@@ -516,12 +516,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                             "page" => 'views/form.buttons.php'
                         ));
                     if ($this->sccpvalues['sccp_compatible']['data'] < '433') {
-                        $this->pagedata["sccpcodec"] = array(                        
-                            "sccpcodec" => array(
-                            "name" => _("Device SCCP Codec"),
-                            "page" => 'views/server.codec.php'
-                        ),
-                        );
+                        $this->pagedata["sccpcodec"] = array(
+                                "name" => _("Device SCCP Codec"),
+                                "page" => 'views/server.codec.php'
+                            );
                     }
 
                     break;
@@ -1209,7 +1207,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if ($hw_id == 'new') {
             $this->srvinterface->sccp_core_commands(array('cmd' => 'reset_phone', 'name' => $name_dev));
         } else {
-            $this->srvinterface->sccp_core_commands(array('cmd' => 'reload_phone', 'name' => $name_dev));
+            $this->srvinterface->sccp_core_commands(array('cmd' => 'restart_phone', 'name' => $name_dev));
         }
 
         return $save_settings;
