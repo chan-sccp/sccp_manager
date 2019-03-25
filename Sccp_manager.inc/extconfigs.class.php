@@ -100,7 +100,6 @@ class extconfigs {
         'holdconf' => 'resume,newcall,endcall,join',
         'uriaction' => 'default');
 //   Cisco  Language Code / Directory  
-
     private $cisco_language = array('ar_SA' => array('code' => 'ar', 'language' => 'Arabic', 'locale' => 'Arabic_Saudi_Arabia', 'codepage' => 'ISO8859-1'),
         'bg_BG' => array('code' => 'bg', 'language' => 'Bulgarian', 'locale' => 'Bulgarian_Bulgaria', 'codepage' => 'ISO8859-1'),
         'cz_CZ' => array('code' => 'cz', 'language' => 'Czech', 'locale' => 'Czech_Czech_Republic', 'codepage' => 'ISO8859-1'),
@@ -217,10 +216,22 @@ class extconfigs {
 // *** Setings for Provision Sccp        
         $adv_config = Array('tftproot' => '', 'firmware' => 'firmware', 'settings' => 'settings',
             'locales' => 'locales', 'languages' => 'languages', 'templates' => 'templates');
+// 'pro' /tftpboot - root dir 
+//       /tftpboot/locales/locales/%Languge_name%
+//       /tftpboot/settings/XMLdefault.cnf.xml
+//       /tftpboot/settings/SEP[MAC].cnf.xml
+//       /tftpboot/firmware/79xx/SCCPxxxx.loads
         $adv_tree['pro'] = Array('templates' => 'tftproot', 'settings' => 'tftproot', 'locales' => 'tftproot', 'firmware' => 'tftproot', 'languages' => 'locales');
 
+// 'def' /tftpboot - root dir 
+//       /tftpboot/languages/%Languge_name%
+//       /tftpboot/XMLdefault.cnf.xml
+//       /tftpboot/SEP[MAC].cnf.xml
+//       /tftpboot/SCCPxxxx.loads
+        $adv_tree['def'] = Array('templates' => 'tftproot', 'settings' => '', 'locales' => '', 'firmware' => '', 'languages' => 'tftproot');
 //        $adv_tree['def']   = Array('templates' => 'tftproot', 'settings' => '', 'locales' => 'tftproot',  'firmware' => 'tftproot', 'languages' => '');
-        $adv_tree['def'] = Array('templates' => 'tftproot', 'settings' => '', 'locales' => 'tftproot', 'firmware' => 'tftproot', 'languages' => 'tftproot');
+//        $adv_tree['def'] = Array('templates' => 'tftproot', 'settings' => '', 'locales' => 'tftproot', 'firmware' => 'tftproot', 'languages' => 'tftproot');
+        
 //* **************------ ****        
         $base_tree = Array('tftp_templates' => 'templates', 'tftp_path_store' => 'settings', 'tftp_lang_path' => 'languages', 'tftp_firmware_path' => 'firmware');
 
