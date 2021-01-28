@@ -418,10 +418,10 @@ class extconfigs
     {
         global $amp_conf;
         $res = array();
-        if (empty($realm)) {
+/*        if (empty($realm)) {
             $realm = 'sccp';
         }
-        $cnf_int = \FreePBX::Config();
+*/        $cnf_int = \FreePBX::Config();
         $cnf_wr = \FreePBX::WriteConfig();
         $cnf_read = \FreePBX::LoadConfig();
 
