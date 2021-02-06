@@ -45,7 +45,6 @@ class dbinterface
 
     public function HWextension_db_SccpTableData($dataid, $data = array())
     {
-        // $stmt is a single row fetch, $stmts is a fetchAll.
         global $db;
         $stmt = '';
         $stmts = '';
@@ -60,7 +59,7 @@ class dbinterface
                     $stmts = $db->prepare('SELECT * FROM sccpline WHERE name = $data[name]');
                 }
                 break;
-            case 'SccpDevice':
+            case "SccpDevice":
                 $filtered ='';
                 $singlerow = false;
                 if (empty($data['fields'])) {
@@ -128,7 +127,7 @@ class dbinterface
                         . 'LEFT JOIN sccpdevmodel as addon ON t1.addon=addon.model WHERE name="' . $data['id'] . '';
                 $stmt = $db->prepare($sql);
                 break;
-            case 'get_sccpuser':
+            case "get_sccpuser":
                 $sql = 'SELECT * FROM sccpuser ';
                 if (!empty($data['id'])) {
                     $sql .= 'WHERE name= ' . $data['id'] . '';
@@ -200,7 +199,7 @@ class dbinterface
                         if (strpos($filter['model'], 'loadInformation')) {
                             $sql = 'SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (loadinformationid =' . $filter['model'] . ') ORDER BY model';
                         } else {
-                            $sql = 'SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (loadinformationid = loadInformation' . $filter['model'] . ') ORDER BY model';
+                            $sql = 'SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (loadinformationid =loadInformation' . $filter['model'] . ') ORDER BY model';
                         }
                     } else {
 //                          $sql = "SELECT ".$filter['model'];
@@ -322,25 +321,27 @@ class dbinterface
                 $result = $db->prepare($req)->execute();
                 break;
             case 'sccpbuttons':
-                switch ($mode) {
-                    case 'clear':   // no break here as clear is same as delete
-                    case 'delete':
-                        $sql = 'DELETE FROM sccpbuttonconfig WHERE ref=' . $hwid . '';
-                        $result = $db->prepare($sql)->execute();
-                        break;
-                    case 'replace':
-                        if (!empty($save_value)) {
-                            $sql = 'UPDATE sccpbuttonconfig SET `name`=? WHERE  `ref`= ? AND `reftype`=? AND `instance`=?  AND `buttontype`=?';
-                            $stmt = $db->prepare($sql);
-                            $result= $db->executeMultiple($stmt, $save_value);
-                        }
-                        break;
-                    default:
-                        if (!empty($save_value)) {
-                            $sql = 'INSERT INTO sccpbuttonconfig (`ref`, `reftype`,`instance`, `buttontype`, `name`, `options`) VALUES (?,?,?,?,?,?)';
-                            $stmt = $db->prepare($sql);
-                            $result = $db->executeMultiple($stmt, $save_value);
-                        }
+                if (($mode == 'clear') || ($mode == 'delete')) {
+                    $sql = 'DELETE FROM sccpbuttonconfig WHERE ref=' . $hwid . '';
+                    $result = $db->prepare($sql)->execute();
+                }
+                if ($mode == 'delete') {
+                    break;
+                }
+                if (empty($save_value)) {
+                    break;
+                }
+                if ($mode == 'replace') {
+                    $sql = 'UPDATE sccpbuttonconfig SET `name`=? WHERE  `ref`= ? AND `reftype`=? AND `instance`=?  AND `buttontype`=?';
+//                    $sql = 'INSERT INTO `sccpbuttonconfig` (`ref`, `reftype`,`instance`, `buttontype`, `name`, `options`) VALUES (?,?,?,?,?,?);';
+//                    die(print_r($save_value,1));
+                    $stmt = $db->prepare($sql);
+                    $result= $db->executeMultiple($stmt, $save_value);
+                } else {
+                    $sql = 'INSERT INTO sccpbuttonconfig (`ref`, `reftype`,`instance`, `buttontype`, `name`, `options`) VALUES (?,?,?,?,?,?)';
+//                    die(print_r($save_value,1));
+                    $stmt = $db->prepare($sql);
+                    $result = $db->executeMultiple($stmt, $save_value);
                 }
         }
         return $result;
