@@ -1868,10 +1868,22 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 //        $save_settings = array();
         if (empty($save_value)) {
             $this->dbinterface->write('sccpsettings', $this->sccpvalues, 'clear');
+
+/*            foreach ($this->sccpvalues as $key => $val) {
+                if ((trim($val['data']) !== '') or ($val['data'] == '0')) {
+                    $save_settings[] = array($key, $val['data'], $val['seq'], $val['type']);
+                } else {
+                    $unsaved_settings[] = array($key, $val['data'], $val['seq'], $val['type']);
+                }
+            }
+            $this->dbinterface->write('sccpsettings', $save_settings, 'clear');
+*/
         } else {
             $this->dbinterface->write('sccpsettings', $save_value, 'update');
         }
         return true;
+//        }
+//        return true;
     }
 
     /*
