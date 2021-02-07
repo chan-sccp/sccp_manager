@@ -254,7 +254,6 @@ class srvinterface {
         } else {
             return $this->oldinterface->sccp_list_keysets();
         }
-
     }
 
     public function sccp_get_active_device() {
