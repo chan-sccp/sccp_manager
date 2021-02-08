@@ -869,7 +869,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 }
                 break;
             case 'getDeviceModel':
-//dbug('getting Device model');
+dbug('getting Device model');
                 switch ($request['type']) {
                     case 'all':
                     case 'extension':
@@ -930,7 +930,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 return $result;
                 break;
             case 'getExtensionGrid':
-//dbug('getting Extension Grid');
+dbug('getting Extension Grid');
                 $result = $this->dbinterface->HWextension_db_SccpTableData('SccpExtension');
                 if (empty($result)) {
                     return array();
@@ -954,7 +954,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 return $result;
                 break;
             case 'getPhoneGrid':
-//dbug('getting Phone Grid');
+dbug('getting Phone Grid');
                 $cmd_type = !empty($request['type']) ? $request['type'] : '';
 
                 $result = $this->dbinterface->HWextension_db_SccpTableData('SccpDevice', array('type' => $cmd_type));
@@ -1868,22 +1868,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 //        $save_settings = array();
         if (empty($save_value)) {
             $this->dbinterface->write('sccpsettings', $this->sccpvalues, 'clear');
-
-/*            foreach ($this->sccpvalues as $key => $val) {
-                if ((trim($val['data']) !== '') or ($val['data'] == '0')) {
-                    $save_settings[] = array($key, $val['data'], $val['seq'], $val['type']);
-                } else {
-                    $unsaved_settings[] = array($key, $val['data'], $val['seq'], $val['type']);
-                }
-            }
-            $this->dbinterface->write('sccpsettings', $save_settings, 'clear');
-*/
         } else {
             $this->dbinterface->write('sccpsettings', $save_value, 'update');
         }
         return true;
-//        }
-//        return true;
     }
 
     /*
@@ -2144,7 +2132,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $dir_list = $this->findAllFiles($dir, $file_ext, 'fileonly');
         }
         $raw_settings = $this->dbinterface->getDb_model_info($get, $format_list, $filter);
-//dbug('reloading table');
+dbug('reloading table');
         if ($validate) {
             for ($i = 0; $i < count($raw_settings); $i++) {
                 $raw_settings[$i]['validate'] = '-;-';
