@@ -112,19 +112,19 @@ class dbinterface
             case 'HWextension':
                 $raw_settings = $this->getDb_model_info($get = "extension", $format_list = "model");
                 break;
-            case 'get_colums_sccpdevice':
-                $sql = "DESCRIBE sccpdevice";
+            case 'get_columns_sccpdevice':
+                $sql = 'DESCRIBE sccpdevice';
                 $stmt = $db->prepare($sql);
                 break;
-            case 'get_colums_sccpuser':
-                $sql = "DESCRIBE sccpuser";
+            case 'get_columns_sccpuser':
+                $sql = 'DESCRIBE sccpuser';
                 $stmts = $db->prepare($sql);
                 break;
             case 'get_sccpdevice_byid':
-                $sql = 'SELECT t1.*, types.dns,  types.buttons, types.loadimage, types.nametemplate as nametemplate, '
-                        . 'addon.buttons as addon_buttons FROM sccpdevice AS t1 '
-                        . 'LEFT JOIN sccpdevmodel as types ON t1.type=types.model '
-                        . 'LEFT JOIN sccpdevmodel as addon ON t1.addon=addon.model WHERE name="' . $data['id'] . '';
+                $sql = 'SELECT t1.*, types.dns,  types.buttons, types.loadimage, types.nametemplate as nametemplate,
+                        addon.buttons as addon_buttons FROM sccpdevice AS t1
+                        LEFT JOIN sccpdevmodel as types ON t1.type=types.model
+                        LEFT JOIN sccpdevmodel as addon ON t1.addon=addon.model WHERE name =\'' . $data['id'] . '\'';
                 $stmt = $db->prepare($sql);
                 break;
             case "get_sccpuser":
@@ -245,6 +245,13 @@ class dbinterface
 
     function write($table_name = "", $save_value = array(), $mode = 'update', $key_fld = "", $hwid = "")
     {
+//dbug('entering write for table', $table_name);
+if ($table_name === 'sccpdevmodel'){
+dbug('entering write with save_value', $save_value);
+dbug('entering write with mode', $mode);
+dbug('entering write with key_fld', $key_fld);
+dbug('entering write with hwid', $hwid);
+}
         // mode clear  - Empty table before update
         // mode update - update / replace record
         global $db;
@@ -270,25 +277,22 @@ class dbinterface
                 if ($mode == 'clear') {
 //                    $sql = 'truncate `sccpsettings`';
                     $db->prepare('TRUNCATE sccpsettings')->execute();
-                    $stmt = $db->prepare('INSERT INTO sccpsettings (`keyword`, `data`, `seq`, `type`) VALUES (?,?,?,?)');
+                    $stmt = $db->prepare('INSERT INTO sccpsettings (keyword, data, seq, type) VALUES (?,?,?,?)');
                     $result = $db->executeMultiple($stmt, $save_value);
                 } else {
                     if (!empty($delete_value)) {
-                        $stmt = $db->prepare('DELETE FROM sccpsettings WHERE `keyword`=?');
+                        $stmt = $db->prepare('DELETE FROM sccpsettings WHERE keyword = ?');
                         $result = $db->executeMultiple($stmt, $delete_value);
                     }
                     if (!empty($save_value)) {
-                        $stmt = $db->prepare('REPLACE INTO sccpsettings (`keyword`, `data`, `seq`, `type`) VALUES (?,?,?,?)');
+                        $stmt = $db->prepare('REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES (?,?,?,?)');
                         $result = $db->executeMultiple($stmt, $save_value);
                     }
                 }
                 break;
-            case 'sccpdevmodel':
-                break;
-            case 'sccpdevice':
-                break;
+            case 'sccpdevmodel':    // Fall through to next intentionally
+            case 'sccpdevice':    // Fall through to next intentionally
             case 'sccpuser':
-                $sql_db = $table_name;
                 $sql_key = "";
                 $sql_var = "";
                 foreach ($save_value as $key_v => $data) {
@@ -305,40 +309,39 @@ class dbinterface
                     }
                 }
                 if (!empty($sql_var)) {
-                    if ($mode == 'delete') {
-                        $req = 'DELETE FROM sccpuser WHERE ' . $sql_key . '';
-                    } else {
-                        if ($mode == 'update') {
-                            $req = 'UPDATE sccpuser SET ' . $sql_var .  'WHERE ' . $sql_key . '';
-                        } else {
-                            $req = 'REPLACE INTO sccpuser SET ' . $sql_var . '';
-                        }
+                    switch ($mode) {
+                        case 'delete':
+                            $req = 'DELETE FROM '. $table_name . ' WHERE ' . $sql_key;
+                            break;
+                        case 'update':
+                            $req = 'UPDATE ' . $table_name . ' SET ' . $sql_var . ' WHERE ' . $sql_key;
+                            break;
+                        default:
+                            $req = 'REPLACE INTO ' . $table_name . ' SET ' . $sql_var;
                     }
                 }
                 $result = $db->prepare($req)->execute();
                 break;
             case 'sccpbuttons':
-                if (($mode == 'clear') || ($mode == 'delete')) {
-                    $sql = 'DELETE FROM sccpbuttonconfig WHERE ref=' . $hwid . '';
-                    $result = $db->prepare($sql)->execute();
-                }
-                if ($mode == 'delete') {
-                    break;
-                }
-                if (empty($save_value)) {
-                    break;
-                }
-                if ($mode == 'replace') {
-                    $sql = 'UPDATE sccpbuttonconfig SET `name`=? WHERE  `ref`= ? AND `reftype`=? AND `instance`=?  AND `buttontype`=?';
-//                    $sql = 'INSERT INTO `sccpbuttonconfig` (`ref`, `reftype`,`instance`, `buttontype`, `name`, `options`) VALUES (?,?,?,?,?,?);';
-//                    die(print_r($save_value,1));
-                    $stmt = $db->prepare($sql);
-                    $result= $db->executeMultiple($stmt, $save_value);
-                } else {
-                    $sql = 'INSERT INTO sccpbuttonconfig (`ref`, `reftype`,`instance`, `buttontype`, `name`, `options`) VALUES (?,?,?,?,?,?)';
-//                    die(print_r($save_value,1));
-                    $stmt = $db->prepare($sql);
-                    $result = $db->executeMultiple($stmt, $save_value);
+                switch ($mode) {
+                    case 'clear':   // no break here as clear is same as delete
+                    case 'delete':
+                        $sql = 'DELETE FROM sccpbuttonconfig WHERE ref=' . $hwid . '';
+                        $result = $db->prepare($sql)->execute();
+                        break;
+                    case 'replace':
+                        if (!empty($save_value)) {
+                            $sql = 'UPDATE sccpbuttonconfig SET name =? WHERE  ref = ? AND reftype =? AND instance =?  AND buttontype =?';
+                            $stmt = $db->prepare($sql);
+                            $result= $db->executeMultiple($stmt, $save_value);
+                        }
+                        break;
+                    default:
+                        if (!empty($save_value)) {
+                            $sql = 'INSERT INTO sccpbuttonconfig (ref, reftype, instance, buttontype, name, options) VALUES (?,?,?,?,?,?)';
+                            $stmt = $db->prepare($sql);
+                            $result = $db->executeMultiple($stmt, $save_value);
+                        }
                 }
         }
         return $result;
