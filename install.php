@@ -1004,7 +1004,6 @@ if (!$sccp_db_ver) {
 InstallDB_createButtonConfigTrigger();
 InstallDB_CreateSccpDeviceConfigView($sccp_compatible);
 InstallDB_updateDBVer($sccp_compatible);
-dbug('chanSCCPWarning',$chanSCCPWarning);
 if ($chanSCCPWarning) {
     outn("<br>");
     outn("<font color='red'>Warning: Upgrade chan_sccp_b to use full ami functionality</font>");
