@@ -932,19 +932,23 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
             GROUP BY sccpuser.name; ";
         } else {
             $sql .= "CREATE OR REPLACE
-                ALGORITHM = MERGE
-                VIEW sccpdeviceconfig AS
-            SELECT  case sccpdevice._profileid
-                    when 0 then
-            		(select GROUP_CONCAT(CONCAT_WS( ',', defbutton.buttontype, defbutton.name, defbutton.options ) SEPARATOR ';') from `sccpbuttonconfig` as defbutton where defbutton.ref = sccpdevice.name ORDER BY defbutton.instance )
-            	when 1 then
-            		(select GROUP_CONCAT(CONCAT_WS( ',', userbutton.buttontype, userbutton.name, userbutton.options ) SEPARATOR ';') from `sccpbuttonconfig` as userbutton where userbutton.ref = sccpdevice._loginname ORDER BY userbutton.instance )
-            	when 2 then
-			(select GROUP_CONCAT(CONCAT_WS( ',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';') from `sccpbuttonconfig` as homebutton where homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
-                    end as button,  if(sccpdevice._profileid = 0, sccpdevice._description, sccpuser.description) as description, sccpdevice.*
-            FROM sccpdevice
-            LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice._loginname )
-            GROUP BY sccpdevice.name;";
+                    ALGORITHM = MERGE
+                    VIEW sccpdeviceconfig AS
+                    SELECT CASE sccpdevice._profileid
+                        WHEN 0 THEN
+                		        (SELECT GROUP_CONCAT(CONCAT_WS( ',', defbutton.buttontype, defbutton.name, defbutton.options ) SEPARATOR ';')
+                            FROM sccpbuttonconfig AS defbutton, sccpdevice WHERE defbutton.ref = sccpdevice.name ORDER BY defbutton.instance )
+                	      WHEN 1 THEN
+                		        (SELECT GROUP_CONCAT(CONCAT_WS( ',', userbutton.buttontype, userbutton.name, userbutton.options ) SEPARATOR ';')
+                            FROM sccpbuttonconfig AS userbutton, sccpdevice WHERE userbutton.ref = sccpdevice._loginname ORDER BY userbutton.instance )
+                	      WHEN 2 THEN
+    			                   (SELECT GROUP_CONCAT(CONCAT_WS( ',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';')
+                             FROM sccpbuttonconfig AS homebutton, sccpdevice WHERE homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
+                        END
+                    AS button,  if(sccpdevice._profileid = 0, sccpdevice._description, sccpuser.description) AS description, sccpdevice.*
+                    FROM sccpdevice
+                    LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice._loginname )
+                    GROUP BY sccpdevice.name;";
         }
     }
     $results = $db->query($sql);
