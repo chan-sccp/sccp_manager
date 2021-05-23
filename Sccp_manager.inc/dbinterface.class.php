@@ -403,6 +403,7 @@ class dbinterface
                 }
             }
         }
+
         return $result;
     }
 }

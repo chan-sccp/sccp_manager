@@ -997,17 +997,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                                 if (empty($dev_schema)) {
                                     $dev_schema[0]['model'] = "ERROR in Model Schema";
                                 }
-                                $result[] = array(
-                                    'name' => $id_name,
-                                    'mac' => $id_name,
-                                    'button' => '---',
-                                    'type' => $dev_schema[0]['model'],
-                                    'new_hw' => 'Y',
-                                    'description' => '*NEW* ' . $dev_ids['descr'],
-                                    'status' => '*NEW* ' . $dev_ids['status'],
-                                    'address' => $dev_ids['address'],
-                                    'addon' => $dev_addon
-                                );
+                                $result[] = array('name' => $id_name, 'mac' => $id_name, 'button' => '---', 'type' => $dev_schema[0]['model'], 'new_hw' => 'Y',
+                                    'description' => '*NEW* ' . $dev_ids['descr'], 'status' => '*NEW* ' . $dev_ids['status'], 'address' => $dev_ids['address'],
+                                    'addon' => $dev_addon);
                             }
                         }
                     }

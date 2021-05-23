@@ -85,7 +85,7 @@ if (!empty($_REQUEST['id'])) {
                     <div class="row">
                         <div class="form-group">
                             <div class="col-md-3">
-                                <label class="control-label" for="codecw"><?php echo _("Allow") ?></label>
+                                <label class="control-label" for="codecw"><?php echo _("Allow (audio)") ?></label>
                             </div>
                             <div class="col-md-9">
                                 <div>
@@ -121,9 +121,8 @@ if (!empty($_REQUEST['id'])) {
         </div>
         <!--END Codecs-->
 
+        <!--END SCCP Audio Codecs-->
     </div>
-    <!--END SCCP Audio Codecs-->
-
     <!--SCCP Video Codecs-->
     <div class="section-title" data-for="sccp_vcodecs">
         <h3><i class="fa fa-minus"></i><?php echo _("SCCP Video Codecs ") ?></h3>
@@ -136,7 +135,7 @@ if (!empty($_REQUEST['id'])) {
                     <div class="row">
                         <div class="form-group">
                             <div class="col-md-3">
-                                <label class="control-label" for="codecw"><?php echo _("Allow") ?></label>
+                                <label class="control-label" for="codecw"><?php echo _("Allow (video)") ?></label>
                             </div>
                             <div class="col-md-9">
                                 <div>
@@ -169,11 +168,70 @@ if (!empty($_REQUEST['id'])) {
                     </div>
                 </div>
             </div>
-            <!--END Codecs-->
         </div>
+        <!--END Codecs-->
         <!--END SCCP Video Codecs-->
     </div>
 
+    <div class="section-title" data-for="sccp_dcodecs">
+        <h3><i class="fa fa-minus"></i><?php echo _("SCCP Disallow Codecs ") ?></h3>
+    </div>
+    <div class="section" data-id="sccp_dcodecs">
+
+    <!--SCCP Video Codecs-->
+    <div class="section-title" data-for="sccp_vcodecs">
+        <h3><i class="fa fa-minus"></i><?php echo _("SCCP Video Codecs ") ?></h3>
+    </div>
+    <div class="section" data-id="sccp_vcodecs">
+        <!--Codecs-->
+        <div class="element-container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="sccp_disallow"><?php echo _("Disallow") ?></label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="sccp_disallow"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <div>
+                                <?php echo show_help(_("This is the default Codec setting for SCCP Device.")) ?>
+                                </div>
+                                <?php
+                                $seq = 1;
+
+                                echo '<ul class="sortable">';
+                                foreach ($video_codecs as $codec => $codec_state) {
+                                    $codec_trans = _($codec);
+                                    $codec_checked = $codec_state ? 'checked' : '';
+                                    echo '<li><a href="#">'
+                                    . '<img src="assets/sipsettings/images/arrow_up_down.png" height="16" width="16" border="0" alt="move" style="float:none; margin-left:-6px; margin-bottom:-3px;cursor:move" /> '
+                                    . '<input type="checkbox" '
+                                    . ($codec_checked ? 'value="' . $seq++ . '" ' : '')
+                                    . 'name="voicecodecs[' . $codec . ']" '
+                                    . 'id="' . $codec . '" '
+                                    . 'class="audio-codecs" '
+                                    . $codec_checked
+                                    . ' />'
+                                    . '&nbsp;&nbsp;<label for="' . $codec . '"> '
+                                    . '<small>' . $codec_trans . '</small>'
+                                    . " </label></a></li>\n";
+                                }
+                                echo '</ul>';
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <span id="sccp_disallow-help" class="help-block fpbx-help-block"><?php echo _("Default : all. Plz eneter format: alaw,ulaw") ?></span>
+                </div>
+            </div>
+        </div>
+        <!--END Codec disallow-->
+    </div>
 
     
 </form>
