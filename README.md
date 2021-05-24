@@ -1,7 +1,7 @@
 ## Welcome to Develop Chan_SCCP GUI Manager for FreePBX
 | [English :gb:/:us:](README.md) | [Russian :ru:](README.ru.md) | [Previous Stable Releases](https://github.com/PhantomVl/sccp_manager/tree/master)
 
-![Gif](https://github.com/PhantomVl/sccp_manager/raw/develop/.dok/image/Demo_1s5.gif)
+![Gif](https://github.com/chan-sccp/sccp_manager/raw/develop/.dok/image/Demo_1s5.gif)
 
   * [Installation](https://github.com/chan-sccp/sccp_manager#installation)
   * [Prerequisites](https://github.com/chan-sccp/sccp_manager#prerequisites)
