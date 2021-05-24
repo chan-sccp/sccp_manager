@@ -1,7 +1,7 @@
 ## Welcome to Develop Chan_SCCP GUI Manager for FreePBX
-| [English :gb:/:us:](README.md) | [Russian :ru:](README.ru.md) | [OLD Stable Release](https://github.com/PhantomVl/sccp_manager/tree/master)
+| [English :gb:/:us:](README.md) | [Russian :ru:](README.ru.md) | [Previous Stable Releases](https://github.com/PhantomVl/sccp_manager/tree/master)
 
-![Gif](https://github.com/PhantomVl/sccp_manager/raw/develop/.dok/image/Demo_1s5.gif)
+![Gif](https://github.com/chan-sccp/sccp_manager/raw/develop/.dok/image/Demo_1s5.gif)
 
   * [Installation](https://github.com/chan-sccp/sccp_manager#installation)
   * [Prerequisites](https://github.com/chan-sccp/sccp_manager#prerequisites)
@@ -32,20 +32,13 @@ You can find more information and documentation on our [![SCCP Manager Wiki](htt
 
 ## Prerequisites
 Make sure you have the following installed on your system:
-- c-compiler:
-  - gcc >= 4.4  (note: older not supported, higher advised)
-  - clang >= 3.6  (note: older not supported, higher advised)
-- gnu make
-- pbx:
-  - asterisk >= 1.8 (absolute minimum & not recommended)
-  - asterisk >= 13.7 or asterisk >= 14.0 recommended
 - gui:
   - freepbx >= 13.0.192
-- standard posix compatible applications like sed, awk, tr
+- a working version of [chan-sccp](https://github.com/chan-sccp/chan-sccp)
 
 ### Requirements
-- Chan_SCCP module 4.3.1 (or later) channel driver for Asterisk: [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/Building-and-Installation-Guide)
-  - expected configure flags:
+- Chan_SCCP module 4.3.4 (or later) channel driver for Asterisk: [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/Building-and-Installation-Guide)
+  - sccp_manager expects these configure flags to be set during compilation:
     ```./configure  --enable-conference --enable-advanced-functions --enable-distributed-devicestate --enable-video```
   - Creating mysql DB from sorce
     ```mysql -u root asterisk < mysql-v5_enum.sql```
@@ -77,18 +70,19 @@ Make sure you have the following installed on your system:
 9. Apply Config to FreePBX.
 
 ### Module update to latest state
+
+If you installed sccp_manager using git clone instead of installing a zip
+file / tarball then you can do easily keep up with the latest develop by
+doing this:
+
 1. Goto to module into your local system. (/var/www/html/admin/modules/sccp_manager/)
 
 >        cd /var/www/html/admin/modules/sccp_manager/
->        git fetch
 >        git pull
->          or
 >        git checkout develop
 
-
 ### IMPORTANT NOTES:
-- !!! If something stops working, use the master branch [master](https://github.com/PhantomVl/sccp_manager/tree/master)
-  !!! master branch does not support changes into chan-sccp made after October 2018.
+- !!! If something stops working, use the develop branch [develop](https://github.com/chan-sccp/sccp_manager/tree/develop)
 - This system assumes/requires that you are using the Asterisk realtime database. If you are not yet using the realtime database,
 you will have to set it up for this module to work ([See](https://github.com/chan-sccp/chan-sccp/wiki/Realtime-Configuration)).
 - For the cisco phones to work correctly, they should be provisioned with the latest firmware (v8.1 or higher)
