@@ -82,7 +82,6 @@ Make sure you have the following installed on your system:
 >        cd /var/www/html/admin/modules/sccp_manager/
 >        git fetch
 >        git pull
->        git checkout extension_mobility
 >          or
 >        git checkout develop
 
