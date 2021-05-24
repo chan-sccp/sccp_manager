@@ -1,5 +1,5 @@
 ## Welcome to Develop Chan_SCCP GUI Manager for FreePBX
-| [English :gb:/:us:](README.md) | [Russian :ru:](README.ru.md) | [OLD Stable Release](https://github.com/PhantomVl/sccp_manager/tree/master)
+| [English :gb:/:us:](README.md) | [Russian :ru:](README.ru.md) | [Previous Stable Releases](https://github.com/PhantomVl/sccp_manager/tree/master)
 
 ![Gif](https://github.com/PhantomVl/sccp_manager/raw/develop/.dok/image/Demo_1s5.gif)
 
@@ -82,8 +82,7 @@ doing this:
 >        git checkout develop
 
 ### IMPORTANT NOTES:
-- !!! If something stops working, use the master branch [master](https://github.com/PhantomVl/sccp_manager/tree/master)
-  !!! master branch does not support changes into chan-sccp made after October 2018.
+- !!! If something stops working, use the develop branch [develop](https://github.com/chan-sccp/sccp_manager/tree/develop)
 - This system assumes/requires that you are using the Asterisk realtime database. If you are not yet using the realtime database,
 you will have to set it up for this module to work ([See](https://github.com/chan-sccp/chan-sccp/wiki/Realtime-Configuration)).
 - For the cisco phones to work correctly, they should be provisioned with the latest firmware (v8.1 or higher)

@@ -4,6 +4,7 @@
 	<version>14.0.0.2M</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
+	<publisher>Steve Lad</publisher>
 	<publisher>Alex GP</publisher>
         <repo>extended</repo>
 	<description>SCCP Phone and Extension Manager</description>
@@ -21,7 +22,7 @@
 	<supported>
 		<version>13.0.0.2M</version>
 	</supported>
-        <info>https://github.com/PhantomVl/sccp_manager</info>
+        <info>https://github.com/chan-sccp/sccp_manager</info>
         <license>GPL</license>
 	<md5sum></md5sum>
 </module>
