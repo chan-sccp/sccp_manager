@@ -109,6 +109,7 @@
                         <span id="new_buttons-help" class="help-block fpbx-help-block">Help.</span>
                 </div></div></div>
 
+
                 <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
                         <label class="control-label" for="new_loadimage"><?php echo _('Load Image');?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="new_loadimage"></i>
@@ -164,7 +165,8 @@
                     <div class="row"><div class="col-md-12">
                         <span id="editd_model-help" class="help-block fpbx-help-block">Help.</span>
                 </div></div></div>
-                
+
+
                 <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
                         <label class="control-label" for="editd_vendor"><?php echo _('Vendor name');?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="editd_vendor"></i>
@@ -229,6 +231,8 @@
                     <div class="row"><div class="col-md-12">
                         <span id="editd_nametemplate-help" class="help-block fpbx-help-block">Help.</span>
                 </div></div></div>
+
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _('Close');?></button>

@@ -205,13 +205,15 @@ class dbinterface
             case 'byciscoid':
                 if (!empty($filter)) {
                     if (!empty($filter['model'])) {
-                        if (!strpos($filter['model'], 'loadInformation')) {
-                            $filter['model'] = 'loadInformation' . $filter['model'];
+                        if (strpos($filter['model'], 'loadInformation')) {
+                            $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (loadinformationid =' . $filter['model'] . ') ORDER BY model');
+                        } else {
+                            $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (loadinformationid = loadInformation' . $filter['model'] . ') ORDER BY model');
                         }
                         $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (loadinformationid = :model ) ORDER BY model");
                         $stmt->bindParam(':model', $filter['model'], \PDO::PARAM_STR);
                     } else {
-                        $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel ORDER BY model");
+                        $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel ORDER BY model');
                     }
                     break;
                 }
@@ -403,6 +405,7 @@ class dbinterface
                 }
             }
         }
+
         return $result;
     }
 }

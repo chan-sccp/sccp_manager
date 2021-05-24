@@ -49,7 +49,7 @@ Make sure you have the following installed on your system:
   - Creating mysql DB from sorce 
     ```mysql -u root asterisk < mysql-v5_enum.sql```
 
-- TFTP Server running under (recomended) /tftpboot/ [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/setup-tftp-service)
+- TFTP Server running under (recommended) /tftpboot/ [See our WIKI] (https://github.com/chan-sccp/chan-sccp/wiki/setup-tftp-service)
   - You will need the phone settings templates. You can use the templates taken from the distribution "chan-sccp" 
     ```cp /usr/src/chan-sccp/conf/tftp/\*.xml\* /tftpboot/templates/```
 

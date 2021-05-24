@@ -192,6 +192,7 @@ ri ^(.+)\/(.+-dictionary-ext.xml)$ languages/\1/\2
 ri ^(.+)\/(.+-tones.xml)$ languages/\1/\2
 ri ^(.+)\/(.+-font.xml)$ languages/\1/\2
 ri ^(.+)\/(.+-kate.xml)$ languages/\1/\2
+
 #ri ^(.+)\/(.+-tones.xml)$ locales/countries/\1/\2
 
 # Keep ring-tones in a separate directory (optional)

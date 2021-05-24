@@ -19,7 +19,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                                  'namedcallgroup'=>'namedcallgroup', 'namedpickupgroup' => 'namedpickupgroup',            
                                  "transfer" => 'transfer', "echocancel" => 'echocancel',
                                  "language" => 'language', "description" => 'callerid',
-                                 "cid_num" => 'cid_num', "cid_name" => 'cid_name', "mailbox" => 'mailbox',
+                                 "cid_num" => 'cid_num', "cid_name" => 'label', "mailbox" => 'mailbox',
                                  "musicclass" => 'musicclass',"allow" => 'allow',"disallow" => 'disallow',
                                  "videomode" => 'videomode',
                                  "dnd" => 'dnd', "silencesuppression" => 'silencesuppression',
@@ -82,7 +82,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                 }
                 $settings['allow']['value'] = implode(",", $allow_codec);
 
-		// parse outboundcid content into cid_num and cid_name sccpline fields
                 if (empty($settings['cid_num']['value'])) {
                     $settings['cid_num']['value'] = $id;
                 } else {

@@ -14,8 +14,8 @@ class srvinterface {
 
     var $error;
     var $_info;
-    var $ami_mode;
-    var $useAmiForSoftKeys = true;
+    var $ami_mode = false;
+    var $useAmiInterface = true;
 
     public function __construct($parent_class = null) {
         $this->paren_class = $parent_class;
@@ -231,11 +231,11 @@ class srvinterface {
             default:
                 $retval = 430;
         }
-        if ($res['RevisionNum'] < 11048) {
-            $this->useAmiForSoftKeys = false;
+        if ($res['RevisionNum'] < 11063) {
+            $this->useAmiInterface = false;
         }
         if ($revNumComp) {
-            return array($retval, $this->useAmiForSoftKeys);
+            return array($retval, $this->useAmiInterface);
         }
         return $retval;
     }
@@ -249,11 +249,12 @@ class srvinterface {
     }
 
     public function sccp_list_keysets() {
-        if (($this->ami_mode) && ($this->useAmiForSoftKeys)){
+        if ($this->ami_mode) {
             return $this->aminterface->sccp_list_keysets();
         } else {
             return $this->oldinterface->sccp_list_keysets();
         }
+
     }
 
     public function sccp_get_active_device() {
