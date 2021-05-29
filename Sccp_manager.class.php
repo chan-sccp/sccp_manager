@@ -837,7 +837,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $upd_mode = 'replace';
             case 'model_update':
                 if ($request['command'] == 'model_update') {
-                    $key_name = array('model','vendor','dns', 'buttons', 'loadimage', 'loadinformationid', 'nametemplate');
+                    $key_name = array('model', 'loadimage', 'nametemplate');
                     $upd_mode = 'update';
                 }
                 if (!empty($request['model'])) {

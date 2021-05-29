@@ -235,8 +235,6 @@ function Get_DB_config($sccp_compatible)
             'directed_pickup' => array('drop' => "yes"),
             'directed_pickup_context' => array('drop' => "yes"),
             'pickupcontext' => array('drop' => "yes"),
-            'allow' => array('drop' => "yes"),
-            'disallow' => array('drop' => "yes"),
             'directed_pickup_modeanswer' => array('drop' => "yes"),
             'pickupmodeanswer' => array('drop' => "yes"),
             'disallow' => array('drop' => "yes"),
@@ -286,7 +284,6 @@ function Get_DB_config($sccp_compatible)
             'conf_show_conflist' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
             'type' => array('create' => 'VARCHAR(15) NULL DEFAULT NULL', 'modify' => "VARCHAR(15)"),
             'imageversion' => array('create' => 'VARCHAR(31) NULL DEFAULT NULL', 'modify' => "VARCHAR(31)"),
-            'phonecodepage' => array('create' => 'VARCHAR(50) NULL DEFAULT NULL', 'modify' => "VARCHAR(50)"),
             'softkeyset' => array('def_modify' => "softkeyset")
         ),
         'sccpline' => array(
