@@ -90,9 +90,18 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         foreach ($this->database->query($sql) as $row) {
             $tech[$row["Field"]]=$row["Field"];
         }
-
-        //                die(print_r($tech));
-
+        $sqlCol = 'name';
+        $sqlVal = "\'{$id}\'";
+        foreach($this->data_fld as $key => $val) {
+            if (!empty($settings[$val]) ) {
+                if (!empty($settings[$val]['value'])){
+                    $sqlCol .= ", {$key}";
+                    $sqlVal .= ", \' {$settings[$val]['value']} \'";
+                }
+            }
+        }
+        $sql = "REPLACE INTO sccpline ( {$sqlCol} ) VALUES ( {$sqlVal} );";
+        /*
         $sql = 'REPLACE INTO sccpline (name';
         $sqlv = 'values ("'.$id.'"';
         foreach($this->data_fld as $key => $val) {
@@ -104,6 +113,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         }
         $sql .= ") ".$sqlv.");";
+        */
         $sth = $this->database->prepare($sql);
         $sth->execute();
         return true;
@@ -141,71 +151,71 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     public function getDefaultDeviceSettings($id, $displayname, &$flag) {
         	$dial = 'SCCP';
         	$settings  = array(
-        		"pin" => array(
-        			"value" => "",
-        			"flag" => $flag++
-        		),
-        		"incominglimit" => array(
-        			"value" => "",
-        			"flag" => $flag++
-        		),
-        		"lcontext" => array(
-        			"value" => "from-internal",
-        			"flag" => $flag++
-        		),
-        		"callgroup" => array(
-        			"value" => "",
-        			"flag" => $flag++
-        		),
-        		"namedcallgroup" => array(
-        			"value" => "",
-        			"flag" => $flag++
-        		),
-        		"pickupgroup" => array(
-        			"value" => "",
-        			"flag" => $flag++
-        		),
-        		"namedpickupgroup" => array(
-        			"value" => "",
-        			"flag" => $flag++
-        		),
-        		"transfer" => array(
-        			"value" => "yes",
-        			"flag" => $flag++
-        		),
-        		"adhocNumber" => array(
-        			"value" => "",
-        			"flag" => $flag++
-        		),
-        		"echocancel" => array(
-        			"value" => "no",
-        			"flag" => $flag++
-        		),
-        		"dnd" => array(
-        			"value" => "UserDefined",
-        			"flag" => $flag++
-        		),
-        		"silencesuppression" => array(
-        			"value" => "no",
-        			"flag" => $flag++
-        		),
-        		"secondary_dialtone_digits" => array(
-        			"value" => "9",
-        			"flag" => $flag++
-        		),
-        		"secondary_dialtone_tone" => array(
-        			"value" => "0x22",
-        			"flag" => $flag++
-        		),
-        		"musicclass" => array(
-        			"value" => "default",
-        			"flag" => $flag++
-        		),
-        	);
+                      		"pin" => array(
+                              		"value" => "",
+                              		"flag" => $flag++
+                      		),
+                      		"incominglimit" => array(
+                              		"value" => "",
+                              		"flag" => $flag++
+                      		),
+                      		"lcontext" => array(
+                              		"value" => "from-internal",
+                              		"flag" => $flag++
+                      		),
+                      		"callgroup" => array(
+                              		"value" => "",
+                              		"flag" => $flag++
+                      		),
+                      		"namedcallgroup" => array(
+                              		"value" => "",
+                              		"flag" => $flag++
+                      		),
+                      		"pickupgroup" => array(
+                              		"value" => "",
+                              		"flag" => $flag++
+                      		),
+                      		"namedpickupgroup" => array(
+                              		"value" => "",
+                              		"flag" => $flag++
+                      		),
+                      		"transfer" => array(
+                              		"value" => "yes",
+                              		"flag" => $flag++
+                      		),
+                      		"adhocNumber" => array(
+                              		"value" => "",
+                              		"flag" => $flag++
+                      		),
+                      		"echocancel" => array(
+                              		"value" => "no",
+                              		"flag" => $flag++
+                      		),
+                      		"dnd" => array(
+                              		"value" => "UserDefined",
+                              		"flag" => $flag++
+                      		),
+                      		"silencesuppression" => array(
+                              		"value" => "no",
+                              		"flag" => $flag++
+                      		),
+                      		"secondary_dialtone_digits" => array(
+                              		"value" => "9",
+                              		"flag" => $flag++
+                      		),
+                      		"secondary_dialtone_tone" => array(
+                              		"value" => "0x22",
+                              		"flag" => $flag++
+                      		),
+                      		"musicclass" => array(
+                              		"value" => "default",
+                              		"flag" => $flag++
+          		            )
+    	                );
         	return array(
-        		"dial" => $dial,
-        		"settings" => $settings
-        	);
+              		"dial" => $dial,
+              		"settings" => $settings
+              	  );
         }
 
 # !TODO!: -TODO-: Would it not be better to put this part in the view directory (MVC) ? No,  This is a template for Freepbx.
