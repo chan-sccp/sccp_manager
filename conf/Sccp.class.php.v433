@@ -93,27 +93,13 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         $sqlCol = 'name';
         $sqlVal = "\'{$id}\'";
         foreach($this->data_fld as $key => $val) {
-            if (!empty($settings[$val]) ) {
-                if (!empty($settings[$val]['value'])){
-                    $sqlCol .= ", {$key}";
-                    $sqlVal .= ", \' {$settings[$val]['value']} \'";
-                }
+            if (isset($settings[$val]['value'])){
+                $sqlCol .= ", {$key}";
+                $sqlVal .= ", \' {$settings[$val]['value']} \'";
             }
         }
         $sql = "REPLACE INTO sccpline ( {$sqlCol} ) VALUES ( {$sqlVal} );";
-        /*
-        $sql = 'REPLACE INTO sccpline (name';
-        $sqlv = 'values ("'.$id.'"';
-        foreach($this->data_fld as $key => $val) {
-            if (!empty($settings[$val]) ) {
-                if (!empty($settings[$val]['value'])){
-                    $sql .= ', '.$key;
-                    $sqlv .= ", '".$settings[$val]['value']."' ";
-                }
-            }
-        }
-        $sql .= ") ".$sqlv.");";
-        */
+
         $sth = $this->database->prepare($sql);
         $sth->execute();
         return true;
