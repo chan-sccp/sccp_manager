@@ -56,12 +56,12 @@
 </div>
 
 <!-- Begin Form Input New  -->
-<div class="modal fade add_new_model" tabindex="-1" role="dialog" aria-labelledby="myLargeModelLabel">
+<div class="modal fade add_new_model" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="gridSystemModelLabel"><?php echo _('Model');?></h4>
+                <h4 class="modal-title" id="gridSystemModalLabel"><?php echo _('Modal title');?></h4>
             </div>
             <div class="modal-body">
                 <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
@@ -147,12 +147,12 @@
     </div>
 </div>
 
-<div class="modal fade" id="edit_model" tabindex="-1" role="dialog" aria-labelledby="myLargeModelLabel">
+<div class="modal fade" id="edit_model" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="gridSystemModelLabel"><?php echo _('Model');?></h4>
+                <h4 class="modal-title" id="gridSystemModalLabel"><?php echo _('Modal title');?></h4>
             </div>
             <div class="modal-body">
                 <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
@@ -164,7 +164,7 @@
                     <div class="row"><div class="col-md-12">
                         <span id="editd_model-help" class="help-block fpbx-help-block">Help.</span>
                 </div></div></div>
-                
+
                 <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
                         <label class="control-label" for="editd_vendor"><?php echo _('Vendor name');?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="editd_vendor"></i>
