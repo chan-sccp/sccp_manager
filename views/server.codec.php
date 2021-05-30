@@ -35,7 +35,7 @@ if (!empty($_REQUEST['id'])) {
 } else {
     $codec_list = $sccp_codec;
 }
-        
+
 ?>
 
 <!-- TODO: Codec selection has moved to the line level in newer chan-sccp versions and should be moved -->
@@ -55,7 +55,7 @@ if (!empty($_REQUEST['id'])) {
                                 <i class="fa fa-question-circle fpbx-help-icon" data-for="sccp_disallow"></i>
                             </div>
                             <div class="col-md-9 radioset">
-                                <input id="sccp_disallow" type="text" name="sccp_disallow" value="<?php echo $sccp_disalow ?>">  
+                                <input id="sccp_disallow" type="text" name="sccp_disallow" value="<?php echo $sccp_disalow ?>">
                                 <label for="sccp_disallow"><?php echo _("default : " . $sccp_disalow_def) ?></label>
                             </div>
                         </div>
@@ -64,13 +64,13 @@ if (!empty($_REQUEST['id'])) {
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <span id="sccp_disallow-help" class="help-block fpbx-help-block"><?php echo _("Default : all. Plz eneter format: alaw,ulaw") ?></span>
+                    <span id="sccp_disallow-help" class="help-block fpbx-help-block"><?php echo _("Default : all. Please enter format: alaw,ulaw,...") ?></span>
                 </div>
             </div>
         </div>
         <!--END Codec disallow-->
     </div>
-    
+
     <!--SCCP Audio Codecs-->
     <div class="section-title" data-for="sccp_acodecs">
         <h3><i class="fa fa-minus"></i><?php echo _("SCCP Audio Codecs ") ?></h3>
@@ -174,6 +174,3 @@ if (!empty($_REQUEST['id'])) {
         <!--END SCCP Video Codecs-->
     </div>
 </form>
-
-
-
