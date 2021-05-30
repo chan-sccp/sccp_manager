@@ -86,7 +86,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
         //                die(print_r($settings));
         $tech = Array();
-        $sql = "DESCRIBE `sccpline`";
+        $sql = "DESCRIBE sccpline";
         foreach ($this->database->query($sql) as $row) {
             $tech[$row["Field"]]=$row["Field"];
         }
