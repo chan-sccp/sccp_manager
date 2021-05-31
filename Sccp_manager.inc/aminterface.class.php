@@ -80,7 +80,7 @@ class aminterface
             $this->load_subspace();
         }
 
-        if ($this->_config['enabled'] {
+        if ($this->_config['enabled']) {
             // Ami is not hard disabled in __construct line 63.
             if ($this->open()) {
                 // Can open a connection. Now check compatibility with chan-sccp.
