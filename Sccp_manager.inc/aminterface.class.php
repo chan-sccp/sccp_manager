@@ -33,10 +33,10 @@ class aminterface
         $drivers = array('Message' => 'Message.class.php', 'Response' => 'Response.class.php', 'Event' => 'Event.class.php');
         foreach ($drivers as $key => $value) {
             $class = $driverNamespace . "\\" . $key;
-            $driver = __DIR__ . "/" . $value;
+            $driver = __DIR__ . "/aminterface/" . $value;
             if (!class_exists($class, false)) {
                 if (file_exists($driver)) {
-                    include(__DIR__ . "/" . $value);
+                    include(__DIR__ . "/aminterface/" . $value);
                 } else {
                     throw new \Exception("Class required but file not found " . $driver);
                 }
@@ -68,6 +68,21 @@ class aminterface
         }
         if ($this->_config['enabled']) {
             $this->load_subspace();
+        }
+
+        if ($this->status()) {
+            // Ami is not hard disabled in Amiinterface __construct line 54.
+            if ($this->open()) {
+                // Can open a connection. Now check compatibility with chan-sccp.
+                // will return true if compatible.
+                if (!$this->get_compatible_sccp(true)[1]) {
+                    // Close the open socket as will not use
+                    $this->close();
+                } else {
+                    // is compatible so enable AMI mode
+                    $this->ami_mode = true;
+                }
+            }
         }
     }
 
@@ -514,5 +529,36 @@ class aminterface
             }
         }
         return $cmd_res;
+    }
+
+    public function get_compatible_sccp($revNumComp=false) {
+        // only called with args from installer to get revision and compatibility
+        $res = $this->getSCCPVersion();
+        if (empty($res)) {
+            return 0;
+        }
+        switch ($res["vCode"]) {
+            case 0:
+                $retval = 0;
+                break;
+            case 433:
+                $retval = 433;
+                break;
+            case 432:
+                $retval = 430;
+                break;
+            case 431:
+                $retval = 431;
+                break;
+            default:
+                $retval = 430;
+        }
+        if ($res['RevisionNum'] < 11063) {
+            $this->useAmiInterface = false;
+        }
+        if ($revNumComp) {
+            return array($retval, true);
+        }
+        return $retval;
     }
 }

@@ -376,11 +376,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     public function myShowPage() {
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
-        /*
-          if ($this->sccpvalues['sccp_compatible']['data'] >= '433') {
-          $this->sccp_metainfo = $this->srvinterface->getGlobalsFromMetaData('general');
-          }
-         */
+
         if (!empty($this->sccpvalues['displayconfig'])) {
             if (!empty($this->sccpvalues['displayconfig']['data']) && ($this->sccpvalues['displayconfig']['data'] == 'sccpsimple')) {
                 $this->pagedata = array(
@@ -517,11 +513,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
         $inputform = !empty($request['tech_hardware']) ? $request['tech_hardware'] : '';
-        /*
-          if ($this->sccpvalues['sccp_compatible']['data'] >= '433') {
-          $this->sccp_metainfo = $this->srvinterface->getGlobalsFromMetaData('device');
-          }
-         */
+
         if (empty($this->pagedata)) {
             switch ($inputform) {
                 case "cisco":
@@ -699,7 +691,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 //$this->createDefaultSccpConfig();
                 $this->createDefaultSccpXml();
 
-                $res = $this->srvinterface->sccp_reload();
+                $res = $this->aminterface->core_sccp_reload();
                 $msg [] = 'Config Saved: ' . $res['Response'];
                 $msg [] = 'Info :' . $res['data'];
                 // !TODO!: It is necessary in the future to check, and replace all server responses on correct messages. Use _(msg)
@@ -744,7 +736,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                             $this->dbinterface->write('sccpdevice', array('name' => $idv), 'delete', "name");
                             $this->dbinterface->write('sccpbuttons', array(), 'delete', '', $idv);
                             $this->deleteSccpDeviceXML($idv); // Концы в вводу !!
-                            $this->srvinterface->sccpDeviceReset($idv);
+                            $this->aminterface->sccpDeviceReset($idv, 'reset');
                         }
                     }
                     return array('status' => true, 'table_reload' => true, 'message' => 'Hardware device has been deleted! ');
@@ -789,24 +781,23 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         $msg = strpos($idv, 'SEP-');
                         if (!(strpos($idv, 'SEP') === false)) {
                             if ($cmd_id == 'reset_token') {
-                                $res = $this->srvinterface->sccp_reset_token($idv);
-
+                                $res = $this->aminterface->sccpDeviceReset($idv, 'tokenack');
                                 $msgr[] = $msg . ' ' . $res['Response'] . ' ' . $res['data'];
                             } else {
-                                $res = $this->srvinterface->sccpDeviceReset($idv);
+                                $res = $this->aminterface->sccpDeviceReset($idv, 'reset');
                                 $msgr[] = $msg . ' ' . $res['Response'] . ' ' . $res['data'];
                             }
                         }
                         if ($idv == 'all') {
-                            $dev_list = $this->srvinterface->sccp_get_active_device();
+                            $dev_list = $this->aminterface->sccp_get_active_device();
                             foreach ($dev_list as $key => $data) {
                                 if ($cmd_id == 'reset_token') {
                                     if (($data['token'] == 'Rej') || ($data['status'] == 'Token ')) {
-                                        $res = $this->srvinterface->sccp_reset_token($idv);
+                                        $res = $this->aminterface->sccpDeviceReset($idv, 'tokenack');
                                         $msgr[] = 'Send Token reset to :' . $key;
                                     }
                                 } else {
-                                    $res = $this->srvinterface->sccpDeviceReset($idv);
+                                    $res = $this->aminterface->sccpDeviceReset($idv, 'reset');
                                     $msgr[] = $res['Response'] . ' ' . $res['data'];
                                 }
                             }
@@ -893,7 +884,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     $id_name = $request['softkey'];
                     unset($this->sccp_conf_init[$id_name]);
                     $this->createDefaultSccpConfig();
-                    $msg = print_r($this->srvinterface->sccp_reload(), 1);
+                    $msg = print_r($this->aminterface->core_sccp_reload(), 1);
                     return array('status' => true, 'table_reload' => true);
                 }
                 break;
@@ -910,7 +901,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
                     // !TODO!: -TODO-:  Check SIP Support Enabled
                     $this->createSccpXmlSoftkey();
-                    $msg = print_r($this->srvinterface->sccp_reload(), 1);
+                    $msg = print_r($this->aminterface->core_sccp_reload, 1);
                     return array('status' => true, 'table_reload' => true);
                 }
                 break;
@@ -918,7 +909,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $result = array();
                 $i = 0;
                 $keyl = 'default';
-                foreach ($this->srvinterface->sccp_list_keysets() as $keyl => $vall) {
+                foreach ($this->aminterface->sccp_list_keysets() as $keyl => $vall) {
                     $result[$i]['softkeys'] = $keyl;
                     if ($keyl == 'default') {
                         foreach ($this->extconfigs->getextConfig('keyset') as $key => $value) {
@@ -964,7 +955,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 if ($cmd_type == 'cisco-sip') {
                     return $result;
                 }
-                $staus = $this->srvinterface->sccp_get_active_device();
+                $staus = $this->aminterface->sccp_get_active_device();
                 if (empty($result)) {
                     $result = array();
                 } else {
@@ -987,7 +978,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     foreach ($staus as $dev_ids) {
                         $id_name = $dev_ids['name'];
                         if (empty($dev_ids['news'])) {
-                            $dev_data = $this->srvinterface->sccp_getdevice_info($id_name);
+                            $dev_data = $this->aminterface->sccp_getdevice_info($id_name);
                             if (!empty($dev_data['SCCP_Vendor']['model_id'])) {
                                 $dev_addon = $dev_data['SCCP_Vendor']['model_addon'];
                                 if (empty($dev_addon)) {
@@ -1302,9 +1293,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $this->dbinterface->write('sccpbuttons', $save_buttons, $update_hw, '', $name_dev);
         $this->createSccpDeviceXML($name_dev);
         if ($hw_id == 'new') {
-            $this->srvinterface->sccpDeviceReset($name_dev);
+            $this->aminterface->sccpDeviceReset($name_dev, 'reset');
         } else {
-            $this->srvinterface->sccpDeviceRestart($name_dev);
+            $this->aminterface->sccpDeviceReset($name_dev, 'restart');
         }
 
         return $save_settings;
@@ -1728,7 +1719,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $this->sccppath["asterisk"] = $confDir;
             }
         }
-        $ver_id = $this->srvinterface->get_compatible_sccp();
+        $ver_id = $this->aminterface->get_compatible_sccp();
         if (!empty($this->sccpvalues['SccpDBmodel'])) {
             $ver_id = $this->sccpvalues['SccpDBmodel']['data'];
         }
@@ -1761,7 +1752,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             }
         }
 
-        $hint = $this->srvinterface->sccp_list_hints();
+        $hint = $this->aminterface->core_list_hints();
         foreach ($hint as $key => $value) {
             if ($this->hint_context['default'] != $value) {
                 $this->hint_context[$key] = $value;
@@ -1774,7 +1765,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     function createSccpXmlSoftkey() {
-        foreach ($this->srvinterface->sccp_list_keysets() as $keyl => $vall) {
+        foreach ($this->aminterface->sccp_list_keysets() as $keyl => $vall) {
             $this->xmlinterface->create_xmlSoftkeyset($this->sccp_conf_init, $this->sccppath, $keyl);
         }
     }
@@ -2021,9 +2012,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $dir_info['asterisk'] = $this->findAllFiles($amp_conf['ASTETCDIR']);
         $dir_info['tftpdir'] = $this->findAllFiles($this->sccppath["tftp_path"]);
         $dir_info['driver'] = $this->FreePBX->Core->getAllDriversInfo();
-        $dir_info['core'] = $this->srvinterface->getSCCPVersion();
-        $dir_info['realtime'] = $this->srvinterface->sccp_realtime_status();
-        $dir_info['srvinterface'] = $this->srvinterface->info();
+        $dir_info['core'] = $this->aminterface->getSCCPVersion();
+        $dir_info['realtime'] = $this->aminterface->getRealTimeStatus();
+        //$dir_info['srvinterface'] = $this->srvinterface->info();
         $dir_info['extconfigs'] = $this->extconfigs->info();
         $dir_info['dbinterface'] = $this->dbinterface->info();
         $dir_info['XML'] = $this->xmlinterface->info();
@@ -2196,7 +2187,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
         if (empty($res)) {
             // Old Req get all hints
-            $tmp_data = $this->srvinterface->sccp_list_all_hints();
+            $tmp_data = $this->aminterface->core_list_all_hints();
             foreach ($tmp_data as $value) {
                 $res[$value] = array('key' => $value, 'exten' => $this->before('@', $value), 'label' => $value);
             }

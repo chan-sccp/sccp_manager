@@ -15,17 +15,17 @@ global $db;
 global $amp_conf;
 global $astman;
 global $version;
-global $srvinterface;
+global $aminterface;
 global $mobile_hw;
 global $useAmiForSoftKeys;
 $mobile_hw = '0';
 
-$class = "\\FreePBX\\Modules\\Sccp_manager\\srvinterface";
+$class = "\\FreePBX\\Modules\\Sccp_manager\\aminterface";
 if (!class_exists($class, false)) {
-    include(__DIR__ . "/Sccp_manager.inc/srvinterface.class.php");
+    include(__DIR__ . "/Sccp_manager.inc/aminterface/amiinterface.class.php");
 }
 if (class_exists($class, false)) {
-    $srvinterface = new $class();
+    $aminterface = new $class();
 }
 function Get_DB_config($sccp_compatible)
 {
@@ -447,12 +447,12 @@ function CheckAsteriskVersion()
 function CheckChanSCCPCompatible()
 {
     global $chanSCCPWarning;
-    global $srvinterface, $astman;
+    global $aminterface, $astman;
     if (!$astman) {
         ie_freepbx('No asterisk manager connection provided!. Installation Failed');
     }
     // calling with true returns array with compatibility and RevisionNumber
-    return $srvinterface->get_compatible_sccp(true);
+    return $aminterface->get_compatible_sccp(true);
 }
 
 function InstallDB_Buttons()
