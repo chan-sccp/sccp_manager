@@ -342,14 +342,6 @@ class aminterface
         }
         print_r("<br>------------E dispatch----------<br>");
     }
-
-//-------------------------------------------------------------------------------
-    function core_list_all_exten($keyfld = '', $filter = array())
-    {
-        $result = array();
-        return $result;
-    }
-
 //-------------------Adaptive Function ------------------------------------------------------------
 
     function core_list_hints()
@@ -441,16 +433,16 @@ class aminterface
     }
     function getSCCPVersion()
     {
-        $result = array();
+        //Initialise result array
+        $result = array( 'RevisionHash' => '', 'vCode' => 0, 'RevisionNum' => 0, 'futures' => '', 'Version' => 0);
         if ($this->_connect_state) {
             $_action = new \FreePBX\modules\Sccp_manager\aminterface\SCCPConfigMetaDataAction();
             $metadata = $this->send($_action)->getResult();
         }
-        //return $result;
+
         if (isset($metadata['Version'])) {
             $result['Version'] = $metadata['Version'];
             $version_parts = explode('.', $metadata['Version']);
-            $result['vCode'] = 0;
             if ($version_parts[0] === 4) {
                 switch ($version_parts[1]) {
                     case 1:
@@ -460,10 +452,9 @@ class aminterface
                         $result['vCode'] = 420;
                         break;
                     case 3. . .5:
+                        $result['vCode'] = 430;
                         if($version_parts[2] == 3){
                             $result['vCode'] = 433;
-                        } else {
-                            $result['vCode'] = 430;
                         }
                         break;
                     default:
@@ -471,26 +462,11 @@ class aminterface
                         break;
                 }
             }
-            /* Revision got replaced by RevisionHash in 10404 (using the hash does not work) */
-            if (array_key_exists("Revision", $metadata)) {
-                if (base_convert($metadata["Revision"], 16, 10) == base_convert('702487a', 16, 10)) {
-                    $result['vCode'] = 431;
-                }
-                if (base_convert($metadata["Revision"], 16, 10) >= "10403") {
-                    $result['vCode'] = 431;
-                }
-            }
             if (array_key_exists("RevisionHash", $metadata)) {
                 $result['RevisionHash'] = $metadata["RevisionHash"];
-            } else {
-                $result['RevisionHash'] = '';
             }
             if (isset($metadata['RevisionNum'])) {
-                $result['RevisionNum'] = $metadata['RevisionNum'];
-                if ($metadata['RevisionNum'] >= 10403) { // new method, RevisionNum is incremental
-                    $result['vCode'] = 432;
-                }
-                if ($metadata['RevisionNum'] >= 10491) { // new method, RevisionNum is incremental
+                if ($metadata['RevisionNum'] >= 11063) { // new method, RevisionNum is incremental
                     $result['vCode'] = 433;
                 }
             }
@@ -532,31 +508,12 @@ class aminterface
     public function get_compatible_sccp($revNumComp=false) {
         // only called with args from installer to get revision and compatibility
         $res = $this->getSCCPVersion();
-        if (empty($res)) {
-            return 0;
-        }
-        switch ($res["vCode"]) {
-            case 0:
-                $retval = 0;
-                break;
-            case 433:
-                $retval = 433;
-                break;
-            case 432:
-                $retval = 430;
-                break;
-            case 431:
-                $retval = 431;
-                break;
-            default:
-                $retval = 430;
-        }
         if ($res['RevisionNum'] < 11063) {
             $this->useAmiInterface = false;
         }
         if ($revNumComp) {
-            return array($retval, true);
+            return array($res['vCode'], true);
         }
-        return $retval;
+        return $res['vCode'];
     }
 }

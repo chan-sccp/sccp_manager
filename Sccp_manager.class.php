@@ -930,22 +930,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 if (empty($result)) {
                     return array();
                 }
-                /*
-                  $res_info = $this->aminterface->core_list_all_exten('exten');
-                  if (!empty($res_info)) {
-                  foreach ($result as $key => $value) {
-                  $tpm_info = $res_info[$value['name']];
-                  if (!empty($tpm_info)) {
-                  $result[$key]['line_status'] = $tpm_info['status'];
-                  $result[$key]['line_statustext'] = $tpm_info['statustext'];
-                  } else {
-                  $result[$key]['line_status'] = '';
-                  $result[$key]['line_statustext'] = '';
-                  }
-                  }
-                  }
-                 *
-                 */
                 return $result;
                 break;
             case 'getPhoneGrid':
@@ -2014,7 +1998,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $dir_info['driver'] = $this->FreePBX->Core->getAllDriversInfo();
         $dir_info['core'] = $this->aminterface->getSCCPVersion();
         $dir_info['realtime'] = $this->aminterface->getRealTimeStatus();
-        //$dir_info['srvinterface'] = $this->srvinterface->info();
         $dir_info['extconfigs'] = $this->extconfigs->info();
         $dir_info['dbinterface'] = $this->dbinterface->info();
         $dir_info['XML'] = $this->xmlinterface->info();
@@ -2181,9 +2164,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     function getHintInformation($sort = true, $filter = array()) {
         $res = array();
         $default_hint = '@ext-local';
-
-        // get all extension
-        // $res = $this->srvinterface->core_list_all_exten('hint', $filter);
 
         if (empty($res)) {
             // Old Req get all hints
