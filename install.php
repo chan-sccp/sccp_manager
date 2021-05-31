@@ -461,8 +461,8 @@ function InstallDB_Buttons()
     outn("<li>" . _("Creating buttons table...") . "</li>");
 //    $check = $db->getRow("SELECT 1 FROM buttonconfig LIMIT 0", DB_FETCHMODE_ASSOC);
 //        if (DB::IsError($check)) {
-    $sql = "DROP TABLE IF EXISTS `buttonconfig`;
-             CREATE TABLE IF NOT EXISTS `sccpbuttonconfig` (
+    $sql = "DROP TABLE IF EXISTS buttonconfig;
+            CREATE TABLE IF NOT EXISTS sccpbuttonconfig (
             `ref` varchar(15) NOT NULL default '',
             `reftype` enum('sccpdevice', 'sipdevice', 'sccpuser') NOT NULL default 'sccpdevice',
             `instance` tinyint(4) NOT NULL default 0,
@@ -501,18 +501,18 @@ function InstallDB_sccpdevmodel()
 {
     global $db;
     outn("<li>" . _("Creating sccpdevmodel table...") . "</li>");
-    $sql = "CREATE TABLE IF NOT EXISTS `sccpdevmodel` (
-        `model` varchar(20) NOT NULL DEFAULT '',
-        `vendor` varchar(40) DEFAULT '',
-        `dns` int(2) DEFAULT '1',
-        `buttons` int(2) DEFAULT '0',
-        `loadimage` varchar(40) DEFAULT '',
-        `loadinformationid` VARCHAR(30) NULL DEFAULT NULL,
-        `enabled` INT(2) NULL DEFAULT '0',
-        `nametemplate` VARCHAR(50) NULL DEFAULT NULL,
-        PRIMARY KEY (`model`),
-        KEY `model` (`model`)
-    ) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+    $sql = "CREATE TABLE IF NOT EXISTS sccpdevmodel (
+            `model` varchar(20) NOT NULL DEFAULT '',
+            `vendor` varchar(40) DEFAULT '',
+            `dns` int(2) DEFAULT '1',
+            `buttons` int(2) DEFAULT '0',
+            `loadimage` varchar(40) DEFAULT '',
+            `loadinformationid` VARCHAR(30) NULL DEFAULT NULL,
+            `enabled` INT(2) NULL DEFAULT '0',
+            `nametemplate` VARCHAR(50) NULL DEFAULT NULL,
+            PRIMARY KEY (`model`),
+            KEY `model` (`model`)
+            ) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
     $check = $db->query($sql);
     if (DB::IsError($check)) {
         die_freepbx("Can not create sccpdevmodel table, error:$check\n");
@@ -525,17 +525,17 @@ function InstallDB_sccpuser()
     global $db;
     outn("<li>" . _("Creating sccpuser table...") . "</li>");
     $sql = "CREATE TABLE IF NOT EXISTS `sccpuser` (
-	`name` VARCHAR(20) NULL DEFAULT NULL,
-	`pin` VARCHAR(7) NULL DEFAULT NULL,
-	`password` VARCHAR(7) NULL DEFAULT NULL,
-	`description` VARCHAR(45) NULL DEFAULT NULL,
-	`roaminglogin` ENUM('on','off','multi') NULL DEFAULT 'off',
-	`devicegroup` VARCHAR(20) NULL DEFAULT 'all',
- 	`auto_logout` ENUM('on','off') NULL DEFAULT 'off',
-        `homedevice` VARCHAR(20) NULL DEFAULT NULL,
-        UNIQUE INDEX (`name`),
-	PRIMARY KEY (`name`)
-    ) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+          	`name` VARCHAR(20) NULL DEFAULT NULL,
+          	`pin` VARCHAR(7) NULL DEFAULT NULL,
+          	`password` VARCHAR(7) NULL DEFAULT NULL,
+          	`description` VARCHAR(45) NULL DEFAULT NULL,
+          	`roaminglogin` ENUM('on','off','multi') NULL DEFAULT 'off',
+          	`devicegroup` VARCHAR(20) NULL DEFAULT 'all',
+           	`auto_logout` ENUM('on','off') NULL DEFAULT 'off',
+            `homedevice` VARCHAR(20) NULL DEFAULT NULL,
+            UNIQUE INDEX (`name`),
+          	PRIMARY KEY (`name`)
+            ) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
     $check = $db->query($sql);
     if (DB::IsError($check)) {
         die_freepbx("Can not create sccpdevmodel table, error:$check\n");
@@ -871,28 +871,53 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
     outn("<li>" . _("(Re)Create sccpdeviceconfig view") . "</li>");
     $sql = "";
     if ($sccp_compatible < 431) {
-        $sql = "
-        CREATE OR REPLACE
+        $sql = "CREATE OR REPLACE
             ALGORITHM = MERGE
             VIEW sccpdeviceconfig AS
-
-        SELECT GROUP_CONCAT( CONCAT_WS( ',', buttonconfig.type, buttonconfig.name, buttonconfig.options )
-        ORDER BY instance ASC
-        SEPARATOR ';' ) AS button,
-        `sccpdevice`.`type` AS `type`,`sccpdevice`.`addon` AS `addon`,`sccpdevice`.`description` AS `description`,`sccpdevice`.`tzoffset` AS `tzoffset`,
-        `sccpdevice`.`transfer` AS `transfer`,`sccpdevice`.`cfwdall` AS `cfwdall`,`sccpdevice`.`cfwdbusy` AS `cfwdbusy`,`sccpdevice`.`imageversion` AS `imageversion`,
-        `sccpdevice`.`deny` AS `deny`,`sccpdevice`.`permit` AS `permit`,`sccpdevice`.`dndFeature` AS `dndFeature`,`sccpdevice`.`directrtp` AS `directrtp`,
-        `sccpdevice`.`earlyrtp` AS `earlyrtp`,`sccpdevice`.`mwilamp` AS `mwilamp`,`sccpdevice`.`mwioncall` AS `mwioncall`,`sccpdevice`.`pickupexten` AS `pickupexten`,
-        `sccpdevice`.`pickupcontext` AS `pickupcontext`,`sccpdevice`.`pickupmodeanswer` AS `pickupmodeanswer`,`sccpdevice`.`private` AS `private`,
-        `sccpdevice`.`privacy` AS `privacy`,`sccpdevice`.`nat` AS `nat`,`sccpdevice`.`softkeyset` AS `softkeyset`,`sccpdevice`.`audio_tos` AS `audio_tos`,
-        `sccpdevice`.`audio_cos` AS `audio_cos`,`sccpdevice`.`video_tos` AS `video_tos`,`sccpdevice`.`video_cos` AS `video_cos`,`sccpdevice`.`conf_allow` AS `conf_allow`,
-        `sccpdevice`.`conf_play_general_announce` AS `conf_play_general_announce`,`sccpdevice`.`conf_play_part_announce` AS `conf_play_part_announce`,
-        `sccpdevice`.`conf_mute_on_entry` AS `conf_mute_on_entry`,`sccpdevice`.`conf_music_on_hold_class` AS `conf_music_on_hold_class`,
-        `sccpdevice`.`conf_show_conflist` AS `conf_show_conflist`,`sccpdevice`.`setvar` AS `setvar`,`sccpdevice`.`disallow` AS `disallow`,
-        `sccpdevice`.`allow` AS `allow`,`sccpdevice`.`backgroundImage` AS `backgroundImage`,`sccpdevice`.`ringtone` AS `ringtone`,`sccpdevice`.`name` AS `name`
-        FROM sccpdevice
-        LEFT JOIN sccpbuttonconfig buttonconfig ON ( buttonconfig.device = sccpdevice.name )
-        GROUP BY sccpdevice.name;";
+            SELECT GROUP_CONCAT( CONCAT_WS( ',', buttonconfig.type, buttonconfig.name, buttonconfig.options )
+            ORDER BY instance ASC
+            SEPARATOR ';' ) AS button,
+            sccpdevice.type AS type,
+            sccpdevice.addon AS addon,
+            sccpdevice.description AS description,
+            sccpdevice.tzoffset AS tzoffset,
+            sccpdevice.transfer AS transfer,
+            sccpdevice.cfwdall AS cfwdall,
+            sccpdevice.cfwdbusy AS cfwdbusy,
+            sccpdevice.imageversion AS imageversion,
+            sccpdevice.deny AS deny,
+            sccpdevice.permit AS permit,
+            sccpdevice.dndFeature AS dndFeature,
+            sccpdevice.directrtp AS directrtp,
+            sccpdevice.earlyrtp AS earlyrtp,
+            sccpdevice.mwilamp AS mwilamp,
+            sccpdevice.mwioncall AS mwioncall,
+            sccpdevice.pickupexten AS pickupexten,
+            sccpdevice.pickupcontext AS pickupcontext,
+            sccpdevice.pickupmodeanswer AS pickupmodeanswer,
+            sccpdevice.private AS private,
+            sccpdevice.privacy AS privacy,
+            sccpdevice.nat AS nat,
+            sccpdevice.softkeyset AS softkeyset,
+            sccpdevice.audio_tos AS audio_tos,
+            sccpdevice.audio_cos AS audio_cos,
+            sccpdevice.video_tos AS video_tos,
+            sccpdevice.video_cos AS video_cos,
+            sccpdevice.conf_allow AS conf_allow,
+            sccpdevice.conf_play_general_announce AS conf_play_general_announce,
+            sccpdevice.conf_play_part_announce AS conf_play_part_announce,
+            sccpdevice.conf_mute_on_entry AS conf_mute_on_entry,
+            sccpdevice.conf_music_on_hold_class AS conf_music_on_hold_class,
+            sccpdevice.conf_show_conflist AS conf_show_conflist,
+            sccpdevice.setvar AS setvar,
+            sccpdevice.disallow AS disallow,
+            sccpdevice.allow AS allow,
+            sccpdevice.backgroundImage AS backgroundImage,
+            sccpdevice.ringtone AS ringtone,
+            sccpdevice.name AS name
+            FROM sccpdevice
+            LEFT JOIN sccpbuttonconfig buttonconfig ON ( buttonconfig.device = sccpdevice.name )
+            GROUP BY sccpdevice.name;";
     } else {
   /*      $sql = "
         CREATE OR REPLACE
@@ -909,35 +934,37 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
            LEFT JOIN sccpline ON ( sccpline.name = sccpdevice._loginname)
         GROUP BY sccpdevice.name;";
 */
-        $sql = "DROP VIEW IF EXISTS `sccpdeviceconfig`;
-                DROP VIEW IF EXISTS `sccpuserconfig`;";
+        $sql = "DROP VIEW IF EXISTS sccpdeviceconfig;
+                DROP VIEW IF EXISTS sccpuserconfig;";
         ///    global $hw_mobil;
 
         global $mobile_hw;
         if ($mobile_hw == '1') {
-            $sql .= "CREATE OR REPLACE ALGORITHM = MERGE VIEW sccpdeviceconfig AS
-            SELECT GROUP_CONCAT( CONCAT_WS( ',', sccpbuttonconfig.buttontype, sccpbuttonconfig.name, sccpbuttonconfig.options )
-            ORDER BY instance ASC SEPARATOR ';' ) AS sccpbutton, sccpdevice.*
-            FROM sccpdevice
-            LEFT JOIN sccpbuttonconfig ON (sccpbuttonconfig.reftype = 'sccpdevice' AND sccpbuttonconfig.ref = sccpdevice.name )
-            GROUP BY sccpdevice.name; ";
-            $sql .=  "CREATE OR REPLACE ALGORITHM = MERGE VIEW sccpuserconfig AS
-            SELECT GROUP_CONCAT( CONCAT_WS( ',', sccpbuttonconfig.buttontype, sccpbuttonconfig.name, sccpbuttonconfig.options )
-            ORDER BY instance ASC SEPARATOR ';' ) AS button, sccpuser.*
-            FROM sccpuser
-            LEFT JOIN sccpbuttonconfig ON ( sccpbuttonconfig.reftype = 'sccpuser' AND sccpbuttonconfig.ref = sccpuser.id)
-            GROUP BY sccpuser.name; ";
+            $sql .= "CREATE OR REPLACE
+                ALGORITHM = MERGE
+                VIEW sccpdeviceconfig AS
+                SELECT GROUP_CONCAT( CONCAT_WS( ',', sccpbuttonconfig.buttontype, sccpbuttonconfig.name, sccpbuttonconfig.options )
+                ORDER BY instance ASC SEPARATOR ';' ) AS sccpbutton, sccpdevice.*
+                FROM sccpdevice
+                LEFT JOIN sccpbuttonconfig ON (sccpbuttonconfig.reftype = 'sccpdevice' AND sccpbuttonconfig.ref = sccpdevice.name )
+                GROUP BY sccpdevice.name; ";
+                $sql .=  "CREATE OR REPLACE ALGORITHM = MERGE VIEW sccpuserconfig AS
+                SELECT GROUP_CONCAT( CONCAT_WS( ',', sccpbuttonconfig.buttontype, sccpbuttonconfig.name, sccpbuttonconfig.options )
+                ORDER BY instance ASC SEPARATOR ';' ) AS button, sccpuser.*
+                FROM sccpuser
+                LEFT JOIN sccpbuttonconfig ON ( sccpbuttonconfig.reftype = 'sccpuser' AND sccpbuttonconfig.ref = sccpuser.id)
+                GROUP BY sccpuser.name; ";
         } else {
             $sql .= "CREATE OR REPLACE
                 ALGORITHM = MERGE
                 VIEW sccpdeviceconfig AS
             SELECT  case sccpdevice._profileid
                     when 0 then
-            		(select GROUP_CONCAT(CONCAT_WS( ',', defbutton.buttontype, defbutton.name, defbutton.options ) SEPARATOR ';') from `sccpbuttonconfig` as defbutton where defbutton.ref = sccpdevice.name ORDER BY defbutton.instance )
+            		(select GROUP_CONCAT(CONCAT_WS( ',', defbutton.buttontype, defbutton.name, defbutton.options ) SEPARATOR ';') from sccpbuttonconfig as defbutton where defbutton.ref = sccpdevice.name ORDER BY defbutton.instance )
             	when 1 then
-            		(select GROUP_CONCAT(CONCAT_WS( ',', userbutton.buttontype, userbutton.name, userbutton.options ) SEPARATOR ';') from `sccpbuttonconfig` as userbutton where userbutton.ref = sccpdevice._loginname ORDER BY userbutton.instance )
+            		(select GROUP_CONCAT(CONCAT_WS( ',', userbutton.buttontype, userbutton.name, userbutton.options ) SEPARATOR ';') from sccpbuttonconfig as userbutton where userbutton.ref = sccpdevice._loginname ORDER BY userbutton.instance )
             	when 2 then
-			(select GROUP_CONCAT(CONCAT_WS( ',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';') from `sccpbuttonconfig` as homebutton where homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
+			(select GROUP_CONCAT(CONCAT_WS( ',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';') from sccpbuttonconfig as homebutton where homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
                     end as button,  if(sccpdevice._profileid = 0, sccpdevice._description, sccpuser.description) as description, sccpdevice.*
             FROM sccpdevice
             LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice._loginname )
