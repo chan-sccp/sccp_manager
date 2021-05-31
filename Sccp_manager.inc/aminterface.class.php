@@ -30,7 +30,10 @@ class aminterface
     {
         $driverNamespace = "\\FreePBX\\Modules\\Sccp_manager\\aminterface";
 
-        $drivers = array('Message' => 'Message.class.php', 'Response' => 'Response.class.php', 'Event' => 'Event.class.php');
+        $drivers = array('Message' => 'Message.class.php',
+                  'Response' => 'Response.class.php',
+                  'Event' => 'Event.class.php'
+                );
         foreach ($drivers as $key => $value) {
             $class = $driverNamespace . "\\" . $key;
             $driver = __DIR__ . "/aminterface/" . $value;
@@ -51,7 +54,14 @@ class aminterface
         $this->_socket = false;
         $this->_connect_state = false;
         $this->_error = array();
-        $this->_config = array('host' => 'localhost', 'user' => '', 'pass' => '', 'port' => '5038', 'tsoket' => 'tcp://', 'timeout' => 30, 'enabled' => true);
+        $this->_config = array('host' => 'localhost',
+                        'user' => '',
+                        'pass' => '',
+                        'port' => '5038',
+                        'tsoket' => 'tcp://',
+                        'timeout' => 30,
+                        'enabled' => true
+                      );
         $this->_eventListeners = array();
         $this->_incomingMsgObjectList = array();
         $this->_lastActionId = false;
@@ -70,28 +80,16 @@ class aminterface
             $this->load_subspace();
         }
 
-        if ($this->status()) {
-            // Ami is not hard disabled in Amiinterface __construct line 54.
+        if ($this->_config['enabled'] {
+            // Ami is not hard disabled in __construct line 63.
             if ($this->open()) {
                 // Can open a connection. Now check compatibility with chan-sccp.
                 // will return true if compatible.
                 if (!$this->get_compatible_sccp(true)[1]) {
                     // Close the open socket as will not use
                     $this->close();
-                } else {
-                    // is compatible so enable AMI mode
-                    $this->ami_mode = true;
                 }
             }
-        }
-    }
-
-    public function status()
-    {
-        if ($this->_config['enabled']) {
-            return true;
-        } else {
-            return false;
         }
     }
 

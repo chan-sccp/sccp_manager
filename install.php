@@ -1149,7 +1149,7 @@ InstallDB_CreateSccpDeviceConfigView($sccp_compatible);
 InstallDB_updateDBVer($sccp_compatible);
 if ($chanSCCPWarning) {
     outn("<br>");
-    outn("<font color='red'>Warning: Upgrade chan_sccp_b to use full ami functionality</font>");
+    outn("<font color='red'>Error: installed version of chan-sccp is not compatible. Please upgrade chan-sccp</font>");
 }
 if (!$sccp_db_ver) {
     Setup_RealTime();

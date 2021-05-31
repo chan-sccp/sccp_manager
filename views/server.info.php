@@ -35,7 +35,11 @@ $info['dbinterface'] = $this->dbinterface->info();
 $info['aminterface'] = $this->aminterface->info();
 $info['XML'] = $this->xmlinterface->info();
 $info['sccp_class'] = $driver['sccp'];
-$info['Core_sccp'] = array('Version' => $core['Version'], 'about' => 'Sccp ver.' . $core['Version'] . ' r' . $core['vCode'] . ' Revision :' . $core['RevisionNum'] . ' Hash :' . $core['RevisionHash']);
+$info['Core_sccp'] = array('Version' => $core['Version'],
+                    'about' => 'Sccp ver.' . $core['Version'] .
+                            ' r' . $core['vCode'] . ' Revision :' .
+                            $core['RevisionNum'] . ' Hash :' .
+                            $core['RevisionHash']);
 /*
 if (!$this->srvinterface->useAmiInterface) {
     $info['aminterface']['about'] .= ' -- Disabled';
@@ -125,12 +129,6 @@ if ($cisco_tz['offset'] == 0) {
         }
     }
 }
-/* Test Ok
- *
- *
- *
- *
- */
 
 if (!empty($this->info_warning)) {
     ?>
