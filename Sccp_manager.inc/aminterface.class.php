@@ -469,6 +469,7 @@ class aminterface
                 if ($metadata['RevisionNum'] >= 11063) { // new method, RevisionNum is incremental
                     $result['vCode'] = 433;
                 }
+                $result['RevisionNum'] = $metadata["RevisionNum"];
             }
             if (isset($metadata['ConfigureEnabled'])) {
                 $result['futures'] = implode(';', $metadata['ConfigureEnabled']);
