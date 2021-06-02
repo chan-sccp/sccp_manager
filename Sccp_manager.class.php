@@ -140,7 +140,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             return;
         }
 
-        $this->getSccpSettingFromDB(); // Overwrite Exist
+        $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); // Overwrite Exist
 //        $this->getSccpSetingINI(false); // get from sccep.ini
         $this->initializeSccpPath();
         $this->initVarfromDefs();
@@ -185,7 +185,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $htmlret .= load_view(__DIR__ . '/views/formShow.php', array(
                     'itm' => $item, 'h_show' => $heder_show,
                     'form_prefix' => $form_prefix, 'fvalues' => $form_values,
-                    'tftp_lang' => $this->getTftpLang(), 'metainfo' => $this->sccp_metainfo));
+                    'tftp_lang' => $this->tftpLang, 'metainfo' => $this->sccp_metainfo));
             }
         } else {
             $htmlret .= load_view(__DIR__ . '/views/formShowError.php');
@@ -269,70 +269,39 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
 
-        if (!empty($this->sccpvalues['displayconfig'])) {
-            if (!empty($this->sccpvalues['displayconfig']['data']) && ($this->sccpvalues['displayconfig']['data'] == 'sccpsimple')) {
-                $this->pagedata = array(
-                    "general" => array(
-                        "name" => _("General SCCP Settings"),
-                        "page" => 'views/server.setting.php'
-                    ),
-                    "sccpdevice" => array(
-                        "name" => _("SCCP Device"),
-                        "page" => 'views/server.device.php'
-                    ),
-                    "sccpurl" => array(
-                        "name" => _("SCCP Device URL"),
-                        "page" => 'views/server.url.php'
-                    ),
-                    "sccpinfo" => array(
-                        "name" => _("SCCP info"),
-                        "page" => 'views/server.info.php'
-                    ),
-                );
-            }
-        }
-
-        if (empty($this->pagedata)) {
-            //$driver = $this->FreePBX->Config->get_conf_setting('ASTSIPDRIVER');
-            $this->pagedata = array(
-                "general" => array(
-                    "name" => _("General SCCP Settings"),
-                    "page" => 'views/server.setting.php'
+        $this->pagedata = array(
+            "general" => array(
+                "name" => _("General SCCP Settings"),
+                "page" => 'views/server.setting.php'
                 ),
-                "sccpdevice" => array(
-                    "name" => _("SCCP Device"),
-                    "page" => 'views/server.device.php'
+            "sccpdevice" => array(
+                "name" => _("SCCP Device"),
+                "page" => 'views/server.device.php'
                 ),
-                "sccpurl" => array(
-                    "name" => _("SCCP Device URL"),
-                    "page" => 'views/server.url.php'
+            "sccpurl" => array(
+                "name" => _("SCCP Device URL"),
+                "page" => 'views/server.url.php'
                 ),
-                "sccpntp" => array(
+            "sccpinfo" => array(
+                "name" => _("SCCP info"),
+                "page" => 'views/server.info.php'
+                )
+            );
+        if (isset($this->sccpvalues['displayconfig']['data']) && ($this->sccpvalues['displayconfig']['data'] != 'sccpsimple')) {
+            $this->pagedata['sccpntp'] = array(
                     "name" => _("SCCP Time"),
                     "page" => 'views/server.datetime.php'
-                ),
-                "sccpcodec" => array(
+                    );
+            $this->pagedata['sccpcodec'] = array(
                     "name" => _("SCCP Codec"),
                     "page" => 'views/server.codec.php'
-                ),
-                "sccpadv" => array(
+                    );
+            $this->pagedata['sccpadv'] = array(
                     "name" => _("Advanced SCCP Settings"),
                     "page" => 'views/server.advanced.php'
-                ),
-                "sccpinfo" => array(
-                    "name" => _("SCCP info"),
-                    "page" => 'views/server.info.php'
-                ),
-            );
+                  );
         }
-        if (!empty($this->pagedata)) {
-            foreach ($this->pagedata as &$page) {
-                ob_start();
-                include($page['page']);
-                $page['content'] = ob_get_contents();
-                ob_end_clean();
-            }
-        }
+        $this->processPageData();
         return $this->pagedata;
     }
 
@@ -345,14 +314,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 "page" => 'views/server.info.php'
             ),
         );
-
-        foreach ($this->pagedata as &$page) {
-            ob_start();
-            include($page['page']);
-            $page['content'] = ob_get_contents();
-            ob_end_clean();
-        }
-
+        $this->processPageData();
         return $this->pagedata;
     }
 
@@ -390,15 +352,18 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     }
                     break;
             }
-            foreach ($this->pagedata as &$page) {
-                ob_start();
-                include($page['page']);
-                $page['content'] = ob_get_contents();
-                ob_end_clean();
-            }
+            $this->processPageData();
         }
-
         return $this->pagedata;
+    }
+
+    public function processPageData() {
+        foreach ($this->pagedata as &$page) {
+            ob_start();
+            include($page['page']);
+            $page['content'] = ob_get_contents();
+            ob_end_clean();
+        }
     }
 
     public function phoneShowPage() {
@@ -838,8 +803,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
         if (!empty($save_settings)) {
             $this->saveSccpSettings($save_settings);
-            $this->getSccpSettingFromDB();
-            // $this->createDefaultSccpConfig();
+            $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
         }
         $this->createDefaultSccpConfig(); // Rewrite Config.
         $save_settings[] = array('status' => true);
@@ -928,11 +892,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         return $save_buttons;
         // Why is there a second return here???????
         return $save_settings;
-    }
-
-    public function getSccpSettingFromDB() {
-        $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
-        return;
     }
 
     public function getMyConfig($var = null, $id = "noid") {
@@ -1064,21 +1023,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         return true;
     }
 
-    function Sccp_manager_hookGet_config($engine) {
-        $this->debugdata($engine);
-    }
-
-    function Sccp_manager_get_config($engine) {
-        $this->debugdata($engine);
-    }
-
     /**
      * Retrieve Active Codecs
      * return fiends Lag pack
      */
-    public function getTftpLang() {
-        return $this->tftpLang;
-    }
 
     private function initTftpLang() {
         $result = array();
