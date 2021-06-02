@@ -265,7 +265,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      *  Show form information - General
      */
 
-    public function myShowPage() {
+    public function settingsShowPage() {
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
 

@@ -11,7 +11,7 @@ if (!defined('FREEPBX_IS_AUTH')) {
 
 //
 // Initialise page before to avoid double calls and improve performance
-$display_page = FreePBX::create()->Sccp_manager->myShowPage();
+$display_page = FreePBX::create()->Sccp_manager->settingsShowPage();
 $display_info = _("SCCP Server Settings");
 // standardise code to reduce base
 include('page.html.php');
