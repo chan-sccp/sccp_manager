@@ -20,11 +20,12 @@
 		 * Version 14.1.0.1 * - Migrated to chan-sccp repo
 		 * Version 14.2.0.1 * - Retired old interface - min chan-sccp v433
 	</changelog>
-	<location></location>
+	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>
 		<version>13.0.0.2M</version>
 	</supported>
 	<info>https://github.com/chan-sccp/sccp_manager</info>
+	<updateurl>https://chan-sccp.github.io/sccp_manager/update.json</updateurl>
 	<license>GPL</license>
 	<md5sum></md5sum>
 	<updateurl></updateurl>
