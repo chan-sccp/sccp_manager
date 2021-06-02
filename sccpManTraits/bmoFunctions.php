@@ -106,5 +106,17 @@ trait bmoFunctions {
         }
         return $buttons;
     }
+
+    public function getRightNav($request) {
+        if (isset($request['tech_hardware']) && ($request['tech_hardware'] == 'cisco')) {
+            return load_view(__DIR__ . "/views/hardware.rnav.php", array('request' => $request));
+        }
+    }
+
+    public function doGeneralPost() {
+        if (!isset($_REQUEST['Submit'])) {
+            return;
+        }
+    }
 }
 ?>

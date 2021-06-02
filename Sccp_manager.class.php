@@ -495,48 +495,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         return $this->pagedata;
     }
 
-    public function formShowPage() {
-        $request = $_REQUEST;
-        $action = !empty($request['action']) ? $request['action'] : '';
-
-        if (empty($this->pagedata)) {
-            //$driver = $this->FreePBX->Config->get_conf_setting('ASTSIPDRIVER');
-            $this->pagedata = array(
-                "general" => array(
-                    "name" => _("SCCP Extension"),
-                    "page" => 'views/extension.page.php'
-                )
-            );
-
-            $this->pagedata['sccpdevice'] = array(
-                "name" => _("SCCP Phone"),
-                "page" => 'views/phone.page.php'
-            );
-
-            foreach ($this->pagedata as &$page) {
-                ob_start();
-                include($page['page']);
-                $page['content'] = ob_get_contents();
-                ob_end_clean();
-            }
-        }
-
-        return $this->pagedata;
-    }
-
-    public function getRightNav($request) {
-        if (isset($request['tech_hardware']) && ($request['tech_hardware'] == 'cisco')) {
-            return load_view(__DIR__ . "/views/hardware.rnav.php", array('request' => $request));
-        }
-    }
-
-    public function doGeneralPost() {
-        // $this->FreePBX->WriteConfig($config);
-        if (!isset($_REQUEST['Submit'])) {
-            return;
-        }
-    }
-
     /*
      *
      * *  Save Hardware Device Information to Db + ???? Create / update XML Profile
