@@ -47,7 +47,7 @@ apt-get install PHP7.3-zip
     ```./configure  --enable-conference --enable-advanced-functions --enable-distributed-devicestate --enable-video```
   - Creating mysql DB from sorce
     ```mysql -u root asterisk < mysql-v5_enum.sql```
-  
+
 
 - TFTP Server running under (recommended) /tftpboot/ [See our WIKI] (https://github.com/chan-sccp/chan-sccp/wiki/setup-tftp-service)
   - You will need the phone settings templates. You can use the templates taken from the distribution "chan-sccp"
@@ -95,15 +95,8 @@ https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
 
 ### Module update to latest state
 
-If you installed sccp_manager using git clone instead of installing a zip
-file / tarball then you can do easily keep up with the latest develop by
-doing this:
+If you installed the Develop branch, the module can be updated to the latest version via FreePBX. FreePBX -> Admin -> Module Admin.
 
-1. Goto to module into your local system. (/var/www/html/admin/modules/sccp_manager/)
-
->        cd /var/www/html/admin/modules/sccp_manager/
->        git pull
->        git checkout develop
 
 ### IMPORTANT NOTES:
 - !!! If something stops working, use the develop branch [develop](https://github.com/chan-sccp/sccp_manager/tree/develop)
