@@ -36,10 +36,10 @@ class aminterface
                 );
         foreach ($drivers as $key => $value) {
             $class = $driverNamespace . "\\" . $key;
-            $driver = __DIR__ . "/aminterface/" . $value;
+            $driver = __DIR__ . "/amInterfaceClasses/" . $value;
             if (!class_exists($class, false)) {
                 if (file_exists($driver)) {
-                    include(__DIR__ . "/aminterface/" . $value);
+                    include(__DIR__ . "/amInterfaceClasses/" . $value);
                 } else {
                     throw new \Exception("Class required but file not found " . $driver);
                 }
