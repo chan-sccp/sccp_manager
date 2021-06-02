@@ -1,1 +1,0 @@
-https://github.com/chan-sccp/chan-sccp/wiki/Monitor-and-Pickup-Incoming-Calls-via-Speeddial-Using-Custom-Devstate
