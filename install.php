@@ -746,7 +746,7 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
 function CreateBackUpConfig()
 {
     global $amp_conf;
-    outn("<li>" . _("Create Config BackUp") . "</li>");
+    outn("<li>" . _("Creating Config BackUp") . "</li>");
     $cnf_int = \FreePBX::Config();
     $backup_files = array('extensions','extconfig','res_mysql', 'res_config_mysql','sccp','sccp_hardware','sccp_extensions');
     $backup_ext = array('_custom.conf', '_additional.conf','.conf');
@@ -755,7 +755,13 @@ function CreateBackUpConfig()
     $fsql = $dir.'/sccp_backup_'.date("Ymd").'.sql';
     $result = exec('mysqldump '.$amp_conf['AMPDBNAME'].' --password='.$amp_conf['AMPDBPASS'].' --user='.$amp_conf['AMPDBUSER'].' --single-transaction >'.$fsql, $output);
 
-    $zip = new \ZipArchive();
+    try {
+        $zip = new \ZipArchive();
+    } catch (\Exception $e) {
+        outn("<br>");
+        outn("<font color='red'>PHPx.x-zip not installed where x.x is the installed PHP version. Install it before continuing !</font>");
+        die_freepbx();
+    }
     $filename = $dir . "/sccp_instal_backup" . date("Ymd"). ".zip";
     if ($zip->open($filename, \ZIPARCHIVE::CREATE)) {
         foreach ($backup_files as $file) {

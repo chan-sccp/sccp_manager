@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.1.0.1</version>
+	<version>14.2.0.1</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad</publisher>
@@ -15,9 +15,10 @@
 	</menuitems>
 	<changelog>
 		 * Version 13.0.0.1 * - Alfa Release tested on freepbx v.13.0.192.16, v.14.0.1.5
-		 * Version 13.0.0.2 * - Release tested 
-		 * Version 14.0.0.1 * - Alfa Release new DB structure Add User mobility 
+		 * Version 13.0.0.2 * - Release tested
+		 * Version 14.0.0.1 * - Alfa Release new DB structure Add User mobility
 		 * Version 14.1.0.1 * - Migrated to chan-sccp repo
+		 * Version 14.2.0.1 * - Retired old interface - min chan-sccp v433
 	</changelog>
 	<location></location>
 	<supported>
@@ -26,4 +27,111 @@
 	<info>https://github.com/chan-sccp/sccp_manager</info>
 	<license>GPL</license>
 	<md5sum></md5sum>
+	<updateurl></updateurl>
+	<database>
+		<table name="sccpdevice">
+			<field name="type" type="string" length="15" default="NULL" notnull="false"/>
+			<field name="addon" type="string" length="45" default="NULL" notnull="false"/>
+			<field name="_description" type="string" length="45" default="NULL" notnull="false"/>
+			<field name="tzoffset" type="string" length="5" default="NULL" notnull="false"/>
+			<field name="imageversion" type="string" length="31" default="NULL" notnull="false"/>
+			<field name="deny" type="string" length="100" default="'0.0.0.0/0.0.0.0'" notnull="false"/>
+			<field name="permit" type="string" length="100" default="'internal'" notnull="false"/>
+			<field name="earlyrtp" type="string" default="NULL" notnull="false"/>
+			<field name="mwilamp" type="string" default="'on'" notnull="false"/>
+			<field name="mwioncall" type="string" default="'on'" notnull="false"/>
+			<field name="dndFeature" type="string" default="NULL" notnull="false"/>
+			<field name="transfer" type="string" default="NULL" notnull="false"/>
+			<field name="cfwdall" type="string" default="'on'" notnull="false"/>
+			<field name="cfwdbusy" type="string" default="'on'" notnull="false"/>
+			<field name="private" type="string" default="'off'"/>
+			<field name="privacy" type="string" default="'full'"/>
+			<field name="nat" type="string" default="NULL" notnull="false"/>
+			<field name="directrtp" type="string" default="NULL" notnull="false"/>
+			<field name="softkeyset" type="string" length="100" default="'softkeyset'" notnull="false"/>
+			<field name="audio_tos" type="string" length="11" default="'0xB8'" notnull="false"/>
+			<field name="audio_cos" type="string" length="1" default="'6'" notnull="false"/>
+			<field name="video_tos" type="string" length="11" default="'0x88'" notnull="false"/>
+			<field name="video_cos" type="string" length="1" default="'5'" notnull="false"/>
+			<field name="conf_allow" type="string" default="'on'"/>
+			<field name="conf_play_general_announce" type="string" length="3" default="'on'" notnull="false"/>
+			<field name="conf_play_part_announce" type="string" default="'on'"/>
+			<field name="conf_mute_on_entry" type="string" default="'off'"/>
+			<field name="conf_music_on_hold_class" type="string" length="80" default="'default'" notnull="false"/>
+			<field name="conf_show_conflist" type="string" default="'on'"/>
+			<field name="force_dtmfmode" type="string" default="'auto'"/>
+			<field name="setvar" type="string" length="100" default="NULL" notnull="false"/>
+			<field name="backgroundImage" type="string" length="255" default="NULL" notnull="false"/>
+			<field name="backgroundThumbnail" type="string" length="255" default="NULL" notnull="false"/>
+			<field name="ringtone" type="string" length="255" default="NULL" notnull="false"/>
+			<field name="name" type="string" length="15" default="''" primarykey="true"/>
+			<field name="callhistory_answered_elsewhere" type="string" default="NULL" notnull="false"/>
+			<field name="_hwlang" type="string" length="12" default="NULL" notnull="false"/>
+			<field name="_loginname" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_profileid" type="integer" default="0"/>
+			<field name="_dialrules" type="string" length="255" default="NULL" notnull="false"/>
+			<field name="useRedialMenu" type="string" length="5" default="'no'" notnull="false"/>
+			<field name="cfwdnoanswer" type="string" default="'on'" notnull="false"/>
+			<field name="park" type="string" default="'on'" notnull="false"/>
+			<field name="monitor" type="string" default="NULL" notnull="false"/>
+			<field name="transfer_on_hangup" type="string" default="NULL" notnull="false"/>
+			<field name="phonecodepage" type="string" length="50" default="NULL" notnull="false"/>
+		</table>
+	  <table name="sccpline">
+	    <field name="id" type="integer" autoincrement="true"/>
+	    <field name="pin" type="string" length="7" default="NULL" notnull="false"/>
+	    <field name="label" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="description" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="context" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="incominglimit" type="integer" default="6" notnull="false"/>
+	    <field name="transfer" type="string" default="NULL" notnull="false"/>
+	    <field name="mailbox" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="vmnum" type="string" length="45" default="'*97'" notnull="false"/>
+	    <field name="cid_name" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="cid_num" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="disallow" type="string" length="255" default="NULL" notnull="false"/>
+	    <field name="allow" type="string" length="255" default="NULL" notnull="false"/>
+	    <field name="trnsfvm" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="secondary_dialtone_digits" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="secondary_dialtone_tone" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="musicclass" type="string" length="45" default="'default'" notnull="false"/>
+	    <field name="language" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="accountcode" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="echocancel" type="string" default="'off'"/>
+	    <field name="silencesuppression" type="string" default="'off'"/>
+	    <field name="callgroup" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="pickupgroup" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="namedcallgroup" type="string" length="100" default="NULL" notnull="false"/>
+	    <field name="namedpickupgroup" type="string" length="100" default="NULL" notnull="false"/>
+	    <field name="adhocNumber" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="meetme" type="string" length="5" default="NULL" notnull="false"/>
+	    <field name="meetmenum" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="meetmeopts" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="regexten" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="directed_pickup" type="string" default="NULL" notnull="false"/>
+	    <field name="directed_pickup_context" type="string" length="100" default="NULL" notnull="false"/>
+	    <field name="pickup_modeanswer" type="string" default="NULL" notnull="false"/>
+	    <field name="amaflags" type="string" length="45" default="NULL" notnull="false"/>
+	    <field name="dnd" type="string" default="'reject'" notnull="false"/>
+	    <field name="videomode" type="string" default="'auto'" notnull="false"/>
+	    <field name="setvar" type="string" length="50" default="NULL" notnull="false"/>
+	    <field name="name" type="string" length="40" default="''" primarykey="true"/>
+	    <field name="phonecodepage" type="string" length="50" default="NULL" notnull="false"/>
+	    <key name="id" type="unique">
+	      <column name="id"/>
+	    </key>
+	  </table>
+		<table name="sccpbuttonconfig">
+			 <field name="ref" type="string" length="15" default="''" primarykey="true"/>
+			 <field name="reftype" type="string" default="'sccpdevice'" primarykey="true"/>
+			 <field name="instance" type="boolean" default="0" primarykey="true"/>
+			 <field name="buttontype" type="string" default="'line'" primarykey="true"/>
+			 <field name="name" type="string" length="36" default="NULL" notnull="false"/>
+			 <field name="options" type="string" length="100" default="NULL" notnull="false"/>
+			 <key name="ref" type="index">
+				 <column name="ref"/>
+				 <column name="reftype"/>
+			 </key>
+		 </table>
+	</database>
 </module>
