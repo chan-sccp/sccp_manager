@@ -1,6 +1,6 @@
 <?php
 
-namespace FreePBX\modules\Sccp_manager\SccpManTraits;
+namespace FreePBX\modules\Sccp_manager\sccpManTraits;
 
 trait ajaxHelper {
 

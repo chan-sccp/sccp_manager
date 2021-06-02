@@ -105,8 +105,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     public $class_error; //error construct
     public $info_warning;
 
-    use \FreePBX\modules\Sccp_Manager\SccpManTraits\helperfunctions;
-    use \FreePBX\modules\Sccp_Manager\SccpManTraits\ajaxHelper;
+    use \FreePBX\modules\Sccp_Manager\sccpManTraits\helperFunctions;
+    use \FreePBX\modules\Sccp_Manager\sccpManTraits\ajaxHelper;
 
     public function __construct($freepbx = null) {
         if ($freepbx == null) {
@@ -120,7 +120,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 //        $this->v = new \Respect\Validation\Validator();
         $driverNamespace = "\\FreePBX\\Modules\\Sccp_manager";
         if (class_exists($driverNamespace, false)) {
-            foreach (glob(__DIR__ . "/SccpManClasses/*.class.php") as $driver) {
+            foreach (glob(__DIR__ . "/sccpManClasses/*.class.php") as $driver) {
                 if (preg_match("/\/([a-z1-9]*)\.class\.php$/i", $driver, $matches)) {
                     $name = $matches[1];
                     $class = $driverNamespace . "\\" . $name;
