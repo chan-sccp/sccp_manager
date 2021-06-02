@@ -270,6 +270,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $action = !empty($request['action']) ? $request['action'] : '';
 
         $this->pagedata = array(
+            "sccpinfo" => array(
+                "name" => _("SCCP info"),
+                "page" => 'views/server.info.php'
+                ),
             "general" => array(
                 "name" => _("General SCCP Settings"),
                 "page" => 'views/server.setting.php'
@@ -281,10 +285,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             "sccpurl" => array(
                 "name" => _("SCCP Device URL"),
                 "page" => 'views/server.url.php'
-                ),
-            "sccpinfo" => array(
-                "name" => _("SCCP info"),
-                "page" => 'views/server.info.php'
                 )
             );
         if (isset($this->sccpvalues['displayconfig']['data']) && ($this->sccpvalues['displayconfig']['data'] != 'sccpsimple')) {
