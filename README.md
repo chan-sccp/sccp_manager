@@ -99,7 +99,7 @@ If you installed the Develop branch, the module can be updated to the latest ver
 
 
 ### IMPORTANT NOTES:
-- !!! If something stops working, use the develop branch [develop](https://github.com/chan-sccp/sccp_manager/tree/develop)
+- If something stops working, use the Stable branch as described in [Installation](https://github.com/chan-sccp/sccp_manager#installation)
 - This system assumes/requires that you are using the Asterisk realtime database. If you are not yet using the realtime database,
 you will have to set it up for this module to work ([See](https://github.com/chan-sccp/chan-sccp/wiki/Realtime-Configuration)).
 - For the cisco phones to work correctly, they should be provisioned with the latest firmware (v8.1 or higher)
