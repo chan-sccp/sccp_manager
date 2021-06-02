@@ -65,15 +65,33 @@ apt-get install PHP7.3-zip
 
 ## Installation
 
-1. Download module into your local system. (/var/www/html/admin/modules/)
-2. Goto FreePBX Admin -> Module Admin.
-3. Click Upload Modules.
-4. Browse to the location of the module on your computer and select Upload.
-5. Click Manage Local Modules.
-6. Find and click SCCP Manager. Check Install. Click Process button.
-7. Confirm installation.
-8. Close Status window.
-9. Apply Config to FreePBX.
+How to install sccp_manager
+-----
+
+1. Creating mysql DB from source using
+```
+mysql -p asterisk < /usr/src/chan-sccp/conf/mysql-v5_enum.sql
+```
+2. Create a new tab and log in to FreePBX
+3. Go to Admin -> Module Admin
+4. Click Upload Modules.
+5. Enter one of the following urls:
+
+Stable
+```
+https://github.com/chan-sccp/sccp_manager/tarball/develop/chan-sccp-sccp_manager-legacy-1-g9ef59f0.tar
+```
+Develop. _This module can be updated through module admin as modifications are made, but may still have issues_
+```
+https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
+```
+6. Click Download From Web.
+7. Click Manage Local Modules.
+8. Find and click SCCP Manager. Check Install. Click Process button.
+9. Confirm installation.
+10. Close Status window.
+11. Apply Config to FreePBX.
+12. Continue to [[Using-SCCP_Manager-to-Manage-chan-sccp]]
 
 ### Module update to latest state
 
