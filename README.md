@@ -35,9 +35,10 @@ Make sure you have the following installed on your system:
 - gui:
   - freepbx >= 13.0.192
 - a working version of [chan-sccp](https://github.com/chan-sccp/chan-sccp)
+- PHPx.x-zip installed (where x.x is the installed version of PHP)
 
 ### Requirements
-- Chan_SCCP module 4.3.4 (or later) channel driver for Asterisk: [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/Building-and-Installation-Guide)
+- chan-sccp module 4.3.4 (or later) channel driver for Asterisk: [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/Building-and-Installation-Guide)
   - sccp_manager expects these configure flags to be set during compilation:
     ```./configure  --enable-conference --enable-advanced-functions --enable-distributed-devicestate --enable-video```
   - Creating mysql DB from sorce
