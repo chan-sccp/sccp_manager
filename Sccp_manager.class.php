@@ -105,8 +105,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     public $class_error; //error construct
     public $info_warning;
 
+    // Move all non sccp_manager specific functions to traits
     use \FreePBX\modules\Sccp_Manager\sccpManTraits\helperFunctions;
-    use \FreePBX\modules\Sccp_Manager\sccpManTraits\ajaxHelper;
+    use \FreePBX\modules\Sccp_Manager\sccpManTraits\ajaxHelper;   // TODO should migrate this to child class
+    use \FreePBX\modules\Sccp_Manager\sccpManTraits\bmoFunctions;
 
     public function __construct($freepbx = null) {
         if ($freepbx == null) {
@@ -258,109 +260,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
     }
 
-    /* unused but FPBX API requires it */
-
-    public function doConfigPageInit($page) {
-        $this->doGeneralPost();
-    }
-
-    /* unused but FPBX API requires it */
-
-    public function install() {
-
-    }
-
-    /* unused but FPBX API requires it */
-
-    public function uninstall() {
-
-    }
-
-    /* unused but FPBX API requires it */
-
-    public function backup() {
-
-    }
-
-    /* unused but FPBX API requires it */
-
-    public function restore($backup) {
-
-    }
-
-    public function getActionBar($request) {
-        $buttons = array();
-        switch ($request['display']) {
-            case 'sccp_adv':
-                if (empty($request['tech_hardware'])) {
-                    break;
-                }
-                $buttons = array(
-                    'submit' => array(
-                        'name' => 'ajaxsubmit',
-                        'id' => 'ajaxsubmit',
-                        'value' => _("Save")
-                    ),
-                    'Save' => array(
-                        'name' => 'ajaxsubmit2',
-                        'id' => 'ajaxsubmit2',
-                        'stayonpage' => 'yes',
-                        'value' => _("Save + Continue")
-                    ),
-                    'cancel' => array(
-                        'name' => 'cancel',
-                        'id' => 'ajaxcancel',
-                        'data-search' => '?display=sccp_adv',
-                        'data-hash' => 'sccpdialplan',
-                        'value' => _("Cancel")
-                    ),
-                );
-                break;
-            case 'sccp_phone':
-                if (empty($request['tech_hardware'])) {
-                    break;
-                }
-                $buttons = array(
-                    'submit' => array(
-                        'name' => 'ajaxsubmit',
-                        'id' => 'ajaxsubmit',
-                        'value' => _("Save")
-                    ),
-                    'Save' => array(
-                        'name' => 'ajaxsubmit2',
-                        'id' => 'ajaxsubmit2',
-                        'stayonpage' => 'yes',
-                        'value' => _("Save + Continue")
-                    ),
-                    'cancel' => array(
-                        'name' => 'cancel',
-                        'id' => 'ajaxcancel',
-                        'data-search' => '?display=sccp_phone',
-                        'data-hash' => 'sccpdevice',
-                        'value' => _("Cancel")
-                    ),
-                );
-
-                break;
-            case 'sccpsettings':
-                $buttons = array(
-                    'submit' => array(
-                        'name' => 'ajaxsubmit',
-                        'id' => 'ajaxsubmit',
-                        'value' => _("Submit")
-                    ),
-                    'reset' => array(
-                        'name' => 'reset',
-                        'id' => 'ajaxcancel',
-                        'data-reload' => 'reload',
-                        'value' => _("Reset")
-                    ),
-                );
-
-                break;
-        }
-        return $buttons;
-    }
 
     /*
      *  Show form information - General
