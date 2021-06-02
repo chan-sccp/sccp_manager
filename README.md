@@ -91,7 +91,7 @@ https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
 9. Confirm installation.
 10. Close Status window.
 11. Apply Config to FreePBX.
-12. Continue to [[Using-SCCP_Manager-to-Manage-chan-sccp]]
+12. Continue to [Using-SCCP_Manager-to-Manage-chan-sccp](https://github.com/chan-sccp/chan-sccp/wiki/Using-SCCP_Manager-to-Manage-chan-sccp)
 
 ### Module update to latest state
 
