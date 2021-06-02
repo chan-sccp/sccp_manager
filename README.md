@@ -35,6 +35,11 @@ Make sure you have the following installed on your system:
 - gui:
   - freepbx >= 13.0.192
 - a working version of [chan-sccp](https://github.com/chan-sccp/chan-sccp)
+- PHPx.x-zip has to be installed (where x.x is the installed version of PHP).
+  For example, on Debian, using PHP7.3
+```
+apt-get install PHP7.3-zip
+```
 
 ### Requirements
 - Chan_SCCP module 4.3.4 (or later) channel driver for Asterisk: [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/Building-and-Installation-Guide)
@@ -42,6 +47,7 @@ Make sure you have the following installed on your system:
     ```./configure  --enable-conference --enable-advanced-functions --enable-distributed-devicestate --enable-video```
   - Creating mysql DB from sorce
     ```mysql -u root asterisk < mysql-v5_enum.sql```
+  
 
 - TFTP Server running under (recommended) /tftpboot/ [See our WIKI] (https://github.com/chan-sccp/chan-sccp/wiki/setup-tftp-service)
   - You will need the phone settings templates. You can use the templates taken from the distribution "chan-sccp"
