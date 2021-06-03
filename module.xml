@@ -28,7 +28,6 @@
 	<updateurl>https://chan-sccp.github.io/sccp_manager/update.json</updateurl>
 	<license>GPL</license>
 	<md5sum></md5sum>
-	<updateurl></updateurl>
 	<database>
 		<table name="sccpdevice">
 			<field name="type" type="string" length="15" default="NULL" notnull="false"/>
