@@ -383,19 +383,12 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         "buttons" => array(
                             "name" => _("Device Buttons"),
                             "page" => 'views/form.buttons.php'
-                    ));
-                    if ($this->sccpvalues['sccp_compatible']['data'] < '433') {
-                        $this->pagedata["sccpcodec"] = array(
-                            "name" => _("Device SCCP Codec"),
-                            "page" => 'views/server.codec.php'
-                        );
-                    }
-                    if ($this->sccpvalues['sccp_compatible']['data'] >= '433') {
-                        $this->pagedata["advanced"] = array(
+                        ),
+                        "advanced" => array(
                             "name" => _("Device SCCP Advanced"),
                             "page" => 'views/form.devadvanced.php'
-                        );
-                    }
+                        )
+                    );
                     break;
                 case "cisco-sip":
                     $this->pagedata = array(
@@ -406,15 +399,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         "buttons" => array(
                             "name" => _("Sip device Buttons"),
                             "page" => 'views/form.sbuttons.php'
-                    ));
-                    /*
-                      if ($this->sccpvalues['sccp_compatible']['data'] < '433') {
-                      $this->pagedata["sccpcodec"] = array(
-                      "name" => _("Device SCCP Codec"),
-                      "page" => 'views/server.codec.php'
-                      );
-                      }
-                     */
+                        )
+                    );
                     break;
 
                 case "r_user":
@@ -428,7 +414,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                             "page" => 'views/form.buttons.php'
                         ),
                     );
-
                     break;
 
                 default:
