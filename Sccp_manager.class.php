@@ -270,36 +270,37 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $action = !empty($request['action']) ? $request['action'] : '';
 
         $this->pagedata = array(
-            "sccpinfo" => array(
-                "name" => _("SCCP info"),
-                "page" => 'views/server.info.php'
-                ),
             "general" => array(
                 "name" => _("General SCCP Settings"),
                 "page" => 'views/server.setting.php'
-                ),
+              ),
             "sccpdevice" => array(
                 "name" => _("SCCP Device"),
                 "page" => 'views/server.device.php'
-                ),
+              ),
             "sccpurl" => array(
                 "name" => _("SCCP Device URL"),
                 "page" => 'views/server.url.php'
-                )
+              ),
+            "sccpntp" => array(
+                "name" => _("SCCP Time"),
+                "page" => 'views/server.datetime.php'
+              ),
+            "sccpcodec" => array(
+                "name" => _("SCCP Codec"),
+                "page" => 'views/server.codec.php'
+              ),
+            "sccpadv" => array(
+                "name" => _("Advanced SCCP Settings"),
+                "page" => 'views/server.advanced.php'
+              ),
+            "sccpinfo" => array(
+                "name" => _("SCCP info"),
+                "page" => 'views/server.info.php'
+              )
             );
-        if (isset($this->sccpvalues['displayconfig']['data']) && ($this->sccpvalues['displayconfig']['data'] != 'sccpsimple')) {
-            $this->pagedata['sccpntp'] = array(
-                    "name" => _("SCCP Time"),
-                    "page" => 'views/server.datetime.php'
-                    );
-            $this->pagedata['sccpcodec'] = array(
-                    "name" => _("SCCP Codec"),
-                    "page" => 'views/server.codec.php'
-                    );
-            $this->pagedata['sccpadv'] = array(
-                    "name" => _("Advanced SCCP Settings"),
-                    "page" => 'views/server.advanced.php'
-                  );
+        if (isset($this->sccpvalues['displayconfig']['data']) && ($this->sccpvalues['displayconfig']['data'] == 'sccpsimple')) {
+            unset($this->pagedata['sccpntp'], $this->pagedata['sccpcodec'], $this->pagedata['sccpadv'] );
         }
         $this->processPageData();
         return $this->pagedata;
