@@ -19,7 +19,7 @@
     "supported": {
         "version": "13.0"
     },
-    "location": "https://github.com/chan-sccp/sccp_manager/archive/refs/tags/v14.1.0.1-alpha.zip",
+    "location": "https://github.com/chan-sccp/sccp_manager/archive/refs/tags/V14.2.0.2.tar.gz",
     "md5sum": "0b0682f5c5ed6a14bbb6b781021aa4d0",
     "packaged": "3492782"
 }
