@@ -323,38 +323,106 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
         $inputform = !empty($request['tech_hardware']) ? $request['tech_hardware'] : '';
-
-        if (empty($this->pagedata)) {
-            switch ($inputform) {
-                case 'dialplan':
-                    $this->pagedata = array(
-                        "general" => array(
-                            "name" => _("SCCP Dial Plan information"),
-                            "page" => 'views/form.dptemplate.php'
-                        )
+        switch ($inputform) {
+            case 'dialplan':
+                $this->pagedata = array(
+                    "general" => array(
+                        "name" => _("SCCP Dial Plan information"),
+                        "page" => 'views/form.dptemplate.php'
+                    )
+                );
+                break;
+            default:
+                $this->pagedata = array(
+                    "general" => array(
+                        "name" => _("SCCP Model information"),
+                        "page" => 'views/advserver.model.php'
+                    ),
+                    "sccpkeyset" => array(
+                        "name" => _("SCCP Device Keyset"),
+                        "page" => 'views/advserver.keyset.php'
+                    )
+                );
+                if ($this->sccpvalues['siptftp']['data'] == 'on') {
+                    $this->pagedata["sccpdialplan"] = array(
+                        "name" => _("SIP Dial Plan information"),
+                        "page" => 'views/advserver.dialtemplate.php'
                     );
-                    break;
-                default:
-                    $this->pagedata = array(
-                        "general" => array(
-                            "name" => _("SCCP Model information"),
-                            "page" => 'views/advserver.model.php'
-                        ),
-                        "sccpkeyset" => array(
-                            "name" => _("SCCP Device Keyset"),
-                            "page" => 'views/advserver.keyset.php'
-                        )
-                    );
-                    if ($this->sccpvalues['siptftp']['data'] == 'on') {
-                        $this->pagedata["sccpdialplan"] = array(
-                            "name" => _("SIP Dial Plan information"),
-                            "page" => 'views/advserver.dialtemplate.php'
-                        );
-                    }
-                    break;
-            }
-            $this->processPageData();
+                }
+                break;
         }
+
+        $this->processPageData();
+        return $this->pagedata;
+    }
+
+    public function phoneShowPage() {
+        $request = $_REQUEST;
+        $action = !empty($request['action']) ? $request['action'] : '';
+        $inputform = !empty($request['tech_hardware']) ? $request['tech_hardware'] : '';
+        switch ($inputform) {
+            case "cisco":
+                $this->pagedata = array(
+                    "general" => array(
+                        "name" => _("Device configuration"),
+                        "page" => 'views/form.adddevice.php'
+                    ),
+                    "buttons" => array(
+                        "name" => _("Device Buttons"),
+                        "page" => 'views/form.buttons.php'
+                    ),
+                    "advanced" => array(
+                        "name" => _("Device SCCP Advanced"),
+                        "page" => 'views/form.devadvanced.php'
+                    )
+                );
+                break;
+            case "cisco-sip":
+                $this->pagedata = array(
+                    "general" => array(
+                        "name" => _("Sip device configuration"),
+                        "page" => 'views/form.addsdevice.php'
+                    ),
+                    "buttons" => array(
+                        "name" => _("Sip device Buttons"),
+                        "page" => 'views/form.sbuttons.php'
+                    )
+                );
+                break;
+
+            case "r_user":
+                $this->pagedata = array(
+                    "general" => array(
+                        "name" => _("Roaming User configuration"),
+                        "page" => 'views/form.addruser.php'
+                    ),
+                    "buttons" => array(
+                        "name" => _("Device Buttons"),
+                        "page" => 'views/form.buttons.php'
+                    ),
+                );
+                break;
+
+            default:
+                $this->pagedata = array(
+                    "general" => array(
+                        "name" => _("SCCP Extension"),
+                        "page" => 'views/hardware.extension.php'
+                    ),
+                    "sccpdevice" => array(
+                        "name" => _("SCCP Phone"),
+                        "page" => 'views/hardware.phone.php'
+                    )
+                );
+                if ($this->sccpvalues['siptftp']['data'] == 'on') {
+                    $this->pagedata["sipdevice"] = array(
+                        "name" => _("SIP CISCO Phone"),
+                        "page" => 'views/hardware.sphone.php'
+                    );
+                }
+                break;
+        }
+        $this->processPageData();
         return $this->pagedata;
     }
 
@@ -365,85 +433,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $page['content'] = ob_get_contents();
             ob_end_clean();
         }
-    }
-
-    public function phoneShowPage() {
-        $request = $_REQUEST;
-        $action = !empty($request['action']) ? $request['action'] : '';
-        $inputform = !empty($request['tech_hardware']) ? $request['tech_hardware'] : '';
-
-        if (empty($this->pagedata)) {
-            switch ($inputform) {
-                case "cisco":
-                    $this->pagedata = array(
-                        "general" => array(
-                            "name" => _("Device configuration"),
-                            "page" => 'views/form.adddevice.php'
-                        ),
-                        "buttons" => array(
-                            "name" => _("Device Buttons"),
-                            "page" => 'views/form.buttons.php'
-                        ),
-                        "advanced" => array(
-                            "name" => _("Device SCCP Advanced"),
-                            "page" => 'views/form.devadvanced.php'
-                        )
-                    );
-                    break;
-                case "cisco-sip":
-                    $this->pagedata = array(
-                        "general" => array(
-                            "name" => _("Sip device configuration"),
-                            "page" => 'views/form.addsdevice.php'
-                        ),
-                        "buttons" => array(
-                            "name" => _("Sip device Buttons"),
-                            "page" => 'views/form.sbuttons.php'
-                        )
-                    );
-                    break;
-
-                case "r_user":
-                    $this->pagedata = array(
-                        "general" => array(
-                            "name" => _("Roaming User configuration"),
-                            "page" => 'views/form.addruser.php'
-                        ),
-                        "buttons" => array(
-                            "name" => _("Device Buttons"),
-                            "page" => 'views/form.buttons.php'
-                        ),
-                    );
-                    break;
-
-                default:
-                    $this->pagedata = array(
-                        "general" => array(
-                            "name" => _("SCCP Extension"),
-                            "page" => 'views/hardware.extension.php'
-                        ),
-                        "sccpdevice" => array(
-                            "name" => _("SCCP Phone"),
-                            "page" => 'views/hardware.phone.php'
-                        )
-                    );
-                    if ($this->sccpvalues['siptftp']['data'] == 'on') {
-                        $this->pagedata["sipdevice"] = array(
-                            "name" => _("SIP CISCO Phone"),
-                            "page" => 'views/hardware.sphone.php'
-                        );
-                    }
-                    break;
-            }
-            foreach ($this->pagedata as &$page) {
-                ob_start();
-                include($page['page']);
-                $page['content'] = ob_get_contents();
-                ob_end_clean();
-            }
-        }
-
-        return $this->pagedata;
     }
 
     /*
