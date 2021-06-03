@@ -63,7 +63,6 @@ if (!empty($version)) {
     if (DB::IsError($result)) {
         die_freepbx($result->getDebugInfo());
     }
-    unset($result);
 
 /* Comment: Maybe save in sccpsettings, if the chan_sccp tables already existed in the database or if they were created by install.php */
 /* So that you know if it is safe to drop/delete them */

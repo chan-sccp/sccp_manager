@@ -28,12 +28,12 @@ $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-
         "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
 $mysql_table = array("sccpdevice","sccpdeviceconfig");
 //$time_zone_name = timezone_identifiers_list();
-$time_zone = array('-12' => 'GTM -12', '-11' => 'GTM -11', '-10' => 'GTM -10', '-09' => 'GTM -9',
-                   '-08' => 'GTM -8',  '-07' => 'GTM -7',  '-06' => 'GTM -6', '-05' => 'GTM -5',
-                   '-04' => 'GTM -4',  '-03' => 'GTM -3',  '-02' => 'GTM -2', '-01' => 'GTM -1',
-                   '00'  => 'GTM time', '01' => 'GTM +1',  '02'  => 'GTM +2', '03'  => 'GTM +3',
-                   '04'  => 'GTM +4',   '05' => 'GTM +5',  '06'  => 'GTM +6', '07'  => 'GTM +7',
-                   '08'  => 'GTM +8',   '09' => 'GTM +9',  '10'  => 'GTM +10', '11'=> 'GTM +11', '12' => 'GTM +12');
+$time_zone = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',
+                   '-08' => 'GMT -8',  '-07' => 'GMT -7',  '-06' => 'GMT -6', '-05' => 'GMT -5',
+                   '-04' => 'GMT -4',  '-03' => 'GMT -3',  '-02' => 'GMT -2', '-01' => 'GMT -1',
+                   '00'  => 'GMT', '01' => 'GMT +1',  '02'  => 'GMT +2', '03'  => 'GMT +3',
+                   '04'  => 'GMT +4',   '05' => 'GMT +5',  '06'  => 'GMT +6', '07'  => 'GMT +7',
+                   '08'  => 'GMT +8',   '09' => 'GMT +9',  '10'  => 'GMT +10', '11'=> 'GMT +11', '12' => 'GMT +12');
 
 
 $time_zone_name = array();

@@ -125,11 +125,10 @@ class extconfigs
     private $sccpDefaults = array(
         "servername" => 'VPBXSCCP',
         "bindaddr" => '0.0.0.0', "port" => '2000', # chan_sccp also supports ipv6
-        # bindaddr = "::" will support ipv6 and ipv4 at the same time
         "deny" => '0.0.0.0/0.0.0.0',
         "permit" => '0.0.0.0/0.0.0.0', # !TODO!: please change this to 'internal' which would mean:
         # permit:127.0.0.0/255.0.0.0,permit:10.0.0.0/255.0.0.0,permit:172.0.0.0/255.224.0.0,permit:192.168.0.0/255.255.0.0"
-        "dateformat" => 'D.M.Y', # This is the german default format. Should be "D/M/Y" or "D/M/YA" instead
+        "dateformat" => 'D.M.Y',
         "disallow" => 'all', "allow" => 'alaw;ulaw',
         "hotline_enabled" => 'off',
         "hotline_context" => 'default', # !TODO!: Should this not be from-internal on FreePBX ?
