@@ -201,32 +201,32 @@ class dbinterface
             case 'byid':
                 if (!empty($filter)) {
                     if (!empty($filter['model'])) {
-                        $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE model = :model ORDER BY model');
+                        $stmt = $dbh->prepare("SELECT  {$sel_inf} FROM sccpdevmodel WHERE model = :model ORDER BY model");
                         $stmt->bindParam(':model', $filter['model'],\PDO::PARAM_STR);
                     } else {
-                        $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel ORDER BY model');
+                        $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel ORDER BY model");
                     }
                     break;
                 }
                 break;
             case 'extension':
-                $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (dns = 0) and (enabled = 1) ORDER BY model');
+                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns = 0) and (enabled = 1) ORDER BY model");
                 break;
             case 'enabled':
-                //$stmt = $db->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE enabled = 1 ORDER BY model'); //previously this fell through to phones.
+                //$stmt = $db->prepare('SELECT ' . {$sel_inf} . ' FROM sccpdevmodel WHERE enabled = 1 ORDER BY model'); //previously this fell through to phones.
                 //break;  // above includes expansion modules but was not original behaviour so commented out. Falls through to phones.
             case 'phones':
-                $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) ORDER BY model ');
+                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) ORDER BY model");
                 break;
             case 'ciscophones':
-                $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor NOT LIKE \'%-sip\' ORDER BY model');
+                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor NOT LIKE \'%-sip\' ORDER BY model");
                 break;
             case 'sipphones':
-                $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND `vendor` LIKE \'%-sip\' ORDER BY model');
+                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor LIKE \'%-sip\' ORDER BY model");
                 break;
             case 'all':     // Fall through to default
             default:
-                $stmt = $dbh->prepare('SELECT ' . $sel_inf . ' FROM sccpdevmodel ORDER BY model');
+                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel ORDER BY model");
                 break;
         }
         $stmt->execute();
@@ -290,13 +290,13 @@ class dbinterface
                 if (!empty($sql_var)) {
                     switch ($mode) {
                         case 'delete':
-                            $stmt = $dbh->prepare('DELETE FROM '. $table_name . ' WHERE ' . $sql_key);
+                            $stmt = $dbh->prepare("DELETE FROM {$table_name} WHERE {$sql_key}");
                             break;
                         case 'update':
-                            $stmt = $dbh->prepare('UPDATE ' . $table_name . ' SET ' . $sql_var . ' WHERE ' . $sql_key);
+                            $stmt = $dbh->prepare("UPDATE {$table_name} SET {$sql_var} WHERE {$sql_key}");
                             break;
                         case 'replace':
-                            $stmt = $dbh->prepare('REPLACE INTO ' . $table_name . ' SET ' . $sql_var);
+                            $stmt = $dbh->prepare("REPLACE INTO {$table_name} SET {$sql_var}");
                             break;
                         // no default mode - must be explicit.
                     }
