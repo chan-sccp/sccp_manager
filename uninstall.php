@@ -34,11 +34,11 @@ if (!defined('FREEPBX_IS_AUTH')) {
     die('No direct script access allowed');
 }
 
-    global $db;
-    $version = FreePBX::Config()->get('ASTVERSION');
+global $db;
+$version = FreePBX::Config()->get('ASTVERSION');
 
-    out('Removing all Sccp_manager tables');
-    $tables = array('sccpdevmodel', 'sccpsettings');
+out('Removing all Sccp_manager tables');
+$tables = array('sccpdevmodel', 'sccpsettings');
 foreach ($tables as $table) {
     $sql = "DROP TABLE IF EXISTS {$table}";
     $result = $db->query($sql);
@@ -77,5 +77,5 @@ if (!empty($version)) {
  *
  */
 }
-
    echo "done<br>\n";
+?>

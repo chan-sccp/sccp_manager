@@ -64,7 +64,6 @@
 			<field name="backgroundImage" type="string" length="255" default="NULL" notnull="false"/>
 			<field name="backgroundThumbnail" type="string" length="255" default="NULL" notnull="false"/>
 			<field name="ringtone" type="string" length="255" default="NULL" notnull="false"/>
-			<field name="name" type="string" length="15" default="" primarykey="true"/>
 			<field name="callhistory_answered_elsewhere" type="string" default="NULL" notnull="false"/>
 			<field name="_hwlang" type="string" length="12" default="NULL" notnull="false"/>
 			<field name="_loginname" type="string" length="20" default="NULL" notnull="false"/>
