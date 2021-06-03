@@ -89,7 +89,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     private $SCCP_LANG_DICTIONARY = 'be-sccp.jar'; // CISCO LANG file search in /tftp-path
     private $pagedata = null;
     private $sccp_driver_ver = '11.4';             // Ver fore SCCP.CLASS.PHP
-    public $sccp_manager_ver = '14.0.0.2';
+    public $sccp_manager_ver = '14.1.0.0';
     public $sccp_branch = 'm';                       // Ver fore SCCP.CLASS.PHP
     private $tftpLang = array();
 
@@ -119,7 +119,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $this->db = $freepbx->Database;
         $this->cnf_wr = \FreePBX::WriteConfig();
         $this->cnf_read = \FreePBX::LoadConfig();
-//        $this->v = new \Respect\Validation\Validator();
         $driverNamespace = "\\FreePBX\\Modules\\Sccp_manager";
         if (class_exists($driverNamespace, false)) {
             foreach (glob(__DIR__ . "/sccpManClasses/*.class.php") as $driver) {
@@ -260,7 +259,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
     }
 
-
     /*
      *  Show form information - General
      */
@@ -299,6 +297,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 "page" => 'views/server.info.php'
               )
             );
+        // If view is set to simple, remove the ntp, codec and advanced tabs
         if (isset($this->sccpvalues['displayconfig']['data']) && ($this->sccpvalues['displayconfig']['data'] == 'sccpsimple')) {
             unset($this->pagedata['sccpntp'], $this->pagedata['sccpcodec'], $this->pagedata['sccpadv'] );
         }
