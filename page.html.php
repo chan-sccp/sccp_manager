@@ -21,7 +21,7 @@
                                 <?php echo $page['content']?>
                             </div>
                         <?php } ?>
-                                        </div>
+                    </div>
                 </div>
             </div>
         </div>
