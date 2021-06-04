@@ -91,11 +91,11 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             $tech[$row["Field"]]=$row["Field"];
         }
         $sqlCol = 'name';
-        $sqlVal = "\'{$id}\'";
+        $sqlVal = "'{$id}'";
         foreach($this->data_fld as $key => $val) {
             if (isset($settings[$val]['value'])){
                 $sqlCol .= ", {$key}";
-                $sqlVal .= ", \' {$settings[$val]['value']} \'";
+                $sqlVal .= ", '{$settings[$val]['value']}'";
             }
         }
         $sql = "REPLACE INTO sccpline ( {$sqlCol} ) VALUES ( {$sqlVal} );";
