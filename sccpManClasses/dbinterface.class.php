@@ -83,11 +83,11 @@ class dbinterface
                 } elseif (!empty($data['type'])) {
                     switch ($data['type']) {
                         case "cisco-sip":
-                            $stmts = $dbh->prepare('SELECT ' . $fld . ' FROM sccpdeviceconfig WHERE TYPE LIKE \'%-sip\' ORDER BY name');
+                            $stmts = $dbh->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE TYPE LIKE '%-sip' ORDER BY name");
                             break;
                         case "cisco":      // Fall through to default intentionally
                         default:
-                            $stmts = $dbh->prepare('SELECT ' . $fld . ' FROM sccpdeviceconfig WHERE TYPE not LIKE \'%-sip\' ORDER BY name');
+                            $stmts = $dbh->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE TYPE not LIKE '%-sip' ORDER BY name");
                             break;
                     }
                 } else {      //no filter and no name provided - return all
@@ -219,10 +219,10 @@ class dbinterface
                 $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) ORDER BY model");
                 break;
             case 'ciscophones':
-                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor NOT LIKE \'%-sip\' ORDER BY model");
+                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor NOT LIKE '%-sip' ORDER BY model");
                 break;
             case 'sipphones':
-                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor LIKE \'%-sip\' ORDER BY model");
+                $stmt = $dbh->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor LIKE '%-sip' ORDER BY model");
                 break;
             case 'all':     // Fall through to default
             default:
