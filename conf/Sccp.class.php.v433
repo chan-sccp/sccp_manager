@@ -307,10 +307,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         $tmparr['transfer'] = array('prompttext' => _('Call Transfer'), 'value' => 'on', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio');
 
         unset($select);
-        $select[] = array('value' => 'yes', 'text' => 'Yes');
-        $select[] = array('value' => 'no', 'text' => 'No');
+        $select[] = array('value' => 'on', 'text' => 'On');
+        $select[] = array('value' => 'off', 'text' => 'Off');
         $tt = _("Echo cancel");
-        $tmparr['echocancel'] = array('prompttext' => _('Echo cancel'), 'value' => 'yes', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio');
+        $tmparr['echocancel'] = array('prompttext' => _('Echo cancel'), 'value' => 'off', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio');
 
         unset($select);
         $select[] = array('value' => 'off', 'text' => 'Off');
@@ -326,10 +326,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         $tmparr['dnd'] = array('prompttext' => _('DND'), 'value' => 'UserDefined', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio');
 
         unset($select);
-        $select[] = array('value' => 'yes', 'text' => 'Yes');
-        $select[] = array('value' => 'no', 'text' => 'No');
+        $select[] = array('value' => 'on', 'text' => 'On');
+        $select[] = array('value' => 'off', 'text' => 'Off');
         $tt = _("Silence Suppression. Asterisk Not supported");
-        $tmparr['silencesuppression'] = array('prompttext' => _('Silence Suppression'), 'value' => 'no', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio');
+        $tmparr['silencesuppression'] = array('prompttext' => _('Silence Suppression'), 'value' => 'off', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio');
 
         unset($select);
         $select[] = array('value' => 'default', 'text' => _('default'));
