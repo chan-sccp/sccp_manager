@@ -324,10 +324,6 @@ function InstallDB_updateSchema($db_config)
             if (!empty($tab_modif[$fld_id])) {
                 // Potentially have something to modify in schema
                 $db_config[$tabl_name][$fld_id]['fieldExists'] = 'yes';
-                if (!empty($tab_modif[$fld_id]['create'])) {
-                    // Field exists so no need to create
-                    //unset($db_config[$tabl_name][$fld_id]['create']);
-                }
                 if (!empty($tab_modif[$fld_id]['def_modify'])) {
                     if (strtoupper($tab_modif[$fld_id]['def_modify']) == strtoupper($tabl_data[4])) {
                         unset($db_config[$tabl_name][$fld_id]['def_modify']);
