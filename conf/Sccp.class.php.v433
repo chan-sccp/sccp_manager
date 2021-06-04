@@ -166,7 +166,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                               		"flag" => $flag++
                       		),
                       		"transfer" => array(
-                              		"value" => "yes",
+                              		"value" => "on",
                               		"flag" => $flag++
                       		),
                       		"adhocNumber" => array(
@@ -301,10 +301,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
         # !TODO!: -TODO-: is there no easier way to specify a boolean radio group ? No.
         unset($select);
-        $select[] = array('value' => 'yes', 'text' => 'Yes');
-        $select[] = array('value' => 'no', 'text' => 'No');
+        $select[] = array('value' => 'on', 'text' => 'On');
+        $select[] = array('value' => 'off', 'text' => 'Off');
         $tt = _("Allow call transfer.");
-        $tmparr['transfer'] = array('prompttext' => _('Call Transfer'), 'value' => 'yes', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio');
+        $tmparr['transfer'] = array('prompttext' => _('Call Transfer'), 'value' => 'on', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio');
 
         unset($select);
         $select[] = array('value' => 'yes', 'text' => 'Yes');
