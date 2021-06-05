@@ -35,19 +35,13 @@ Make sure you have the following installed on your system:
 - gui:
   - freepbx >= 13.0.192
 - a working version of [chan-sccp](https://github.com/chan-sccp/chan-sccp)
-- PHPx.x-zip has to be installed (where x.x is the installed version of PHP).
-  For example, on Debian, using PHP7.3
-```
-apt-get install PHP7.3-zip
-```
 
 ### Requirements
-- chan-sccp module 4.3.4 (or later) channel driver for Asterisk: [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/Building-and-Installation-Guide)
+- Chan_SCCP module 4.3.4 (or later) channel driver for Asterisk: [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/Building-and-Installation-Guide)
   - sccp_manager expects these configure flags to be set during compilation:
     ```./configure  --enable-conference --enable-advanced-functions --enable-distributed-devicestate --enable-video```
   - Creating mysql DB from sorce
     ```mysql -u root asterisk < mysql-v5_enum.sql```
-
 
 - TFTP Server running under (recommended) /tftpboot/ [See our WIKI] (https://github.com/chan-sccp/chan-sccp/wiki/setup-tftp-service)
   - You will need the phone settings templates. You can use the templates taken from the distribution "chan-sccp"
@@ -65,41 +59,30 @@ apt-get install PHP7.3-zip
 
 ## Installation
 
-How to install sccp_manager
------
-
-1. Creating mysql DB from source using
-```
-mysql -p asterisk < /usr/src/chan-sccp/conf/mysql-v5_enum.sql
-```
-2. Create a new tab and log in to FreePBX
-3. Go to Admin -> Module Admin
-4. Click Upload Modules.
-5. Enter one of the following urls:
-
-Stable
-```
-https://github.com/chan-sccp/sccp_manager/tarball/develop/chan-sccp-sccp_manager-legacy-1-g9ef59f0.tar
-```
-Develop. _This module can be updated through module admin as modifications are made, but may still have issues_
-```
-https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
-```
-6. Click Download From Web.
-7. Click Manage Local Modules.
-8. Find and click SCCP Manager. Check Install. Click Process button.
-9. Confirm installation.
-10. Close Status window.
-11. Apply Config to FreePBX.
-12. Continue to [Using-SCCP_Manager-to-Manage-chan-sccp](https://github.com/chan-sccp/chan-sccp/wiki/Using-SCCP_Manager-to-Manage-chan-sccp)
+1. Download module into your local system. (/var/www/html/admin/modules/)
+2. Goto FreePBX Admin -> Module Admin.
+3. Click Upload Modules.
+4. Browse to the location of the module on your computer and select Upload.
+5. Click Manage Local Modules.
+6. Find and click SCCP Manager. Check Install. Click Process button.
+7. Confirm installation.
+8. Close Status window.
+9. Apply Config to FreePBX.
 
 ### Module update to latest state
 
-If you installed the Develop branch, the module can be updated to the latest version via FreePBX. FreePBX -> Admin -> Module Admin.
+If you installed sccp_manager using git clone instead of installing a zip
+file / tarball then you can do easily keep up with the latest develop by
+doing this:
 
+1. Goto to module into your local system. (/var/www/html/admin/modules/sccp_manager/)
+
+>        cd /var/www/html/admin/modules/sccp_manager/
+>        git pull
+>        git checkout develop
 
 ### IMPORTANT NOTES:
-- If something stops working, use the Stable branch as described in [Installation](https://github.com/chan-sccp/sccp_manager#installation)
+- !!! If something stops working, use the develop branch [develop](https://github.com/chan-sccp/sccp_manager/tree/develop)
 - This system assumes/requires that you are using the Asterisk realtime database. If you are not yet using the realtime database,
 you will have to set it up for this module to work ([See](https://github.com/chan-sccp/chan-sccp/wiki/Realtime-Configuration)).
 - For the cisco phones to work correctly, they should be provisioned with the latest firmware (v8.1 or higher)

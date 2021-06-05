@@ -34,11 +34,11 @@ if (!defined('FREEPBX_IS_AUTH')) {
     die('No direct script access allowed');
 }
 
-global $db;
-$version = FreePBX::Config()->get('ASTVERSION');
+    global $db;
+    $version = FreePBX::Config()->get('ASTVERSION');
 
-out('Removing all Sccp_manager tables');
-$tables = array('sccpdevmodel', 'sccpsettings');
+    out('Removing all Sccp_manager tables');
+    $tables = array('sccpdevmodel', 'sccpsettings');
 foreach ($tables as $table) {
     $sql = "DROP TABLE IF EXISTS {$table}";
     $result = $db->query($sql);
@@ -63,6 +63,7 @@ if (!empty($version)) {
     if (DB::IsError($result)) {
         die_freepbx($result->getDebugInfo());
     }
+    unset($result);
 
 /* Comment: Maybe save in sccpsettings, if the chan_sccp tables already existed in the database or if they were created by install.php */
 /* So that you know if it is safe to drop/delete them */
@@ -77,5 +78,5 @@ if (!empty($version)) {
  *
  */
 }
+
    echo "done<br>\n";
-?>
