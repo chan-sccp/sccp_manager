@@ -79,7 +79,7 @@ mysql -p asterisk < /usr/src/chan-sccp/conf/mysql-v5_enum.sql
 
 Stable
 ```
-https://github.com/chan-sccp/sccp_manager/tarball/develop/chan-sccp-sccp_manager-legacy-1-g9ef59f0.tar
+https://github.com/chan-sccp/sccp_manager/archive/refs/tags/Legacy-v2.tar.gz
 ```
 Develop. _This module can be updated through module admin as modifications are made, but may still have issues_
 ```
