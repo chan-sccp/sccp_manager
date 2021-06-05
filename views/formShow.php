@@ -28,12 +28,12 @@ $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-
         "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
 $mysql_table = array("sccpdevice","sccpdeviceconfig");
 //$time_zone_name = timezone_identifiers_list();
-$time_zone = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',
-                   '-08' => 'GMT -8',  '-07' => 'GMT -7',  '-06' => 'GMT -6', '-05' => 'GMT -5',
-                   '-04' => 'GMT -4',  '-03' => 'GMT -3',  '-02' => 'GMT -2', '-01' => 'GMT -1',
-                   '00'  => 'GMT', '01' => 'GMT +1',  '02'  => 'GMT +2', '03'  => 'GMT +3',
-                   '04'  => 'GMT +4',   '05' => 'GMT +5',  '06'  => 'GMT +6', '07'  => 'GMT +7',
-                   '08'  => 'GMT +8',   '09' => 'GMT +9',  '10'  => 'GMT +10', '11'=> 'GMT +11', '12' => 'GMT +12');
+$time_zone = array('-12' => 'GTM -12', '-11' => 'GTM -11', '-10' => 'GTM -10', '-09' => 'GTM -9',
+                   '-08' => 'GTM -8',  '-07' => 'GTM -7',  '-06' => 'GTM -6', '-05' => 'GTM -5',
+                   '-04' => 'GTM -4',  '-03' => 'GTM -3',  '-02' => 'GTM -2', '-01' => 'GTM -1',
+                   '00'  => 'GTM time', '01' => 'GTM +1',  '02'  => 'GTM +2', '03'  => 'GTM +3',
+                   '04'  => 'GTM +4',   '05' => 'GTM +5',  '06'  => 'GTM +6', '07'  => 'GTM +7',
+                   '08'  => 'GTM +8',   '09' => 'GTM +9',  '10'  => 'GTM +10', '11'=> 'GTM +11', '12' => 'GTM +12');
 
 
 $time_zone_name = array();
@@ -42,10 +42,10 @@ $sofkey_list = array();
 $model_list = array();
 $device_list = array();
 $dialplan_list = array();
-
+        
 //$time_zone = \FreePBX::Sccp_manager()-> extconfigs-> getextConfig('cisco_time');
 //$system_time_zone = \FreePBX::Sccp_manager()->getSysnemTimeZone();
-//$sofkey_list = \FreePBX::Sccp_manager()-> aminterface->sccp_list_keysets();
+//$sofkey_list = \FreePBX::Sccp_manager()-> srvinterface -> sccp_list_keysets();
 //$model_list = \FreePBX::Sccp_manager()->dbinterface->HWextension_db_SccpTableData("HWDevice");
 //$extension_list = \FreePBX::Sccp_manager()->dbinterface->HWextension_db_SccpTableData("HWextension");
 //$device_list = \FreePBX::Sccp_manager()->dbinterface->HWextension_db_SccpTableData("SccpDevice");
@@ -109,24 +109,24 @@ foreach ($items as $child) {
         if (!empty($child ->class)) {
             $res_sec_class = (string)$child ->class;
         }
-
+         
         if (empty($child->nameseparator)) {
             $child->nameseparator = ' / ';
         }
         $i = 0;
-
+ 
         echo '<!-- Begin '.$child->label.' -->';
-
+                
         ?>
         <div class="element-container">
-            <div class="row"> <div class="form-group <?php echo $res_sec_class; ?>">
+            <div class="row"> <div class="form-group <?php echo $res_sec_class; ?>"> 
                     <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
                     </div>
                     <div class="col-md-9">
                         <?php
-
+                        
                         foreach ($child->xpath('input') as $value) {
                                 $res_n =  (string)$value->name;
                                 $res_name = $npref . $res_n;
@@ -209,7 +209,7 @@ foreach ($items as $child) {
             $res_value = array((string) $child->default);
 //            $res_value = explode('/', (string) $child->default);
         }
-
+        
         echo '<!-- Begin '.$child->label.' -->';
         ?>
     <div class="element-container">
@@ -221,7 +221,7 @@ foreach ($items as $child) {
                                 <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                                 <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
                             </div>
-
+                            
                             <div class="col-md-9">
                             <?php
                             if (!empty($child->cbutton)) {
@@ -250,7 +250,7 @@ foreach ($items as $child) {
                                         }
                                         $opt_hide .= ' data-vshow="'.$child->option_show.'" data-clshow="'.$child->option_show['class'].'" ';
                                     }
-
+                                    
                                     if (!empty($value->option_disabled)) {
                                         $opt_class .= " sccp_button_disabled";
                                         $opt_hide = ' data-vhide="'.$value->option_disabled.'" data-btn="checkbox" data-clhide="'.$value->option_disabled['class'].'" ';
@@ -259,7 +259,7 @@ foreach ($items as $child) {
                                     if (!empty($value->class)) {
                                         $opt_class .= " ".(string)$value->class;
                                     }
-
+                                    
                                     echo '<span class="'.$opt_class.'"'.$opt_hide.'><button type="button" class="btn '.$res_vf.'" data-color="primary">';
                                     echo '<i class="state-icon '. (($res_vf == 'active')?'glyphicon glyphicon-check"':'glyphicon glyphicon-uncheck'). '"></i> ';
                                     echo $value.'</button><input type="checkbox" name="'. $res_n.'" class="hidden" '. (($res_vf == 'active')?'checked="checked"':'') .'/></span>';
@@ -271,10 +271,10 @@ foreach ($items as $child) {
                                 $opt_class .= " ".(string)$child->class;
                             }
                             echo '<div class = "'.$opt_class.'">';
-
+                                    
                             foreach ($res_value as $dat_v) {
                                 ?>
-                                <div class = "<?php echo $res_id;?> form-group form-inline" data-nextid=<?php echo $i+1;?> >
+                                <div class = "<?php echo $res_id;?> form-group form-inline" data-nextid=<?php echo $i+1;?> > 
                                 <?php
                                 $res_vf = explode('/', $dat_v);
                                 $i2 = 0;
@@ -286,7 +286,7 @@ foreach ($items as $child) {
                                         $opt_at[$fields_id]['class']='form-control ' .(string)$value->class;
                                     }
                                     $opt_at[$fields_id]['nameseparator']=(string)$value['nameseparator'];
-
+                                
                                     echo '<input type="text" name="'. $res_n.'" class="'.$opt_at[$fields_id]['class'].'" value="'.$res_vf[$i2].'"';
                                     if (isset($value->options)) {
                                         foreach ($value->options ->attributes() as $optkey => $optval) {
@@ -304,7 +304,7 @@ foreach ($items as $child) {
                                 $i++;
                             }
                             ?>
-
+                                    
                                 </div>
                             <?php
                             if (!empty($child->addbutton)) {
@@ -325,7 +325,7 @@ foreach ($items as $child) {
         <?php
         echo '<!-- END '.$child->label.' -->';
     }
-
+    
     if ($child['type'] == 'IS') {
         $res_n =  (string)$child->name;
         $res_id = $npref.$child->name;
@@ -334,17 +334,17 @@ foreach ($items as $child) {
                 $child->help = $metainfo[$res_n]['Description'];
             }
         }
-
+        
              // --- Add Hiden option
         $res_sec_class ='';
         if (!empty($child ->class)) {
             $res_sec_class = (string)$child ->class;
         }
-
+       
             echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
-            <div class="row"><div class="form-group <?php echo $res_sec_class;?>">
+            <div class="row"><div class="form-group <?php echo $res_sec_class;?>"> 
                     <div class="col-md-3 radioset">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -364,7 +364,7 @@ foreach ($items as $child) {
                         if (!empty($fvalues[$res_n])) {
                             if (($fvalues[$res_n]['data'] != '') ) {
                                 $res_v = (string)$fvalues[$res_n]['data'];
-                            }
+                            } 
                         }
                         if (!empty($child->option_hide)) {
                             $opt_hide = ' class="sccp_button_hide" data-vhide="'.$child->option_hide.'" data-clhide="'.$child->option_hide['class'].'" ';
@@ -390,7 +390,7 @@ foreach ($items as $child) {
                             echo '<label for="' . $res_id. '_' . $i . '">' . _($value) .  '</label>';
                             $i++;
                         }
-                        ?>
+                        ?>                        
                         </div>
                 </div></div>
             <div class="row"><div class="col-md-12">
@@ -401,7 +401,7 @@ foreach ($items as $child) {
         <?php
         echo '<!-- END '.$child->label.' -->';
     }
-
+    
 /*
  *    Input element Select SLD - Date format
  *                         SLZ - Time Zone
@@ -420,11 +420,11 @@ foreach ($items as $child) {
                 $child->help = $metainfo[$res_n]['Description'];
             }
         }
-
+        
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
-
+        
         if ($child['type'] == 'SLD') {
             $select_opt= $day_format;
         }
@@ -434,7 +434,7 @@ foreach ($items as $child) {
         }
         if ($child['type'] == 'SLK') {
             if (empty($sofkey_list)) {
-                $sofkey_list = \FreePBX::Sccp_manager()->aminterface->sccp_list_keysets();
+                $sofkey_list = \FreePBX::Sccp_manager()-> srvinterface -> sccp_list_keysets();
             }
             $select_opt= $sofkey_list;
         }
@@ -455,8 +455,8 @@ foreach ($items as $child) {
 
         ?>
         <div class="element-container">
-           <div class="row"> <div class="form-group">
-
+           <div class="row"> <div class="form-group"> 
+ 
                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -488,7 +488,7 @@ foreach ($items as $child) {
 /*
  *    Input element Select SLS - System Language
  */
-
+    
     if ($child['type'] == 'SLS' || $child['type'] == 'SLT' || $child['type'] == 'SLA' || $child['type'] == 'SLZ') {
 //        $value = $child -> select;
         $res_n =  (string)$child ->name;
@@ -526,28 +526,28 @@ foreach ($items as $child) {
                 }
             }
         }
-
+        
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
-
+        
         if (!empty($fvalues[$res_n])) {
             if (!empty($fvalues[$res_n]['data'])) {
                 $child->value = $fvalues[$res_n]['data'];
             }
         }
-
+        
         if (empty($child->value)) {
             if (!empty($child->default)) {
                 $child->value = $child->default;
             }
         }
-
+        
         echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
-           <div class="row"> <div class="form-group">
-
+           <div class="row"> <div class="form-group"> 
+ 
                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -592,7 +592,7 @@ foreach ($items as $child) {
                 $child->help = $metainfo[$res_n]['Description'];
             }
         }
-
+        
         if (empty($child ->class)) {
             $child->class = 'form-control';
         }
@@ -600,8 +600,8 @@ foreach ($items as $child) {
 
         ?>
         <div class="element-container">
-           <div class="row"> <div class="form-group">
-
+           <div class="row"> <div class="form-group"> 
+ 
                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -626,7 +626,7 @@ foreach ($items as $child) {
                              echo '>' . (string)$value. '</option>';
                     }
                     ?> </select>
-
+                            
                     </div> </div>
             </div></div>
             <div class="row"><div class="col-md-12">
@@ -653,7 +653,7 @@ foreach ($items as $child) {
                 $child->help = $metainfo[$res_n]['Description'];
             }
         }
-
+        
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
@@ -697,8 +697,8 @@ foreach ($items as $child) {
 
         ?>
         <div class="element-container">
-           <div class="row"> <div class="form-group">
-
+           <div class="row"> <div class="form-group"> 
+ 
                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -724,7 +724,7 @@ foreach ($items as $child) {
                             $key = $fvalues[$res_n]['data'];
                         }
                     }
-
+                            
                     foreach ($select_opt as $data) {
                         echo '<option value="' . $data[$fld] . '"';
                         if ($key == $data[$fld]) {
@@ -772,7 +772,7 @@ foreach ($items as $child) {
             $res_value = array((string) $child->default);
 //            $res_value = explode('/', (string) $child->default);
         }
-
+        
         echo '<!-- Begin '.$res_id.' -->';
         ?>
         <table class="table table-striped" id="dp-table-<?php echo $res_id;?>">
@@ -786,7 +786,7 @@ foreach ($items as $child) {
 
             $res_vf = explode('/', $dat_v);
             $i2 = 0;
-
+                            
             foreach ($child->xpath('element') as $value) {
                 $fields_id = (string)strtolower($value['field']);
                 $res_n  = $res_id.'['.$i.']['.$fields_id.']';
@@ -794,7 +794,7 @@ foreach ($items as $child) {
 
                 $opt_at[$fields_id]['display_prefix']=(string)$value['display_prefix'];
                 $opt_at[$fields_id]['display_sufix']=(string)$value['display_sufix'];
-
+                                
                 if (empty($value->options->class)) {
                     $opt_at[$fields_id]['options']['class']='form-control';
                 }
@@ -806,7 +806,7 @@ foreach ($items as $child) {
                         $res_opt['addon'] .=' '.$optkey.'="'.$optval.'"';
                     }
                 }
-
+                                
                 echo '<td class="">';
                 $res_opt['inp_st'] = '<div class="input-group"> <span class="input-group-addon" id="basep_'.$res_n.'">'.$opt_at[$fields_id]['display_prefix'].'</span>';
                 $res_opt['inp_end'] = '<span class="input-group-addon" id="bases_'.$res_n.'">'.$opt_at[$fields_id]['display_sufix'].'</span></div>';
@@ -849,14 +849,14 @@ foreach ($items as $child) {
             if ($i > 0) {
                 echo '<input type="button" id="'.$res_id.'-btndel" data-id="'.($i).'" data-for="'.$res_id.'" class="table-js-del" value="-" />';
             }
-
+                            
             echo '</td></tr>';
             $i++;
         }
         echo '</table>';
         echo '<!-- END '.$res_id.' -->';
     }
-
+    
     if ($child['type'] == 'HLP') {
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
@@ -866,10 +866,10 @@ foreach ($items as $child) {
         echo '<!-- Begin '.$child->label.' -->';
 
         ?>
-
+            
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-info-circle"></i> <nbsp> <?php echo _($child->label);?>
+                <h3 class="panel-title"><i class="fa fa-info-circle"></i> <nbsp> <?php echo _($child->label);?> 
                 <a data-toggle="collapse" href="<?php echo '#'.$res_id;?>"><i class="fa fa-plus pull-right"></i></a></h3>
             </div>
             <div class="panel-body collapse" id="<?php echo $res_id;?>">
@@ -926,14 +926,14 @@ foreach ($items as $child) {
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+        </div><!-- /.modal -->        
         <?php
         echo '<!-- END '.$child->label.' -->';
     }
 /*
  *    Input element Select SLTZN - System Time Zone
  */
-
+    
     if ($child['type'] == 'SLTZN') {
 //        $value = $child -> select;
         $res_n =  (string)$child ->name;
@@ -952,29 +952,29 @@ foreach ($items as $child) {
         $time_zone_list = array_merge($time_zone_global, $time_zone_ru);
         $optgroup = '';
         sort($time_zone_list);
-
+        
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
-
+        
         if (!empty($fvalues[$res_n])) {
             if (!empty($fvalues[$res_n]['data'])) {
                 $child->value = $fvalues[$res_n]['data'];
             }
         }
-
+        
         if (empty($child->value)) {
             $child->value = \date_default_timezone_get();
 //            if (!empty($child->default)){
 //                $child->value = $child->default;
 //            }
         }
-
+        
         echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
-           <div class="row"> <div class="form-group">
-
+           <div class="row"> <div class="form-group"> 
+ 
                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -998,7 +998,7 @@ foreach ($items as $child) {
                     if ($optgroup !== '') {
                         echo '</optgroup>';
                     }
-
+                            
                     ?> </select>
                     <!-- </div> --> </div>
             </div></div>
@@ -1017,3 +1017,4 @@ if ($h_show==1) {
     echo '</div>';
 }
 ?>
+
