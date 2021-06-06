@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.2.0.1</version>
+	<version>14.2.0.2</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -18,6 +18,7 @@
 		 * Version 14.0.0.1 * - Alfa Release new DB structure Add User mobility
 		 * Version 14.1.0.1 * - Migrated to chan-sccp repo
 		 * Version 14.2.0.1 * - Retired old interface - min chan-sccp v433
+		 * Version 14.2.0.2 * - Fix module database definition
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>
