@@ -69,14 +69,9 @@ if ($chanSCCPWarning) {
     outn("<br>");
     outn("<font color='red'>Error: installed version of chan-sccp is not compatible. Please upgrade chan-sccp</font>");
 }
-if (!$sccp_db_ver) {
-    Setup_RealTime();
-    outn("<br>");
-    outn("Install Complete !");
-} else {
-    outn("<br>");
-    outn("Update Complete !");
-}
+Setup_RealTime();
+outn("<br>");
+outn("Install Complete !");
 outn("<br>");
 
 // Functions follow
@@ -771,78 +766,83 @@ function RenameConfig()
 
 function Setup_RealTime()
 {
+    outn("<li>" . _("Checking realtime configuration ...") . "</li>");
     global $amp_conf;
-    outn("<li>" . _("Pre config RealTime") . "</li>");
     $cnf_int = \FreePBX::Config();
     $cnf_wr = \FreePBX::WriteConfig();
     $cnf_read = \FreePBX::LoadConfig();
-    $backup_ext = array('_custom.conf', '_additional.conf','.conf');
 
-    $def_config = array('sccpdevice' => 'mysql,asterisk,sccpdeviceconfig', 'sccpline' => ' mysql,asterisk,sccpline');
-    $def_bd_config = array('dbhost' => $amp_conf['AMPDBHOST'], 'dbname' => $amp_conf['AMPDBNAME'],
-        'dbuser' => $amp_conf['AMPDBUSER'], 'dbpass' => $amp_conf['AMPDBPASS'],
-        'dbport' => '3306', 'dbsock' => '/var/lib/mysql/mysql.sock','dbcharset'=>'utf8');
-    $def_bd_sec = 'asterisk';
-
+    // Define required default settings based on FreePBX and system settings
     $dir = $cnf_int->get('ASTETCDIR');
-    $res_conf_sql = ini_get('pdo_mysql.default_socket');
-    $res_conf = '';
+    $sys_mysql_socket = ini_get('pdo_mysql.default_socket');
+    $def_bd_config = array('dbhost' => $amp_conf['AMPDBHOST'],
+                            'dbname' => $amp_conf['AMPDBNAME'],
+                            'dbuser' => $amp_conf['AMPDBUSER'],
+                            'dbpass' => $amp_conf['AMPDBPASS'],
+                            'dbport' => '3306',
+                            'dbsock' => '/var/lib/mysql/mysql.sock',
+                            'dbcharset'=>'utf8'
+                          );
+    if (!empty($sys_mysql_socket)) {
+        if (file_exists($sys_mysql_socket)) {
+            $def_bd_config['dbsock'] = $sys_mysql_socket;
+        }
+    }
+    $def_bd_section = $amp_conf['AMPDBNAME'];
+    $def_ext_config = array('sccpdevice' => "mysql,{$def_bd_section},sccpdeviceconfig",'sccpline' => "mysql,{$def_bd_section},sccpline");
+
+    // Check extconfig file for correct connector values
     $ext_conf = '';
     $ext_conf_file = 'extconfig.conf';
+    $backup_ext = array('_custom.conf', '_additional.conf','.conf');
     foreach ($backup_ext as $value) {
         if (file_exists($dir . '/extconfig' . $value)) {
+            // Last possibility is normal file extconfig.conf
             $ext_conf_file =  'extconfig' . $value;
             $ext_conf = $cnf_read->getConfig($ext_conf_file);
             break;
         }
     }
-    if (!empty($res_conf_sql)) {
-        if (file_exists($res_conf_sql)) {
-            $def_bd_config['dbsock'] = $res_conf_sql;
-        }
-    }
 
     if (!empty($ext_conf)) {
-        $tmp = array();
-        if (!empty($ext_conf['settings']['sccpdevice'])) {
-            $tmp = explode(',', $ext_conf['settings']['sccpdevice']);
-            $def_config['sccpdevice'] = $ext_conf['settings']['sccpdevice'];
+        $currentExtSettings = array();
+        $writeExtSettings = $ext_conf;
+        if (empty($ext_conf['settings']['sccpdevice']) || ($ext_conf['settings']['sccpdevice'] !== $def_ext_config['sccpdevice'])) {
+            // Have error in sccpdevice so need to correct
+            $writeExtSettings['settings']['sccpdevice'] = $def_ext_config['sccpdevice'];
         }
-        if (!empty($ext_conf['settings']['sccpline'])) {
-            if (empty($tmp)) {
-                $tmp = explode(',', $ext_conf['settings']['sccpline']);
-                $tmp[2] = 'sccpdevice';
-                $def_config['sccpdevice'] = implode(',', $tmp);
-            }
-            $def_config['sccpline'] = $ext_conf['settings']['sccpline'];
+        if (empty($ext_conf['settings']['sccpline']) || ($ext_conf['settings']['sccpline'] !== $def_ext_config['sccpline'])) {
+            // Have error in sccpline so need to correct
+            $writeExtSettings['settings']['sccpline'] = $def_ext_config['sccpline'];
         }
-        if (!empty($tmp)) {
-            $def_bd_sec = $tmp[1];
+        if (!empty($writeExtSettings)) {
+            outn("<li>" . _("Updating extconfig file ...") . "</li>");
+            $cnf_wr->writeConfig($ext_conf_file, $writeExtSettings);
         }
     }
-    $ext_conf['settings']['sccpdevice'] = $def_config['sccpdevice'];
-    $ext_conf['settings']['sccpline'] = $def_config['sccpline'];
 
+    // Check database settings
+    $res_conf = '';
     if (file_exists($dir . '/res_mysql.conf')) {
         $res_conf = $cnf_read->getConfig('res_mysql.conf');
-        if (empty($res_conf[$def_bd_sec])) {
-            $res_conf[$def_bd_sec] = $def_bd_config;
+        if (empty($res_conf[$def_bd_section])) {
+            $res_conf[$def_bd_section] = $def_bd_config;
+            $cnf_wr->writeConfig('res_mysql.conf', $res_conf);
+            outn("<li>" . _("Updating res_mysql.conf file ...") . "</li>");
         }
-        $cnf_wr->writeConfig('res_mysql.conf', $res_conf, false);
     }
     if (file_exists($dir . '/res_config_mysql.conf')) {
         $res_conf = $cnf_read->getConfig('res_config_mysql.conf');
-        if (empty($res_conf[$def_bd_sec])) {
-            $res_conf[$def_bd_sec] = $def_bd_config;
+        if (empty($res_conf[$def_bd_section])) {
+            $res_conf[$def_bd_section] = $def_bd_config;
+            $cnf_wr->writeConfig('res_config_mysql.conf', $res_conf);
+            outn("<li>" . _("Updating res_config_mysql.conf file ...") . "</li>");
         }
-        $cnf_wr->writeConfig('res_config_mysql.conf', $res_conf, false);
     }
     if (empty($res_conf)) {
-        $res_conf[$def_bd_sec] = $def_bd_config;
-//        $res_conf['general']['dbsock'] = $def_bd_config['dbsock'];
+        $res_conf[$def_bd_section] = $def_bd_config;
         $cnf_wr->writeConfig('res_config_mysql.conf', $res_conf, false);
     }
-    $cnf_wr->writeConfig($ext_conf_file, $ext_conf, false);
 }
 
 ?>
