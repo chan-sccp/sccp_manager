@@ -113,7 +113,7 @@ function Get_DB_config($sccp_compatible)
             'useRedialMenu' => array('create' => "VARCHAR(5) NULL DEFAULT 'no' AFTER `_dialrules`"),
             'dtmfmode' => array('drop' => "yes"),
             'force_dtmfmode' => array('create' => "ENUM('auto','rfc2833','skinny') NOT NULL default 'auto'",
-                          'modify' => "ENUM('auto','rfc2833','skinny')", 'def_modify'=> 'auto'),
+                          'modify' => "ENUM('auto','rfc2833','skinny')"),
             'deny' => array('create' => 'VARCHAR(100) NULL DEFAULT NULL', 'modify' => "VARCHAR(100)"),
             'permit' => array('create' => 'VARCHAR(100) NULL DEFAULT NULL', 'modify' => "VARCHAR(100)"),
             'backgroundImage' => array('create' => 'VARCHAR(255) NULL DEFAULT NULL', 'modify' => "VARCHAR(255)"),
@@ -126,8 +126,7 @@ function Get_DB_config($sccp_compatible)
             'directrtp' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
             'dndFeature' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
             'earlyrtp' => array('create' => "ENUM('immediate','offHook','dialing','ringout','progress','none') NOT NULL default 'none'",
-                                'modify' => "ENUM('immediate','offHook','dialing','ringout','progress','none')",
-                                'def_modify' => 'none'),
+                                'modify' => "ENUM('immediate','offHook','dialing','ringout','progress','none')"),
             'monitor' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
             'audio_tos' => array('def_modify' => "0xB8"),
             'audio_cos' => array('def_modify' => "6"),
@@ -140,8 +139,8 @@ function Get_DB_config($sccp_compatible)
                               'modify' => "enum('on','off','wink','flash','blink')"),
             'mwioncall' => array('create' => "enum('on','off') NOT NULL default 'on'",
                                 'modify' => "enum('on','off')"),
-            'private' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"), // Что-то лишенне
-            'privacy' => array('create' => "enum('full','on','off') NOT NULL default 'full'", 'modify' => "enum('full','on','off')"), // Что-то лишенне
+            'private' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+            'privacy' => array('create' => "enum('full','on','off') NOT NULL default 'full'", 'modify' => "enum('full','on','off')"),
             'nat' => array('create' => "enum('on','off','auto') NOT NULL default 'off'", 'modify' => "enum('on','off','auto')"),
             'conf_allow' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
             'conf_play_part_announce' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
@@ -320,23 +319,28 @@ function InstallDB_updateSchema($db_config)
         }
         foreach ($db_result as $tabl_data) {
             $fld_id = $tabl_data[0];
+            $db_config[$tabl_name][$fld_id]['fieldExists'] = FALSE;
             // Filter commands to avoid applying unnecessary
             if (!empty($tab_modif[$fld_id])) {
                 // Potentially have something to modify in schema
-                $db_config[$tabl_name][$fld_id]['fieldExists'] = 'yes';
+                $db_config[$tabl_name][$fld_id]['fieldExists'] = TRUE;
+                if (!empty($tab_modif[$fld_id]['modify'])) {
+                    if (strtoupper($tab_modif[$fld_id]['modify']) == strtoupper($tabl_data[1])) {
+                        unset($db_config[$tabl_name][$fld_id]['modify']);
+                    }
+                    // Modifying field so do not then need to modify defaults as this should do that
+                    if (!empty($tab_modif[$fld_id]['def_modify'])) {
+                            unset($db_config[$tabl_name][$fld_id]['def_modify']);
+                    }
+                }
                 if (!empty($tab_modif[$fld_id]['def_modify'])) {
                     if (strtoupper($tab_modif[$fld_id]['def_modify']) == strtoupper($tabl_data[4])) {
                         unset($db_config[$tabl_name][$fld_id]['def_modify']);
                     }
                 }
-                if (!empty($tab_modif[$fld_id]['modify'])) {
-                    if (strtoupper($tab_modif[$fld_id]['modify']) == strtoupper($tabl_data[1])) {
-                        unset($db_config[$tabl_name][$fld_id]['modify']);
-                    }
-                }
                 if (!empty($tab_modif[$fld_id]['rename'])) {
                     $fld_id_source = $tab_modif[$fld_id]['rename'];
-                    $db_config[$tabl_name][$fld_id_source]['fieldExists'] = 'yes';
+                    $db_config[$tabl_name][$fld_id_source]['fieldExists'] = TRUE;
                     if (!empty($db_config[$tabl_name][$fld_id_source]['create'])) {
                         $db_config[$tabl_name][$fld_id]['create'] = $db_config[$tabl_name][$fld_id_source]['create'];
                     } else {
@@ -351,7 +355,7 @@ function InstallDB_updateSchema($db_config)
         $sql_update = '';
 
         foreach ($tab_modif as $row_fld => $row_data) {
-            if (empty($row_data['fieldExists'])) {
+            if (!$row_data['fieldExists']) {
                 if (!empty($row_data['create'])) {
                     $sql_create .= "ADD COLUMN {$row_fld} {$row_data['create']}, ";
                     $count_modify ++;
@@ -361,25 +365,22 @@ function InstallDB_updateSchema($db_config)
                     $sql_modify .= "CHANGE COLUMN  {$row_fld}  {$row_data['rename']} {$row_data['create']}, ";
                     $count_modify ++;
                 }
+                $row_data['fieldModified'] = FALSE;
                 if (!empty($row_data['modify'])) {
-                    if (empty($row_data['mod_stat'])) {
-                        if (!empty($row_data['create'])) {
-                            $sql_modify .= "MODIFY COLUMN {$row_fld}  {$row_data['create']}, ";
-                        } else {
-                            $sql_modify .= "MODIFY COLUMN {$row_fld} {$row_data['modify']} DEFAULT {$row_data['def_modify']}, ";
-                        }
-                        if (strpos($row_data['modify'], 'enum') !== false) {
-                            $sql_update .= "UPDATE " . $tabl_name . " set `" . $row_fld . "`=case when lower(`" . $row_fld . "`) in ('yes','true','1') then 'on' when lower(`" . $row_fld . "`) in ('no', 'false', '0') then 'off' else `" . $row_fld . "` end; ";
-                        }
-                        $row_data['def_mod_stat'] = 'no';
-                        $count_modify ++;
+                    if (!empty($row_data['create'])) {
+                        // Use values in create to set defaults
+                        $sql_modify .= "MODIFY COLUMN {$row_fld}  {$row_data['create']}, ";
+                    } else {
+                        $sql_modify .= "MODIFY COLUMN {$row_fld} {$row_data['modify']} DEFAULT {$row_data['def_modify']}, ";
                     }
+                    if (strpos($row_data['modify'], 'enum') !== false) {
+                        $sql_update .= "UPDATE " . $tabl_name . " set `" . $row_fld . "`=case when lower(`" . $row_fld . "`) in ('yes','true','1') then 'on' when lower(`" . $row_fld . "`) in ('no', 'false', '0') then 'off' else `" . $row_fld . "` end; ";
+                    }
+                    $count_modify ++;
                 }
                 if (!empty($row_data['def_modify'])) {
-                    if (empty($row_data['def_mod_stat'])) {
-                        $sql_modify .= "ALTER COLUMN {$row_fld}  SET DEFAULT  {$row_data['def_modify']}, ";
-                        $count_modify ++;
-                    }
+                    $sql_modify .= "MODIFY COLUMN {$row_fld}  SET DEFAULT  {$row_data['def_modify']}, ";
+                    $count_modify ++;
                 }
                 if (!empty($row_data['drop'])) {
                     $sql_create .= "DROP COLUMN {$row_fld}, ";
