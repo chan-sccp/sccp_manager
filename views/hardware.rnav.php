@@ -1,18 +1,24 @@
-<div id="toolbar-sccpbnav">
-<a href="config.php?display=sccp_phone#sccpdevice" class = "btn btn-default"><i class="fa fa-list"></i>&nbsp;<?php echo _("List Device")?></a>
-<a href="config.php?display=sccp_phone&amp;tech_hardware=cisco" class = "btn btn-default"><i class="fa fa-plus"></i>&nbsp;<?php echo _("Add Device")?></a>
+<div id="toolbar-sccp-rnav">
+    <a class="btn btn-default" href="config.php?display=sccp_phone#sccpdevice">
+        <i class="fa fa-list"></i>&nbsp;
+        <?php echo _("List Device")?>
+    </a>
+    <a class="btn btn-default" href="config.php?display=sccp_phone&amp;tech_hardware=cisco">
+        <i class="fa fa-plus">&nbsp;</i>
+        <?php echo _("Add Device")?>
+    </a>
 </div>
 <table id="sccpnavgrid"
-        data-search="true"
-        data-toolbar="#toolbar-sccpnav"
-        data-url="ajax.php?module=sccp_manager&amp;command=getPhoneGrid&amp;type=sccp"
-        data-cache="false"
-        data-toggle="table" 
-        class="table">
+    data-search="true"
+    data-toolbar="#toolbar-sccp-rnav"
+    data-url="ajax.php?module=sccp_manager&command=getPhoneGrid&type=sccp"
+    data-cache="false"
+    data-toggle="table"
+    class="table">
     <thead>
-            <tr>
-                            <th data-sortable="true" data-field="mac"><?php echo _('SEP ID') ?></th>
-                            <th data-sortable="true" data-field="description"><?php echo _('Descriptions') ?></th>
+        <tr>
+              <th data-sortable="true" data-field="mac"><?php echo _('SEP ID')?></th>
+              <th data-sortable="true" data-field="description"><?php echo _('Descriptions')?></th>
         </tr>
     </thead>
 </table>

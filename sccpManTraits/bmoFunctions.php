@@ -34,7 +34,6 @@ trait bmoFunctions {
     }
 
     public function getActionBar($request) {
-      dbug('request',$request);
         $buttons = array();
         switch ($request['display']) {
             case 'sccp_adv':
@@ -110,7 +109,7 @@ trait bmoFunctions {
 
     public function getRightNav($request) {
         if (isset($request['tech_hardware']) && ($request['tech_hardware'] == 'cisco')) {
-            return load_view(__DIR__ . "/views/hardware.rnav.php", array('request' => $request));
+            return load_view("/var/www/html/admin/modules/sccp_manager/views/hardware.rnav.php", array('request' => $request));
         }
     }
 
