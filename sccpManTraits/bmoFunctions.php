@@ -34,6 +34,7 @@ trait bmoFunctions {
     }
 
     public function getActionBar($request) {
+      dbug('request',$request);
         $buttons = array();
         switch ($request['display']) {
             case 'sccp_adv':
@@ -92,13 +93,13 @@ trait bmoFunctions {
                     'submit' => array(
                         'name' => 'ajaxsubmit',
                         'id' => 'ajaxsubmit',
-                        'value' => _("Submit")
+                        'value' => _("Save")
                     ),
                     'reset' => array(
                         'name' => 'reset',
                         'id' => 'ajaxcancel',
                         'data-reload' => 'reload',
-                        'value' => _("Reset")
+                        'value' => _("Cancel")
                     ),
                 );
 

@@ -35,7 +35,7 @@
                     <thead>
                         <tr>
                             <th data-checkbox="true"></th>
-                            <th data-sortable="true" data-field="mac"><?php echo _('Device SEP ID') ?></th>                            
+                            <th data-sortable="true" data-field="mac"><?php echo _('Device SEP ID') ?></th>
                             <th data-sortable="true" data-field="description"><?php echo _('Device  Descriptions') ?></th>
                             <th data-sortable="true" data-formatter="DispayTypeFormatter" data-field="type"><?php echo _('Device type') ?></th>
                             <th data-sortable="true" data-field="button" data-formatter="LineFormatter"><?php echo _('Line') ?></th>
@@ -62,7 +62,7 @@
             }
         }
         return  exp_model;
-        
+
     }
     function DispayDeviceActionsKeyFormatter(value, row, index) {
         var exp_model = '';
@@ -70,9 +70,9 @@
             exp_model += '<a href="?display=sccp_phone&tech_hardware=cisco&new_id=' + row['name'] + '&type='+ row['type'];
             if (row['addon'] !== null ) {
                 exp_model += '&addon='+ row['addon'];
-            }            
+            }
             exp_model += '"><i class="fa fa-pencil"></i></a> &nbsp; &nbsp;\n';
-            
+
         } else {
             exp_model += '<a href="?display=sccp_phone&tech_hardware=cisco&id=' + row['name'] + '"><i class="fa fa-pencil"></i></a> &nbsp; &nbsp;\n';
             exp_model += '</a> &nbsp;<a class="btn-item-delete" data-for="hardware" data-id="' + row['name'] + '"><i class="fa fa-trash"></i></a>';
@@ -84,7 +84,7 @@
         if (value === null)  {
             return  '-- EMPTY --';
         }
-        var data = value.split(";"); 
+        var data = value.split(";");
         result = '';
         for (var i = 0; i < data.length; i++) {
           var val = data[i].split(',');
@@ -94,5 +94,5 @@
     }
         return  result;
     }
-    
+
 </script>
