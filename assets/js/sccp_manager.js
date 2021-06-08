@@ -25,37 +25,7 @@ $(document).ready(function () {
         }
     });
 
-    /*
-     $('#ajaxbackup').on('click', function (e) {
-     var vdata = '';
-     var snd_command = 'backupsettings';
-     $('.fpbx-submit').each(function () {
-     vdata = vdata + $(this).serialize() + '&';
-     });
-
-     $.ajax({
-     type: 'POST',
-     url: 'ajax.php?module=sccp_manager&command=' + snd_command,
-     data: vdata,
-     success: function (data) {
-     if (data.status === true) {
-     if (data.message) {
-     alert(data.message);
-     } else {
-     alert('Data Save');
-     }
-     } else {
-     if (Array.isArray(data.message)) {
-     data.message.forEach(function (entry) {
-     fpbxToast(entry, 'error', 'error');
-     });
-     }
-     }
-     }
-     });
-
-     });
-     */
+    // ajaxsubmit2 is "Save and continue" - saves form data and stays on form
     $('#ajaxsubmit2').on('click', function (e) {
         var vdata = '';
         var snd_command = 'savesettings';
@@ -93,7 +63,7 @@ $(document).ready(function () {
             }
         });
     });
-
+    // ajaxsubmit is save and close form
     $('#ajaxsubmit').on('click', function (e) {
         var vdata = '';
         var snd_command = 'savesettings';
@@ -136,7 +106,6 @@ $(document).ready(function () {
                     if (data.search != null) {
                         location.search = data.search;
                     }
-//                    if (data.reload === true ) {
                     if (data.reload === true && old_style ===true ) {
                         location.reload();
                     }
