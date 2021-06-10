@@ -6,15 +6,13 @@ trait bmoFunctions {
 
     //Need to reload freePBX for modifications below to work
 
-    //need to catch extensions
+    //want to catch extensions
     public static function myConfigPageInits() {
-        dbug('have config page inits');
         return array("extensions");
     }
 
     public function doConfigPageInit($page) {
         if ($page == "extensions") {
-            dbug('have extensions in doConfigPageInit');
         }
         $this->doGeneralPost();
     }
@@ -25,19 +23,13 @@ trait bmoFunctions {
     }
 
     public function doGuiHook(&$cc) {
-        dbug('$_REQUEST', $_REQUEST);
-        //dbug('CC', $cc);
         if ($_REQUEST['display'] == "extensions" ) {
       			if (isset($_REQUEST['tech_hardware']))  {
-                dbug('Have caught hook in doGuiHook');
-                $this->getActionBar($_REQUEST);
+                //this is the add extensions form
             }
-        //$cc->addguielem("_top", new \gui_pageheading('', 'I added a header', false));
         }
     }
-
-
-
+    
     /* unused but FPBX API requires it */
 
     public function install() {
@@ -64,6 +56,7 @@ trait bmoFunctions {
 
     public function getActionBar($request) {
         $buttons = array();
+        dbug('Request in BMO is', $request);
         switch ($request['display']) {
             case 'sccp_adv':
                 if (empty($request['tech_hardware'])) {
@@ -132,6 +125,7 @@ trait bmoFunctions {
                 break;
                 case 'extensions':
                     // only called from configpage inits
+                    dbug('in case extensions');
                     $buttons = array(
                     'submit' => array(
                         'name' => 'ajaxsubmit',

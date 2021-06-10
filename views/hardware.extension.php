@@ -39,12 +39,12 @@ if (!empty($this->sccpvalues['system_rouminguser'])) {
     function DispayPhoneActionsKeyFormatter(value, row, index) {
         var exp_dev = '';
         var rmn_dev = '<?php echo $roming_enable ?>';
-        exp_dev += "<a href="config.php?display=extensions&extdisplay=' + row['name'] + '"><i class="fa fa-pencil"></i></a> &nbsp;";
-        exp_dev += "<a class="clickable delete" data-id="' + row['name'] + '"><i class="fa fa-trash"></i></a>";
+        exp_dev += '<a href="config.php?display=extensions&amp;extdisplay=' + row['name'] + '"><i class="fa fa-pencil"></i></a> &nbsp;';
+        exp_dev += '<a class="clickable delete" data-id="' + row['name'] + '"><i class="fa fa-trash"></i></a>';
         if (rmn_dev == 'yes') {
-            exp_dev += "<a href="config.php?display=sccp_phone&tech_hardware=r_user&ru_id=' + row['name'] + '"><i class="fa fa-bicycle"></i></a> &nbsp;";
+            exp_dev += '<a href="config.php?display=sccp_phone&amp;tech_hardware=r_user&amp;ru_id=' + row['name'] + '"><i class="fa fa-bicycle"></i></a> &nbsp;';
         }
         return  exp_dev;
-        return  "<a href="config.php?display=extensions&extdisplay=' + row['name'] + '"><i class="fa fa-pencil"></i></a> &nbsp;<a class="clickable delete" data-id="' + row['name'] + '"><i class="fa fa-trash"></i></a>";
+        return  '<a href="config.php?display=extensions&amp;extdisplay=' + row['name'] + '"><i class="fa fa-pencil"></i></a> &nbsp;<a class="clickable delete" data-id="' + row['name'] + '"><i class="fa fa-trash"></i></a>';
     }
 </script>

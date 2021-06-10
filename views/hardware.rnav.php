@@ -3,7 +3,7 @@
         <i class="fa fa-list"></i>&nbsp;
         <?php echo _("List Device")?>
     </a>
-    <a class="btn btn-default" href="config.php?display=sccp_phone&amp;tech_hardware=cisco">
+    <a class="btn btn-default" href="config.php?display=sccp_phone&tech_hardware=cisco">
         <i class="fa fa-plus">&nbsp;</i>
         <?php echo _("Add Device")?>
     </a>
