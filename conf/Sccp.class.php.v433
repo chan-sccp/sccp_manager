@@ -88,7 +88,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
         $sth = $this->database->prepare($sql);
         $sth->execute();
-        redirect('http://192.168.50.254/admin/config.php?display=sccp_phone', false);
+        redirect("http://{$_SERVER['SERVER_ADDR']}/admin/config.php?display=sccp_phone", false);
         return true;
     }
 
