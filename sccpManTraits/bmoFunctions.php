@@ -3,11 +3,40 @@
 namespace FreePBX\modules\Sccp_manager\sccpManTraits;
 
 trait bmoFunctions {
-    /* unused but FPBX API requires it */
+
+    //Need to reload freePBX for modifications below to work
+
+    //need to catch extensions
+    public static function myConfigPageInits() {
+        dbug('have config page inits');
+        return array("extensions");
+    }
 
     public function doConfigPageInit($page) {
+        if ($page == "extensions") {
+            dbug('have extensions in doConfigPageInit');
+        }
         $this->doGeneralPost();
     }
+
+    // Try to change extensions which is part of core
+    public static function myGuiHooks() {
+        return array('core');
+    }
+
+    public function doGuiHook(&$cc) {
+        dbug('$_REQUEST', $_REQUEST);
+        //dbug('CC', $cc);
+        if ($_REQUEST['display'] == "extensions" ) {
+      			if (isset($_REQUEST['tech_hardware']))  {
+                dbug('Have caught hook in doGuiHook');
+                $this->getActionBar($_REQUEST);
+            }
+        //$cc->addguielem("_top", new \gui_pageheading('', 'I added a header', false));
+        }
+    }
+
+
 
     /* unused but FPBX API requires it */
 
@@ -85,7 +114,6 @@ trait bmoFunctions {
                         'value' => _("Cancel")
                     ),
                 );
-
                 break;
             case 'sccpsettings':
                 $buttons = array(
@@ -101,7 +129,30 @@ trait bmoFunctions {
                         'value' => _("Cancel")
                     ),
                 );
-
+                break;
+                case 'extensions':
+                    // only called from configpage inits
+                    $buttons = array(
+                    'submit' => array(
+                        'name' => 'ajaxsubmit',
+                        'id' => 'ajaxsubmit',
+                        'data-search' => '?display=sccp_custom',
+                        'value' => _("Save")
+                    ),
+                    'Save' => array(
+                        'name' => 'ajaxsubmit2',
+                        'id' => 'ajaxsubmit2',
+                        'stayonpage' => 'yes',
+                        'value' => _("Save + Continue")
+                    ),
+                    'cancel' => array(
+                        'name' => 'cancel',
+                        'id' => 'ajaxcancel',
+                        'data-search' => '?display=sccp_custom',
+                        'data-hash' => 'sccpdevice',
+                        'value' => _("Cancel")
+                    ),
+                    );
                 break;
         }
         return $buttons;
