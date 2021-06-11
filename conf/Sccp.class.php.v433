@@ -31,21 +31,9 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         );
     }
 
-/*        public function addDevice1($id, $settings) {
-                $sql = 'INSERT INTO sccp (id, keyword, data, flags) values (?,?,?,?)';
-                $sth = $this->database->prepare($sql);
-                $settings = is_array($settings)?$settings:array();
-                foreach($settings as $key => $setting) {
-                        $sth->execute(array($id,$key,$setting['value'],$setting['flag']));
-                }
-                return true;
-        }
-*/
     public function addDevice($id, $settings) {
+        global $currentcomponent;
         $add_fld = array ("name"=>'label',"outboundcid"=>'cid_num',"langcode"=>'language',"extdisplay"=>'description');
-        //                print_r($_REQUEST);
-        //                echo '<br><br>';
-        //                die(print_r($settings));
         $settings['cid_num']['value'] = '';
         $settings['cid_name']['value'] = $label;
         $settings['mailbox']['value']= '';
@@ -84,7 +72,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         }
 
-        //                die(print_r($settings));
         $tech = Array();
         $sql = "DESCRIBE sccpline";
         foreach ($this->database->query($sql) as $row) {
@@ -102,6 +89,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
         $sth = $this->database->prepare($sql);
         $sth->execute();
+        // Redirect to SCCP Phone page. This was last function in add so
+        // should be safe. Prefer to add in Hooks, but is not followed
+        // even if set for $currentcomponent
+        redirect("config.php?display=sccp_phone", false);
         return true;
     }
 
