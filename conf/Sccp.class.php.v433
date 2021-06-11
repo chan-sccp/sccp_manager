@@ -32,6 +32,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function addDevice($id, $settings) {
+        global $currentcomponent;
         $add_fld = array ("name"=>'label',"outboundcid"=>'cid_num',"langcode"=>'language',"extdisplay"=>'description');
         $settings['cid_num']['value'] = '';
         $settings['cid_name']['value'] = $label;
@@ -88,7 +89,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
         $sth = $this->database->prepare($sql);
         $sth->execute();
-        redirect("http://{$_SERVER['SERVER_ADDR']}/admin/config.php?display=sccp_phone", false);
+        // Redirect to SCCP Phone page. This was last function in add so
+        // should be safe. Prefer to add in Hooks, but is not followed
+        // even if set for $currentcomponent
+        redirect("config.php?display=sccp_phone", false);
         return true;
     }
 

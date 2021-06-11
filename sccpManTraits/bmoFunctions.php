@@ -24,12 +24,19 @@ trait bmoFunctions {
 
     public function doGuiHook(&$cc) {
         if ($_REQUEST['display'] == "extensions" ) {
-      			if (isset($_REQUEST['tech_hardware']))  {
-                //this is the add extensions form
+      			if ($_REQUEST['tech_hardware'] == 'sccp_custom')  {
+                /*
+                this is the add extensions form
+                On submit returns to extensions page. Users prefer that it returns
+                To Sccp Phone.
+                Below adds redirect URL, but it is not followed
+                $cc->setRedirectURL("config.php?display=sccp_phone");
+                so force redirect at end of addDevice in SccpClass
+                */  
             }
         }
     }
-    
+
     /* unused but FPBX API requires it */
 
     public function install() {
@@ -56,7 +63,6 @@ trait bmoFunctions {
 
     public function getActionBar($request) {
         $buttons = array();
-        dbug('Request in BMO is', $request);
         switch ($request['display']) {
             case 'sccp_adv':
                 if (empty($request['tech_hardware'])) {
@@ -123,38 +129,13 @@ trait bmoFunctions {
                     ),
                 );
                 break;
-                case 'extensions':
-                    // only called from configpage inits
-                    dbug('in case extensions');
-                    $buttons = array(
-                    'submit' => array(
-                        'name' => 'ajaxsubmit',
-                        'id' => 'ajaxsubmit',
-                        'data-search' => '?display=sccp_custom',
-                        'value' => _("Save")
-                    ),
-                    'Save' => array(
-                        'name' => 'ajaxsubmit2',
-                        'id' => 'ajaxsubmit2',
-                        'stayonpage' => 'yes',
-                        'value' => _("Save + Continue")
-                    ),
-                    'cancel' => array(
-                        'name' => 'cancel',
-                        'id' => 'ajaxcancel',
-                        'data-search' => '?display=sccp_custom',
-                        'data-hash' => 'sccpdevice',
-                        'value' => _("Cancel")
-                    ),
-                    );
-                break;
         }
         return $buttons;
     }
 
     public function getRightNav($request) {
         if (isset($request['tech_hardware']) && ($request['tech_hardware'] == 'cisco')) {
-            return load_view("/var/www/html/admin/modules/sccp_manager/views/hardware.rnav.php", array('request' => $request));
+            return load_view($_SERVER['DOCUMENT_ROOT'] .'/admin/modules/sccp_manager/views/hardware.rnav.php', array('request' => $request));
         }
     }
 
