@@ -74,7 +74,9 @@ Stable
 ```
 https://github.com/chan-sccp/sccp_manager/archive/refs/tags/Legacy-v2.tar.gz
 ```
-Develop. _This module can be updated through module admin as modifications are made, but may still have issues_
+Develop. 
+_This version can be updated through module admin as modifications are made (pending fix by FreePbx)
+_This is development software and so may have issues_
 ```
 https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
 ```
