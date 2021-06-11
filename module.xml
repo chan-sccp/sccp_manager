@@ -30,7 +30,7 @@
 	<md5sum></md5sum>
 	<database>
 		<table name="sccpdevice">
-			<field name="name" type="string" length="15" default="" primarykey="true"/>
+			<field name="name" type="string" length="15" primarykey="true"/>
 			<field name="type" type="string" length="15" notnull="false"/>
 			<field name="addon" type="string" length="45" notnull="false"/>
 			<field name="_description" type="string" length="45" notnull="false"/>
@@ -115,14 +115,14 @@
 			<field name="dnd" type="string" default="reject" notnull="false"/>
 			<field name="videomode" type="string" default="auto" notnull="false"/>
 			<field name="setvar" type="string" length="50" notnull="false"/>
-			<field name="name" type="string" length="40" default="" primarykey="true"/>
+			<field name="name" type="string" length="40" primarykey="true"/>
 			<field name="phonecodepage" type="string" length="50" notnull="false"/>
 			<key name="id" type="unique">
 				<column name="id"/>
 			</key>
 	 	</table>
 		<table name="sccpbuttonconfig">
-			 <field name="ref" type="string" length="15" default="" primarykey="true"/>
+			 <field name="ref" type="string" length="15" primarykey="true"/>
 			 <field name="reftype" type="string" length="15" default="sccpdevice" primarykey="true"/>
 			 <field name="instance" type="boolean" default="0" primarykey="true"/>
 			 <field name="buttontype" type="string" default="line" primarykey="true"/>
@@ -134,11 +134,11 @@
 			 </key>
 		 </table>
 		 <table name="sccpdevmodel">
-			 <field name="model" type="string" length="20" default="" primarykey="true"/>
-			 <field name="vendor" type="string" length="40" default="" notnull="false"/>
+			 <field name="model" type="string" length="20" primarykey="true"/>
+			 <field name="vendor" type="string" length="40" notnull="false"/>
 			 <field name="dns" type="integer" default="1" notnull="false"/>
 			 <field name="buttons" type="integer" default="0" notnull="false"/>
-			 <field name="loadimage" type="string" length="40" default="" notnull="false"/>
+			 <field name="loadimage" type="string" length="40" notnull="false"/>
 			 <field name="loadinformationid" type="string" length="30" notnull="false"/>
 			 <field name="enabled" type="integer" default="0" notnull="false"/>
 			 <field name="nametemplate" type="string" length="50" notnull="false"/>
