@@ -122,7 +122,7 @@
 			</key>
 	 	</table>
 		<table name="sccpbuttonconfig">
-			 <field name="ref" type="string" length="15" primarykey="true"/>
+			 <field name="ref" type="string" length="15" default="" primarykey="true"/>
 			 <field name="reftype" type="string" length="15" default="sccpdevice" primarykey="true"/>
 			 <field name="instance" type="boolean" default="0" primarykey="true"/>
 			 <field name="buttontype" type="string" default="line" primarykey="true"/>
