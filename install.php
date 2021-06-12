@@ -826,7 +826,7 @@ function Setup_RealTime()
         }
     } else {
         // Either did not find file or file did not contain any config, so create and fill
-        outn("<li>" . _("Creating extconfig file ...  ") . . $ext_conf_file . "</li>");
+        outn("<li>" . _("Creating extconfig file ...  ") . $ext_conf_file . "</li>");
         $writeExtSettings['settings']['sccpdevice'] = $def_ext_config['sccpdevice'];
         $writeExtSettings['settings']['sccpline'] = $def_ext_config['sccpline'];
         $cnf_wr->writeConfig($ext_conf_file, $writeExtSettings);
