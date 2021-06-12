@@ -798,14 +798,14 @@ function Setup_RealTime()
     foreach ($backup_ext as $value) {
         if (file_exists($dir . '/extconfig' . $value)) {
             // Last possibility is normal file extconfig.conf
-            $ext_conf_file = $dir . 'extconfig' . $value;
+            $ext_conf_file = 'extconfig' . $value;
             $ext_conf = $cnf_read->getConfig($ext_conf_file);
             break;
         }
     }
     if (empty($ext_conf_file)) {
         // Have not found a file, so will need to create. $ext_conf must be empty
-        $ext_conf_file = $dir . '/extconfig.conf';
+        $ext_conf_file = 'extconfig.conf';
     }
 
     if (!empty($ext_conf)) {
