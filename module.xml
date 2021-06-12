@@ -125,7 +125,7 @@
 			 <field name="ref" type="string" length="15" default="" primarykey="true"/>
 			 <field name="reftype" type="string" length="15" default="sccpdevice" primarykey="true"/>
 			 <field name="instance" type="boolean" default="0" primarykey="true"/>
-			 <field name="buttontype" type="string" default="line" primarykey="true"/>
+			 <field name="buttontype" type="string" length="255" default="line" primarykey="true"/>
 			 <field name="name" type="string" length="36" notnull="false"/>
 			 <field name="options" type="string" length="100" notnull="false"/>
 			 <key name="ref" type="index">
