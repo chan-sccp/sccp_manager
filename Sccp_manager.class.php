@@ -1069,6 +1069,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
 
         $driver = $this->FreePBX->Core->getAllDriversInfo();
+        // Below is always set to replace; good for Develop, but needs to be updated for release
         $sccp_driver_replace = '';
         if (empty($driver['sccp'])) {
             $sccp_driver_replace = 'yes';
@@ -1084,7 +1085,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
         $this->sccpvalues['sccp_compatible'] = array('keyword' => 'sccp_compatible', 'data' => $ver_id, 'type' => '1', 'seq' => '99');
         $this->sccppath = $this->extconfigs->validate_init_path($confDir, $this->sccpvalues, $sccp_driver_replace);
-        $driver = $this->FreePBX->Core->getAllDriversInfo(); // ??????
+        $driver = $this->FreePBX->Core->getAllDriversInfo(); // Check that Sccp Driver has been updated by above
 
         $read_config = $this->cnf_read->getConfig('sccp.conf');
         $this->sccp_conf_init['general'] = $read_config['general'];

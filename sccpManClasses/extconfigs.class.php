@@ -14,15 +14,13 @@ class extconfigs
         $this->paren_class = $parent_class;
     }
 
-    public function info()
-    {
-        $Ver = '13.0.3';
+    public function info() {
+        $Ver = '13.1.1';
         return array('Version' => $Ver,
             'about' => 'Default Setings and Enums ver: ' . $Ver);
     }
 
-    public function getextConfig($id = '', $index = '')
-    {
+    public function getextConfig($id = '', $index = '') {
         switch ($id) {
             case 'keyset':
                 $result = $this->keysetdefault;
@@ -47,7 +45,7 @@ class extconfigs
                 return $tmp_ofset / 60;
 
                 break;
-            case 'sccp_timezone': // Sccp manafer: 1400 (+ Id) :2007 (+ Id)
+            case 'sccp_timezone': // Sccp manager: 1303; server_info: 122
                 $result = array();
 
                 if (empty($index)) {
@@ -59,15 +57,26 @@ class extconfigs
                     $timezone_abbreviations = \DateTimeZone::listAbbreviations();
 
                     $tz_tmp = array();
-                    foreach ($timezone_abbreviations as $subArray) {
+                    foreach ($timezone_abbreviations as $key=>$subArray) {
                         $tf_idt = array_search($index, array_column($subArray, 'timezone_id'));
                         if (!empty($tf_idt)) {
-                            $tz_tmp[] = $subArray[$tf_idt];
+                            $tz_tmp[$key] = $subArray[$tf_idt];
                         }
                     }
+
                     if (empty($tz_tmp)) {
                         return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
                     }
+                    
+                    // as php DateTimeZone::listAbbreviations() has multiple historic Values
+                    // Need to find one that matches this machine offset.
+
+                    //Now find out if DST is used here. Test if DST setting is different in 6 months
+                    $haveDstNow = date('I');
+                    $futureDate = (new \DateTime(null,new \DateTimeZone($index)))->modify('+6 months');
+                    dbug('now is',$haveDstNow);
+                    dbug('future date', $futureDate->format('I'));
+
 
                     if (count($tz_tmp)==1) {
                         $time_set = $tz_tmp[0];
@@ -81,6 +90,8 @@ class extconfigs
                             }
                         }
                     }
+
+                    // Should now have a match on offset.
                     $tmp_ofset = $time_set['offset'] / 60;
                     $tmp_dli = (empty($time_set['dst']) ? '' :  'Daylight' );
                     foreach ($this->cisco_timezone as $key => $value) {
@@ -109,11 +120,6 @@ class extconfigs
 
     private function get_cisco_time_zone($tzc)
     {
-
-        if ((empty($tzc)) or (!array_key_exists($tzc, $this->cisco_timezone))) {
-//            return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
-            return array();
-        }
         $tzdata = $this->cisco_timezone[$tzc];
         $cisco_code = $tzc . ' Standard' . ((empty($tzdata['daylight'])) ? '' : '/' . $tzdata['daylight']) . ' Time';
         if (isset($tzdata['cisco_code'])) {
