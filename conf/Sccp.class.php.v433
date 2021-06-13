@@ -35,9 +35,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         global $currentcomponent;
         $add_fld = array ("name"=>'label',"outboundcid"=>'cid_num',"langcode"=>'language',"extdisplay"=>'description');
         $settings['cid_num']['value'] = '';
-        $settings['cid_name']['value'] = $label;
+        $settings['cid_name']['value'] = '';
         $settings['mailbox']['value']= '';
 
+        // Add $_REQUEST values to settings
         if (isset($_REQUEST)){
             foreach($add_fld as $key => $val) {
                 if (!empty($_REQUEST[$key])){
@@ -53,10 +54,8 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         }
         $settings['allow']['value'] = implode(",", $allow_codec);
 
-	      // parse outboundcid content into cid_num and cid_name sccpline fields
-        if (empty($settings['cid_num']['value'])) {
-            $settings['cid_num']['value'] = $id;
-        } else {
+	      // If set, parse outboundcid content into cid_num and cid_name sccpline fields
+        if (!empty($settings['cid_num']['value'])) {
             $outboundcid = $settings['cid_num']['value'];
             if (preg_match('/"(.*)"\s?<(.*)>/', $outboundcid, $matches)) {
                 $settings['cid_num']['value'] = $matches[2];
@@ -89,10 +88,15 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
         $sth = $this->database->prepare($sql);
         $sth->execute();
-        // Redirect to SCCP Phone page. This was last function in add so
-        // should be safe. Prefer to add in Hooks, but is not followed
-        // even if set for $currentcomponent
-        redirect("config.php?display=sccp_phone", false);
+        /*
+        If called from SCCP Phone, redirect to SCCP Phone page on submit.
+        This was last function in add so should be safe.
+        Prefer to add in Hooks, but is not followed even if set for $currentcomponent
+        Do nothing if called from QuickCreateExtension when display is not set
+        */
+        if (isset($_REQUEST['display'])) {
+            redirect("config.php?display=sccp_phone", false);
+        }
         return true;
     }
 
