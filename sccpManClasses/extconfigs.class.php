@@ -31,20 +31,6 @@ class extconfigs
             case 'sccpDefaults':
                 $result = $this->sccpDefaults;
                 break;
-            case 'sccp_timezone_offset': // Sccp manafer: 1400 (+ Id) :2007 (+ Id)
-                if (empty($index)) {
-                    return 0;
-                }
-                if (array_key_exists($index, $this->cisco_timezone)) {
-                    $tmp_time = $this->get_cisco_time_zone($index);
-                    return $tmp_time['offset'];
-                }
-
-                $tmp_dt = new \DateTime(null, new \DateTimeZone($index));
-                $tmp_ofset = $tmp_dt->getOffset();
-                return $tmp_ofset / 60;
-
-                break;
             case 'sccp_timezone': // Sccp manager: 1303; server_info: 122
                 $result = array();
 
@@ -69,15 +55,18 @@ class extconfigs
                 // Now look for a match in cisco_tz_array based on offset and DST
                 // First correct offset if we have DST now as cisco offsets are
                 // based on non dst offsets
-                $tmp_ofset = $thisTzOffset / 60;
+                $tmpOffset = $thisTzOffset / 60;
                 if ($haveDstNow) {
-                    $tmp_ofset = $tmp_ofset - 60;
+                    $tmpOffset = $tmpOffset - 60;
                 }
                 foreach ($this->cisco_timezone as $key => $value) {
-                    if (($value['offset'] == $tmp_ofset) and ( $value['daylight'] == $usesDaylight )) {
+                    if (($value['offset'] == $tmpOffset) and ( $value['daylight'] == $usesDaylight )) {
                         // This code may not be the one typically used, but it has the correct values.
                         $cisco_code = $key . ' Standard' . (($usesDaylight) ? '/Daylight' : '') . ' Time';
-                        return array('offset' => $tmp_ofset, 'daylight' => ($usesDaylight) ? 'Daylight' : '', 'cisco_code' => $cisco_code);
+
+                        $this->sccpvalues['tzoffset']['data'] = $tmpOffset;
+
+                        return array('offset' => $tmpOffset, 'daylight' => ($usesDaylight) ? 'Daylight' : '', 'cisco_code' => $cisco_code);
                         break;
                     }
                 }
@@ -356,7 +345,6 @@ class extconfigs
                 copy($filename, $dst_path . basename($filename));
             }
         }
-
 
         $dst = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/core/functions.inc/drivers/Sccp.class.php';
         if (!file_exists($dst) || $sccp_driver_replace == 'yes') {

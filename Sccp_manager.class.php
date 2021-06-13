@@ -762,9 +762,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
                 case 'sccp_ntp_timezone':
                     $tz_id = $value;
-                    $TZdata = $this->extconfigs->getextConfig('sccp_timezone_offset', $tz_id);
+                    $TZdata = $this->extconfigs->getextConfig('sccp_timezone', $tz_id);
                     if (!empty($TZdata)) {
-                        $value = ($TZdata / 60);
+                        $value = $TZdata['offset']/60;
                         if (!($this->sccpvalues['tzoffset']['data'] == $value)) {
                             $save_settings[] = array('keyword' => 'tzoffset', 'data' => $value,
                                 'seq' => '98',
@@ -774,7 +774,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     break;
             }
         }
-
         if (!empty($save_settings)) {
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
