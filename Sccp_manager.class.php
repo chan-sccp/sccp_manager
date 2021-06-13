@@ -140,7 +140,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
 
         $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); // Overwrite Exist
-//        $this->getSccpSetingINI(false); // get from sccep.ini
         $this->initializeSccpPath();
         $this->initVarfromDefs();
         $this->initTftpLang();
@@ -201,6 +200,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             if (empty($this->sccpvalues[$key])) {
                 $this->sccpvalues[$key] = array('keyword' => $key, 'data' => $value, 'type' => '0', 'seq' => '0');
             }
+        }
+        // Check timezone has not been changed in FreePBX and update if has
+        if ($this->sccpvalues['ntp_timezone'] != \date_default_timezone_get()) {
+            $this->sccpvalues['ntp_timezone'] = array('keyword' => 'ntp_timezone', 'seq'=>95, 'type' => 2, 'data' => \date_default_timezone_get());
         }
     }
 
