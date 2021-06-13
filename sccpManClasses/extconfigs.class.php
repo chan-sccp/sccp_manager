@@ -49,68 +49,40 @@ class extconfigs
                 $result = array();
 
                 if (empty($index)) {
-                    return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
+                    return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich Standard Time');
                 }
-                if (array_key_exists($index, $this->cisco_timezone)) {
-                    return  $this->get_cisco_time_zone($index);
-                } else {
-                    $timezone_abbreviations = \DateTimeZone::listAbbreviations();
 
-                    $tz_tmp = array();
-                    foreach ($timezone_abbreviations as $key=>$subArray) {
-                        $tf_idt = array_search($index, array_column($subArray, 'timezone_id'));
-                        if (!empty($tf_idt)) {
-                            $tz_tmp[$key] = $subArray[$tf_idt];
-                        }
-                    }
-
-                    if (empty($tz_tmp)) {
-                        return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
-                    }
-
-                    // as php DateTimeZone::listAbbreviations() has multiple historic Values
-                    // Need to find one that matches this machine offset.
-
-                    //Now find out if DST is used here. Test if DST setting is different in 6 months
-                    $usesDaylight = false;
-                    $haveDstNow = date('I');
-                    $futureDateArray = array(2,4,6,8);
-                    foreach ($futureDateArray as $numMonths) {
-                        $futureDate = (new \DateTime(null,new \DateTimeZone($index)))->modify("+{$numMonths} months");
-                        if ($futureDate->format('I') != $haveDstNow) {
-                            $usesDaylight = true;
-                            break;
-                        };
-                    }
-
-                    if (count($tz_tmp)==1) {
-                        $time_set = $tz_tmp[0];
-                    } else {
-                        $tmp_dt = new \DateTime(null, new \DateTimeZone($index));
-                        $tmp_ofset = $tmp_dt->getOffset();
-                        foreach ($tz_tmp as $subArray) {
-                            if ($subArray['offset'] == $tmp_ofset) {
-                                $time_set = $subArray;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Now look for a match in cisco_code based on offset and DST
-                    // First correct offset if we have DST now
-                    $tmp_ofset = $time_set['offset'] / 60;
-                    if ($haveDstNow) {
-                        $tmp_ofset = $tmp_ofset - 60;
-                    }
-                    foreach ($this->cisco_timezone as $key => $value) {
-                        if (($value['offset'] == $tmp_ofset) and ( $value['daylight'] == $usesDaylight )) {
-                            dbug('cisco_code found', $key);
-                            return  $this->get_cisco_time_zone($key);
-                            break;
-                        }
-                    }
-                    return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
+                //See if DST is used in this TZ. Test if DST setting is different at
+                //various future intervals. If dst changes, this TZ uses dst
+                $usesDaylight = false;
+                $haveDstNow = date('I');
+                $futureDateArray = array(2,4,6,8);
+                foreach ($futureDateArray as $numMonths) {
+                    $futureDate = (new \DateTime(null,new \DateTimeZone($index)))->modify("+{$numMonths} months");
+                    if ($futureDate->format('I') != $haveDstNow) {
+                        $usesDaylight = true;
+                        break;
+                    };
                 }
+                $thisTzOffset = (new \DateTime(null, new \DateTimeZone($index)))->getOffset();
+
+                // Now look for a match in cisco_tz_array based on offset and DST
+                // First correct offset if we have DST now as cisco offsets are
+                // based on non dst offsets
+                $tmp_ofset = $thisTzOffset / 60;
+                if ($haveDstNow) {
+                    $tmp_ofset = $tmp_ofset - 60;
+                }
+                foreach ($this->cisco_timezone as $key => $value) {
+                    if (($value['offset'] == $tmp_ofset) and ( $value['daylight'] == $usesDaylight )) {
+                        // This code may not be the one typically used, but it has the correct values.
+                        $cisco_code = $key . ' Standard' . (($usesDaylight) ? '/Daylight' : '') . ' Time';
+                        return array('offset' => $tmp_ofset, 'daylight' => ($usesDaylight) ? 'Daylight' : '', 'cisco_code' => $cisco_code);
+                        break;
+                    }
+                }
+                return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich Standard Time');
+
                 break;
             default:
                 return array('noId');
@@ -130,10 +102,7 @@ class extconfigs
     private function get_cisco_time_zone($tzc)
     {
         $tzdata = $this->cisco_timezone[$tzc];
-        $cisco_code = $tzc . ' Standard' . ((empty($tzdata['daylight'])) ? '' : '/' . $tzdata['daylight']) . ' Time';
-        if (isset($tzdata['cisco_code'])) {
-            $cisco_code = (empty($tzdata['cisco_code'])) ? $cisco_code : $tzdata['cisco_code'];
-        }
+        $cisco_code = $tzc . ' Standard' . (($tzdata['daylight']) ? '/Daylight' : '') . ' Time';
         return array('offset' => $tzdata['offset'], 'daylight' => $tzdata['daylight'], 'cisco_code' => $cisco_code);
     }
 
