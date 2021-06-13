@@ -140,7 +140,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
 
         $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); // Overwrite Exist
-//        $this->getSccpSetingINI(false); // get from sccep.ini
         $this->initializeSccpPath();
         $this->initVarfromDefs();
         $this->initTftpLang();
@@ -201,6 +200,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             if (empty($this->sccpvalues[$key])) {
                 $this->sccpvalues[$key] = array('keyword' => $key, 'data' => $value, 'type' => '0', 'seq' => '0');
             }
+        }
+        // Check timezone has not been changed in FreePBX and update if has
+        if ($this->sccpvalues['ntp_timezone'] != \date_default_timezone_get()) {
+            $this->sccpvalues['ntp_timezone'] = array('keyword' => 'ntp_timezone', 'seq'=>95, 'type' => 2, 'data' => \date_default_timezone_get());
         }
     }
 
@@ -762,9 +765,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
                 case 'sccp_ntp_timezone':
                     $tz_id = $value;
-                    $TZdata = $this->extconfigs->getextConfig('sccp_timezone_offset', $tz_id);
+                    $TZdata = $this->extconfigs->getextConfig('sccp_timezone', $tz_id);
                     if (!empty($TZdata)) {
-                        $value = ($TZdata / 60);
+                        $value = $TZdata['offset']/60;
                         if (!($this->sccpvalues['tzoffset']['data'] == $value)) {
                             $save_settings[] = array('keyword' => 'tzoffset', 'data' => $value,
                                 'seq' => '98',
@@ -774,7 +777,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     break;
             }
         }
-
         if (!empty($save_settings)) {
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
@@ -1069,6 +1071,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
 
         $driver = $this->FreePBX->Core->getAllDriversInfo();
+        // Below is always set to replace; good for Develop, but needs to be updated for release
         $sccp_driver_replace = '';
         if (empty($driver['sccp'])) {
             $sccp_driver_replace = 'yes';
@@ -1084,7 +1087,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
         $this->sccpvalues['sccp_compatible'] = array('keyword' => 'sccp_compatible', 'data' => $ver_id, 'type' => '1', 'seq' => '99');
         $this->sccppath = $this->extconfigs->validate_init_path($confDir, $this->sccpvalues, $sccp_driver_replace);
-        $driver = $this->FreePBX->Core->getAllDriversInfo(); // ??????
+        $driver = $this->FreePBX->Core->getAllDriversInfo(); // Check that Sccp Driver has been updated by above
 
         $read_config = $this->cnf_read->getConfig('sccp.conf');
         $this->sccp_conf_init['general'] = $read_config['general'];

@@ -14,15 +14,13 @@ class extconfigs
         $this->paren_class = $parent_class;
     }
 
-    public function info()
-    {
-        $Ver = '13.0.3';
+    public function info() {
+        $Ver = '13.1.1';
         return array('Version' => $Ver,
             'about' => 'Default Setings and Enums ver: ' . $Ver);
     }
 
-    public function getextConfig($id = '', $index = '')
-    {
+    public function getextConfig($id = '', $index = '') {
         switch ($id) {
             case 'keyset':
                 $result = $this->keysetdefault;
@@ -33,64 +31,47 @@ class extconfigs
             case 'sccpDefaults':
                 $result = $this->sccpDefaults;
                 break;
-            case 'sccp_timezone_offset': // Sccp manafer: 1400 (+ Id) :2007 (+ Id)
-                if (empty($index)) {
-                    return 0;
-                }
-                if (array_key_exists($index, $this->cisco_timezone)) {
-                    $tmp_time = $this->get_cisco_time_zone($index);
-                    return $tmp_time['offset'];
-                }
-
-                $tmp_dt = new \DateTime(null, new \DateTimeZone($index));
-                $tmp_ofset = $tmp_dt->getOffset();
-                return $tmp_ofset / 60;
-
-                break;
-            case 'sccp_timezone': // Sccp manafer: 1400 (+ Id) :2007 (+ Id)
+            case 'sccp_timezone': // Sccp manager: 1303; server_info: 122
                 $result = array();
 
                 if (empty($index)) {
-                    return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
+                    return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich Standard Time');
                 }
-                if (array_key_exists($index, $this->cisco_timezone)) {
-                    return  $this->get_cisco_time_zone($index);
-                } else {
-                    $timezone_abbreviations = \DateTimeZone::listAbbreviations();
 
-                    $tz_tmp = array();
-                    foreach ($timezone_abbreviations as $subArray) {
-                        $tf_idt = array_search($index, array_column($subArray, 'timezone_id'));
-                        if (!empty($tf_idt)) {
-                            $tz_tmp[] = $subArray[$tf_idt];
-                        }
-                    }
-                    if (empty($tz_tmp)) {
-                        return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
-                    }
-
-                    if (count($tz_tmp)==1) {
-                        $time_set = $tz_tmp[0];
-                    } else {
-                        $tmp_dt = new \DateTime(null, new \DateTimeZone($index));
-                        $tmp_ofset = $tmp_dt->getOffset();
-                        foreach ($tz_tmp as $subArray) {
-                            if ($subArray['offset'] == $tmp_ofset) {
-                                $time_set = $subArray;
-                                break;
-                            }
-                        }
-                    }
-                    $tmp_ofset = $time_set['offset'] / 60;
-                    $tmp_dli = (empty($time_set['dst']) ? '' :  'Daylight' );
-                    foreach ($this->cisco_timezone as $key => $value) {
-                        if (($value['offset'] == $tmp_ofset) and ( $value['daylight'] == $tmp_dli )) {
-                            return  $this->get_cisco_time_zone($key);
-                            break;
-                        }
-                    }
-                    return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
+                //See if DST is used in this TZ. Test if DST setting is different at
+                //various future intervals. If dst changes, this TZ uses dst
+                $usesDaylight = false;
+                $haveDstNow = date('I');
+                $futureDateArray = array(2,4,6,8);
+                foreach ($futureDateArray as $numMonths) {
+                    $futureDate = (new \DateTime(null,new \DateTimeZone($index)))->modify("+{$numMonths} months");
+                    if ($futureDate->format('I') != $haveDstNow) {
+                        $usesDaylight = true;
+                        break;
+                    };
                 }
+                $thisTzOffset = (new \DateTime(null, new \DateTimeZone($index)))->getOffset();
+
+                // Now look for a match in cisco_tz_array based on offset and DST
+                // First correct offset if we have DST now as cisco offsets are
+                // based on non dst offsets
+                $tmpOffset = $thisTzOffset / 60;
+                if ($haveDstNow) {
+                    $tmpOffset = $tmpOffset - 60;
+                }
+                foreach ($this->cisco_timezone as $key => $value) {
+                    if (($value['offset'] == $tmpOffset) and ( $value['daylight'] == $usesDaylight )) {
+                        // This code may not be the one typically used, but it has the correct values.
+                        $cisco_code = $key . ' Standard' . (($usesDaylight) ? '/Daylight' : '') . ' Time';
+
+                        $this->sccpvalues['tzoffset']['data'] = $tmpOffset;
+
+                        return array('offset' => $tmpOffset, 'daylight' => ($usesDaylight) ? 'Daylight' : '', 'cisco_code' => $cisco_code);
+                        break;
+                    }
+                }
+                return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich Standard Time');
+
                 break;
             default:
                 return array('noId');
@@ -109,16 +90,8 @@ class extconfigs
 
     private function get_cisco_time_zone($tzc)
     {
-
-        if ((empty($tzc)) or (!array_key_exists($tzc, $this->cisco_timezone))) {
-//            return array('offset' => '00', 'daylight' => '', 'cisco_code' => 'Greenwich');
-            return array();
-        }
         $tzdata = $this->cisco_timezone[$tzc];
-        $cisco_code = $tzc . ' Standard' . ((empty($tzdata['daylight'])) ? '' : '/' . $tzdata['daylight']) . ' Time';
-        if (isset($tzdata['cisco_code'])) {
-            $cisco_code = (empty($tzdata['cisco_code'])) ? $cisco_code : $tzdata['cisco_code'];
-        }
+        $cisco_code = $tzc . ' Standard' . (($tzdata['daylight']) ? '/Daylight' : '') . ' Time';
         return array('offset' => $tzdata['offset'], 'daylight' => $tzdata['daylight'], 'cisco_code' => $cisco_code);
     }
 
@@ -194,74 +167,53 @@ class extconfigs
         'zh_TW' => array('code' => 'zh', 'language' => 'Chinese', 'locale' => 'Chinese_Taiwan', 'codepage' => 'ISO8859-1')
     );
     private $cisco_timezone = array(
-        'Dateline' => array('offset' => '-720', 'daylight' => ''),
-        'Samoa' => array('offset' => '-660', 'daylight' => ''),
-        'Hawaiian' => array('offset' => '-600', 'daylight' => ''),
-        'Alaskan' => array('offset' => '-540', 'daylight' => 'Daylight'),
-        'Pacific' => array('offset' => '-480', 'daylight' => 'Daylight'),
-        'Mountain' => array('offset' => '-420', 'daylight' => 'Daylight'),
-        'US Mountain' => array('offset' => '-420', 'daylight' => ''),
-        'Central' => array('offset' => '-360', 'daylight' => 'Daylight'),
-        'Mexico' => array('offset' => '-360', 'daylight' => 'Daylight'),
-        'Canada Central' => array('offset' => '-360', 'daylight' => ''),
-        'SA Pacific' => array('offset' => '-300', 'daylight' => ''),
-        'Eastern' => array('offset' => '-300', 'daylight' => 'Daylight'),
-        'US Eastern' => array('offset' => '-300', 'daylight' => ''),
-        'Atlantic' => array('offset' => '-240', 'daylight' => 'Daylight'),
-        'SA Western' => array('offset' => '-240', 'daylight' => ''),
-        'Pacific SA' => array('offset' => '-240', 'daylight' => ''),
-        'Newfoundland' => array('offset' => '-210', 'daylight' => 'Daylight'),
-        'E. South America' => array('offset' => '-180', 'daylight' => 'Daylight'),
-        'SA Eastern' => array('offset' => '-180', 'daylight' => ''),
-        'Pacific SA' => array('offset' => '-180', 'daylight' => 'Daylight'),
-        'Mid-Atlantic' => array('offset' => '-120', 'daylight' => 'Daylight'),
-        'Azores' => array('offset' => '-060', 'daylight' => 'Daylight'),
-        'GMT' => array('offset' => '00', 'daylight' => 'Daylight'),
-        'Greenwich' => array('offset' => '00', 'daylight' => ''),
-        'W. Europe' => array('offset' => '60', 'daylight' => 'Daylight'),
-        'GTB' => array('offset' => '60', 'daylight' => 'Daylight'),
-        'Egypt' => array('offset' => '60', 'daylight' => 'Daylight'),
-        'E. Europe' => array('offset' => '60', 'daylight' => 'Daylight'),
-        'Romance' => array('offset' => '120', 'daylight' => 'Daylight'),
-        'Central Europe' => array('offset' => '120', 'daylight' => 'Daylight'),
-        'South Africa' => array('offset' => '120', 'daylight' => ''),
-        'Jerusalem' => array('offset' => '120', 'daylight' => 'Daylight'),
-        'Saudi Arabia' => array('offset' => '180', 'daylight' => ''),
-        /*              Russian  Regions                                                                 */
-        'Russian/Kaliningrad' => array('offset' => '120', 'daylight' => '', 'cisco_code' => 'South Africa Standard Time'),
-        'Russian/Moscow' => array('offset' => '180', 'daylight' => '', 'cisco_code' => 'Russian Standard Time'),
-        'Russian/St.Peterburg' => array('offset' => '180', 'daylight' => '', 'cisco_code' => 'Russian Standard Time'),
-        'Russian/Samara' => array('offset' => '240', 'daylight' => '', 'cisco_code' => 'Arabian Standard Time'),
-        'Russian/Novosibirsk' => array('offset' => '300', 'daylight' => '', 'cisco_code' => 'Ekaterinburg Standard Time'),
-        'Russian/Ekaterinburg' => array('offset' => '300', 'daylight' => '', 'cisco_code' => 'Ekaterinburg Standard Time'),
-        'Russian/Irkutsk' => array('offset' => '480', 'daylight' => '', 'cisco_code' => 'China Standard Time'),
-        'Russian/Yakutsk' => array('offset' => '540', 'daylight' => '', 'cisco_code' => 'Tokyo Standard Time'),
-        'Russian/Khabarovsk' => array('offset' => '600', 'daylight' => '', 'cisco_code' => 'West Pacific Standard Time'),
-        'Russian/Vladivostok' => array('offset' => '600', 'daylight' => '', 'cisco_code' => 'West Pacific Standard Time'),
-        'Russian/Sakhalin' => array('offset' => '660', 'daylight' => '', 'cisco_code' => 'Central Pacific Standard Time'),
-        'Russian/Magadan' => array('offset' => '660', 'daylight' => '', 'cisco_code' => 'Central Pacific Standard Time'),
-        'Russian/Kamchatka' => array('offset' => '720', 'daylight' => '', 'cisco_code' => 'Fiji Standard Time'),
-        /*              EnD - Russian  Regions                                                             */
-        'Iran' => array('offset' => '210', 'daylight' => 'Daylight'),
-        'Caucasus' => array('offset' => '240', 'daylight' => 'Daylight'),
-        'Arabian' => array('offset' => '240', 'daylight' => ''),
-        'Afghanistan' => array('offset' => '270', 'daylight' => ''),
-        'West Asia' => array('offset' => '300', 'daylight' => ''),
-        'India' => array('offset' => '330', 'daylight' => ''),
-        'Central Asia' => array('offset' => '360', 'daylight' => ''),
-        'SE Asia' => array('offset' => '420', 'daylight' => ''),
-        'China' => array('offset' => '480', 'daylight' => ''),
-        'Taipei' => array('offset' => '480', 'daylight' => ''),
-        'Tokyo' => array('offset' => '540', 'daylight' => ''),
-        'Cen. Australia' => array('offset' => '570', 'daylight' => 'Daylight'),
-        'AUS Central' => array('offset' => '570', 'daylight' => ''),
-        'E. Australia' => array('offset' => '600', 'daylight' => ''),
-        'AUS Eastern' => array('offset' => '600', 'daylight' => 'Daylight'),
-        'West Pacific' => array('offset' => '600', 'daylight' => ''),
-        'Tasmania' => array('offset' => '600', 'daylight' => 'Daylight'),
-        'Central Pacific' => array('offset' => '660', 'daylight' => ''),
-        'Fiji' => array('offset' => '720', 'daylight' => ''),
-        'New Zealand' => array('offset' => '720', 'daylight' => 'Daylight')
+        'Dateline' => array('offset' => '-720', 'daylight' => false),
+        'Samoa' => array('offset' => '-660', 'daylight' => false),
+        'Hawaiian' => array('offset' => '-600', 'daylight' => false),
+        'Alaskan' => array('offset' => '-540', 'daylight' => true),
+        'Pacific' => array('offset' => '-480', 'daylight' => true),
+        'Mountain' => array('offset' => '-420', 'daylight' => true),
+        'US Mountain' => array('offset' => '-420', 'daylight' => false),
+        'Central' => array('offset' => '-360', 'daylight' => true),
+        'Mexico' => array('offset' => '-360', 'daylight' => true),
+        'Canada Central' => array('offset' => '-360', 'daylight' => false),
+        'SA Pacific' => array('offset' => '-300', 'daylight' => false),
+        'Eastern' => array('offset' => '-300', 'daylight' => true),
+        'US Eastern' => array('offset' => '-300', 'daylight' => false),
+        'Atlantic' => array('offset' => '-240', 'daylight' => true),
+        'SA Western' => array('offset' => '-240', 'daylight' => false),
+        'Pacific SA' => array('offset' => '-240', 'daylight' => false),
+        'Newfoundland' => array('offset' => '-210', 'daylight' => true),
+        'E. South America' => array('offset' => '-180', 'daylight' => true),
+        'SA Eastern' => array('offset' => '-180', 'daylight' => false),
+        'Pacific SA' => array('offset' => '-180', 'daylight' => true),
+        'Mid-Atlantic' => array('offset' => '-120', 'daylight' => true),
+        'Azores' => array('offset' => '-060', 'daylight' => true),
+        'GMT' => array('offset' => '00', 'daylight' => true),
+        'Greenwich' => array('offset' => '00', 'daylight' => false),
+        'W. Europe' => array('offset' => '60', 'daylight' => true),
+        'Central Europe' => array('offset' => '120', 'daylight' => true),
+        'South Africa' => array('offset' => '120', 'daylight' => false),
+        'Saudi Arabia' => array('offset' => '180', 'daylight' => false),
+        'Iran' => array('offset' => '210', 'daylight' => true),
+        'Caucasus' => array('offset' => '240', 'daylight' => true),
+        'Arabian' => array('offset' => '240', 'daylight' => false),
+        'Afghanistan' => array('offset' => '270', 'daylight' => false),
+        'West Asia' => array('offset' => '300', 'daylight' => false),
+        'India' => array('offset' => '330', 'daylight' => false),
+        'Central Asia' => array('offset' => '360', 'daylight' => false),
+        'SE Asia' => array('offset' => '420', 'daylight' => false),
+        'China' => array('offset' => '480', 'daylight' => false),
+        'Tokyo' => array('offset' => '540', 'daylight' => false),
+        'Cen. Australia' => array('offset' => '570', 'daylight' => true),
+        'AUS Central' => array('offset' => '570', 'daylight' => false),
+        'E. Australia' => array('offset' => '600', 'daylight' => false),
+        'AUS Eastern' => array('offset' => '600', 'daylight' => true),
+        'West Pacific' => array('offset' => '600', 'daylight' => false),
+        'Tasmania' => array('offset' => '600', 'daylight' => true),
+        'Central Pacific' => array('offset' => '660', 'daylight' => false),
+        'Fiji' => array('offset' => '720', 'daylight' => false),
+        'New Zealand' => array('offset' => '720', 'daylight' => true)
     );
 
     public function validate_init_path($confDir = '', $db_vars, $sccp_driver_replace = '')
@@ -393,7 +345,6 @@ class extconfigs
                 copy($filename, $dst_path . basename($filename));
             }
         }
-
 
         $dst = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/core/functions.inc/drivers/Sccp.class.php';
         if (!file_exists($dst) || $sccp_driver_replace == 'yes') {
