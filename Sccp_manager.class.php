@@ -163,10 +163,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $this->initVarfromXml(); // Overwrite Exist
         }
 
-        if (get_class($freepbx) === 'FreePBX') {
+        //if (get_class($freepbx) === 'FreePBX') {
             // only save settings when building a new FreePBX object
             $this->saveSccpSettings();
-        }
+        //}
     }
 
     /*
