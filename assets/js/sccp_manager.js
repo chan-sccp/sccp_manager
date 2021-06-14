@@ -55,7 +55,7 @@ $(document).ready(function () {
                     if (data.message) {
                         bs_alert(data.message,data.status);
                     } else {
-                        bs_alert('Data Save',data.status);
+                        fpbxToast(_('Data saved'),_('Data saved'), 'success');
                     }
                 } else {
                     bs_alert(data.message,data.status);
