@@ -415,7 +415,7 @@ class aminterface
                 $_action = new \FreePBX\modules\Sccp_manager\aminterface\SCCPDeviceRestartAction($devicename, $action);
             }
             $_response = $this->send($_action);
-            $result['data'] = 'Device :'.$devicename.' Result: '.$_response->getMessage();
+            $result['data'] = 'Device: '.$devicename.' Result: '.$_response->getMessage();
             $result['Response']=$_response->getKey('Response');
         }
         return $result;
