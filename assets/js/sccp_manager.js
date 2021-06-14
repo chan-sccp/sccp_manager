@@ -580,10 +580,10 @@ $(document).ready(function () {
             var i = 0;
             var conf_msg = '??????';
             if ($(this).data('id') === 'reset_dev') {
-                conf_msg = 'Reset All device ?';
+                conf_msg = 'Reset ALL devices ?';
             }
             if ($(this).data('id') === 'reset_token') {
-                conf_msg = 'Reset Token on All device ?';
+                conf_msg = 'Reset Token on ALL devices ?';
             }
             if ($(this).data('id') === 'update_button_label') {
                 conf_msg = 'Update Button Labels on ALL devices ?';
@@ -628,11 +628,11 @@ $(document).ready(function () {
                     } else {
                         if (Array.isArray(data.message)) {
                             data.message.forEach(function (entry) {
-                                bs_alert(entry,data.status);
+                                fpbxToast(data.message[1],_('Error Result'), 'warning');
                             });
                         } else {
                             if (data.message) {
-                                bs_alert(data.message,data.status);
+                                fpbxToast(data.message,_('Error Result'), 'warning');
                             } else {
                                 if (data) {
                                     bs_alert(data,data.status);
