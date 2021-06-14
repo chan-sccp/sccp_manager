@@ -153,23 +153,23 @@ $(document).ready(function () {
         }
 //    console.log("delete : " + data);
         if (dev_cmd != '') {
-            if (confirm(_('Are you sure you wish to delete "' + dev_id.toString().toUpperCase() + '" inormation ?'))) {
+            if (confirm(_('Are you sure you wish to delete "' + dev_id.toString().toUpperCase() + '" information?'))) {
                 $.ajax({
                     type: 'POST',
                     url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
                     command: dev_cmd,
                     data: ext_data,
                     success: function (data) {
-//                console.log(data);
                         if (data.status === true) {
-                            if (data.message) {
-                                var old_style = bs_alert(data.message, data.status, data.reload);
-                            }
                             if (data.table_reload === true) {
                                 $('table').bootstrapTable('refresh');
                             }
-                            if (data.reload === true && old_style === true ) {
-                                location.reload();
+                            if (data.message) {
+                                fpbxToast(data.message,_('Operation Result'), 'success');
+                                if (data.reload === true) {
+                                    //Need setTimout or reload will kill Toast
+                                    setTimeout(function(){location.reload();},500);
+                                }
                             }
                         } else {
                             bs_alert(data.message,data.status);
@@ -628,7 +628,6 @@ $(document).ready(function () {
                         if (Array.isArray(data.message)) {
                             data.message.forEach(function (entry) {
                                 bs_alert(entry,data.status);
-                                //fpbxToast(entry, 'error', 'error');
                             });
                         } else {
                             if (data.message) {
