@@ -88,9 +88,6 @@ $(document).ready(function () {
             data: vdata,
             success: function (data) {
                 if (data.status === true) {
-                    if (data.message) {
-                        var old_style = bs_alert(data.message, data.status, data.reload);
-                    }
                     if (data.table_reload === true) {
                         $('table').bootstrapTable('refresh');
                     }
@@ -106,8 +103,12 @@ $(document).ready(function () {
                     if (data.search != null) {
                         location.search = data.search;
                     }
-                    if (data.reload === true && old_style ===true ) {
-                        location.reload();
+                    if (data.message) {
+                        fpbxToast(_('Configuration saved. Reloading Module'),_('Configuration saved'), 'success');
+                        if (data.reload === true) {
+                            //Need setTimout or reload will kill Toast
+                            setTimeout(function(){location.reload();},500);
+                        }
                     }
                 } else {
                     bs_alert(data.message,data.status);
