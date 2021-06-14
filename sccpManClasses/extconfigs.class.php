@@ -353,7 +353,7 @@ class extconfigs
                 copy($src_path, $dst);
             } else {
                 // Set new default
-                $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/' . basename($dst) '.v433';
+                $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/' . basename($dst) . '.v433';
                 copy($src_path, $dst);
             }
         }
