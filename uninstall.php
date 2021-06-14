@@ -95,21 +95,15 @@ if (!empty($version)) {
         sql("DELETE FROM kvstore WHERE module = 'sccpsettings'");
         sql("DELETE FROM kvstore WHERE module = 'Sccp_manager'");
     }
-}
-outn("<li>" . _('Removing all Sccp_manager tables') . "</li>");
-foreach ($sqlTables as $table) {
-    $sql = "DROP TABLE IF EXISTS {$table}";
-    $result = $db->query($sql);
-    if (DB::IsError($result)) {
-        die_freepbx($result->getDebugInfo());
-    }
-    $sql = "DROP VIEW IF EXISTS sccpdeviceconfig";
-    $result = $db->query($sql);
-    if (DB::IsError($result)) {
-        die_freepbx($result->getDebugInfo());
-    }
-    unset($result);
-}
-   outn("<li>" . _("Uninstall Complete") . "</li>");
-   return true;
+  }
+  // FreePbx removes all tables via module.xml, and uninstaller will error
+  // If the tables do not exist.
+  //outn("<li>" . _('Removing all Sccp_manager tables') . "</li>");
+  //foreach ($sqlTables as $table) {
+      //$sql = "DROP TABLE IF EXISTS {$table}";
+  //}
+  outn("<li>" . _('Removing all Sccp_manager views') . "</li>");
+  $db->query("DROP VIEW IF EXISTS sccpdeviceconfig");
+
+  outn("<li>" . _("Uninstall Complete") . "</li>");
 ?>
