@@ -185,8 +185,8 @@ trait ajaxHelper {
                     }
                 }
                 $res = $this->updateSccpButtons($hw_list);
-                $msg .= $res['Response'] . ' raw: ' . $res['data'] . ' ';
-                return array('status' => true, 'message' => 'Update Butons Labels Complite ' . $msg, 'reload' => true);
+                $msg .= $res['Response'] . (empty($res['data']) ? '' : ' raw data: ' . $res['data'] . ' ');
+                return array('status' => true, 'message' => 'Update Buttons Labels Complete: ' . $msg, 'reload' => false, 'table_reload' => true);
             case 'model_add':
                 $save_settings = array();
                 $key_name = array('model', 'vendor', 'dns', 'buttons', 'loadimage', 'loadinformationid', 'nametemplate');

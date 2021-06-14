@@ -586,7 +586,7 @@ $(document).ready(function () {
                 conf_msg = 'Reset Token on All device ?';
             }
             if ($(this).data('id') === 'update_button_label') {
-                conf_msg = 'Update Butons Labels on All device ?';
+                conf_msg = 'Update Button Labels on ALL devices ?';
             }
             $('#table-sccp').bootstrapTable('getSelections').forEach(function (entry) {
                 datas = datas + 'name[' + i + ']=' + entry['name'] + '&';
@@ -615,14 +615,15 @@ $(document).ready(function () {
                 success: function (data) {
 //                    console.log(data);
                     if (data.status === true) {
-                        if (data.message) {
-                            var old_style = bs_alert(data.message, data.status,data.reload);
-                        }
                         if (data.table_reload === true) {
                             $('table').bootstrapTable('refresh');
                         }
-                        if (data.reload === true && old_style === true) {
-                            location.reload();
+                        if (data.message) {
+                            fpbxToast(data.message,_('Operation Result'), 'success');
+                            if (data.reload === true) {
+                                //Need setTimout or reload will kill Toast
+                                setTimeout(function(){location.reload();},500);
+                            }
                         }
                     } else {
                         if (Array.isArray(data.message)) {

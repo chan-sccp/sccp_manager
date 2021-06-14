@@ -1182,7 +1182,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $buton_list = $this->dbinterface->HWextension_db_SccpTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial'));
         }
         if (empty($buton_list)) {
-            return array('Response' => ' Found 0 device ', 'data' => '');
+            return array('Response' => ' 0 buttons found ', 'data' => '');
         }
         $copy_fld = array('ref', 'reftype', 'instance', 'buttontype');
         $user_list = $user_list = $this->dbinterface->get_db_SccpTableByID("SccpExtension", array(), 'name');
