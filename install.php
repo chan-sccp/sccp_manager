@@ -45,7 +45,7 @@ $db_config   = Get_DB_config($sccp_compatible);
 $sccp_db_ver = CheckSCCPManagerDBVersion();
 
 // BackUp Old config
-CreateBackUpConfig();
+createBackUpConfig();
 RenameConfig();
 
 InstallDB_updateSchema($db_config);
@@ -708,7 +708,7 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
     }
     return true;
 }
-function CreateBackUpConfig()
+function createBackUpConfig()
 {
     global $amp_conf;
     outn("<li>" . _("Creating Config BackUp") . "</li>");
@@ -718,7 +718,7 @@ function CreateBackUpConfig()
     $dir = $cnf_int->get('ASTETCDIR');
 
     $fsql = $dir.'/sccp_backup_'.date("Ymd").'.sql';
-    $result = exec('mysqldump '.$amp_conf['AMPDBNAME'].' --password='.$amp_conf['AMPDBPASS'].' --user='.$amp_conf['AMPDBUSER'].' --single-transaction >'.$fsql, $output);
+    $result = exec('mysqldump '.$amp_conf['AMPDBNAME'].' --password='.$amp_conf['AMPDBPASS'].' --user='.$amp_conf['AMPDBUSER'].' --single-transaction >'.$fsql);
 
     try {
         $zip = new \ZipArchive();
@@ -744,7 +744,7 @@ function CreateBackUpConfig()
         outn("<li>" . _("Error Creating BackUp: ") . $filename ."</li>");
     }
     unlink($fsql);
-    outn("<li>" . _("Create Config BackUp: ") . $filename ."</li>");
+    outn("<li>" . _("Config backup created: ") . $filename ."</li>");
 }
 
 function RenameConfig()
