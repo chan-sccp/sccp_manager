@@ -173,17 +173,23 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      *   Generate Input elements in Html Code from sccpgeneral.xml
      */
 
-    public function showGroup($grup_name, $heder_show, $form_prefix = 'sccp', $form_values = null) {
+    public function showGroup($group_name, $show_Header, $form_prefix = 'sccp', $form_values = null, $show_inherit = true) {
         $htmlret = "";
         if (empty($form_values)) {
             $form_values = $this->sccpvalues;
         }
         if ((array) $this->xml_data) {
-            foreach ($this->xml_data->xpath('//page_group[@name="' . $grup_name . '"]') as $item) {
+            foreach ($this->xml_data->xpath('//page_group[@name="' . $group_name . '"]') as $item) {
                 $htmlret .= load_view(__DIR__ . '/views/formShow.php', array(
-                    'itm' => $item, 'h_show' => $heder_show,
-                    'form_prefix' => $form_prefix, 'fvalues' => $form_values,
-                    'tftp_lang' => $this->tftpLang, 'metainfo' => $this->sccp_metainfo));
+                    'itm' => $item,
+                    'h_show' => $show_Header,
+                    'form_prefix' => $form_prefix,
+                    'fvalues' => $form_values,
+                    'tftp_lang' => $this->tftpLang,
+                    'metainfo' => $this->sccp_metainfo,
+                    'inherit' => $show_inherit
+                  )
+                );
             }
         } else {
             $htmlret .= load_view(__DIR__ . '/views/formShowError.php');
@@ -680,9 +686,14 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $save_settings[$key] = $value;
             }
         }
+        // Save this device.
         $this->dbinterface->write('sccpdevice', $save_settings, 'replace');
+        // Retrieve the phone buttons and write back to
+        // update sccpdeviceconfig via Trigger
         $save_buttons = $this->getPhoneButtons($get_settings, $name_dev, $hw_type);
         $this->dbinterface->write('sccpbuttons', $save_buttons, $update_hw, '', $name_dev);
+        // Create new XML for this device, and then reset or restart the device
+        // so that it loads the file from TFT.
         $this->createSccpDeviceXML($name_dev);
         if ($hw_id == 'new') {
             $this->aminterface->sccpDeviceReset($name_dev, 'reset');

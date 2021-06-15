@@ -70,14 +70,14 @@ if (!empty($_REQUEST['id'])) {
     }
 }
 //print_r($db_res);
- 
+
 if (!empty($device_warning)) {
-    ?>    
+    ?>
     <div class="fpbx-container container-fluid">
         <div class="row">
             <div class="container">
                 <h2 style="border:2px solid Tomato;color:Tomato;" >Warning in the SCCP Device</h2>
-                <div class="table-responsive">          
+                <div class="table-responsive">
                         <?php
                         foreach ($device_warning as $key => $value) {
                             echo '<h3>'.$key.'</h3>';
@@ -115,8 +115,9 @@ if (!empty($device_warning)) {
     echo $this->showGroup('sccp_hw_dev2', 1, 'sccp_hw', $def_val);
     echo $this->showGroup('sccp_hw_dev_advance', 1, 'sccp_hw', $def_val);
     echo $this->showGroup('sccp_hw_dev_softkey', 1, 'sccp_hw', $def_val);
-    echo $this->showGroup('sccp_hw_dev_pickup', 1, 'sccp_hw', $def_val);
+    // echo $this->showGroup('sccp_hw_dev_pickup', 1, 'sccp_hw', $def_val); This are line properties and does not exist!
     echo $this->showGroup('sccp_hw_dev_conference', 1, 'sccp_hw', $def_val);
+    echo $this->showGroup('sccp_dev_vendor_conf', 1, 'sccp_hw', $def_val, true);
     echo $this->showGroup('sccp_hw_dev_network', 1, 'sccp_hw', $def_val);
-    ?>    
+    ?>
 </form>

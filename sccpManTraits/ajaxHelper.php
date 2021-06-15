@@ -10,8 +10,8 @@ trait ajaxHelper {
         switch ($req) {
             case 'backupsettings':
             case 'savesettings':
-            case 'save_hardware':
-            case 'save_sip_hardware':
+            case 'save_device':
+            case 'save_sip_device':
             case 'save_ruser':
             case 'save_dialplan_template':
             case 'delete_hardware':
@@ -62,8 +62,8 @@ trait ajaxHelper {
                 // !TODO!: It is necessary in the future to check, and replace all server responses on correct messages. Use _(msg)
                 return array('status' => true, 'message' => $msg, 'reload' => true);
                 break;
-            case 'save_sip_hardware':
-            case 'save_hardware':
+            case 'save_sip_device':
+            case 'save_device':
                 $this->saveSccpDevice($request);
                 return array('status' => true, 'search' => '?display=sccp_phone', 'hash' => 'sccpdevice');
 

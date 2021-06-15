@@ -536,7 +536,7 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
     </page_group>
 
-    <page_group name="sccp_advant">
+    <page_group name="sccp_dev_vendor_conf">
         <label>Device Vendor Setting</label>
         <item type="IE" id="3" seq="98">
             <label>Log Server</label>
@@ -588,7 +588,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Timeout in HH:MM format to automatically turn off phone display if outside the time specified by "daysDisplayNotActive", "displayOnTime" and "displayOnTimeout".</help>
         </item>
-
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_settingsaccess</name>
             <label>Settings Access</label>
@@ -688,8 +687,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="1">Enabled</button>
             <help> Enable Link Layer Discovery Protocol on the PC (computer) port.</help>
         </item>
-
-
     </page_group>
 
     <page_group name="sccp_srst">
@@ -1069,7 +1066,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <options placeholder="default"></options>
                 <class>sccp-custom</class>
             </input>
-            <help>Context where direct pickup search for extensions. if not set current contect will be use.</help>
+            <help>Context where direct pickup search for extensions. if not set current context will be use.</help>
         </item>
         <item type="IE" id="7">
             <label>Default pickup group</label>
@@ -1079,7 +1076,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <options placeholder="default"></options>
                 <class>sccp-custom</class>
             </input>
-            <help>Context where direct pickup search for extensions. if not set current contect will be use.</help>
+            <help>Context where direct pickup search for extensions. if not set current context will be use.</help>
         </item>
 
         <item type="IS" id="11">

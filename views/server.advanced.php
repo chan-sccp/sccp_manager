@@ -9,12 +9,12 @@
 <form autocomplete="off" name="frm_advanced" id="frm_ntp" class="fpbx-submit" action="" method="post">
     <input type="hidden" name="category" value="advancedform">
     <input type="hidden" name="Submit" value="Submit">
-    
+
 <?php
-    
+
         echo $this->showGroup('sccp_srst', 1);
-        echo $this->showGroup('sccp_advant', 1);
+        echo $this->showGroup('sccp_dev_vendor_conf', 1,'sccp',null,false);
 //        echo $this->showGroup('sccp_dev_time',1);
 
-?>  
+?>
 </form>
