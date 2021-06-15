@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.2.0.9</version>
+	<version>14.2.0.10</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -22,6 +22,7 @@
 		 * Version 14.2.0.5 * - Replace Modals with fpbxToast
 		 * Version 14.2.0.8 * - Fix uninstaller and create backup
 		 * Version 14.2.0.9 * - Bug Fix - incorrect response class for Reset Token Device
+		 * Version 14.2.0.10 * - Bug Fix - line not assigned on device creation
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>
