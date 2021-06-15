@@ -54,7 +54,7 @@ $keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Displa
                         <div id="toolbar-all">
                             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" onclick="load_oncliсk(this,'*new*')" data-target=".edit_new_keyset"><i class="fa fa-bolt"></i> <?php echo _("Add Keyset"); ?></button>
             </div>
-                        <table data-cookie="true" data-cookie-id-table="sccp_keyset-all" data-url="ajax.php?module=sccp_manager&amp;command=getSoftKey&amp;type=active" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list" id="softkey-all" data-unique-id="softkeys">
+                        <table data-cookie="true" data-cookie-id-table="sccp_keyset-all" data-url="ajax.php?module=sccp_manager&command=getSoftKey&type=active" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list" id="softkey-all" data-unique-id="softkeys">
                             <thead>
                                 <tr>
 <!--                                    <th data-checkbox="true"></th> -->
@@ -72,7 +72,7 @@ $keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Displa
                 </tr>
                             </thead>
                             <tbody>
-                                
+
                             </tbody>
             </table>
             </div>
@@ -101,9 +101,9 @@ $keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Displa
                         <span id="new_devmodel-help" class="help-block fpbx-help-block">Help. max len = 15</span>
                 </div></div></div>
 
-                
+
                 <ul class="nav nav-tabs" role="tablist">
-                
+
 <?php
                 $i = 0;
 foreach ($keysetarray as $key => $value) {
@@ -129,7 +129,7 @@ foreach ($keysetarray as $key => $value) {
     }
     echo '<div class="element-container"><div class="row"><div class="form-group"><div class="col-md-3"><label class="control-label" for="'.$key.'">'._($keynamearray[$key]['name']).'</label>';
     echo '<i class="fa fa-question-circle fpbx-help-icon" data-for="'.$key.'"></i></div>';
-                    
+
         echo '<div class="col-md-4"><select multiple class="form-control sccpmultiselect" name="av_'.$key.'" id="source_'.$key.'">';
     $row_dada= explode(',', $value);
     foreach ($row_dada as $data) {
@@ -145,19 +145,19 @@ foreach ($keysetarray as $key => $value) {
     echo '</div></div></div></div>';
     $i ++;
 }
-?>                                        
-                </div>    
-                
+?>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary sccp_update" data-id="keyset_add" data-mode="new" id="keyset_add" data-dismiss="modal">Save</button>
-            </div>            
+            </div>
         </div>
     </div>
 </div>
 
-    
+
 
 <script>
     function DispayActionsKeyFormatter(value, row, index) {

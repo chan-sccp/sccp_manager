@@ -31,25 +31,14 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         );
     }
 
-/*        public function addDevice1($id, $settings) {
-                $sql = 'INSERT INTO sccp (id, keyword, data, flags) values (?,?,?,?)';
-                $sth = $this->database->prepare($sql);
-                $settings = is_array($settings)?$settings:array();
-                foreach($settings as $key => $setting) {
-                        $sth->execute(array($id,$key,$setting['value'],$setting['flag']));
-                }
-                return true;
-        }
-*/
     public function addDevice($id, $settings) {
+        global $currentcomponent;
         $add_fld = array ("name"=>'label',"outboundcid"=>'cid_num',"langcode"=>'language',"extdisplay"=>'description');
-        //                print_r($_REQUEST);
-        //                echo '<br><br>';
-        //                die(print_r($settings));
         $settings['cid_num']['value'] = '';
-        $settings['cid_name']['value'] = $label;
+        $settings['cid_name']['value'] = '';
         $settings['mailbox']['value']= '';
 
+        // Add $_REQUEST values to settings
         if (isset($_REQUEST)){
             foreach($add_fld as $key => $val) {
                 if (!empty($_REQUEST[$key])){
@@ -65,10 +54,8 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         }
         $settings['allow']['value'] = implode(",", $allow_codec);
 
-	      // parse outboundcid content into cid_num and cid_name sccpline fields
-        if (empty($settings['cid_num']['value'])) {
-            $settings['cid_num']['value'] = $id;
-        } else {
+	      // If set, parse outboundcid content into cid_num and cid_name sccpline fields
+        if (!empty($settings['cid_num']['value'])) {
             $outboundcid = $settings['cid_num']['value'];
             if (preg_match('/"(.*)"\s?<(.*)>/', $outboundcid, $matches)) {
                 $settings['cid_num']['value'] = $matches[2];
@@ -84,7 +71,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         }
 
-        //                die(print_r($settings));
         $tech = Array();
         $sql = "DESCRIBE sccpline";
         foreach ($this->database->query($sql) as $row) {
@@ -102,6 +88,15 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
         $sth = $this->database->prepare($sql);
         $sth->execute();
+        /*
+        If called from SCCP Phone, redirect to SCCP Phone page on submit.
+        This was last function in add so should be safe.
+        Prefer to add in Hooks, but is not followed even if set for $currentcomponent
+        Do nothing if called from QuickCreateExtension when display is not set
+        */
+        if (isset($_REQUEST['display'])) {
+            redirect("config.php?display=sccp_phone", false);
+        }
         return true;
     }
 

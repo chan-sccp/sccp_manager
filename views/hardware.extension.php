@@ -18,12 +18,9 @@ if (!empty($this->sccpvalues['system_rouminguser'])) {
             <div class="display no-border">
                 <h1><?php echo _("Extensions (Line)") ?></h1>
                 <div id="toolbar-sccp-extension">
-                    <a class="btn btn-default" href="config.php?display=extensions&amp;tech_hardware=sccp_custom"><i class="fa fa-plus">&nbsp;</i><?php echo _("Add Extension") ?></a>
-                    <button id="remove-sccp-extension" class="btn btn-danger btn-remove" data-type="extensions" data-section="sccp-extension" disabled>
-                        <i class="glyphicon glyphicon-remove"></i> <span><?php echo _('Delete') ?></span>
-                    </button>
+                    <a class="btn btn-default" href="config.php?display=extensions&tech_hardware=sccp_custom"><i class="fa fa-plus">&nbsp;</i><?php echo _("Add Extension") ?></a>
                 </div>
-                <table data-cookie="true" data-cookie-id-table="sccp-extension-table" data-url="ajax.php?module=sccp_manager&amp;command=getExtensionGrid&amp;type=sccp" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sip" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list-sccp" id="table-sccp-extension" data-id="name">
+                <table data-cookie="true" data-cookie-id-table="sccp-extension-table" data-url="ajax.php?module=sccp_manager&command=getExtensionGrid&type=sccp" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sip" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list-sccp" id="table-sccp-extension" data-id="name">
                     <thead>
                         <tr>
 <!--                            <th data-checkbox="true"></th> -->
@@ -47,7 +44,7 @@ if (!empty($this->sccpvalues['system_rouminguser'])) {
         if (rmn_dev == 'yes') {
             exp_dev += '<a href="config.php?display=sccp_phone&amp;tech_hardware=r_user&amp;ru_id=' + row['name'] + '"><i class="fa fa-bicycle"></i></a> &nbsp;';
         }
-        return  exp_dev;        
+        return  exp_dev;
         return  '<a href="config.php?display=extensions&amp;extdisplay=' + row['name'] + '"><i class="fa fa-pencil"></i></a> &nbsp;<a class="clickable delete" data-id="' + row['name'] + '"><i class="fa fa-trash"></i></a>';
     }
 </script>

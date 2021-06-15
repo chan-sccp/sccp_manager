@@ -25,37 +25,7 @@ $(document).ready(function () {
         }
     });
 
-    /*
-     $('#ajaxbackup').on('click', function (e) {
-     var vdata = '';
-     var snd_command = 'backupsettings';
-     $('.fpbx-submit').each(function () {
-     vdata = vdata + $(this).serialize() + '&';
-     });
-
-     $.ajax({
-     type: 'POST',
-     url: 'ajax.php?module=sccp_manager&command=' + snd_command,
-     data: vdata,
-     success: function (data) {
-     if (data.status === true) {
-     if (data.message) {
-     alert(data.message);
-     } else {
-     alert('Data Save');
-     }
-     } else {
-     if (Array.isArray(data.message)) {
-     data.message.forEach(function (entry) {
-     fpbxToast(entry, 'error', 'error');
-     });
-     }
-     }
-     }
-     });
-
-     });
-     */
+    // ajaxsubmit2 is "Save and continue" - saves form data and stays on form
     $('#ajaxsubmit2').on('click', function (e) {
         var vdata = '';
         var snd_command = 'savesettings';
@@ -85,7 +55,7 @@ $(document).ready(function () {
                     if (data.message) {
                         bs_alert(data.message,data.status);
                     } else {
-                        bs_alert('Data Save',data.status);
+                        fpbxToast(_('Data saved'),_('Data saved'), 'success');
                     }
                 } else {
                     bs_alert(data.message,data.status);
@@ -93,7 +63,7 @@ $(document).ready(function () {
             }
         });
     });
-
+    // ajaxsubmit is save and close form
     $('#ajaxsubmit').on('click', function (e) {
         var vdata = '';
         var snd_command = 'savesettings';
@@ -118,9 +88,6 @@ $(document).ready(function () {
             data: vdata,
             success: function (data) {
                 if (data.status === true) {
-                    if (data.message) {
-                        var old_style = bs_alert(data.message, data.status, data.reload);
-                    }
                     if (data.table_reload === true) {
                         $('table').bootstrapTable('refresh');
                     }
@@ -136,9 +103,12 @@ $(document).ready(function () {
                     if (data.search != null) {
                         location.search = data.search;
                     }
-//                    if (data.reload === true ) {
-                    if (data.reload === true && old_style ===true ) {
-                        location.reload();
+                    if (data.message) {
+                        fpbxToast(_('Configuration saved. Reloading Module'),_('Configuration saved'), 'success');
+                        if (data.reload === true) {
+                            //Need setTimout or reload will kill Toast
+                            setTimeout(function(){location.reload();},500);
+                        }
                     }
                 } else {
                     bs_alert(data.message,data.status);
@@ -183,23 +153,23 @@ $(document).ready(function () {
         }
 //    console.log("delete : " + data);
         if (dev_cmd != '') {
-            if (confirm(_('Are you sure you wish to delete "' + dev_id.toString().toUpperCase() + '" inormation ?'))) {
+            if (confirm(_('Are you sure you wish to delete "' + dev_id.toString().toUpperCase() + '" information?'))) {
                 $.ajax({
                     type: 'POST',
                     url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
                     command: dev_cmd,
                     data: ext_data,
                     success: function (data) {
-//                console.log(data);
                         if (data.status === true) {
-                            if (data.message) {
-                                var old_style = bs_alert(data.message, data.status, data.reload);
-                            }
                             if (data.table_reload === true) {
                                 $('table').bootstrapTable('refresh');
                             }
-                            if (data.reload === true && old_style === true ) {
-                                location.reload();
+                            if (data.message) {
+                                fpbxToast(data.message,_('Operation Result'), 'success');
+                                if (data.reload === true) {
+                                    //Need setTimout or reload will kill Toast
+                                    setTimeout(function(){location.reload();},500);
+                                }
                             }
                         } else {
                             bs_alert(data.message,data.status);
@@ -610,13 +580,13 @@ $(document).ready(function () {
             var i = 0;
             var conf_msg = '??????';
             if ($(this).data('id') === 'reset_dev') {
-                conf_msg = 'Reset All device ?';
+                conf_msg = 'Reset ALL devices ?';
             }
             if ($(this).data('id') === 'reset_token') {
-                conf_msg = 'Reset Token on All device ?';
+                conf_msg = 'Reset Token on ALL devices ?';
             }
             if ($(this).data('id') === 'update_button_label') {
-                conf_msg = 'Update Butons Labels on All device ?';
+                conf_msg = 'Update Button Labels on ALL devices ?';
             }
             $('#table-sccp').bootstrapTable('getSelections').forEach(function (entry) {
                 datas = datas + 'name[' + i + ']=' + entry['name'] + '&';
@@ -645,24 +615,24 @@ $(document).ready(function () {
                 success: function (data) {
 //                    console.log(data);
                     if (data.status === true) {
-                        if (data.message) {
-                            var old_style = bs_alert(data.message, data.status,data.reload);
-                        }
                         if (data.table_reload === true) {
                             $('table').bootstrapTable('refresh');
                         }
-                        if (data.reload === true && old_style === true) {
-                            location.reload();
+                        if (data.message) {
+                            fpbxToast(data.message,_('Operation Result'), 'success');
+                            if (data.reload === true) {
+                                //Need setTimout or reload will kill Toast
+                                setTimeout(function(){location.reload();},500);
+                            }
                         }
                     } else {
                         if (Array.isArray(data.message)) {
                             data.message.forEach(function (entry) {
-                                bs_alert(entry,data.status);
-                                //fpbxToast(entry, 'error', 'error');
+                                fpbxToast(data.message[1],_('Error Result'), 'warning');
                             });
                         } else {
                             if (data.message) {
-                                bs_alert(data.message,data.status);
+                                fpbxToast(data.message,_('Error Result'), 'warning');
                             } else {
                                 if (data) {
                                     bs_alert(data,data.status);

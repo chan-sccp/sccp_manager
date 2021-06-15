@@ -239,7 +239,6 @@ class dbinterface
         // mode update - update / replace record
         $dbh = \FreePBX::Database();
         $result = false;
-        $delete_value = array();
         switch ($table_name) {
             case 'sccpsettings':
                 if ($mode == 'replace') {  // Change mode name to be more transparent
@@ -250,9 +249,8 @@ class dbinterface
                 }
                 foreach ($save_value as $key => $dataArr) {
                     if (!empty($dataArr) && isset($dataArr['data'])) {
-                        if ($dataArr['data'] == $this->val_null) {
-                              $delete_value[] = $save_value[$key]['keyword'];
-                              break;
+                        if (empty($dataArr['data'])) {
+                            continue;
                         }
                     }
                     $stmt->bindParam(':keyword',$dataArr['keyword'],\PDO::PARAM_STR);
@@ -260,13 +258,6 @@ class dbinterface
                     $stmt->bindParam(':seq',$dataArr['seq'],\PDO::PARAM_INT);
                     $stmt->bindParam(':type',$dataArr['type'],\PDO::PARAM_INT);
                     $result = $stmt->execute();
-                }
-                if (!empty($delete_value)) {
-                    $stmt = $dbh->prepare('DELETE FROM sccpsettings WHERE keyword = :keyword');
-                    foreach ($delete_value as $del_key) {
-                        $stmt->bindParam(':keyword',$del_key,\PDO::PARAM_STR);
-                        $result = $stmt->execute();
-                    }
                 }
                 break;
             case 'sccpdevmodel':    // Fall through to next intentionally

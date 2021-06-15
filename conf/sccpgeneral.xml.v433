@@ -492,7 +492,7 @@ and open the template in the editor. Base Version before all crash :-)
             <default>off</default>
             <button value="on">Yes</button>
             <button value="off">No</button>
-            <help>Enabling NTP settings in device configuration.</help>
+            <help>Enable NTP settings in device configuration.</help>
         </item>
         <item type="IE" id="2" seq="10">
             <label>NTP Server name (ip)</label>
@@ -501,7 +501,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <default>pool.ntp.org</default>
                 <value>pool.ntp.org</value>
             </input>
-            <help>NTP Server name or IP</help>
+            <help>NTP Server name or IP address</help>
         </item>
         <item type="IS" id="3" seq="10">
             <name>ntp_server_mode</name>
@@ -532,7 +532,7 @@ and open the template in the editor. Base Version before all crash :-)
             <select>
                 <default>UTC</default>
             </select>
-            <help>Date Format: Time zone</help>
+            <help>System Time zone - this is set by FreePBX and can be changed in Settings : Advanced Settings</help>
         </item>
     </page_group>
 

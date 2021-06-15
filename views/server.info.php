@@ -117,7 +117,7 @@ if ($mysql_info['Value'] <= '2000') {
 }
 
 
-// Check Time Zone comatable
+// Check Time Zone compatibility
 $conf_tz = $this->sccpvalues['ntp_timezone']['data'];
 $cisco_tz = $this->extconfigs->getextConfig('sccp_timezone', $conf_tz);
 if ($cisco_tz['offset'] == 0) {

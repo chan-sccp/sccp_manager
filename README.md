@@ -14,7 +14,7 @@
 [![Download Chan-SCCP channel driver for Asterisk](https://img.shields.io/sourceforge/dt/chan-sccp-b.svg)](https://github.com/chan-sccp/chan-sccp/releases/latest)
 [![Chan-SCCP Documentation](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/chan-sccp/chan-sccp/wiki)
 
-This module has been developed to help IT Staff with their Asterisk-Cisco infrastructure deployment,
+This FreePBX module has been developed to help IT Staff with their Asterisk-Cisco infrastructure deployment,
 providing easy provisioning and management of Cisco IP phones and extensions in a similar way to Cisco CallManager.
 The idea of creating a module is borrowed from (https://github.com/Cynjut/SCCP_Manager), and was further developed and managed
 by PhantomVl (https://github.com/PhantomVl/sccp_manager) who has been unavailable for some time. sccp_manager relies heavily
@@ -45,9 +45,6 @@ apt-get install PHP7.3-zip
 - chan-sccp module 4.3.4 (or later) channel driver for Asterisk: [See our WIKI](https://github.com/chan-sccp/chan-sccp/wiki/Building-and-Installation-Guide)
   - sccp_manager expects these configure flags to be set during compilation:
     ```./configure  --enable-conference --enable-advanced-functions --enable-distributed-devicestate --enable-video```
-  - Creating mysql DB from sorce
-    ```mysql -u root asterisk < mysql-v5_enum.sql```
-
 
 - TFTP Server running under (recommended) /tftpboot/ [See our WIKI] (https://github.com/chan-sccp/chan-sccp/wiki/setup-tftp-service)
   - You will need the phone settings templates. You can use the templates taken from the distribution "chan-sccp"
@@ -68,30 +65,28 @@ apt-get install PHP7.3-zip
 How to install sccp_manager
 -----
 
-1. Creating mysql DB from source using
-```
-mysql -p asterisk < /usr/src/chan-sccp/conf/mysql-v5_enum.sql
-```
-2. Create a new tab and log in to FreePBX
-3. Go to Admin -> Module Admin
-4. Click Upload Modules.
-5. Enter one of the following urls:
+1. Log in to FreePBX
+2. Go to Admin -> Module Admin
+3. Click Upload Modules.
+4. Enter one of the following urls:
 
 Stable
 ```
-https://github.com/chan-sccp/sccp_manager/archive/refs/tags/Legacy-v2.tar.gz
+https://github.com/chan-sccp/sccp_manager/archive/refs/heads/Legacy.zip
 ```
-Develop. _This module can be updated through module admin as modifications are made, but may still have issues_
+Develop.
+This version can be updated through module admin as modifications are made (pending fix by FreePbx)
+_This is development software and so may have issues_
 ```
 https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
 ```
-6. Click Download From Web.
-7. Click Manage Local Modules.
-8. Find and click SCCP Manager. Check Install. Click Process button.
-9. Confirm installation.
-10. Close Status window.
-11. Apply Config to FreePBX.
-12. Continue to [Using-SCCP_Manager-to-Manage-chan-sccp](https://github.com/chan-sccp/chan-sccp/wiki/Using-SCCP_Manager-to-Manage-chan-sccp)
+5. Click Download From Web.
+6. Click Manage Local Modules.
+7. Find and click SCCP Manager. Check Install. Click Process button.
+8. Confirm installation.
+9. Close Status window.
+10. Apply Config to FreePBX.
+11. Continue to [Using-SCCP_Manager-to-Manage-chan-sccp](https://github.com/chan-sccp/chan-sccp/wiki/Using-SCCP_Manager-to-Manage-chan-sccp)
 
 ### Module update to latest state
 
