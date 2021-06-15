@@ -392,7 +392,7 @@ class SCCPTokenAckAction extends ActionMessage
     {
         parent::__construct('SCCPTokenAck');
         $this->setKey('DeviceId', $DeviceName);
-        $this->setResponseHandler("Generic");
+        $this->setResponseHandler("SCCPGeneric");
     }
 }
 

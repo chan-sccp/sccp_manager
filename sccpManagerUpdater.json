@@ -2,20 +2,24 @@
     "rawname": "sccp_manager",
     "repo": "extended",
     "name": "Sccp Manager",
-    "version": "14.2.0.3",
+    "version": "14.2.0.2",
     "publisher": "Steve Lad",
     "license": "GPL",
     "licenselink": "http://www.gnu.org/licenses/gpl.txt",
-    "changelog": "*14.2.0.3* Fix module database definition\n*14.2.0.3* Fix module database definition\n*14.2.0.2* First release of new version without old interface\n*13.0.0.1* Packaging of ver 1.0.0.1\n*12.0.0.1* Packaging of ver 1.0.0.1",
-    "category": "Sccp Connectivity",
+    "changelog": [
+        "*14.2.0.2* First release of new version without old interface",
+        "*13.0.0.1* Packaging of ver 1.0.0.1",
+        "*12.0.0.1* Packaging of ver 1.0.0.1"
+    ],
+    "category": "Settings",
     "description": "The Cisco Manager module lets you manage the chan-sccp module.",
     "depends": {
-        "version": "14.0"
+        "version": "14.0",
     },
     "supported": {
         "version": "13.0"
     },
-    "location": "https://github.com/chan-sccp/sccp_manager/archive/refs/tags/v14.2.0.3.tar.gz",
-    "md5sum": "9aff57a6553a4a3649e056013fe1758f",
-    "packaged": "1623001021"
+    "location": "https://github.com/chan-sccp/sccp_manager/archive/refs/tags/V14.2.0.2.tar.gz",
+    "md5sum": "885935a928b29927a2f9006eda20b549",
+    "packaged": "3362963"
 }

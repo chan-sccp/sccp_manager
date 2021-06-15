@@ -946,6 +946,13 @@ foreach ($items as $child) {
             }
         }
 
+        $time_regions = array('Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Europe', 'Russian', 'Indian', 'Pacific');
+        $time_zone_global = DateTimeZone::listIdentifiers(DateTimeZone::ALL_WITH_BC);
+        $time_zone_ru = array('Russian/Kaliningrad', 'Russian/Moscow', 'Russian/St.Peterburg', 'Russian/Samara', 'Russian/Novosibirsk', 'Russian/Ekaterinburg', 'Russian/Irkutsk', 'Russian/Yakutsk', 'Russian/Khabarovsk', 'Russian/Vladivostok', 'Russian/Sakhalin', 'Russian/Magadan', 'Russian/Kamchatka');
+        $time_zone_list = array_merge($time_zone_global, $time_zone_ru);
+        $optgroup = '';
+        sort($time_zone_list);
+
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
@@ -956,23 +963,45 @@ foreach ($items as $child) {
             }
         }
 
-        $child->value = \date_default_timezone_get();
+        if (empty($child->value)) {
+            $child->value = \date_default_timezone_get();
+//            if (!empty($child->default)){
+//                $child->value = $child->default;
+//            }
+        }
 
         echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
-           <div class="row">
-              <div class="form-group">
-                  <div class="col-md-3">
+           <div class="row"> <div class="form-group">
+
+                   <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
-                  </div>
-                  <div class="col-md-9"> <?php
-                      echo  $child->value;
-                  ?>
-                  </div>
-                </div>
-            </div>
+                    </div>
+                    <div class="col-md-9"> <!-- <div class = "lnet form-group form-inline" data-nextid=1> --> <?php
+                            echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
+                    foreach ($time_zone_list as $opt_key) {
+                        $z = explode('/', $opt_key, 2);
+                        if (count($z) != 2 || !in_array($z[0], $time_regions)) {
+                            continue;
+                        }
+                        if ($optgroup != $z[0]) {
+                            if ($optgroup !== '') {
+                                echo  '</optgroup>';
+                            }
+                            $optgroup = $z[0];
+                            echo   '<optgroup label="' . htmlentities($z[0]) . '">';
+                        }
+                        echo  '<option value="' . htmlentities($opt_key) . '" label="' . htmlentities(str_replace('_', ' ', $z[1])) . '"' . ($opt_key == $child->value ? ' selected="selected" >' : '>'). htmlentities(str_replace('_', ' ', $opt_key)) . '</option>';
+                    }
+                    if ($optgroup !== '') {
+                        echo '</optgroup>';
+                    }
+
+                    ?> </select>
+                    <!-- </div> --> </div>
+            </div></div>
             <div class="row"><div class="col-md-12">
                 <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
             </div></div>

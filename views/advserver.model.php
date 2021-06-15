@@ -33,7 +33,7 @@
                         </ul>
                     </div>
                 </div>
-                <table data-cookie="true" data-row-style="SetRowColor" data-cookie-id-table="sccp_model-all" data-url="ajax.php?module=sccp_manager&command=getDeviceModel&type=enabled" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-model" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-condensed" id="table-models" data-id="model" data-unique-id="model">
+                <table data-cookie="true" data-row-style="SetRowColor" data-cookie-id-table="sccp_model-all" data-url="ajax.php?module=sccp_manager&amp;command=getDeviceModel&amp;type=enabled" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-model" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-condensed" id="table-models" data-id="model" data-unique-id="model">
                    <thead>
                         <tr>
                             <th data-checkbox="true"></th>
@@ -263,13 +263,13 @@
 
     function SetColColorFirm(value, row, index) {
         if (row['validate'].split(';')[0] === 'no') {
-            return  "File not found<br />" + value;
+            return  'Not found '+ value;
         }
         return value;
     }
     function SetColColorTempl(value, row, index) {
         if (row['validate'].split(';')[1] === 'no') {
-            return  "File not found<br /> " + value ;
+            return  'Not found '  + value ;
         }
         return value;
 

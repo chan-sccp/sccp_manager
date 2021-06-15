@@ -25,7 +25,37 @@ $(document).ready(function () {
         }
     });
 
-    // ajaxsubmit2 is "Save and continue" - saves form data and stays on form
+    /*
+     $('#ajaxbackup').on('click', function (e) {
+     var vdata = '';
+     var snd_command = 'backupsettings';
+     $('.fpbx-submit').each(function () {
+     vdata = vdata + $(this).serialize() + '&';
+     });
+
+     $.ajax({
+     type: 'POST',
+     url: 'ajax.php?module=sccp_manager&command=' + snd_command,
+     data: vdata,
+     success: function (data) {
+     if (data.status === true) {
+     if (data.message) {
+     alert(data.message);
+     } else {
+     alert('Data Save');
+     }
+     } else {
+     if (Array.isArray(data.message)) {
+     data.message.forEach(function (entry) {
+     fpbxToast(entry, 'error', 'error');
+     });
+     }
+     }
+     }
+     });
+
+     });
+     */
     $('#ajaxsubmit2').on('click', function (e) {
         var vdata = '';
         var snd_command = 'savesettings';
@@ -55,7 +85,7 @@ $(document).ready(function () {
                     if (data.message) {
                         bs_alert(data.message,data.status);
                     } else {
-                        fpbxToast(_('Data saved'),_('Data saved'), 'success');
+                        bs_alert('Data Save',data.status);
                     }
                 } else {
                     bs_alert(data.message,data.status);
@@ -63,7 +93,7 @@ $(document).ready(function () {
             }
         });
     });
-    // ajaxsubmit is save and close form
+
     $('#ajaxsubmit').on('click', function (e) {
         var vdata = '';
         var snd_command = 'savesettings';
@@ -88,6 +118,9 @@ $(document).ready(function () {
             data: vdata,
             success: function (data) {
                 if (data.status === true) {
+                    if (data.message) {
+                        var old_style = bs_alert(data.message, data.status, data.reload);
+                    }
                     if (data.table_reload === true) {
                         $('table').bootstrapTable('refresh');
                     }
@@ -103,12 +136,9 @@ $(document).ready(function () {
                     if (data.search != null) {
                         location.search = data.search;
                     }
-                    if (data.message) {
-                        fpbxToast(_('Configuration saved. Reloading Module'),_('Configuration saved'), 'success');
-                        if (data.reload === true) {
-                            //Need setTimout or reload will kill Toast
-                            setTimeout(function(){location.reload();},500);
-                        }
+//                    if (data.reload === true ) {
+                    if (data.reload === true && old_style ===true ) {
+                        location.reload();
                     }
                 } else {
                     bs_alert(data.message,data.status);
@@ -153,23 +183,23 @@ $(document).ready(function () {
         }
 //    console.log("delete : " + data);
         if (dev_cmd != '') {
-            if (confirm(_('Are you sure you wish to delete "' + dev_id.toString().toUpperCase() + '" information?'))) {
+            if (confirm(_('Are you sure you wish to delete "' + dev_id.toString().toUpperCase() + '" inormation ?'))) {
                 $.ajax({
                     type: 'POST',
                     url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
                     command: dev_cmd,
                     data: ext_data,
                     success: function (data) {
+//                console.log(data);
                         if (data.status === true) {
+                            if (data.message) {
+                                var old_style = bs_alert(data.message, data.status, data.reload);
+                            }
                             if (data.table_reload === true) {
                                 $('table').bootstrapTable('refresh');
                             }
-                            if (data.message) {
-                                fpbxToast(data.message,_('Operation Result'), 'success');
-                                if (data.reload === true) {
-                                    //Need setTimout or reload will kill Toast
-                                    setTimeout(function(){location.reload();},500);
-                                }
+                            if (data.reload === true && old_style === true ) {
+                                location.reload();
                             }
                         } else {
                             bs_alert(data.message,data.status);
@@ -580,13 +610,13 @@ $(document).ready(function () {
             var i = 0;
             var conf_msg = '??????';
             if ($(this).data('id') === 'reset_dev') {
-                conf_msg = 'Reset ALL devices ?';
+                conf_msg = 'Reset All device ?';
             }
             if ($(this).data('id') === 'reset_token') {
-                conf_msg = 'Reset Token on ALL devices ?';
+                conf_msg = 'Reset Token on All device ?';
             }
             if ($(this).data('id') === 'update_button_label') {
-                conf_msg = 'Update Button Labels on ALL devices ?';
+                conf_msg = 'Update Butons Labels on All device ?';
             }
             $('#table-sccp').bootstrapTable('getSelections').forEach(function (entry) {
                 datas = datas + 'name[' + i + ']=' + entry['name'] + '&';
@@ -615,24 +645,24 @@ $(document).ready(function () {
                 success: function (data) {
 //                    console.log(data);
                     if (data.status === true) {
+                        if (data.message) {
+                            var old_style = bs_alert(data.message, data.status,data.reload);
+                        }
                         if (data.table_reload === true) {
                             $('table').bootstrapTable('refresh');
                         }
-                        if (data.message) {
-                            fpbxToast(data.message,_('Operation Result'), 'success');
-                            if (data.reload === true) {
-                                //Need setTimout or reload will kill Toast
-                                setTimeout(function(){location.reload();},500);
-                            }
+                        if (data.reload === true && old_style === true) {
+                            location.reload();
                         }
                     } else {
                         if (Array.isArray(data.message)) {
                             data.message.forEach(function (entry) {
-                                fpbxToast(data.message[1],_('Error Result'), 'warning');
+                                bs_alert(entry,data.status);
+                                //fpbxToast(entry, 'error', 'error');
                             });
                         } else {
                             if (data.message) {
-                                fpbxToast(data.message,_('Error Result'), 'warning');
+                                bs_alert(data.message,data.status);
                             } else {
                                 if (data) {
                                     bs_alert(data,data.status);

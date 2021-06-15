@@ -140,7 +140,7 @@ trait ajaxHelper {
             case 'reset_dev':
                 $msg = '';
                 $msgr = array();
-                $msgr[] = "Reset command sent to device(s) ";
+                $msgr[] = 'Reset command send';
                 if (!empty($request['name'])) {
                     foreach ($request['name'] as $idv) {
                         $msg = strpos($idv, 'SEP-');
@@ -153,14 +153,13 @@ trait ajaxHelper {
                                 $msgr[] = $msg . ' ' . $res['Response'] . ' ' . $res['data'];
                             }
                         }
-
                         if ($idv == 'all') {
                             $dev_list = $this->aminterface->sccp_get_active_device();
                             foreach ($dev_list as $key => $data) {
                                 if ($cmd_id == 'reset_token') {
                                     if (($data['token'] == 'Rej') || ($data['status'] == 'Token ')) {
                                         $res = $this->aminterface->sccpDeviceReset($idv, 'tokenack');
-                                        $msgr[] = 'Sent Token reset to :' . $key;
+                                        $msgr[] = 'Send Token reset to :' . $key;
                                     }
                                 } else {
                                     $res = $this->aminterface->sccpDeviceReset($idv, 'reset');
@@ -170,7 +169,7 @@ trait ajaxHelper {
                         }
                     }
                 }
-                return array('status' => (($res['Response'] == 'Error')? false : true ), 'message' => $msgr, 'reload' => false, 'table_reload' => true);
+                return array('status' => true, 'message' => $msgr, 'reload' => true);
                 break;
             case 'update_button_label':
                 $msg = '';
@@ -186,8 +185,8 @@ trait ajaxHelper {
                     }
                 }
                 $res = $this->updateSccpButtons($hw_list);
-                $msg .= $res['Response'] . (empty($res['data']) ? '' : ' raw data: ' . $res['data'] . ' ');
-                return array('status' => true, 'message' => 'Update Buttons Labels Complete: ' . $msg, 'reload' => false, 'table_reload' => true);
+                $msg .= $res['Response'] . ' raw: ' . $res['data'] . ' ';
+                return array('status' => true, 'message' => 'Update Butons Labels Complite ' . $msg, 'reload' => true);
             case 'model_add':
                 $save_settings = array();
                 $key_name = array('model', 'vendor', 'dns', 'buttons', 'loadimage', 'loadinformationid', 'nametemplate');

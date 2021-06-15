@@ -45,7 +45,7 @@ $db_config   = Get_DB_config($sccp_compatible);
 $sccp_db_ver = CheckSCCPManagerDBVersion();
 
 // BackUp Old config
-createBackUpConfig();
+CreateBackUpConfig();
 RenameConfig();
 
 InstallDB_updateSchema($db_config);
@@ -708,7 +708,7 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
     }
     return true;
 }
-function createBackUpConfig()
+function CreateBackUpConfig()
 {
     global $amp_conf;
     outn("<li>" . _("Creating Config BackUp") . "</li>");
@@ -718,7 +718,7 @@ function createBackUpConfig()
     $dir = $cnf_int->get('ASTETCDIR');
 
     $fsql = $dir.'/sccp_backup_'.date("Ymd").'.sql';
-    $result = exec('mysqldump '.$amp_conf['AMPDBNAME'].' --password='.$amp_conf['AMPDBPASS'].' --user='.$amp_conf['AMPDBUSER'].' --single-transaction >'.$fsql);
+    $result = exec('mysqldump '.$amp_conf['AMPDBNAME'].' --password='.$amp_conf['AMPDBPASS'].' --user='.$amp_conf['AMPDBUSER'].' --single-transaction >'.$fsql, $output);
 
     try {
         $zip = new \ZipArchive();
@@ -744,7 +744,7 @@ function createBackUpConfig()
         outn("<li>" . _("Error Creating BackUp: ") . $filename ."</li>");
     }
     unlink($fsql);
-    outn("<li>" . _("Config backup created: ") . $filename ."</li>");
+    outn("<li>" . _("Create Config BackUp: ") . $filename ."</li>");
 }
 
 function RenameConfig()
@@ -793,23 +793,18 @@ function Setup_RealTime()
 
     // Check extconfig file for correct connector values
     $ext_conf = '';
-    $ext_conf_file = '';
+    $ext_conf_file = 'extconfig.conf';
     $backup_ext = array('_custom.conf', '_additional.conf','.conf');
     foreach ($backup_ext as $value) {
         if (file_exists($dir . '/extconfig' . $value)) {
             // Last possibility is normal file extconfig.conf
-            $ext_conf_file = 'extconfig' . $value;
+            $ext_conf_file =  'extconfig' . $value;
             $ext_conf = $cnf_read->getConfig($ext_conf_file);
             break;
         }
     }
-    if (empty($ext_conf_file)) {
-        // Have not found a file, so will need to create. $ext_conf must be empty
-        $ext_conf_file = 'extconfig.conf';
-    }
 
     if (!empty($ext_conf)) {
-        // Have found a file and read a config. Now need to check required settings
         $currentExtSettings = array();
         $writeExtSettings = $ext_conf;
         if (empty($ext_conf['settings']['sccpdevice']) || ($ext_conf['settings']['sccpdevice'] !== $def_ext_config['sccpdevice'])) {
@@ -821,15 +816,9 @@ function Setup_RealTime()
             $writeExtSettings['settings']['sccpline'] = $def_ext_config['sccpline'];
         }
         if (!empty($writeExtSettings)) {
-            outn("<li>" . _("Updating extconfig file ...  ") . $ext_conf_file . "</li>");
+            outn("<li>" . _("Updating extconfig file ...") . "</li>");
             $cnf_wr->writeConfig($ext_conf_file, $writeExtSettings);
         }
-    } else {
-        // Either did not find file or file did not contain any config, so create and fill
-        outn("<li>" . _("Creating extconfig file ...  ") . $ext_conf_file . "</li>");
-        $writeExtSettings['settings']['sccpdevice'] = $def_ext_config['sccpdevice'];
-        $writeExtSettings['settings']['sccpline'] = $def_ext_config['sccpline'];
-        $cnf_wr->writeConfig($ext_conf_file, $writeExtSettings);
     }
 
     // Check database settings

@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.2.0.10</version>
+	<version>14.2.0.1</version>
 	<type>setup</type>
 	<category>Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -18,11 +18,6 @@
 		 * Version 14.0.0.1 * - Alfa Release new DB structure Add User mobility
 		 * Version 14.1.0.1 * - Migrated to chan-sccp repo
 		 * Version 14.2.0.1 * - Retired old interface - min chan-sccp v433
-		 * Version 14.2.0.2 * - Fix module database definition
-		 * Version 14.2.0.5 * - Replace Modals with fpbxToast
-		 * Version 14.2.0.8 * - Fix uninstaller and create backup
-		 * Version 14.2.0.9 * - Bug Fix - incorrect response class for Reset Token Device
-		 * Version 14.2.0.10 * - Bug Fix - line not assigned on device creation
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>
@@ -34,7 +29,7 @@
 	<md5sum></md5sum>
 	<database>
 		<table name="sccpdevice">
-			<field name="name" type="string" length="15" primarykey="true"/>
+			<field name="name" type="string" length="15" default="" primarykey="true"/>
 			<field name="type" type="string" length="15" notnull="false"/>
 			<field name="addon" type="string" length="45" notnull="false"/>
 			<field name="_description" type="string" length="45" notnull="false"/>
@@ -120,7 +115,7 @@
 			<field name="dnd" type="string" default="reject" notnull="false"/>
 			<field name="videomode" type="string" default="auto" notnull="false"/>
 			<field name="setvar" type="string" length="50" notnull="false"/>
-			<field name="name" type="string" length="40" primarykey="true"/>
+			<field name="name" type="string" length="40" default="" primarykey="true"/>
 			<field name="phonecodepage" type="string" length="50" notnull="false"/>
 			<key name="id" type="unique">
 				<column name="id"/>
@@ -131,7 +126,7 @@
 			 <field name="ref" type="string" length="15" default="" primarykey="true"/>
 			 <field name="reftype" type="string" length="15" default="sccpdevice" primarykey="true"/>
 			 <field name="instance" type="boolean" default="0" primarykey="true"/>
-			 <field name="buttontype" type="string" length="190" default="line" primarykey="true"/>
+			 <field name="buttontype" type="string" default="line" primarykey="true"/>
 			 <field name="name" type="string" length="36" notnull="false"/>
 			 <field name="options" type="string" length="100" notnull="false"/>
 			 <key name="ref" type="index">
@@ -140,11 +135,11 @@
 			 </key>
 		 </table>
 		 <table name="sccpdevmodel">
-			 <field name="model" type="string" length="20" primarykey="true"/>
-			 <field name="vendor" type="string" length="40" notnull="false"/>
+			 <field name="model" type="string" length="20" default="" primarykey="true"/>
+			 <field name="vendor" type="string" length="40" default="" notnull="false"/>
 			 <field name="dns" type="integer" default="1" notnull="false"/>
 			 <field name="buttons" type="integer" default="0" notnull="false"/>
-			 <field name="loadimage" type="string" length="40" notnull="false"/>
+			 <field name="loadimage" type="string" length="40" default="" notnull="false"/>
 			 <field name="loadinformationid" type="string" length="30" notnull="false"/>
 			 <field name="enabled" type="integer" default="0" notnull="false"/>
 			 <field name="nametemplate" type="string" length="50" notnull="false"/>
