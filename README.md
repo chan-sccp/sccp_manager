@@ -72,7 +72,7 @@ How to install sccp_manager
 
 Stable
 ```
-https://github.com/chan-sccp/sccp_manager/archive/refs/tags/Legacy-v2.tar.gz
+https://github.com/chan-sccp/sccp_manager/archive/refs/heads/Legacy.zip
 ```
 Develop.
 This version can be updated through module admin as modifications are made (pending fix by FreePbx)
