@@ -1171,7 +1171,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $db_field = $this->dbinterface->HWextension_db_SccpTableData("get_columns_sccpdevice");
         $hw_id = (empty($get_settings['sccp_deviceid'])) ? 'new' : $get_settings['sccp_deviceid'];
         $hw_type = (empty($get_settings['sccp_device_typeid'])) ? 'sccpdevice' : $get_settings['sccp_device_typeid'];
-        $update_hw = ($hw_id == 'new') ? 'update' : 'clear';
+        $update_hw = ($hw_id == 'new') ? 'add' : 'clear';
         $hw_prefix = 'SEP';
         if (!empty($get_settings[$hdr_prefix . 'type'])) {
             $value = $get_settings[$hdr_prefix . 'type'];
