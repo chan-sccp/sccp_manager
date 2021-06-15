@@ -8,9 +8,9 @@
 	<repo>extended</repo>
 	<description>SCCP Phone and Extension Manager</description>
 	<menuitems>
-		<sccpsettings	sort="1">Server Config</sccpsettings>
-		<sccp_adv	sort="2">System Parameters</sccp_adv>
-		<sccp_phone	sort="3">Phones Manager</sccp_phone>
+		<sccpsettings sort="1">Setup</sccpsettings>
+		<sccp_adv sort="2">Models and Keysets</sccp_adv>
+		<sccp_phone	sort="3">Extensions and Devices</sccp_phone>
 	</menuitems>
 	<changelog>
 		 * Version 13.0.0.1 * - Alfa Release tested on freepbx v.13.0.192.16, v.14.0.1.5
