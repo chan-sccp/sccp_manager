@@ -211,7 +211,7 @@ function Get_DB_config($sccp_compatible)
     // whereas previously they were all global.
     // By prefixing with an underscore, these fields are ignored by chan-sccp
     // which is not an issue as they are not "runtime"
-    $db_config_V5 = array(
+    $db_config_v5 = array(
         'sccpdevice' => array(
               '_logserver' => array('create' => "varchar(100) NULL default null", 'modify' => "VARCHAR(20)"),
               '_daysdisplaynotactive' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
@@ -225,10 +225,10 @@ function Get_DB_config($sccp_compatible)
               '_pcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
               '_spantopcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
               '_voicevlanaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablecdpswport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablecdppcport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablelldpswport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablelldppcport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')")
+              '_enablecdpswport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_enablecdppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_enablelldpswport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_enablelldppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')")
             )
     );
 
