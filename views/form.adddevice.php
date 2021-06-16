@@ -26,10 +26,12 @@ if (!empty($_REQUEST['new_id'])) {
     }
 }
 
+// Editing an existing Device
 if (!empty($_REQUEST['id'])) {
     $dev_id = $_REQUEST['id'];
     $dev_new = $dev_id;
     $db_res = $this->dbinterface->HWextension_db_SccpTableData('get_sccpdevice_byid', array("id" => $dev_id));
+  dbug('db_res', $db_res);
     foreach ($db_res as $key => $val) {
         if (!empty($val)) {
             switch ($key) {
@@ -65,9 +67,32 @@ if (!empty($_REQUEST['id'])) {
 //                    $val = after('/', $val);
 //                    break;
             }
+            $translateFieldArray = array('_logserver' => 'vendorconfig_logserver',
+                              '_daysdisplaynotactive' => 'vendorconfig_daysdisplaynotactive',
+                              '_displayontime' => 'vendorconfig_displayontime',
+                              '_displayonduration' => 'vendorconfig_displayonduration',
+                              '_displayidletimeout' => 'vendorconfig_displayidletimeout',
+                              '_settingsaccess' => 'vendorconfig_settingsaccess',
+                              '_videocapability' => 'vendorconfig_videocapability',
+                              '_webaccess' => 'vendorconfig_webaccess',
+                              '_webadmin' => 'vendorconfig_webadmin',
+                              '_pcport' => 'vendorconfig_pcport',
+                              '_spantopcport' => 'vendorconfig_spantopcport',
+                              '_voicevlanaccess' => 'vendorconfig_voicevlanaccess',
+                              '_enablecdpswport' => 'vendorconfig_enablecdpswport',
+                              '_enablecdppcport' => 'vendorconfig_enablecdppcport',
+                              '_enablelldpswport' => 'vendorconfig_enablelldpswport',
+                              '_enablelldppcport' => 'vendorconfig_enablelldppcport'
+                            );
+            if (array_key_exists($key,$translateFieldArray)) {
+                $def_val[$translateFieldArray[$key]] = array("keyword" => $translateFieldArray[$key], "data" => $val, "seq" => "99");
+                continue;
+            }
             $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
         }
     }
+      dbug('def_value', $def_val);
+
 }
 //print_r($db_res);
 

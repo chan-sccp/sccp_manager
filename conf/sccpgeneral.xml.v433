@@ -588,103 +588,104 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Timeout in HH:MM format to automatically turn off phone display if outside the time specified by "daysDisplayNotActive", "displayOnTime" and "displayOnTimeout".</help>
         </item>
+
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_settingsaccess</name>
             <label>Settings Access</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Whether a user can access the phone settings.</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_videocapability</name>
             <label>Video Capability</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help></help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_webaccess</name>
             <label>Web Access</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Enable the phone's HTTP server.</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_webadmin</name>
             <label>Web Admin</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Enable remote administration using the phone's HTTP server. 8821 model only.</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_pcport</name>
             <label>Pc Port</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="1">Disabled</button>
-            <button value="0">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Disable the PC (computer) port</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_spantopcport</name>
             <label>Span to PC Port</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="1">Disabled</button>
-            <button value="0">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Forward packets sent and received on the SW (network) port to the PC (computer) port.</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_voicevlanaccess</name>
             <label>Voice Vlan Access</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Allow devices connected to the PC (computer) port to access the voice VLAN.</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_enablecdpswport</name>
             <label>Cdp Sw Port</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Enable Cisco Discovery Protocol on the SW (network) port.</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_enablecdppcport</name>
             <label>Cdp PC Port</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Enable Cisco Discovery Protocol on the PC (computer) port.</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_enablelldpswport</name>
             <label>Link Layer Discovery Sw</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help>Enable Link Layer Discovery Protocol on the SW (network) port.</help>
         </item>
         <item type="IS" id="6" seq="98">
             <name>vendorconfig_enablelldppcport</name>
             <label>Link Layer Discovery PC</label>
-            <default></default>
+            <default>Inherit</default>
             <button value="">Inherit</button>
-            <button value="0">Disabled</button>
-            <button value="1">Enabled</button>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
             <help> Enable Link Layer Discovery Protocol on the PC (computer) port.</help>
         </item>
     </page_group>

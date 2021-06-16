@@ -568,7 +568,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
       dbug('Settings', $get_settings);
         $hdr_prefix = 'sccp_hw_';
         $hdr_arprefix = 'sccp_hw-ar_';
-        $hdr_vendPrefix = 'sccp_hw_vendor';
+        $hdr_vendPrefix = 'sccp_hw_vendorconfig';
 
         $save_buttons = array();
         $save_settings = array();
@@ -624,6 +624,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 default:
                     if (!empty($get_settings[$hdr_prefix . $key])) {
                         $value = $get_settings[$hdr_prefix . $key];
+                    }
+                    if (!empty($get_settings[$hdr_vendPrefix . $key])) {
+                        $value = $get_settings[$hdr_vendPrefix  . $key];
                     }
                     if (!empty($get_settings[$hdr_arprefix . $key])) {
                         $arr_data = '';
