@@ -565,7 +565,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     function saveSccpDevice($get_settings, $validateonly = false) {
-      dbug('Settings', $get_settings);
         $hdr_prefix = 'sccp_hw_';
         $hdr_arprefix = 'sccp_hw-ar_';
         $hdr_vendPrefix = 'sccp_hw_vendorconfig';

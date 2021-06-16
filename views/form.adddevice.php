@@ -24,6 +24,9 @@ if (!empty($_REQUEST['new_id'])) {
     if (!empty($_REQUEST['addon'])) {
         $def_val['addon'] = array("keyword" => 'type', "data" => $_REQUEST['addon'], "seq" => "99");
     }
+    // TODO Default values should be used to populate this device
+    // Currently these are read from sccpgeneral.xml
+    // Need to get these from the db as defaults may have changed.
 }
 
 // Editing an existing Device
@@ -31,7 +34,6 @@ if (!empty($_REQUEST['id'])) {
     $dev_id = $_REQUEST['id'];
     $dev_new = $dev_id;
     $db_res = $this->dbinterface->HWextension_db_SccpTableData('get_sccpdevice_byid', array("id" => $dev_id));
-  dbug('db_res', $db_res);
     foreach ($db_res as $key => $val) {
         if (!empty($val)) {
             switch ($key) {
@@ -67,34 +69,11 @@ if (!empty($_REQUEST['id'])) {
 //                    $val = after('/', $val);
 //                    break;
             }
-            $translateFieldArray = array('_logserver' => 'vendorconfig_logserver',
-                              '_daysdisplaynotactive' => 'vendorconfig_daysdisplaynotactive',
-                              '_displayontime' => 'vendorconfig_displayontime',
-                              '_displayonduration' => 'vendorconfig_displayonduration',
-                              '_displayidletimeout' => 'vendorconfig_displayidletimeout',
-                              '_settingsaccess' => 'vendorconfig_settingsaccess',
-                              '_videocapability' => 'vendorconfig_videocapability',
-                              '_webaccess' => 'vendorconfig_webaccess',
-                              '_webadmin' => 'vendorconfig_webadmin',
-                              '_pcport' => 'vendorconfig_pcport',
-                              '_spantopcport' => 'vendorconfig_spantopcport',
-                              '_voicevlanaccess' => 'vendorconfig_voicevlanaccess',
-                              '_enablecdpswport' => 'vendorconfig_enablecdpswport',
-                              '_enablecdppcport' => 'vendorconfig_enablecdppcport',
-                              '_enablelldpswport' => 'vendorconfig_enablelldpswport',
-                              '_enablelldppcport' => 'vendorconfig_enablelldppcport'
-                            );
-            if (array_key_exists($key,$translateFieldArray)) {
-                $def_val[$translateFieldArray[$key]] = array("keyword" => $translateFieldArray[$key], "data" => $val, "seq" => "99");
-                continue;
-            }
             $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
         }
     }
-      dbug('def_value', $def_val);
 
 }
-//print_r($db_res);
 
 if (!empty($device_warning)) {
     ?>
@@ -142,7 +121,7 @@ if (!empty($device_warning)) {
     echo $this->showGroup('sccp_hw_dev_softkey', 1, 'sccp_hw', $def_val);
     // echo $this->showGroup('sccp_hw_dev_pickup', 1, 'sccp_hw', $def_val); This are line properties and does not exist!
     echo $this->showGroup('sccp_hw_dev_conference', 1, 'sccp_hw', $def_val);
-    echo $this->showGroup('sccp_dev_vendor_conf', 1, 'sccp_hw', $def_val, true);
+    echo $this->showGroup('sccp_dev_vendor_conf', 1, 'vendorconfig', $def_val, true);
     echo $this->showGroup('sccp_hw_dev_network', 1, 'sccp_hw', $def_val);
     ?>
 </form>

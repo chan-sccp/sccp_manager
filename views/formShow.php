@@ -18,11 +18,15 @@
  *    Help elemen          HLP - Help Element
  */
 
+// This will not work if the field already has the underscore
 $npref = $form_prefix.'_';
 $napref = $form_prefix.'-ar_';
 if (empty($form_prefix)) {
     $npref = "sccp_";
     $napref ="sccp-ar_";
+} elseif ($form_prefix == 'vendorconfig') {
+    $npref = 'vendorconfig';
+    $napref = 'vendorconfig-ar';
 }
 $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
         "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
@@ -328,7 +332,8 @@ foreach ($items as $child) {
 
     if ($child['type'] == 'IS') {
         $res_n =  (string)$child->name;
-        $res_id = $npref.$child->name;
+        $res_id = $npref.$res_n;
+        $res_ext = str_replace($npref,'',$res_n);
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
                 $child->help = $metainfo[$res_n]['Description'];
@@ -361,9 +366,9 @@ foreach ($items as $child) {
                         if (!empty($child->value)) {
                              $res_v = (string)$child->value;
                         }
-                        if (!empty($fvalues[$res_n])) {
-                            if (($fvalues[$res_n]['data'] != '') ) {
-                                $res_v = (string)$fvalues[$res_n]['data'];
+                        if (!empty($fvalues[$res_ext])) {
+                            if (($fvalues[$res_ext]['data'] != '') ) {
+                                $res_v = (string)$fvalues[$res_ext]['data'];
                             }
                         }
                         if (!empty($child->option_hide)) {
