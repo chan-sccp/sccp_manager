@@ -13,7 +13,7 @@
 <?php
 
         echo $this->showGroup('sccp_srst', 1);
-        echo $this->showGroup('sccp_dev_vendor_conf', 1,'sccp',null,false);
+        echo $this->showGroup('sccp_dev_vendor_conf', 1);
 //        echo $this->showGroup('sccp_dev_time',1);
 
 ?>

@@ -117,7 +117,6 @@ if (!empty($device_warning)) {
     echo $this->showGroup('sccp_hw_dev_softkey', 1, 'sccp_hw', $def_val);
     // echo $this->showGroup('sccp_hw_dev_pickup', 1, 'sccp_hw', $def_val); This are line properties and does not exist!
     echo $this->showGroup('sccp_hw_dev_conference', 1, 'sccp_hw', $def_val);
-    echo $this->showGroup('sccp_dev_vendor_conf', 1, 'sccp_hw', $def_val, true);
     echo $this->showGroup('sccp_hw_dev_network', 1, 'sccp_hw', $def_val);
     ?>
 </form>

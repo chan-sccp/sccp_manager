@@ -376,11 +376,6 @@ foreach ($items as $child) {
                             $opt_hide .= ' data-vshow="'.$child->option_show.'" data-clshow="'.$child->option_show['class'].'" ';
                         }
                         foreach ($child->xpath('button') as $value) {
-                            if (!$inherit) {
-                                if ($value == 'Inherit') {
-                                    continue;
-                                }
-                            }
                             $val_check = strtolower((string)$value[@value]);
                             if ($val_check == strtolower($res_v)) {
                                 $val_check = " checked";
