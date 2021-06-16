@@ -565,8 +565,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     function saveSccpDevice($get_settings, $validateonly = false) {
+      dbug('Settings', $get_settings);
         $hdr_prefix = 'sccp_hw_';
         $hdr_arprefix = 'sccp_hw-ar_';
+        $hdr_vendPrefix = 'sccp_hw_vendor';
 
         $save_buttons = array();
         $save_settings = array();
@@ -601,22 +603,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                             $value = $hw_prefix . $value;
                         }
                         $name_dev = $value;
-                    }
-                    break;
-                case 'disallow':
-                    $value = $get_settings['sccp_disallow'];
-                    break;
-
-                case 'allow':
-                    $i = 0;
-                    if (!empty($get_settings['voicecodecs'])) {
-                        foreach ($get_settings['voicecodecs'] as $keycodeс => $valcodeс) {
-                            $save_codec[$i] = $keycodeс;
-                            $i++;
-                        };
-                        $value = implode(";", $save_codec);
-                    } else {
-                        $value = 'all'; // Bug If not System Codecs
                     }
                     break;
                 case 'phonecodepage':
