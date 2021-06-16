@@ -207,24 +207,28 @@ function Get_DB_config($sccp_compatible)
             'name' => array('create' => "varchar(45) NOT NULL", 'modify' => "VARCHAR(45)" ),
         )
     );
+    // Below fields allow configuration of these settings on a per device basis
+    // whereas previously they were all global.
+    // By prefixing with an underscore, these fields are ignored by chan-sccp
+    // which is not an issue as they are not "runtime"
     $db_config_V5 = array(
         'sccpdevice' => array(
-              'logserver' => array('create' => "varchar(100) NULL default null", 'modify' => "VARCHAR(20)"),
-              'daysdisplaynotactive' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              'displayontime' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              'displayonduration' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              'displayidletimeout' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              'settingsaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              'videocapability' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              'webaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              'webadmin' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              'pcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
-              'spantopcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
-              'voicevlanaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              'enablecdpswport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
-              'enablecdppcport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
-              'enablelldpswport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
-              'enablelldppcport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')")
+              '_logserver' => array('create' => "varchar(100) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_daysdisplaynotactive' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_displayontime' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_displayonduration' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_displayidletimeout' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_settingsaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_videocapability' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_webaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_webadmin' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_pcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+              '_spantopcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+              '_voicevlanaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_enablecdpswport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_enablecdppcport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_enablelldpswport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_enablelldppcport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')")
             )
     );
 
@@ -232,7 +236,9 @@ function Get_DB_config($sccp_compatible)
         if ($mobile_hw == '1') {
             return $db_config_v4M;
         }
-        if ($sccp_compatible > 433) {
+        // This looks extraneous, but is for future compatibility - do not delete
+        // If integrated into chan-sccp, the version number will change
+        if ($sccp_compatible >= 433) {
             $db_config_v4['sccpdevice'] = array_merge($db_config_v4['sccpdevice'],$db_config_v5['sccpdevice']);
         }
         return $db_config_v4;
