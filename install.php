@@ -1,4 +1,4 @@
-<?php
+AS<?php
 
 if (!defined('FREEPBX_IS_AUTH')) {
     die_freepbx('No direct script access allowed');
@@ -56,11 +56,6 @@ if ($result[0]['IsEmpty']) {
     outn("Populating sccpdevmodel...");
     InstallDB_fillsccpdevmodel();
 }
-if (!$sccp_db_ver) {
-    InstallDB_updateSccpDevice();
-} else {
-    outn("Skip update Device model");
-}
 
 InstallDB_createButtonConfigTrigger();
 InstallDB_CreateSccpDeviceConfigView($sccp_compatible);
@@ -94,10 +89,8 @@ function Get_DB_config($sccp_compatible)
             'directed_pickup_modeanswer' => array('drop' => "yes"),
             'pickupmodeanswer' => array('drop' => "yes"),
             'disallow' => array('drop' => "yes"),
-            'disallow' => array('drop' => "yes"),
             'callhistory_answered_elsewhere' => array('create' => "enum('Ignore','Missed Calls','Received Calls', 'Placed Calls') NOT NULL default 'Ignore'",
                                                       'modify' => "enum('Ignore','Missed Calls','Received Calls','Placed Calls')"),
-
             'description' => array('rename' => "_description"),
             'hwlang' => array('rename' => "_hwlang"),
             '_hwlang' => array('create' => 'varchar(12) NULL DEFAULT NULL'),
@@ -214,13 +207,40 @@ function Get_DB_config($sccp_compatible)
             'name' => array('create' => "varchar(45) NOT NULL", 'modify' => "VARCHAR(45)" ),
         )
     );
+    $db_config_V5 = array(
+        'sccpdevice' => array(
+              'logserver' => array('create' => "varchar(100) NULL default null", 'modify' => "VARCHAR(20)"),
+              'daysdisplaynotactive' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'displayontime' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'displayonduration' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'displayidletimeout' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'settingsaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'videocapability' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'webaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'webadmin' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'pcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+              'spantopcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+              'voicevlanaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'enablecdpswport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
+              'enablecdppcport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
+              'enablelldpswport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')"),
+              'enablelldppcport' => array('create' => "enum('on','off') NULL default 'off'", 'modify' => "enum('on','off')")
+            )
+    );
 
     if ($sccp_compatible >= 433) {
         if ($mobile_hw == '1') {
             return $db_config_v4M;
         }
+        if ($sccp_compatible > 433) {
+            $db_config_v4['sccpdevice'] = array_merge($db_config_v4['sccpdevice'],$db_config_v5['sccpdevice']);
+        }
         return $db_config_v4;
     }
+
+    // New values to add (these are currently unused)
+
+
 }
 
 function CheckSCCPManagerDBTables($table_req)
@@ -553,17 +573,6 @@ function InstallDB_fillsccpdevmodel()
     return true;
 }
 
-function InstallDB_updateSccpDevice()
-{
-    global $db;
-    outn("<li>" . _("Update sccpdevice") . "</li>");
-    $sql = "UPDATE `sccpdevice` set audio_tos='0xB8',audio_cos='6',video_tos='0x88',video_cos='5' where audio_tos=NULL or audio_tos='';";
-    $check = $db->query($sql);
-    if (DB::IsError($check)) {
-        die_freepbx("Can not REPLACE defaults into sccpdevice table\n");
-    }
-}
-
 function InstallDB_createButtonConfigTrigger()
 {
     global $db;
@@ -596,7 +605,6 @@ function InstallDB_createButtonConfigTrigger()
         die_freepbx("Can not modify sccpdevice table\n");
     }
     outn("<li>" . _("(Re)Create trigger Ok") . "</li>");
-//    outn("<li>" . $sql . "</li>");
     return true;
 }
 function InstallDB_updateDBVer($sccp_compatible)
@@ -616,91 +624,42 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
     global $db;
     outn("<li>" . _("(Re)Create sccpdeviceconfig view") . "</li>");
     $sql = "";
-    if ($sccp_compatible < 431) {
-        $sql = "CREATE OR REPLACE
+    $sql = "DROP VIEW IF EXISTS sccpdeviceconfig;
+            DROP VIEW IF EXISTS sccpuserconfig;";
+    ///    global $hw_mobil;
+    // From logserver to end only applies to db ver > 433
+
+    global $mobile_hw;
+    if ($mobile_hw == '1') {
+        $sql .= "CREATE OR REPLACE
             ALGORITHM = MERGE
             VIEW sccpdeviceconfig AS
-            SELECT GROUP_CONCAT( CONCAT_WS( ',', buttonconfig.type, buttonconfig.name, buttonconfig.options )
-            ORDER BY instance ASC
-            SEPARATOR ';' ) AS button,
-            sccpdevice.type AS type,
-            sccpdevice.addon AS addon,
-            sccpdevice.description AS description,
-            sccpdevice.tzoffset AS tzoffset,
-            sccpdevice.transfer AS transfer,
-            sccpdevice.cfwdall AS cfwdall,
-            sccpdevice.cfwdbusy AS cfwdbusy,
-            sccpdevice.imageversion AS imageversion,
-            sccpdevice.deny AS deny,
-            sccpdevice.permit AS permit,
-            sccpdevice.dndFeature AS dndFeature,
-            sccpdevice.directrtp AS directrtp,
-            sccpdevice.earlyrtp AS earlyrtp,
-            sccpdevice.mwilamp AS mwilamp,
-            sccpdevice.mwioncall AS mwioncall,
-            sccpdevice.pickupexten AS pickupexten,
-            sccpdevice.pickupcontext AS pickupcontext,
-            sccpdevice.pickupmodeanswer AS pickupmodeanswer,
-            sccpdevice.private AS private,
-            sccpdevice.privacy AS privacy,
-            sccpdevice.nat AS nat,
-            sccpdevice.softkeyset AS softkeyset,
-            sccpdevice.audio_tos AS audio_tos,
-            sccpdevice.audio_cos AS audio_cos,
-            sccpdevice.video_tos AS video_tos,
-            sccpdevice.video_cos AS video_cos,
-            sccpdevice.conf_allow AS conf_allow,
-            sccpdevice.conf_play_general_announce AS conf_play_general_announce,
-            sccpdevice.conf_play_part_announce AS conf_play_part_announce,
-            sccpdevice.conf_mute_on_entry AS conf_mute_on_entry,
-            sccpdevice.conf_music_on_hold_class AS conf_music_on_hold_class,
-            sccpdevice.conf_show_conflist AS conf_show_conflist,
-            sccpdevice.setvar AS setvar,
-            sccpdevice.disallow AS disallow,
-            sccpdevice.allow AS allow,
-            sccpdevice.backgroundImage AS backgroundImage,
-            sccpdevice.ringtone AS ringtone,
-            sccpdevice.name AS name
+            SELECT GROUP_CONCAT( CONCAT_WS( ',', sccpbuttonconfig.buttontype, sccpbuttonconfig.name, sccpbuttonconfig.options )
+            ORDER BY instance ASC SEPARATOR ';' ) AS sccpbutton, sccpdevice.*
             FROM sccpdevice
-            LEFT JOIN sccpbuttonconfig buttonconfig ON ( buttonconfig.device = sccpdevice.name )
-            GROUP BY sccpdevice.name;";
+            LEFT JOIN sccpbuttonconfig ON (sccpbuttonconfig.reftype = 'sccpdevice' AND sccpbuttonconfig.ref = sccpdevice.name )
+            GROUP BY sccpdevice.name; ";
+            $sql .=  "CREATE OR REPLACE ALGORITHM = MERGE VIEW sccpuserconfig AS
+            SELECT GROUP_CONCAT( CONCAT_WS( ',', sccpbuttonconfig.buttontype, sccpbuttonconfig.name, sccpbuttonconfig.options )
+            ORDER BY instance ASC SEPARATOR ';' ) AS button, sccpuser.*
+            FROM sccpuser
+            LEFT JOIN sccpbuttonconfig ON ( sccpbuttonconfig.reftype = 'sccpuser' AND sccpbuttonconfig.ref = sccpuser.id)
+            GROUP BY sccpuser.name; ";
     } else {
-        $sql = "DROP VIEW IF EXISTS sccpdeviceconfig;
-                DROP VIEW IF EXISTS sccpuserconfig;";
-        ///    global $hw_mobil;
-
-        global $mobile_hw;
-        if ($mobile_hw == '1') {
-            $sql .= "CREATE OR REPLACE
-                ALGORITHM = MERGE
-                VIEW sccpdeviceconfig AS
-                SELECT GROUP_CONCAT( CONCAT_WS( ',', sccpbuttonconfig.buttontype, sccpbuttonconfig.name, sccpbuttonconfig.options )
-                ORDER BY instance ASC SEPARATOR ';' ) AS sccpbutton, sccpdevice.*
-                FROM sccpdevice
-                LEFT JOIN sccpbuttonconfig ON (sccpbuttonconfig.reftype = 'sccpdevice' AND sccpbuttonconfig.ref = sccpdevice.name )
-                GROUP BY sccpdevice.name; ";
-                $sql .=  "CREATE OR REPLACE ALGORITHM = MERGE VIEW sccpuserconfig AS
-                SELECT GROUP_CONCAT( CONCAT_WS( ',', sccpbuttonconfig.buttontype, sccpbuttonconfig.name, sccpbuttonconfig.options )
-                ORDER BY instance ASC SEPARATOR ';' ) AS button, sccpuser.*
-                FROM sccpuser
-                LEFT JOIN sccpbuttonconfig ON ( sccpbuttonconfig.reftype = 'sccpuser' AND sccpbuttonconfig.ref = sccpuser.id)
-                GROUP BY sccpuser.name; ";
-        } else {
-            $sql .= "CREATE OR REPLACE
-                ALGORITHM = MERGE
-                VIEW sccpdeviceconfig AS
+        $sql .= "CREATE OR REPLACE
+            ALGORITHM = MERGE
+            VIEW sccpdeviceconfig AS
             SELECT  case sccpdevice._profileid
-                    when 0 then
-            		(select GROUP_CONCAT(CONCAT_WS( ',', defbutton.buttontype, defbutton.name, defbutton.options ) SEPARATOR ';') from sccpbuttonconfig as defbutton where defbutton.ref = sccpdevice.name ORDER BY defbutton.instance )
-            	when 1 then
-            		(select GROUP_CONCAT(CONCAT_WS( ',', userbutton.buttontype, userbutton.name, userbutton.options ) SEPARATOR ';') from sccpbuttonconfig as userbutton where userbutton.ref = sccpdevice._loginname ORDER BY userbutton.instance )
-            	when 2 then
-			(select GROUP_CONCAT(CONCAT_WS( ',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';') from sccpbuttonconfig as homebutton where homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
-                    end as button,  if(sccpdevice._profileid = 0, sccpdevice._description, sccpuser.description) as description, sccpdevice.*
+                when 0 then
+        		(select GROUP_CONCAT(CONCAT_WS( ',', defbutton.buttontype, defbutton.name, defbutton.options ) SEPARATOR ';') from sccpbuttonconfig as defbutton where defbutton.ref = sccpdevice.name ORDER BY defbutton.instance )
+                when 1 then
+        		(select GROUP_CONCAT(CONCAT_WS( ',', userbutton.buttontype, userbutton.name, userbutton.options ) SEPARATOR ';') from sccpbuttonconfig as userbutton where userbutton.ref = sccpdevice._loginname ORDER BY userbutton.instance )
+                when 2 then
+	         (select GROUP_CONCAT(CONCAT_WS( ',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';') from sccpbuttonconfig as homebutton where homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
+                end as button,  if(sccpdevice._profileid = 0, sccpdevice._description, sccpuser.description) as description, sccpdevice.*
             FROM sccpdevice
             LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice._loginname )
             GROUP BY sccpdevice.name;";
-        }
     }
     $results = $db->query($sql);
     if (DB::IsError($results)) {
