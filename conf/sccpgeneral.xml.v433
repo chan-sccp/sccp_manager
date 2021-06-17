@@ -1119,7 +1119,7 @@ and open the template in the editor. Base Version before all crash :-)
             <default>off</default>
             <button value="on">Enabled</button>
             <button value="off">Disabled</button>
-            <help>Enable/Disable conferencing via meetme (on/off), make sure you have one of the meetme apps mentioned below activated in module.conf</help>
+            <help>Enable/Disable conferencing via meetme (on/off), make sure you have one of the meetme apps mentioned below is activated in module.conf</help>
         </item>
         <item type="IS-disabled" id="9" seq="0">
             <label>Meetme Options</label>
@@ -1534,7 +1534,7 @@ and open the template in the editor. Base Version before all crash :-)
         <label>Conference</label>
         <item type="IS" id="2" seq="99">
             <name>conf_play_general_announce</name>
-            <label>Playback Conference Anncouncements</label>
+            <label>Playback Conference Announcements</label>
             <default>on</default>
             <button value="on">Yes</button>
             <button value="off">No</button>
@@ -1542,7 +1542,7 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
         <item type="IS" id="3" seq="99">
             <name>conf_play_part_announce</name>
-            <label>Playback Participant Anncouncements</label>
+            <label>Playback Participant Announcements</label>
             <default>on</default>
             <button value="on">Yes</button>
             <button value="off">No</button>

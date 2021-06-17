@@ -299,61 +299,67 @@ trait ajaxHelper {
                 return $result;
                 break;
             case 'getPhoneGrid':
+                $dbDevices = array();
                 $cmd_type = !empty($request['type']) ? $request['type'] : '';
 
-                $result = $this->dbinterface->HWextension_db_SccpTableData('SccpDevice', array('type' => $cmd_type));
+                // Find all devices defined in the database
+                $dbDevices = $this->dbinterface->HWextension_db_SccpTableData('SccpDevice', array('type' => $cmd_type));
+                // Return if only interested in SIP devices
                 if ($cmd_type == 'cisco-sip') {
-                    return $result;
+                    return $dbDevices;     //this may be empty
                 }
-                $staus = $this->aminterface->sccp_get_active_device();
-                if (empty($result)) {
-                    $result = array();
-                } else {
-                    foreach ($result as &$dev_id) {
-                        $id_name = $dev_id['name'];
-                        if (!empty($staus[$id_name])) {
-                            $dev_id['description'] = $staus[$id_name]['descr'];
-                            $dev_id['status'] = $staus[$id_name]['status'];
-                            $dev_id['address'] = $staus[$id_name]['address'];
-                            $dev_id['new_hw'] = 'N';
-                            $staus[$id_name]['news'] = 'N';
-                        } else {
-                            $dev_id['description'] = '- -';
-                            $dev_id['status'] = 'not connected';
-                            $dev_id['address'] = '- -';
-                        }
+                // Find all devices currently connected
+                $activeDevices = $this->aminterface->sccp_get_active_device();
+
+                foreach ($dbDevices as &$dev_id) {
+                    $id_name = $dev_id['name'];
+                    if (!empty($activeDevices[$id_name])) {
+                        // Device is in db and is connected
+                        $dev_id['description'] = $activeDevices[$id_name]['descr'];
+                        $dev_id['status'] = $activeDevices[$id_name]['status'];
+                        $dev_id['address'] = $activeDevices[$id_name]['address'];
+                        $dev_id['new_hw'] = 'N';
+                        // No further action required on this active device
+                        unset($activeDevices[$id_name]);
+                    } else {
+                        // Device is in db but not connected
+                        $dev_id['description'] = '- -';
+                        $dev_id['status'] = 'not connected';
+                        $dev_id['address'] = '- -';
                     }
                 }
-                if (!empty($staus)) {
-                    foreach ($staus as $dev_ids) {
+
+                if (!empty($activeDevices)) {
+                    // Have a device that is connected but is not currently in the database
+                    // This device must have been configured by sccp.conf
+                    // Pass parameters to addDevice so that can be added to db.
+                    foreach ($activeDevices as $dev_ids) {
                         $id_name = $dev_ids['name'];
-                        if (empty($dev_ids['news'])) {
-                            $dev_data = $this->aminterface->sccp_getdevice_info($id_name);
-                            if (!empty($dev_data['SCCP_Vendor']['model_id'])) {
-                                $dev_addon = $dev_data['SCCP_Vendor']['model_addon'];
-                                if (empty($dev_addon)) {
-                                    $dev_addon = null;
-                                }
-                                $dev_schema = $this->getSccpModelInformation('byciscoid', false, "all", array('model' => $dev_data['SCCP_Vendor']['model_id']));
-                                if (empty($dev_schema)) {
-                                    $dev_schema[0]['model'] = "ERROR in Model Schema";
-                                }
-                                $result[] = array(
-                                    'name' => $id_name,
-                                    'mac' => $id_name,
-                                    'button' => '---',
-                                    'type' => $dev_schema[0]['model'],
-                                    'new_hw' => 'Y',
-                                    'description' => '*NEW* ' . $dev_ids['descr'],
-                                    'status' => '*NEW* ' . $dev_ids['status'],
-                                    'address' => $dev_ids['address'],
-                                    'addon' => $dev_addon
-                                );
+                        $dev_data = $this->aminterface->sccp_getdevice_info($id_name);
+                        if (!empty($dev_data['SCCP_Vendor']['model_id'])) {
+                            $dev_addon = $dev_data['SCCP_Vendor']['model_addon'];
+                            if (empty($dev_addon)) {
+                                $dev_addon = null;
                             }
+                            $dev_schema = $this->getSccpModelInformation('byciscoid', false, "all", array('model' => $dev_data['SCCP_Vendor']['model_id']));
+                            if (empty($dev_schema)) {
+                                $dev_schema[0]['model'] = "ERROR in Model Schema";
+                            }
+                            $dbDevices[] = array(
+                                'name' => $id_name,
+                                'mac' => $id_name,
+                                'button' => '---',
+                                'type' => $dev_schema[0]['model'],
+                                'new_hw' => 'Y',
+                                'description' => '*NEW* ' . $dev_ids['descr'],
+                                'status' => '*NEW* ' . $dev_ids['status'],
+                                'address' => $dev_ids['address'],
+                                'addon' => $dev_addon
+                            );
                         }
                     }
                 }
-                return $result;
+                return $dbDevices;
                 break;
             case 'getDialTemplate':
                 // -------------------------------   Old device support - In the development---

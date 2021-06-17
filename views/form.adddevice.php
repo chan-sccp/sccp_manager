@@ -4,7 +4,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-$def_val = null;
+$def_val = array();
 $dev_id = null;
 $dev_new = null;
 $device_warning= null;
@@ -15,7 +15,18 @@ $def_val['devlang'] =  array("keyword" => 'devlang', "data" => $this->sccpvalues
 $def_val['directed_pickup_context'] =  array("keyword" => 'directed_pickup_context', "data" => $this->sccpvalues['directed_pickup_context']['data'], "seq" => "99");
 
 if (!empty($_REQUEST['new_id'])) {
+    // Adding device that is connected but not in database
     $dev_id = $_REQUEST['new_id'];
+
+    // Get device defaults from db
+    $sccpDeviceDesc = $this->dbinterface->HWextension_db_SccpTableData('get_columns_sccpdevice');
+
+    foreach ($sccpDeviceDesc as $data) {
+        $key = (string) $data['Field'];
+        $def_val[$key] = array("keyword" => $key, "data" => $data['Default'], "seq" => "99");
+    }
+
+    // Overwrite some specific defaults based on $_REQUEST
     $val = str_replace(array('SEP','ATA','VG'), '', $dev_id);
     $val = implode('.', sscanf($val, '%4s%4s%4s')); // Convert to Cisco display Format
     $def_val['mac'] = array("keyword" => 'mac', "data" => $val, "seq" => "99");
@@ -24,13 +35,17 @@ if (!empty($_REQUEST['new_id'])) {
     if (!empty($_REQUEST['addon'])) {
         $def_val['addon'] = array("keyword" => 'type', "data" => $_REQUEST['addon'], "seq" => "99");
     }
-    // TODO Default values should be used to populate this device
-    // Currently these are read from sccpgeneral.xml
-    // Need to get these from the db as defaults may have changed.
 }
+if (empty($_REQUEST['id'])) {
+    // Adding new device to database
+    $sccpDeviceDesc = $this->dbinterface->HWextension_db_SccpTableData('get_columns_sccpdevice');
 
-// Editing an existing Device
-if (!empty($_REQUEST['id'])) {
+    foreach ($sccpDeviceDesc as $data) {
+        $key = (string) $data['Field'];
+        $def_val[$key] = array("keyword" => $key, "data" => $data['Default'], "seq" => "99");
+    }
+} else {
+    // Editing an existing Device
     $dev_id = $_REQUEST['id'];
     $dev_new = $dev_id;
     $db_res = $this->dbinterface->HWextension_db_SccpTableData('get_sccpdevice_byid', array("id" => $dev_id));
@@ -68,8 +83,9 @@ if (!empty($_REQUEST['id'])) {
 //                    $key = $key . '_mask';
 //                    $val = after('/', $val);
 //                    break;
+                default:
+                    $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
             }
-            $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
         }
     }
 
