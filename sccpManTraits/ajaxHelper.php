@@ -42,6 +42,7 @@ trait ajaxHelper {
 
     // ajaxHandler is called after ajaxRequest returns true
     public function ajaxHandler() {
+      dbug('REQUEST',$_REQUEST);
         $request = $_REQUEST;
         $msg = array();
         $cmd_id = $request['command'];

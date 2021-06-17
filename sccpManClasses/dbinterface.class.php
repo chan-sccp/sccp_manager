@@ -310,7 +310,7 @@ class dbinterface
                             $stmt->bindParam(':instance', $button_array['instance'],\PDO::PARAM_INT);
                             $stmt->bindParam(':buttontype', $button_array['type'],\PDO::PARAM_STR);
                             $stmt->bindParam(':name', $button_array['name'],\PDO::PARAM_STR);
-                            $result= $dbh->execute();
+                            $result= $stmt->execute();
                         }
                         break;
                     case 'add':
@@ -345,6 +345,12 @@ class dbinterface
         $filename = $data_path.'/sccp_backup_'.date('G_a_m_d_y').'.sql';
         $result = exec('mysqldump '.$database.' --password='.$pass.' --user='.$user.' --single-transaction >'.$filename, $output);
         return $filename;
+    }
+
+    public function updateTableDefaults($table, $field, $value) {
+        $dbh = \FreePBX::Database();
+        $stmt = $dbh->prepare("ALTER TABLE {$table} ALTER COLUMN {$field} SET DEFAULT '{$value}'");
+        $stmt->execute();
     }
 
 /*

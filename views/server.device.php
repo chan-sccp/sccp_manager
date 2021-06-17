@@ -11,11 +11,10 @@
     <input type="hidden" name="category" value="deviceform">
     <input type="hidden" name="Submit" value="Submit">
 <?php
-
-        echo $this->showGroup('sccp_dev_config', 1);
-        echo $this->showGroup('sccp_dev_group_config', 1);
-        echo $this->showGroup('sccp_dev_advconfig', 1);
-        echo $this->showGroup('sccp_dev_softkey', 1);
-        echo $this->showGroup('sccp_hotline_config', 1);
-?>  
+        echo $this->showGroup('sccp_dev_config', 1, 'sccpdevice');
+        echo $this->showGroup('sccp_dev_group_config', 1,);
+        echo $this->showGroup('sccp_dev_advconfig', 1, 'sccpdevice');
+        echo $this->showGroup('sccp_dev_softkey', 1, 'sccpdevice');
+        echo $this->showGroup('sccp_hotline_config', 1, 'sccpdevice');
+?>
 </form>

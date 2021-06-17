@@ -697,10 +697,34 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
         $save_codec = array();
+        $count_mods = 0;
+        $dbSaveArray = array();
         $integer_msg = _("%s must be a non-negative integer");
         $errors = array();
         $i = 0;
         foreach ($get_settings as $key => $value) {
+            // Initallly saved all to sccpvalues. Now will save to db defaults if appropriate
+            // TODO: Need to verify the tables defined in showGroup - some options maybe
+            // device options, but if set by freePbx extensions, be in sccpline.
+            $key = (str_replace('sccpdevice_', '', $key, $count_mods));
+            if (($count_mods) && (!empty($value))) {
+                // There will be some exceptions to be handled where there should be no underscore
+                // Handle at db write
+                // Have default to be saved to db sccpdevice
+                $dev_def = $this->getDeviceDefaults();
+                if (!array_key_exists($key, $dev_def)) {
+                    // This key needs to be prefixed with underscore
+                    $key = '_'.$key;
+                }
+                if ((array_key_exists($key, $dev_def)) && ($dev_def[$key]['data'] == $value)) {
+                    // Value unchanged so ignore and get next key.
+                    continue;
+                }
+                $dbSaveArray[] = array('table' => 'sccpdevice', 'field' => $key, 'Default' => $value);
+                unset($get_settings[$key]);
+                continue;
+            }
+
             $pos = strpos($key, $hdr_prefix);
             if ($pos !== false) {
                 $key1 = substr_replace($key, '', 0, strlen($hdr_prefix));
@@ -780,6 +804,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
         }
+
+        foreach ($dbSaveArray as $rowToSave) {
+            $this->dbinterface->updateTableDefaults($rowToSave['table'], $rowToSave['field'], $rowToSave['Default']);
+        }
+
         $this->createDefaultSccpConfig(); // Rewrite Config.
         $save_settings[] = array('status' => true);
         return $save_settings;

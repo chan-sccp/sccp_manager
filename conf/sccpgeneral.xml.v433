@@ -30,7 +30,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="NONE">XML_Ver 433</button>
             <help></help>
         </item>
-
     </page_group>
 
     <page_group name="sccp_hidden">
@@ -63,11 +62,10 @@ and open the template in the editor. Base Version before all crash :-)
             <label>Phone ssh login</label>
             <input>
                 <name>sccp_xml_about</name>
-                <default>XML Base ver: 11.2, Sccp ver: 431</default>
+                <default>XML Base ver: 11.2, Sccp ver: 433</default>
             </input>
             <help>Help.</help>
         </item>
-
     </page_group>
 
     <page_group name="sccp_general">
@@ -116,7 +114,6 @@ and open the template in the editor. Base Version before all crash :-)
             <nameseparator> / </nameseparator>
             externhost
         </item>
-
         <item type="IE" id="5">
             <label>SCCP SERVER Keepalive</label>
             <input>
@@ -166,6 +163,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Help!</help>
         </item>
     </page_group>
+
     <page_group name="sccp_net">
         <label>SCCP Networks</label>
         <item type="IED" id="1" seq="0">
@@ -183,8 +181,6 @@ and open the template in the editor. Base Version before all crash :-)
             <addbutton-disabled>Add Allow Range</addbutton-disabled>
             <help>Allow network settings. Blank fields will be ignored used Network 0.0.0.0/0.0.0.0 to resolve any existing connections. You can use the 'internal' connections only from the networks connected to the server. </help>
         </item>
-
-
         <item type="IED" id="3" seq="0">
             <label>Local Networks / Mask</label>
             <name>localnet</name>
@@ -218,7 +214,6 @@ and open the template in the editor. Base Version before all crash :-)
             <addbutton-disabled>Add Deny network</addbutton-disabled>
             <help>All RFC 1918 addresses are local networks. Should always be at least '0.0.0.0/0.0.0.0'.</help>
         </item>
-
         <item type="IED" id="1" seq="98">
             <label>Device Connect Address / Name </label>
             <name>ccm_address</name>
@@ -236,9 +231,8 @@ and open the template in the editor. Base Version before all crash :-)
             <addbutton-disabled>Add Address</addbutton-disabled>
             <help>This function is useful when the server has many interfaces, but devices must connect only to some interfaces.</help>
         </item>
-
-
     </page_group>
+
     <page_group name="sccp_lang">
         <label>SCCP Language</label>
         <item type="SLS" id="1">
@@ -262,8 +256,8 @@ and open the template in the editor. Base Version before all crash :-)
             <select> </select>
             <help>The user locale allows the phone to display text (menu items, soft keys etc.) native to the phone's language.</help>
         </item>
-
     </page_group>
+
     <page_group name="sccp_dev_config">
         <label>SCCP Device general config</label>
         <item type="IE" id="1">
@@ -440,6 +434,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Use simulated enbloc dialing to speedup connection when dialing while onhook (older phones)</help>
         </item>
     </page_group>
+
     <page_group name="sccp_dev_softkey">
         <label>Global Enable/Disable Softkeys</label>
             <item type="IS" id="2" seq="0">
@@ -513,8 +508,8 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="manycast">Manycast</button>
             <help>Configure NTP Server protocol time synchronization</help>
         </item>
-
     </page_group>
+
     <page_group name="sccp_dev_time">
         <label>SCCP Time Service config</label>
         <item type="SLD" id="1" seq="1">
@@ -907,8 +902,8 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help></help>
         </item>
-
     </page_group>
+
     <page_group name="sccp_qos_config">
         <label>SCCP QoS config</label>
         <item type="IE" id="1">
@@ -954,6 +949,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Video Type Of Service / Class Of Service: Video Type or Class of Service - this is modifiable, but don't.</help>
         </item>
     </page_group>
+
     <page_group name="sccp_hotline_config">
         <label>SCCP Hot Line config</label>
         <item type="HLP" id="2">
@@ -1001,7 +997,6 @@ and open the template in the editor. Base Version before all crash :-)
             </element>
 
         </item>
-
         <item type="IS" id="1">
             <name>hotline_enabled</name>
             <label>Hotline</label>
@@ -1079,7 +1074,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Context where direct pickup search for extensions. if not set current context will be use.</help>
         </item>
-
         <item type="IS" id="11">
             <name>pickup_modeanswer</name>
             <label>Directed Pickup</label>
@@ -1130,7 +1124,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Other options (app_meetme: A,a,b,c,C,d,D,E,e,F,i,I,l,L,m,M,o,p,P,q,r,s,S,t,T,w,x,X,1) see meetme specific documentation</help>
         </item>
-
         <item type="IS" id="10" seq="98">
             <name>autocall_select</name>
             <label>Auto Call Select</label>
@@ -1145,7 +1138,7 @@ and open the template in the editor. Base Version before all crash :-)
             <default>true</default>
             <button value="true">Enabled</button>
             <button value="false">Disabled</button>
-            <help>I'm guessing on this one, but on some devices, the background image on the display can be modified at the device. I think this is the thing that allows that to take.</help>
+            <help>I'm guessing on this one, but on some devices, the background image on the display can be modified at the device. I think this is the thing that allows that to happen.</help>
         </item>
         <item type="IS" id="11" seq="98">
             <name>phonePersonalization</name>
@@ -1153,7 +1146,7 @@ and open the template in the editor. Base Version before all crash :-)
             <default>0</default>
             <button value="1">Enabled</button>
             <button value="0">Disabled</button>
-            <help>Phone personalization needs to be set to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
+            <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
         </item>
         <item type="IS" id="11" seq="98">
             <name>callLogBlfEnabled</name>
@@ -1161,7 +1154,7 @@ and open the template in the editor. Base Version before all crash :-)
             <default>2</default>
             <button value="3">Enabled</button>
             <button value="2">Disabled</button>
-            <help>Which does show numbers you can redial, but also include their current device state, so you know when they are currently busy. Note that the other phonebook entries will now also monitor the remove device state and show the current device state</help>
+            <help>Show numbers you can redial, but also include their current device state, so you know when they are currently busy. Note that the other phonebook entries will now also monitor the remove device state and show the current device state</help>
         </item>
         <item type="SLM" id="6">
             <label>Music On Hold Class</label>
@@ -1171,7 +1164,6 @@ and open the template in the editor. Base Version before all crash :-)
             <class>form-control</class>
             <help>Music Class: Available MOH Classes. These are the MOH classes listed in your current server.</help>
         </item>
-
     </page_group>
 
     <page_group name="sccp_extpath_config">
@@ -1204,7 +1196,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Use path from provision index.cnf file. You must first make sure that you have properly configured the "Provision"</help>
         </item>
-
         <item type="IS" id="2" seq="20">
             <name>tftp_rewrite</name>
             <label>TFTP SERVER remapping support</label>
@@ -1217,7 +1208,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="pro">Provision</button>
             <help>Support the use of regular-expression-based filename remapping</help>
         </item>
-
         <item type="SL" id="2">
             <label>SCCP SERVER MySQL Device Table Name</label>
             <name>devicetable</name>
@@ -1227,7 +1217,6 @@ and open the template in the editor. Base Version before all crash :-)
             <class>sccp-custom</class>
             <help>Device Table: This is the devicetable for your realtime configuration. Don't change this unless you know what you are doing and have made all the appropriate changes in the rest of your Asterisk config files. There are two reasonable settings for this - the sccpdevice table or the sccpdeviceconfig view. If you do not want to use the realtime database anymore, you can set this to blank. NOT RECOMMENDED.</help>
         </item>
-
         <item type="IE" id="3">
             <label>SCCP SERVER MySQL Line Table Name</label>
             <input>
@@ -1237,7 +1226,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Line Table: This is the linetable for your realtime configuration. Don't change this unless you know what you are doing and have made all the appropriate changes in the rest of your Asterisk config files. If you do not want to use the realtime database anymore, you can set this to blank. NOT RECOMMENDED.</help>
         </item>
-
         <item type="IS" id="4" seq="99">
             <name>createlangdir</name>
             <label>Create tftp empty language dir</label>
@@ -1246,7 +1234,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="no">No</button>
             <help>Say 'yes' if you need to create cisco default language directory in tftp path.</help>
         </item>
-
         <item type="IS" id="4" seq="90">
             <name>system_rouminguser</name>
             <label>User Roaming</label>
@@ -1255,9 +1242,9 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="no">No</button>
             <help>Experemental Function Roaming Users</help>
         </item>
-
     </page_group>
-    <!--  Form   add/ edit device -->
+
+    <!--  Begin Form   add/ edit device group-->
     <page_group name="sccp_hw_dev">
         <label>General Device configuration</label>
         <item type="IE" id="1" seq="99">
@@ -1269,7 +1256,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>The MAC address of the phone. You must specify 12 characters in the format XXXX.XXXX.XXXX or XX-XX-XX-XX-XX-XX or XXXXXXXXXXXX</help>
         </item>
-
         <item type="SDM" id="2" seq="99">
             <label>Type</label>
             <name>type</name>
@@ -1332,7 +1318,6 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
     </page_group>
 
-
     <page_group name="sccp_hw_dev2">
         <label>Device configuration</label>
         <item type="IE" id="1" seq="99">
@@ -1391,8 +1376,8 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>The ringtone that the phone will default to. Can be overridden in the phone. The files RINGLIST.XML provice the basic phone ring tones, while DISTINCTIVERINGLIST.XML defines the list of possible ring tones for your other line types. They, along with the actual 'raw' ringtones, are stored in the /tftpboot/ringtones directory with the rest of the config files.</help>
         </item>
-
     </page_group>
+
     <page_group name="sccp_hw_dev_button">
         <label>Buttons Configuration</label>
         <item type="IE" id="1" seq="99">
@@ -1404,8 +1389,8 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help></help>
         </item>
-
     </page_group>
+
     <page_group name="sccp_hw_dev_softkey">
         <label>Enable/Disable Softkeys</label>
         <item type="IS" id="1" seq="99">
@@ -1473,9 +1458,7 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
     </page_group>
 
-
     <page_group name="sccp_hw_dev_advance">
-
         <label>Device Properies</label>
         <item type="IS" id="4" seq="99">
             <name>useRedialMenu</name>
@@ -1524,9 +1507,8 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="Received Calls">Received Calls</button>
             <button value="Missed Calls">Missed Calls</button>
             <button value="Ignore">Ignore</button>
-            <help></help>
+            <help>Do not update history for this Phonebook if answered by another extension</help>
         </item>
-
     </page_group>
 
     <page_group name="sccp_hw_dev_conference">
@@ -1572,8 +1554,10 @@ and open the template in the editor. Base Version before all crash :-)
             <class>form-control</class>
             <help>Play music on hold of this class when no moderator is listening on the conference. If set to an empty string, no music on hold will be played.</help>
         </item>
-
     </page_group>
+
+<!--  End Form   add/ edit device groups-->
+
     <page_group name="add_network_1">
         <item type="IS" id="1" seq="99">
             <name>custom_network_acc</name>
@@ -1608,7 +1592,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Help.</help>
         </item>
-
     </page_group>
 
     <page_group name="sccp_hw_dev_network">
@@ -1628,10 +1611,8 @@ and open the template in the editor. Base Version before all crash :-)
             <addbutton-disabled>Add Deny network</addbutton-disabled>
             <help>All RFC 1918 addresses are local networks. Should always be at least '0.0.0.0/0.0.0.0'.</help>
         </item>
-
         <item type="IED" id="1" seq="0">
             <label>Allow Networks / Mask</label>
-
             <name>permit</name>
             <default>NONE</default>
             <cbutton field="inherit" value="NONE">Inherit
@@ -1650,7 +1631,6 @@ and open the template in the editor. Base Version before all crash :-)
             <addbutton-disables>Add Allow network</addbutton-disables>
             <help>Allow network settings. Blank fields will be ignored used Network 0.0.0.0.</help>
         </item>
-
         <item type="IS" id="3" seq="99">
             <name>nat</name>
             <label>NAT</label>
@@ -1661,7 +1641,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="on">On</button>
             <help>Device NAT support (default Auto)</help>
         </item>
-
         <item type="IS" id="4" seq="99">
             <name>directrtp</name>
             <label>Direct RTP</label>
@@ -1686,6 +1665,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>The audio stream will be open in the progress and connected state. Valid options: none, progress, offhook, dial, ringout. Default may be Progress.</help>
         </item>
     </page_group>
+
     <page_group name="sccp_dp_new_template">
         <item type="IE" id="1" seq="99">
             <label>Template Name </label>
@@ -1696,8 +1676,8 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Help.</help>
         </item>
-
     </page_group>
+
     <page_group name="sccp_dp_template">
         <label>Device Template Function</label>
         <item type="HLP" id="2">
@@ -1768,7 +1748,6 @@ and open the template in the editor. Base Version before all crash :-)
                 </row>
             </element>
         </item>
-
         <item type="ITED" id="1" seq="0">
             <name>dialtemplate</name>
             <default>*/10/*</default>
@@ -1815,9 +1794,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <data>CallWaiting-4</data>
             </element>
             <help>Allow network settings. Blank fields will be ignored used Network 0.0.0.0.</help>
-
         </item>
-
     </page_group>
  <!--
     Roaming User Pages
@@ -1834,7 +1811,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Help!</help>
         </item>
-
         <item type="IE" id="2" seq="99">
             <label>User Display Name</label>
             <input>
@@ -1916,8 +1892,8 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Help!</help>
         </item>
-
     </page_group>
+
     <page_group name="sccp_hw_sip_dev">
         <label>General Device configuration</label>
         <item type="IE" id="1" seq="99">
@@ -1929,7 +1905,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>The MAC address of the phone. You must specify 12 characters in the format XXXX.XXXX.XXXX or XX-XX-XX-XX-XX-XX or XXXXXXXXXXXX</help>
         </item>
-
         <item type="SDMS" id="2" seq="99">
             <label>Type</label>
             <name>type</name>
@@ -1957,7 +1932,6 @@ and open the template in the editor. Base Version before all crash :-)
             <select></select>
              <help>Dial templates control what number patterns are valid and how many seconds to wait for extra digits before dialing. </help>
         </item>
-
     </page_group>
 
     <page_group name="sccp_hw_addv_device">
@@ -1972,7 +1946,6 @@ and open the template in the editor. Base Version before all crash :-)
             <add_pluss>+</add_pluss>
             <help></help>
         </item>
-
     </page_group>
 
 </root>

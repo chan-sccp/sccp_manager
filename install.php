@@ -93,8 +93,8 @@ function Get_DB_config($sccp_compatible)
                                                       'modify' => "enum('Ignore','Missed Calls','Received Calls','Placed Calls')"),
             'description' => array('rename' => "_description"),
             'hwlang' => array('rename' => "_hwlang"),
-            '_hwlang' => array('create' => 'varchar(12) NULL DEFAULT NULL'),
-            '_loginname' => array('create' => 'varchar(20) NULL DEFAULT NULL AFTER `_hwlang`'),
+            '_hwlang' => array('create' => 'VARCHAR(12) NULL DEFAULT NULL'),
+            '_loginname' => array('create' => 'VARCHAR(20) NULL DEFAULT NULL AFTER `_hwlang`'),
             '_profileid' => array('create' => "INT(11) NOT NULL DEFAULT '0' AFTER `_loginname`"),
             '_dialrules' => array('create' => "VARCHAR(255) NULL DEFAULT NULL AFTER `_profileid`"),
 
@@ -167,14 +167,14 @@ function Get_DB_config($sccp_compatible)
             'dnd' => array('create' => "enum('off','reject','silent','user') NOT NULL default 'reject'", 'modify' => "enum('off','reject','silent','user')", 'def_modify' => "reject")
         ),
         'sccpuser' => array(
-            'name' => array('create' => "varchar(20) NOT NULL", 'modify' => "VARCHAR(20)" ),
-            'pin' => array('create' => "varchar(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
-            'password' => array('create' => "varchar(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
-            'description' => array('create' => "varchar(45) NOT NULL", 'modify' => "VARCHAR(45)" ),
+            'name' => array('create' => "VARCHAR(20) NOT NULL", 'modify' => "VARCHAR(20)" ),
+            'pin' => array('create' => "VARCHAR(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
+            'password' => array('create' => "VARCHAR(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
+            'description' => array('create' => "VARCHAR(45) NOT NULL", 'modify' => "VARCHAR(45)" ),
             'roaminglogin' => array('create' => "ENUM('on','off','multi') NOT NULL DEFAULT 'off'", 'modify' => "ENUM('on','off','multi')" ),
             'auto_logout' => array('create' => "ENUM('on','off') NOT NULL DEFAULT 'off'", 'modify' => "ENUM('on','off')" ),
-            'homedevice' => array('create' => "varchar(20) NOT NULL", 'modify' => "VARCHAR(20)" ),
-            'devicegroup' => array('create' => "varchar(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
+            'homedevice' => array('create' => "VARCHAR(20) NOT NULL", 'modify' => "VARCHAR(20)" ),
+            'devicegroup' => array('create' => "VARCHAR(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
         ),
         'sccpbuttonconfig' => array(
             'reftype' => array('create' => "enum('sccpdevice', 'sipdevice', 'sccpuser') NOT NULL default 'sccpdevice'",
@@ -203,8 +203,8 @@ function Get_DB_config($sccp_compatible)
             'videomode' => array('create' => "enum('user','auto','off') NULL default 'auto'", 'modify' => "enum('user','auto','off')"),
         ),
         'sccpuser' => array(
-            'id' => array('create' => "varchar(20) NOT NULL", 'modify' => "VARCHAR(20)" ),
-            'name' => array('create' => "varchar(45) NOT NULL", 'modify' => "VARCHAR(45)" ),
+            'id' => array('create' => "VARCHAR(20) NOT NULL", 'modify' => "VARCHAR(20)" ),
+            'name' => array('create' => "VARCHAR(45) NOT NULL", 'modify' => "VARCHAR(45)" ),
         )
     );
     // Below fields allow configuration of these settings on a per device basis
@@ -213,11 +213,11 @@ function Get_DB_config($sccp_compatible)
     // which is not an issue as they are not "runtime"
     $db_config_v5 = array(
         'sccpdevice' => array(
-              '_logserver' => array('create' => "varchar(100) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_daysdisplaynotactive' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_displayontime' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_displayonduration' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_displayidletimeout' => array('create' => "varchar(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_logserver' => array('create' => "VARCHAR(100) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_daysdisplaynotactive' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_displayontime' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_displayonduration' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_displayidletimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
               '_settingsaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_videocapability' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_webaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
@@ -228,7 +228,24 @@ function Get_DB_config($sccp_compatible)
               '_enablecdpswport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_enablecdppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_enablelldpswport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablelldppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')")
+              '_enablelldppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_simulate_enbloc' => array( 'create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+              '_hotline_enabled' => array( 'create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+              '_hotline_extension' => array( 'create' => "VARCHAR(20) NULL default '*60'", 'modify' => "VARCHAR(20)"),
+              '_hotline_label' => array( 'create' => "VARCHAR(20) NULL default 'hotline'", 'modify' => "VARCHAR(20)"),
+              '_hotline_context' => array( 'create' => "VARCHAR(20) NULL default 'default'", 'modify' => "VARCHAR(20)"),
+              '_firstdigittimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_digittimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_cfwdnoanswer_timeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_autoanswer_ring_time' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_autoanswer_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_remotehangup_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_transfer_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_callwaiting_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_callanswerorder' => array('create' => 'create' => "enum('oldestfirst','latestfirst') NOT NULL default 'latestfirst'",
+                            'modify' => "enum('oldestfirst','latestfirst')"),
+              '_echocancel' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_silencesuppression' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)")
             )
     );
 
