@@ -48,18 +48,11 @@ trait ajaxHelper {
         $cmd_id = $request['command'];
         switch ($cmd_id) {
             case 'savesettings':
-                $action = isset($request['sccp_createlangdir']) ? $request['sccp_createlangdir'] : '';
-                if ($action == 'yes') {
-                    $this->initializeTFtpLanguagePath();
-                }
+                // Consolidate this into a separate method to improve legibility
                 $this->handleSubmit($request);
-                // $this->saveSccpSettings();
-                //$this->createDefaultSccpConfig();
-                $this->createDefaultSccpXml();
-
                 $res = $this->aminterface->core_sccp_reload();
-                $msg [] = 'Config Saved: ' . $res['Response'];
-                $msg [] = 'Info :' . $res['data'];
+                $msg [] = array ("Config Saved: {$res['Response']}", "Info : {$res['data']}");
+
                 // !TODO!: It is necessary in the future to check, and replace all server responses on correct messages. Use _(msg)
                 return array('status' => true, 'message' => $msg, 'reload' => true);
                 break;
@@ -388,7 +381,7 @@ trait ajaxHelper {
 
     }
 
-    function handleSubmit($get_settings, $validateonly = false) {
+    function handleSubmit($request, $validateonly = false) {
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -398,7 +391,11 @@ trait ajaxHelper {
         $integer_msg = _("%s must be a non-negative integer");
         $errors = array();
         $i = 0;
-        foreach ($get_settings as $key => $value) {
+        $action = isset($request['sccp_createlangdir']) ? $request['sccp_createlangdir'] : '';
+        if ($action == 'yes') {
+            $this->initializeTFtpLanguagePath();
+        }
+        foreach ($request as $key => $value) {
             // Initallly saved all to sccpvalues. Now will save to db defaults if appropriate
             // TODO: Need to verify the tables defined in showGroup - some options maybe
             // device options, but if set by freePbx extensions, be in sccpline.
@@ -417,7 +414,7 @@ trait ajaxHelper {
                     continue;
                 }
                 $dbSaveArray[] = array('table' => 'sccpdevice', 'field' => $key, 'Default' => $value);
-                unset($get_settings[$key]);
+                unset($request[$key]);
                 continue;
             }
 
@@ -507,6 +504,7 @@ trait ajaxHelper {
 
         $this->createDefaultSccpConfig(); // Rewrite Config.
         $save_settings[] = array('status' => true);
+        $this->createDefaultSccpXml();
         return $save_settings;
     }
 }
