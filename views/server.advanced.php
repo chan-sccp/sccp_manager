@@ -14,15 +14,10 @@
 
         // originally, this was populated by sccpgeneral.xml but that should be static
         // now will populate from the db defaults.
-        $defaultVal = array();
-        $sccpDeviceDesc = $this->dbinterface->HWextension_db_SccpTableData('get_columns_sccpdevice');
+        $defaultVals = $this->getDeviceDefaults();
 
-        foreach ($sccpDeviceDesc as $data) {
-            $key = (string) $data['Field'];
-            $defaultVal[$key] = array("keyword" => $key, "data" => $data['Default'], "seq" => "99");
-        }
         echo $this->showGroup('sccp_srst', 1);
-        echo $this->showGroup('sccp_dev_vendor_conf', 1,'vendorconfig',$defaultVal,false);
+        echo $this->showGroup('sccp_dev_vendor_conf', 1,'vendorconfig',$defaultVals,false);
 
 ?>
 </form>

@@ -37,13 +37,8 @@ if (!empty($_REQUEST['new_id'])) {
     }
 }
 if (empty($_REQUEST['id'])) {
-    // Adding new device to database
-    $sccpDeviceDesc = $this->dbinterface->HWextension_db_SccpTableData('get_columns_sccpdevice');
-
-    foreach ($sccpDeviceDesc as $data) {
-        $key = (string) $data['Field'];
-        $def_val[$key] = array("keyword" => $key, "data" => $data['Default'], "seq" => "99");
-    }
+    // Adding new device to database. Get default values
+    $def_val = $this->getDeviceDefaults();
 } else {
     // Editing an existing Device
     $dev_id = $_REQUEST['id'];

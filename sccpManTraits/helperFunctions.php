@@ -69,6 +69,16 @@ trait helperfunctions {
         }
         return FALSE;
     }
+    private function getDeviceDefaults() {
+        $def_val = array();
+        $sccpDeviceDesc = $this->dbinterface->HWextension_db_SccpTableData('get_columns_sccpdevice');
+
+        foreach ($sccpDeviceDesc as $data) {
+            $key = (string) $data['Field'];
+            $def_val[$key] = array("keyword" => $key, "data" => $data['Default'], "seq" => "99");
+        }
+        return $def_val;
+    }
 
     private function findAllFiles($dir, $file_mask = null, $mode = 'full') {
         $result = null;
