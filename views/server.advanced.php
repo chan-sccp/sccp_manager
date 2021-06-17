@@ -14,7 +14,7 @@
 
         // originally, this was populated by sccpgeneral.xml but that should be static
         // now will populate from the db defaults.
-        $defaultVals = $this->getDeviceDefaults();
+        $defaultVals = $this->getTableDefaults('sccpdevice');
 
         echo $this->showGroup('sccp_srst', 1);
         echo $this->showGroup('sccp_dev_vendor_conf', 1,'vendorconfig',$defaultVals,false);

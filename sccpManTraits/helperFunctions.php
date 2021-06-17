@@ -69,11 +69,12 @@ trait helperfunctions {
         }
         return FALSE;
     }
-    private function getDeviceDefaults() {
+    private function getTableDefaults($table) {
         $def_val = array();
-        $sccpDeviceDesc = $this->dbinterface->HWextension_db_SccpTableData('get_columns_sccpdevice');
+        // TODO: This is ugly and overkill - needs to be cleaned up in dbinterface
+        $sccpTableDesc = $this->dbinterface->HWextension_db_SccpTableData("get_columns_{$table}");
 
-        foreach ($sccpDeviceDesc as $data) {
+        foreach ($sccpTableDesc as $data) {
             $key = (string) $data['Field'];
             $def_val[$key] = array("keyword" => $key, "data" => $data['Default'], "seq" => "99");
         }

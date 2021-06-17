@@ -11,8 +11,11 @@
     <input type="hidden" name="category" value="deviceform">
     <input type="hidden" name="Submit" value="Submit">
 <?php
+
+        $def_val_line = $this->getTableDefaults('sccpline');
+        $def_val_device = $this->getTableDefaults('sccpdevice');
         echo $this->showGroup('sccp_dev_config', 1, 'sccpdevice');
-        echo $this->showGroup('sccp_dev_group_config', 1,);
+        echo $this->showGroup('sccp_dev_group_config', 1, 'sccpline');
         echo $this->showGroup('sccp_dev_advconfig', 1, 'sccpdevice');
         echo $this->showGroup('sccp_dev_softkey', 1, 'sccpdevice');
         echo $this->showGroup('sccp_hotline_config', 1, 'sccpdevice');

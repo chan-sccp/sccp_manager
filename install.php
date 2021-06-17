@@ -116,10 +116,10 @@ function Get_DB_config($sccp_compatible)
             'earlyrtp' => array('create' => "ENUM('immediate','offHook','dialing','ringout','progress','none') NOT NULL default 'none'",
                                 'modify' => "ENUM('immediate','offHook','dialing','ringout','progress','none')"),
             'monitor' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-            'audio_tos' => array('def_modify' => "0xB8"),
-            'audio_cos' => array('def_modify' => "6"),
-            'video_tos' => array('def_modify' => "0x88"),
-            'video_cos' => array('def_modify' => "5"),
+            'audio_tos' => array('create' => "VARCHAR(11) NOT NULL default '0xB8'",'modify' => "0xB8"),
+            'audio_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x6'",'modify' => "0x6"),
+            'video_tos' => array('create' => "VARCHAR(11) NOT NULL default '0x88'",'modify' => "0x88"),
+            'video_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x5'",'modify' => "0x5"),
             'trustphoneip' => array('drop' => "yes"),
             'transfer_on_hangup' => array('create' => "enum('on','off') NOT NULL DEFAULT 'off'", 'modify' => "enum('on','off')"),
             'phonecodepage' => array('create' => 'VARCHAR(50) NULL DEFAULT NULL', 'modify' => "VARCHAR(50)"),
@@ -242,10 +242,22 @@ function Get_DB_config($sccp_compatible)
               '_remotehangup_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
               '_transfer_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
               '_callwaiting_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_callanswerorder' => array('create' => 'create' => "enum('oldestfirst','latestfirst') NOT NULL default 'latestfirst'",
-                            'modify' => "enum('oldestfirst','latestfirst')"),
+              '_callanswerorder' => array('create' => "enum('oldestfirst','latestfirst') NOT NULL default 'latestfirst'",
+                                    'modify' => "enum('oldestfirst','latestfirst')"),
               '_echocancel' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_silencesuppression' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)")
+              '_silencesuppression' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              '_sccp_tos' => array('create' => "VARCHAR(11) NOT NULL default '0x68'", 'modify' => "VARCHAR(11)"),
+              '_sccp_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x4'", 'modify' => "VARCHAR(11)")
+            ),
+        'sccpline' => array (
+              '_regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
+              '_pickupgroup' => array('create' => "VARCHAR(50) NULL default null", 'modify' => "VARCHAR(50)"),
+              '_transfer_on_hangup' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_autoselectline_enabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_autocall_select' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_backgroundImageAccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_phonePersonalization' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_callLogBlfEnabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')")
             )
     );
 
@@ -257,6 +269,7 @@ function Get_DB_config($sccp_compatible)
         // If integrated into chan-sccp, the version number will change
         if ($sccp_compatible >= 433) {
             $db_config_v4['sccpdevice'] = array_merge($db_config_v4['sccpdevice'],$db_config_v5['sccpdevice']);
+            $db_config_v4['sccpline'] = array_merge($db_config_v4['sccpline'],$db_config_v5['sccpline']);
         }
         return $db_config_v4;
     }
@@ -435,10 +448,10 @@ function InstallDB_updateSchema($db_config)
 
         if (!empty($sql_create)) {
             outn("<li>" . _("Adding new FILTER_VALIDATE_INT") . "</li>");
-            $sql_create = "ALTER TABLE `" . $tabl_name . "` " . substr($sql_create, 0, -2);
+            $sql_create = "ALTER TABLE {$tabl_name} " .substr($sql_create, 0, -2);
             $check = $db->query($sql_create);
             if (DB::IsError($check)) {
-                die_freepbx("Can not create " . $tabl_name . " table sql: " . $sql_create . "n");
+                die_freepbx("Can not create {$tabl_name}. SQL:  {$sql_create} \n");
             }
         }
         if (!empty($sql_modify)) {

@@ -38,7 +38,7 @@ if (!empty($_REQUEST['new_id'])) {
 }
 if (empty($_REQUEST['id'])) {
     // Adding new device to database. Get default values
-    $def_val = $this->getDeviceDefaults();
+    $def_val = $this->getTableDefaults('sccpdevice');
 } else {
     // Editing an existing Device
     $dev_id = $_REQUEST['id'];

@@ -26,10 +26,10 @@
         echo $this->showGroup('sccp_dev_time_s', 1);
         echo $this->showGroup('sccp_net', 1);
         echo $this->showGroup('sccp_lang', 1);
-        echo $this->showGroup('sccp_qos_config', 1);
+        echo $this->showGroup('sccp_qos_config', 1, 'sccpdevice');
         echo $this->showGroup('sccp_extpath_config', 1);
-        
-    ?>    
+
+    ?>
 
 </form>
 
@@ -45,15 +45,14 @@
                 <ul class="nav nav-tabs" role="tablist">
                 <?php
 //                    echo $this->showGroup('add_network_1',0);
-                ?>    
+                ?>
                 </ul>
-            </div>    
-                
+            </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary sccp_update" data-id="network_add" data-mode="new" id="network_add" data-dismiss="modal">Save</button>
-            </div>            
+            </div>
         </div>
     </div>
 </div>
-

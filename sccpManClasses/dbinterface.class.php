@@ -109,6 +109,9 @@ class dbinterface
             case 'get_columns_sccpuser':
                 $stmts = $dbh->prepare('DESCRIBE sccpuser');
                 break;
+            case 'get_columns_sccpline':
+                $stmts = $dbh->prepare('DESCRIBE sccpuser');
+                break;
             case 'get_sccpdevice_byid':
                 $stmt = $dbh->prepare('SELECT t1.*, types.dns,  types.buttons, types.loadimage, types.nametemplate as nametemplate,
                         addon.buttons as addon_buttons FROM sccpdevice AS t1

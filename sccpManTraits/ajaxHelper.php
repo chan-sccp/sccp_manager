@@ -67,7 +67,6 @@ trait ajaxHelper {
             case 'save_device':
                 $this->saveSccpDevice($request);
                 return array('status' => true, 'search' => '?display=sccp_phone', 'hash' => 'sccpdevice');
-
                 break;
             case 'save_ruser':
                 //$res = $request;
@@ -388,6 +387,7 @@ trait ajaxHelper {
         }
 
     }
+
     function handleSubmit($get_settings, $validateonly = false) {
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
@@ -407,7 +407,7 @@ trait ajaxHelper {
                 // There will be some exceptions to be handled where there should be no underscore
                 // Handle at db write
                 // Have default to be saved to db sccpdevice
-                $dev_def = $this->getDeviceDefaults();
+                $dev_def = $this->getTableDefaults('sccpdevice');
                 if (!array_key_exists($key, $dev_def)) {
                     // This key needs to be prefixed with underscore
                     $key = '_'.$key;
