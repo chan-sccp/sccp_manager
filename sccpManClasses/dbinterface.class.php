@@ -310,7 +310,7 @@ class dbinterface
                             $stmt->bindParam(':instance', $button_array['instance'],\PDO::PARAM_INT);
                             $stmt->bindParam(':buttontype', $button_array['type'],\PDO::PARAM_STR);
                             $stmt->bindParam(':name', $button_array['name'],\PDO::PARAM_STR);
-                            $result= $dbh->execute();
+                            $result= $stmt->execute();
                         }
                         break;
                     case 'add':
