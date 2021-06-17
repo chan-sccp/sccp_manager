@@ -21,7 +21,7 @@ class dbinterface
 
     public function info()
     {
-        $Ver = '13.0.2';    // This should be updated
+        $Ver = '13.0.10';    // This should be updated
         return array('Version' => $Ver,
             'about' => 'Data access interface ver: ' . $Ver);
     }
