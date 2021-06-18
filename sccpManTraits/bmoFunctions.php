@@ -32,7 +32,7 @@ trait bmoFunctions {
                 Below adds redirect URL, but it is not followed
                 $cc->setRedirectURL("config.php?display=sccp_phone");
                 so force redirect at end of addDevice in SccpClass
-                */  
+                */
             }
         }
     }
@@ -115,6 +115,7 @@ trait bmoFunctions {
                 );
                 break;
             case 'sccpsettings':
+                // TODO: Need to change to have save and save and continue
                 $buttons = array(
                     'submit' => array(
                         'name' => 'ajaxsubmit',

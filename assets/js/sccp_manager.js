@@ -212,6 +212,15 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
+    $('#sccp_hw_mac').change(function() {
+        var value = $(this).val();
+        const regex = new RegExp('^([0-9A-Fa-f]{2}[:.-]?){5}([0-9A-Fa-f]{2})$');
+        if ( regex.test(value) === false ) {
+            fpbxToast(_('Invalid Mac Address'),_('Invalid Mac Address'), 'warning');
+            setTimeout(function(){document.getElementById("sccp_hw_mac").focus();},2000);
+        };
+      });
+
 // Form.buttons - Form.adddevice
     $('.futuretype').change(function (e) {
         var kid = $(this).data('id');

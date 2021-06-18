@@ -35,6 +35,9 @@ trait ajaxHelper {
             case 'delete_dialplan':
                 return true;
                 break;
+            case 'validateMac':
+                return true;
+                break;
             default:
                 return false;
         }
@@ -49,6 +52,8 @@ trait ajaxHelper {
             case 'savesettings':
                 // Consolidate this into a separate method to improve legibility
                 $this->handleSubmit($request);
+
+                // TODO: Need to be more specific on reload and only reload if critical settings changed.
                 $res = $this->aminterface->core_sccp_reload();
                 $msg [] = array ("Config Saved: {$res['Response']}", "Info : {$res['data']}");
 
@@ -375,6 +380,9 @@ trait ajaxHelper {
 
                 // return array('status' => false, 'message' => $result);
                 return $result;
+                break;
+            case 'validateMac':
+                dbug('Request', $_REQUEST);
                 break;
         }
 
