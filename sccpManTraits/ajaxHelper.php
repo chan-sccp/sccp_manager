@@ -381,7 +381,6 @@ trait ajaxHelper {
     }
 
     function handleSubmit($request, $validateonly = false) {
-      dbug('Request', $request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -434,22 +433,23 @@ trait ajaxHelper {
                 unset($request[$key]);
                 continue;
             }
-            dbug('still in loop with key', $key);
-            $pos = strpos($key, $hdr_prefix);
-            if ($pos !== false) {
-                $key1 = substr_replace($key, '', 0, strlen($hdr_prefix));
-                if (!empty($this->sccpvalues[$key1])) {
-                    if (!($this->sccpvalues[$key1]['data'] == $value)) {
-                        $save_settings[] = array('keyword' => $this->sccpvalues[$key1]['keyword'], 'data' => $value,
-                            'seq' => $this->sccpvalues[$key1]['seq'], 'type' => $this->sccpvalues[$key1]['type']);
-                    }
+
+            $key = (str_replace($hdr_prefix, '', $key, $count_mods));
+            if ($count_mods) {
+                if (!empty($this->sccpvalues[$key]) && (!($this->sccpvalues[$key]['data'] == $value))) {
+                    $save_settings[] = array(
+                          'keyword' => $this->sccpvalues[$key]['keyword'],
+                          'data' => $value,
+                          'seq' => $this->sccpvalues[$key]['seq'],
+                          'type' => $this->sccpvalues[$key1]['type']
+                          );
                 }
             }
-            $pos = strpos($key, $hdr_arprefix);
-            if ($pos !== false) {
-                $key1 = substr_replace($key, '', 0, strlen($hdr_arprefix));
+
+            $key = (str_replace($hdr_arprefix, '', $key, $count_mods));
+            if ($count_mods) {
                 $arr_data = '';
-                if (!empty($this->sccpvalues[$key1])) {
+                if (!empty($this->sccpvalues[$key])) {
                     foreach ($value as $vkey => $vval) {
                         $tmp_data = '';
                         foreach ($vval as $vkey => $vval) {
@@ -475,9 +475,13 @@ trait ajaxHelper {
                     while (substr($arr_data, -1) == ';') {
                         $arr_data = substr($arr_data, 0, -1);
                     }
-                    if (!($this->sccpvalues[$key1]['data'] == $arr_data)) {
-                        $save_settings[] = array('keyword' => $this->sccpvalues[$key1]['keyword'], 'data' => $arr_data,
-                            'seq' => $this->sccpvalues[$key1]['seq'], 'type' => $this->sccpvalues[$key1]['type']);
+                    if (!($this->sccpvalues[$key]['data'] == $arr_data)) {
+                        $save_settings[] = array(
+                            'keyword' => $this->sccpvalues[$key]['keyword'],
+                            'data' => $arr_data,
+                            'seq' => $this->sccpvalues[$key]['seq'],
+                            'type' => $this->sccpvalues[$key]['type']
+                            );
                     }
                 }
             }
@@ -496,15 +500,18 @@ trait ajaxHelper {
                     }
                     break;
 
-                case 'sccp_ntp_timezone':
+                case 'ntp_timezone':
                     $tz_id = $value;
                     $TZdata = $this->extconfigs->getextConfig('sccp_timezone', $tz_id);
                     if (!empty($TZdata)) {
                         $value = $TZdata['offset']/60;
                         if (!($this->sccpvalues['tzoffset']['data'] == $value)) {
-                            $save_settings[] = array('keyword' => 'tzoffset', 'data' => $value,
+                            $save_settings[] = array(
+                                'keyword' => 'tzoffset',
+                                'data' => $value,
                                 'seq' => '98',
-                                'type' => '2');
+                                'type' => '2'
+                                );
                         }
                     }
                     break;
@@ -512,7 +519,6 @@ trait ajaxHelper {
         }
 
         if (!empty($save_settings)) {
-          dbug('save settings', $save_settings);
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
         }

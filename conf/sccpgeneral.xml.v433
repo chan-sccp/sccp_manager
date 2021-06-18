@@ -520,13 +520,13 @@ and open the template in the editor. Base Version before all crash :-)
             </select>
             <help>Date Format: The date format for the on-screen display. Can be one of the following: (D-M-YA, M.D.Y, Y/M/D) where 'D' is Day, 'M' is Month, 'Y' is Year, 'A' is 24-hour, 'a' is 12-hour, and the separators can be '.','-','/'</help>
         </item>
-        <item type="SLTZN" id="2" seq="95">
+        <item type="IE" id="4" seq="10">
             <label>Time Zone</label>
-            <name>ntp_timezone</name>
-            <class>sccp-custom</class>
-            <select>
-                <default>UTC</default>
-            </select>
+            <input>
+                <name>ntp_timezone</name>
+                <default></default>
+                <options readonly="readonly"></options>
+            </input>
             <help>System Time zone - this is set by FreePBX and can be changed in Settings : Advanced Settings</help>
         </item>
     </page_group>
