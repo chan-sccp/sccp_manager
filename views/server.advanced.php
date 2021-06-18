@@ -17,7 +17,7 @@
         $defaultVals = $this->getTableDefaults('sccpdevice', true);
 
         echo $this->showGroup('sccp_srst', 1);
-        echo $this->showGroup('sccp_dev_vendor_conf', 1,'sccpdevice', $defaultVals, false);
+        echo $this->showGroup('sccp_dev_vendor_conf', 1, 'sccpdevice', $defaultVals);
 
 ?>
 </form>

@@ -173,7 +173,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      *   Generate Input elements in Html Code from sccpgeneral.xml
      */
 
-    public function showGroup($group_name, $show_Header, $form_prefix = 'sccp', $form_values = array(), $show_inherit = true) {
+    public function showGroup($group_name, $show_Header, $form_prefix = 'sccp', $form_values = array()) {
         $htmlret = "";
         if (empty($form_values)) {
             $form_values = $this->sccpvalues;
@@ -187,7 +187,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     'fvalues' => $form_values,
                     'tftp_lang' => $this->tftpLang,
                     'metainfo' => $this->sccp_metainfo,
-                    'inherit' => $show_inherit
                   )
                 );
             }
