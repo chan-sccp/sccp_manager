@@ -110,7 +110,7 @@ class dbinterface
                 $stmts = $dbh->prepare('DESCRIBE sccpuser');
                 break;
             case 'get_columns_sccpline':
-                $stmts = $dbh->prepare('DESCRIBE sccpuser');
+                $stmts = $dbh->prepare('DESCRIBE sccpline');
                 break;
             case 'get_sccpdevice_byid':
                 $stmt = $dbh->prepare('SELECT t1.*, types.dns,  types.buttons, types.loadimage, types.nametemplate as nametemplate,
@@ -145,6 +145,8 @@ class dbinterface
                     $raw_settings = array();
                 }
                 break;
+                // No default case so will give exception of $raw_settings undefined if there
+                // dataid is not in the switch.
         }
         if (!empty($stmt)) {
             $stmt->execute();

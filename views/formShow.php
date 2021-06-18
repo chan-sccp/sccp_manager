@@ -24,9 +24,9 @@ $napref = $form_prefix.'-ar_';
 if (empty($form_prefix)) {
     $npref = "sccp_";
     $napref ="sccp-ar_";
-} elseif ($form_prefix == 'vendorconfig') {
-    $npref = 'vendorconfig';
-    $napref = 'vendorconfig-ar';
+//} elseif ($form_prefix == 'vendorconfig') {
+//    $npref = 'vendorconfig';
+//    $napref = 'vendorconfig-ar';
 }
 $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
         "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
@@ -360,15 +360,16 @@ foreach ($items as $child) {
 //                          $res_v = 'no';
                           $opt_hide = '';
                         $res_v = '';
+                        // set res_v according to precedence Default here, value here, supplied value
                         if (!empty($child->default)) {
                             $res_v = (string)$child->default;
                         }
                         if (!empty($child->value)) {
                              $res_v = (string)$child->value;
                         }
-                        if (!empty($fvalues[$res_ext])) {
-                            if (($fvalues[$res_ext]['data'] != '') ) {
-                                $res_v = (string)$fvalues[$res_ext]['data'];
+                        if (!empty($fvalues[$res_n])) {
+                            if (($fvalues[$res_n]['data'] != '') ) {
+                                $res_v = (string)$fvalues[$res_n]['data'];
                             }
                         }
                         if (!empty($child->option_hide)) {

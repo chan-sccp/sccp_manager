@@ -536,7 +536,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IE" id="3" seq="98">
             <label>Log Server</label>
             <input>
-                <name>vendorconfig_logserver</name>
+                <name>logserver</name>
                 <default></default>
                 <class>sccp-custom</class>
                 <options placeholder="x.x.x.x:9001" />
@@ -546,7 +546,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IE" id="3" seq="98">
             <label>Display Not Active</label>
             <input>
-                <name>vendorconfig_daysdisplaynotactive</name>
+                <name>daysdisplaynotactive</name>
                 <default></default>
                 <class>sccp-custom</class>
                 <options placeholder="1,7" />
@@ -556,7 +556,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IE" id="3" seq="98">
             <label>Display Not Active</label>
             <input>
-                <name>vendorconfig_displayontime</name>
+                <name>displayontime</name>
                 <default></default>
                 <class>sccp-custom</class>
                 <options placeholder="08:00" />
@@ -566,7 +566,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IE" id="3" seq="98">
             <label>Display On Duration</label>
             <input>
-                <name>vendorconfig_displayonduration</name>
+                <name>displayonduration</name>
                 <default></default>
                 <class>sccp-custom</class>
                 <options placeholder="10:00" />
@@ -576,109 +576,97 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IE" id="3" seq="98">
             <label>Display Idle Timeout</label>
             <input>
-                <name>vendorconfig_displayidletimeout</name>
+                <name>displayidletimeout</name>
                 <default></default>
                 <class>sccp-custom</class>
                 <options placeholder="00:10" />
             </input>
             <help>Timeout in HH:MM format to automatically turn off phone display if outside the time specified by "daysDisplayNotActive", "displayOnTime" and "displayOnTimeout".</help>
         </item>
-
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_settingsaccess</name>
+            <name>settingsaccess</name>
             <label>Settings Access</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Whether a user can access the phone settings.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_videocapability</name>
+            <name>videocapability</name>
             <label>Video Capability</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help></help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_webaccess</name>
+            <name>webaccess</name>
             <label>Web Access</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable the phone's HTTP server.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_webadmin</name>
+            <name>webadmin</name>
             <label>Web Admin</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable remote administration using the phone's HTTP server. 8821 model only.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_pcport</name>
+            <name>pcport</name>
             <label>Pc Port</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Disable the PC (computer) port</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_spantopcport</name>
+            <name>spantopcport</name>
             <label>Span to PC Port</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Forward packets sent and received on the SW (network) port to the PC (computer) port.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_voicevlanaccess</name>
+            <name>voicevlanaccess</name>
             <label>Voice Vlan Access</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Allow devices connected to the PC (computer) port to access the voice VLAN.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_enablecdpswport</name>
+            <name>enablecdpswport</name>
             <label>Cdp Sw Port</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable Cisco Discovery Protocol on the SW (network) port.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_enablecdppcport</name>
+            <name>enablecdppcport</name>
             <label>Cdp PC Port</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable Cisco Discovery Protocol on the PC (computer) port.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_enablelldpswport</name>
+            <name>enablelldpswport</name>
             <label>Link Layer Discovery Sw</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable Link Layer Discovery Protocol on the SW (network) port.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>vendorconfig_enablelldppcport</name>
+            <name>enablelldppcport</name>
             <label>Link Layer Discovery PC</label>
-            <default>Inherit</default>
-            <button value="">Inherit</button>
+            <default>"off"</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help> Enable Link Layer Discovery Protocol on the PC (computer) port.</help>
@@ -1136,16 +1124,16 @@ and open the template in the editor. Base Version before all crash :-)
             <name>backgroundImageAccess</name>
             <label>Allow change Background Image</label>
             <default>true</default>
-            <button value="true">Enabled</button>
-            <button value="false">Disabled</button>
+            <button value="on">Enabled</button>
+            <button value="off">Disabled</button>
             <help>I'm guessing on this one, but on some devices, the background image on the display can be modified at the device. I think this is the thing that allows that to happen.</help>
         </item>
         <item type="IS" id="11" seq="98">
             <name>phonePersonalization</name>
             <label>Allow push background from server </label>
             <default>0</default>
-            <button value="1">Enabled</button>
-            <button value="0">Disabled</button>
+            <button value="on">Enabled</button>
+            <button value="off">Disabled</button>
             <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
         </item>
         <item type="IS" id="11" seq="98">
@@ -1397,7 +1385,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>transfer</name>
             <label>Transfer</label>
             <default>off</default>
-            <button value="off">Inherit</button>
             <button value="on">On</button>
             <button value="off">Off</button>
             <help>Transfer allowed</help>
@@ -1406,7 +1393,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>park</name>
             <label>Park</label>
             <default>on</default>
-            <button_d value="NONE">Inherit</button_d>
             <button value="on">On</button>
             <button value="off">Off</button>
             <help>Take a look to the compile how-to. Park stuff is not compiled by default.</help>
@@ -1415,7 +1401,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>cfwdall</name>
             <label>Call Forward</label>
             <default>off</default>
-            <button value="off">Inherit</button>
             <button value="on">On</button>
             <button value="off">Off</button>
             <help>Activate the callforward softkeys. Default is On</help>
@@ -1424,7 +1409,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>cfwdbusy</name>
             <label>Call Forward busy</label>
             <default>off</default>
-            <button value="off">Inherit</button>
             <button value="on">On</button>
             <button value="off">Off</button>
             <help>Activate the callforward busy softkeys. Default is On</help>
@@ -1433,7 +1417,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>cfwdnoanswer</name>
             <label>Call Forward NOANSWER</label>
             <default>on</default>
-            <button value="on">Inherit</button>
             <button value="on">On</button>
             <button value="off">Off</button>
             <help>Activate the callforward NOANSWER stuff and softkeys. Default is On</help>
@@ -1442,7 +1425,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>dndFeature</name>
             <label>DND Button on Device</label>
             <default>off</default>
-            <button value="off">Inherit</button>
             <button value="on">On</button>
             <button value="off">Off</button>
             <help>Do Not Disturb. Default is Off</help>
@@ -1481,7 +1463,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>mwioncall</name>
             <label>Message Lamp On Call</label>
             <default>on</default>
-            <button value="on">Inherit</button>
             <button value="on">Yes</button>
             <button value="off">No</button>
             <help>Set the MWI on call.</help>
@@ -1491,7 +1472,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>mwilamp</name>
             <label>Message Waiting Indication (MWI)</label>
             <default>on</default>
-            <button value="on">Inherit</button>
             <button value="on">On</button>
             <button value="off">Off</button>
             <button value="wink">Wink</button>
@@ -1635,7 +1615,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>nat</name>
             <label>NAT</label>
             <default>auto</default>
-            <button value="auto">Inherit</button>
             <button value="auto">Auto</button>
             <button value="off">Off</button>
             <button value="on">On</button>
@@ -1646,7 +1625,6 @@ and open the template in the editor. Base Version before all crash :-)
             <label>Direct RTP</label>
             <default>off</default>
             <button- value="off">Auto</button->
-            <button value="off">Inherit</button>
             <button value="off">Off</button>
             <button value="on">On</button>
             <help>This option allow devices to do direct RTP sessions (default Off)</help>
@@ -1655,7 +1633,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>earlyrtp</name>
             <label>Early RTP</label>
             <default>NONE</default>
-            <button value="NONE">Inherit</button>
             <button-d value="immediate">Immediate</button-d>
             <button value="offhook">Offhook</button>
             <button value="dialing">Dial</button>

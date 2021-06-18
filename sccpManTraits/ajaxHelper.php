@@ -42,7 +42,6 @@ trait ajaxHelper {
 
     // ajaxHandler is called after ajaxRequest returns true
     public function ajaxHandler() {
-      dbug('REQUEST',$_REQUEST);
         $request = $_REQUEST;
         $msg = array();
         $cmd_id = $request['command'];
@@ -382,6 +381,7 @@ trait ajaxHelper {
     }
 
     function handleSubmit($request, $validateonly = false) {
+      dbug('Request', $request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -396,28 +396,45 @@ trait ajaxHelper {
             $this->initializeTFtpLanguagePath();
         }
         foreach ($request as $key => $value) {
-            // Initallly saved all to sccpvalues. Now will save to db defaults if appropriate
+            // Originally saved all to sccpvalues. Now will save to db defaults if appropriate
             // TODO: Need to verify the tables defined in showGroup - some options maybe
             // device options, but if set by freePbx extensions, be in sccpline.
             $key = (str_replace('sccpdevice_', '', $key, $count_mods));
-            if (($count_mods) && (!empty($value))) {
+            if ($count_mods) {
                 // There will be some exceptions to be handled where there should be no underscore
                 // Handle at db write
                 // Have default to be saved to db sccpdevice
-                $dev_def = $this->getTableDefaults('sccpdevice');
+                $dev_def = $this->getTableDefaults('sccpdevice', false);
                 if (!array_key_exists($key, $dev_def)) {
                     // This key needs to be prefixed with underscore
-                    $key = '_'.$key;
+                    $key = "_{$key}";
+                }
+                if ((array_key_exists($key, $dev_def)) && (($dev_def[$key]['data'] == $value) || empty($dev_def[$key]['data']))) {
+                    // Value unchanged or null so ignore and go to next key.
+                    continue;
+                }
+                $dbSaveArray[] = array('table' => 'sccpdevice', 'field' => $key, 'Default' => $value);
+                continue;
+            }
+            $key = (str_replace('sccpline_', '', $key, $count_mods));
+            if ($count_mods) {
+                // There will be some exceptions to be handled where there should be no underscore
+                // Handle at db write
+                // Have default to be saved to db sccpdevice
+                $dev_def = $this->getTableDefaults('sccpline', false);
+                if (!array_key_exists($key, $dev_def)) {
+                    // This key needs to be prefixed with underscore
+                    $key = "_{$key}";
                 }
                 if ((array_key_exists($key, $dev_def)) && ($dev_def[$key]['data'] == $value)) {
                     // Value unchanged so ignore and get next key.
                     continue;
                 }
-                $dbSaveArray[] = array('table' => 'sccpdevice', 'field' => $key, 'Default' => $value);
+                $dbSaveArray[] = array('table' => 'sccpline', 'field' => $key, 'Default' => $value);
                 unset($request[$key]);
                 continue;
             }
-
+            dbug('still in loop with key', $key);
             $pos = strpos($key, $hdr_prefix);
             if ($pos !== false) {
                 $key1 = substr_replace($key, '', 0, strlen($hdr_prefix));
@@ -493,7 +510,9 @@ trait ajaxHelper {
                     break;
             }
         }
+
         if (!empty($save_settings)) {
+          dbug('save settings', $save_settings);
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
         }

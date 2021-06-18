@@ -69,13 +69,20 @@ trait helperfunctions {
         }
         return FALSE;
     }
-    private function getTableDefaults($table) {
+    private function getTableDefaults($table, $trim_underscore = true) {
         $def_val = array();
         // TODO: This is ugly and overkill - needs to be cleaned up in dbinterface
         $sccpTableDesc = $this->dbinterface->HWextension_db_SccpTableData("get_columns_{$table}");
 
         foreach ($sccpTableDesc as $data) {
             $key = (string) $data['Field'];
+            // function has 2 roles: return actual table keys (trim_underscore = false)
+            // return sanitised keys to add defaults (trim_underscore = true)
+            if ($trim_underscore) {
+                // Remove any leading (or trailing but should be none) underscore
+                // These are only used to hide fields from chan-sccp for compatibility
+                $key = trim($key,'_');
+            }
             $def_val[$key] = array("keyword" => $key, "data" => $data['Default'], "seq" => "99");
         }
         return $def_val;

@@ -257,7 +257,7 @@ function Get_DB_config($sccp_compatible)
               '_autocall_select' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_backgroundImageAccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_phonePersonalization' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_callLogBlfEnabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')")
+              '_callLogBlfEnabled' => array('create' => "enum('3','2') NOT NULL default '2'", 'modify' => "enum('3','2')")
             )
     );
 
