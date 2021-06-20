@@ -47,17 +47,6 @@ $model_list = array();
 $device_list = array();
 $dialplan_list = array();
 
-//$time_zone = \FreePBX::Sccp_manager()-> extconfigs-> getextConfig('cisco_time');
-//$system_time_zone = \FreePBX::Sccp_manager()->getSysnemTimeZone();
-//$sofkey_list = \FreePBX::Sccp_manager()-> aminterface->sccp_list_keysets();
-//$model_list = \FreePBX::Sccp_manager()->dbinterface->HWextension_db_SccpTableData("HWDevice");
-//$extension_list = \FreePBX::Sccp_manager()->dbinterface->HWextension_db_SccpTableData("HWextension");
-//$device_list = \FreePBX::Sccp_manager()->dbinterface->HWextension_db_SccpTableData("SccpDevice");
-//$extension_list[]=array(model=>'NONE', vendor=>'CISCO', dns=>'0');
-//$device_list[]=array(name=>'NONE', description=>'No Device');
-
-//print_r($metainfo);
-
 if (\FreePBX::Modules()->checkStatus("soundlang")) {
     $syslangs = \FreePBX::Soundlang()->getLanguages();
     if (!is_array($syslangs)) {
@@ -71,8 +60,6 @@ if (function_exists('music_list')) {
 if (!is_array($moh_list)) {
     $moh_list = array('default');
 }
-
-
 
 $items = $itm -> children();
 

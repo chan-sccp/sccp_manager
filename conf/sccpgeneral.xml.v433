@@ -1446,8 +1446,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>useRedialMenu</name>
             <label>Redial using Phonebook</label>
             <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">On</button>
+            <button value="no">Off</button>
             <help>You can specifying 'useRedialMenu = yes' in the sccp.conf device section and the redial softkey will cause the "placed calls" list instead of immediately calling the last dialed number.</help>
         </item>
         <item type="IS" id="6" seq="99">

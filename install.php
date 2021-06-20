@@ -99,7 +99,7 @@ function Get_DB_config($sccp_compatible)
             '_profileid' => array('create' => "INT(11) NOT NULL DEFAULT '0' AFTER `_loginname`"),
             '_dialrules' => array('create' => "VARCHAR(255) NULL DEFAULT NULL AFTER `_profileid`"),
 
-            'useRedialMenu' => array('create' => "VARCHAR(5) NULL DEFAULT 'no' AFTER `_dialrules`"),
+            'useRedialMenu' => array('create' => "enum('yes','no') NOT NULL default 'no'", 'modify' => "enum('yes','no')"),
             'dtmfmode' => array('drop' => "yes"),
             'force_dtmfmode' => array('create' => "ENUM('auto','rfc2833','skinny') NOT NULL default 'auto'",
                           'modify' => "ENUM('auto','rfc2833','skinny')"),
@@ -431,7 +431,7 @@ function InstallDB_updateSchema($db_config)
                     $count_modify ++;
                 }
                 if (!empty($row_data['def_modify'])) {
-                    $sql_modify .= "MODIFY COLUMN {$row_fld}  SET DEFAULT  {$row_data['def_modify']}, ";
+                    $sql_modify .= "ALTER COLUMN {$row_fld} SET DEFAULT '{$row_data['def_modify']}', ";
                     $count_modify ++;
                 }
                 if (!empty($row_data['drop'])) {
