@@ -147,6 +147,7 @@ function Get_DB_config($sccp_compatible)
             'namedpickupgroup' => array('create' => "VARCHAR(100) NULL DEFAULT NULL AFTER `namedcallgroup`", 'modify' => "VARCHAR(100)"),
             'adhocNumber' => array('create' => "VARCHAR(45) NULL DEFAULT NULL AFTER `namedpickupgroup`"),
             'meetme' => array('create' => "VARCHAR(5) NULL DEFAULT NULL AFTER `adhocNumber`"),
+            'context' => array('create' => "VARCHAR(45) NULL DEFAULT NULL AFTER `description`", 'def_modify' => 'from-internal'),
             'meetmenum' => array('create' => "VARCHAR(45) NULL DEFAULT NULL AFTER `meetme`"),
             'meetmeopts' => array('create' => "VARCHAR(45) NULL DEFAULT NULL AFTER `meetmenum`"),
             'regexten' => array('create' => "VARCHAR(45) NULL DEFAULT NULL AFTER `meetmeopts`"),
@@ -252,7 +253,6 @@ function Get_DB_config($sccp_compatible)
             ),
         'sccpline' => array (
               '_regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
-              '_pickupgroup' => array('create' => "VARCHAR(50) NULL default null", 'modify' => "VARCHAR(50)"),
               '_transfer_on_hangup' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_autoselectline_enabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_autocall_select' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),

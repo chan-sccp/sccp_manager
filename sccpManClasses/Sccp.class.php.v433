@@ -53,6 +53,18 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                         );
     private $line_defaults = array();
 
+    public function __construct($parent_class = null) {
+
+        $this->freepbx = $parent_class;
+        $this->database = $parent_class->Database();
+        $stmt = $this->database->prepare('DESCRIBE sccpline');
+        $stmt->execute();
+        $raw_settings = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($raw_settings as $row) {
+            $this->line_defaults[$row["Field"]] = $row["Default"];
+        }
+    }
+
     public function getInfo() {
 		    return array(
       			"rawName" => "sccp",
@@ -105,16 +117,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         }
 
-        $tech = Array();
-        $sql = "DESCRIBE sccpline";
-        foreach ($this->database->query($sql) as $row) {
-            $tech[$row["Field"]]=$row["Field"];
-            $this->line_defaults[$row["Field"]] = $row["Default"];
-        }
         $sqlCol = 'name';
         $sqlVal = "'{$id}'";
         foreach($this->data_fld as $key => $val) {
-            if (isset($tech[$key])) {
+            if (array_key_exists($key, $this->line_defaults)) {
                 if (isset($settings[$val]['value'])){
                     $sqlCol .= ", {$key}";
                     $sqlVal .= ", '{$settings[$val]['value']}'";
@@ -172,58 +178,43 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function getDefaultDeviceSettings($id, $displayname, &$flag) {
+
       	$dial = 'SCCP';
       	$settings  = array(
                         "mailbox" => array(
                                     "value" => $this->line_defaults['mailbox'],
                                     "flag" => $flag++
                         ),
-                    		"pin" => array(
-                            		"value" => $this->line_defaults['pin'],
-                            		"flag" => $flag++
-                    		),
                     		"incominglimit" => array(
                             		"value" => $this->line_defaults['incominglimit'],
                             		"flag" => $flag++
                     		),
-                    		"lcontext" => array(
-                            		"value" => "from-internal",
+                    		"context" => array(
+                            		"value" => $this->line_defaults['context'],
+                            		"flag" => $flag++
+                    		),
+                        "directed_pickup_context" => array(
+                            		"value" => $this->line_defaults['directed_pickup_context'],
                             		"flag" => $flag++
                     		),
                     		"callgroup" => array(
                             		"value" => $this->line_defaults['callgroup'],
                             		"flag" => $flag++
                     		),
-                    		"namedcallgroup" => array(
-                            		"value" => $this->line_defaults['namedcallgroup'],
-                            		"flag" => $flag++
-                    		),
                     		"pickupgroup" => array(
                             		"value" => $this->line_defaults['pickupgroup'],
                             		"flag" => $flag++
                     		),
-                    		"namedpickupgroup" => array(
-                            		"value" => "",
+                        "namedcallgroup" => array(
+                            		"value" => $this->line_defaults['namedcallgroup'],
                             		"flag" => $flag++
                     		),
-                    		"transfer" => array(
-                            		"value" => $this->line_defaults['transfer'],
+                    		"namedpickupgroup" => array(
+                            		"value" => $this->line_defaults['namedpickupgroup'],
                             		"flag" => $flag++
                     		),
                     		"adhocNumber" => array(
                             		"value" => $this->line_defaults['adhocNumber'],
-                            		"flag" => $flag++
-                    		),
-                    		"echocancel" => array(
-                            		"value" => $this->line_defaults['echocancel'],
-                            		"flag" => $flag++
-                    		),
-                    		"dnd" => array(
-                            		"value" => $this->line_defaults['dnd'],
-                            		"flag" => $flag++
-                    		),
-                    		"silencesuppression" => array(
-                            		"value" => $this->line_defaults['silencesuppression'],
                             		"flag" => $flag++
                     		),
                     		"secondary_dialtone_digits" => array(
@@ -234,10 +225,38 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                             		"value" => $this->line_defaults['secondary_dialtone_tone'],
                             		"flag" => $flag++
                     		),
+                        "directed_pickup" => array(
+                                "value" => $this->line_defaults['directed_pickup'],
+                                "flag" => $flag++
+                        ),
+                        "pickup_modeanswer" => array(
+                                "value" => $this->line_defaults['pickup_modeanswer'],
+                                "flag" => $flag++
+                        ),
+                        "transfer" => array(
+                                "value" => $this->line_defaults['transfer'],
+                                "flag" => $flag++
+                        ),
+                        "echocancel" => array(
+                                "value" => $this->line_defaults['echocancel'],
+                                "flag" => $flag++
+                        ),
+                        "dnd" => array(
+                            		"value" => $this->line_defaults['dnd'],
+                            		"flag" => $flag++
+                    		),
+                        "silencesuppression" => array(
+                                "value" => $this->line_defaults['silencesuppression'],
+                                "flag" => $flag++
+                        ),
                     		"musicclass" => array(
                             		"value" => $this->line_defaults['musicclass'],
                             		"flag" => $flag++
         		            ),
+                        "pin" => array(
+                                "value" => $this->line_defaults['pin'],
+                                "flag" => $flag++
+                        ),
                         "allow" => array(
                                 "value" => $this->line_defaults['allow'],
                                 "flag" => $flag++
@@ -254,6 +273,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function getDeviceDisplay($display, $deviceInfo, $currentcomponent, $primarySection) {
+
     		$section = _("SCCP Extension Details");
     		$section_с = _("SCCP Codec Details");
         $gn_category = "sccp";
@@ -318,16 +338,16 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
     		$tmparr = array();
         $tt = _("Name or id of linked maibox");
-    		$tmparr['mailbox'] = array('prompttext' => _('Mailbox'), 'value' => '', 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
+    		$tmparr['mailbox'] = array('prompttext' => _('Mailbox'), 'value' => $this->line_defaults['mailbox'], 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
 
         $tt = _("The SCCP channel number for this port. If you plaining to use this line as 'Shared' or use on several devices - leave this field blank or set limit to 10 calls.");
-        $tmparr['incominglimit'] = array('prompttext' => _('Incoming Call Limit'), 'value' => '', 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
+        $tmparr['incominglimit'] = array('prompttext' => _('Incoming Call Limit'), $this->line_defaults['incominglimit'], 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
 
         $tt = _("Asterisk context this device will send calls to. Only change this is you know what you are doing.");
-        $tmparr['lcontext'] = array('prompttext' => _('Line context'), 'value' => 'from-internal', 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
+        $tmparr['context'] = array('prompttext' => _('Line context'), 'value' => $this->line_defaults['context'], 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
 
         $tt = _("Asterisk context this device will can pickup calls. Only change this is you know what you are doing.");
-        $tmparr['directed_pickup_context'] = array('prompttext' => _('Directed PickUp Сontext '), 'value' => 'from-internal', 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
+        $tmparr['directed_pickup_context'] = array('prompttext' => _('Directed PickUp Сontext '), 'value' => $this->line_defaults['directed_pickup_context'], 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
 
         $tt = _("Sets the named caller groups this line is a member of (ast111) : ");
         if (!empty($named_group['namedcallgroup'])) {
@@ -336,7 +356,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
             $tt .= '... ';
         }
-    		$tmparr['namedcallgroup'] = array('prompttext' => _('Named Call Group'),'value' => '', 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
+    		$tmparr['namedcallgroup'] = array('prompttext' => _('Named Call Group'),'value' => $this->line_defaults['namedcallgroup'], 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
 
         $tt = _("Named PickupGroup : ");
                     if (!empty($named_group['namedpickupgroup'])) {
@@ -345,10 +365,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                         }
                         $tt .= '... ';
                     }
-    		$tmparr['namedpickupgroup'] = array('prompttext' => _('Named Pickup Group'),'value' => '', 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
+    		$tmparr['namedpickupgroup'] = array('prompttext' => _('Named Pickup Group'),'value' => $this->line_defaults['namedpickupgroup'], 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
 
         $tt = _("Digits to indicate an external line to user (secondary dialtone) Sample 9 or 8 (max 9 digits)");
-    		$tmparr['secondary_dialtone_digits'] = array('prompttext' => _('Secondary dialtone digits'), 'value' => '', 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
+    		$tmparr['secondary_dialtone_digits'] = array('prompttext' => _('Secondary dialtone digits'), 'value' => $this->line_defaults['secondary_dialtone_digits'], 'tt' => $tt, 'level' => 1, 'section' => $section,'category' => $gn_category);
 
         unset($select);
         $select[] = array( 'value' => '0x21', 'text' => 'Inside Dial Tone');
@@ -409,7 +429,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         $select[] = array('value' => 'no', 'text' => 'No');
 
         $tt = _("Outside dialtone frequency (defaul 0x22)");
-        $tmparr['secondary_dialtone_tone'] = array('prompttext' => _('Secondary dialtone'), 'value' => '0x22', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'select', 'section' => $section,'category' => $gn_category);
+        $tmparr['secondary_dialtone_tone'] = array('prompttext' => _('Secondary dialtone'), 'value' => $this->line_defaults['secondary_dialtone_tone'], 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'select', 'section' => $section,'category' => $gn_category);
 
         unset($select);
         $select[] = array('value' => 'on', 'text' => 'Yes');
@@ -434,7 +454,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         $select[] = array('value' => 'on', 'text' => 'Yes');
         $select[] = array('value' => 'off', 'text' => 'No');
         $tt = _("Echo cancel");
-        $tmparr['echocancel'] = array('prompttext' => _('Echo cancel'), 'value' => 'on', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio', 'section' => $section,'category' => $gn_category);
+        $tmparr['echocancel'] = array('prompttext' => _('Echo cancel'), 'value' => $this->line_defaults['echocancel'], 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio', 'section' => $section,'category' => $gn_category);
 
         unset($select);
         $select[] = array('value' => 'off', 'text' => 'Off');
@@ -445,13 +465,13 @@ class Sccp extends \FreePBX\modules\Core\Driver {
               _("Cycle  - dnd that cycles through all three states off -> reject -> silent -> off (this is the normal behaviour)").'<br>'.
               _("Reject - Usesr can only switch off and on (in reject/busy mode)").'<br>'.
               _("Silent - Usesr can only switch off and on (in silent mode)");
-        $tmparr['dnd'] = array('prompttext' => _('DND'), 'value' => 'reject', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio', 'section' => $section,'category' => $gn_category);
+        $tmparr['dnd'] = array('prompttext' => _('DND'), 'value' => $this->line_defaults['dnd'], 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio', 'section' => $section,'category' => $gn_category);
 
         unset($select);
         $select[] = array('value' => 'on', 'text' => 'Yes');
         $select[] = array('value' => 'off', 'text' => 'No');
         $tt = _("Silence Suppression. Asterisk Not supported");
-        $tmparr['silencesuppression'] = array('prompttext' => _('Silence Suppression'), 'value' => 'off', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio', 'section' => $section,'category' => $gn_category);
+        $tmparr['silencesuppression'] = array('prompttext' => _('Silence Suppression'), 'value' => $this->line_defaults['silencesuppression'], 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio', 'section' => $section,'category' => $gn_category);
 
         unset($select);
         $select[] = array('value' => 'default', 'text' => _('default'));
@@ -465,7 +485,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         }
 
         $tt = _("Music on hold");
-        $tmparr['musicclass'] = array('prompttext' => _('Music on hold'), 'value' => '', 'tt' => $tt, 'select' => $select, 'level' => 1, 'section' => $section,'category' => $gn_category);
+        $tmparr['musicclass'] = array('prompttext' => _('Music on hold'), 'value' => $this->line_defaults['musicclass'], 'tt' => $tt, 'select' => $select, 'level' => 1, 'section' => $section,'category' => $gn_category);
         unset($select);
 
         $tt = _("Sets the named pickup groups this line is a member of (this phone can pickup calls from remote phones which are in this caller group (ast111)");
