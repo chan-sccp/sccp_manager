@@ -124,7 +124,6 @@ foreach ($items as $child) {
                             if (empty($res_id)) {
                                 $res_id = $res_name;
                             }
-
                             if (!empty($fvalues[$res_n])) {
                                 if (!empty($fvalues[$res_n]['data'])) {
                                     $value->value = $fvalues[$res_n]['data'];

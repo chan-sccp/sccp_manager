@@ -36,11 +36,11 @@ if (!empty($_REQUEST['new_id'])) {
         $def_val['addon'] = array("keyword" => 'type', "data" => $_REQUEST['addon'], "seq" => "99");
     }
 }
-if (empty($_REQUEST['id'])) {
-    // Adding new device to database. Get default values
-    $def_val = $this->getTableDefaults('sccpdevice');
-} else {
-    // Editing an existing Device
+
+//Get default values. Will use these dor a new device, and modify for an existing.
+$def_val = $this->getTableDefaults('sccpdevice');
+if (!empty($_REQUEST['id'])) {
+    // Editing an existing Device. Overwrite any defaults that are already set for this device.
     $dev_id = $_REQUEST['id'];
     $dev_new = $dev_id;
     $db_res = $this->dbinterface->HWextension_db_SccpTableData('get_sccpdevice_byid', array("id" => $dev_id));
@@ -61,11 +61,13 @@ if (empty($_REQUEST['id'])) {
                             $device_warning['Template'] = array('Missing device configuration template : '. $tmp_raw['nametemplate']);
                         }
                     }
+                    $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
                     break;
                 case 'name':
-                    $key = 'mac';
+                    $key = 'mac';   //This is the key that formShow expects
                     $val = str_replace(array('SEP','ATA','VG'), '', $val);
                     $val = implode('.', sscanf($val, '%4s%4s%4s')); // Convert to Cisco display Format
+                    $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
                     break;
                 case '_hwlang':
                     $tmpar =  explode(":", $val);
@@ -79,7 +81,21 @@ if (empty($_REQUEST['id'])) {
 //                    $val = after('/', $val);
 //                    break;
                 default:
+                    // Overwrite existing defaults after checking that data is still valid after schema updates
+                    // Do not strip underscores as these fields are new in the schema and so should be valid.
+                    $enumFields = $this->getTableEnums('sccpdevice', false);
+                    if (array_key_exists($key, $enumFields)){
+                        // This field is (now) an enum. Check the current value is acceptable.
+                        // Quote value as enum values are quoted.
+                        if (in_array("'{$val}'", $enumFields[$key])) {
+                            // The value is valid so will keep
+                            $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
+                        }
+                        // Do not store value and let defaults apply
+                        continue;
+                    }
                     $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
+                    break;
             }
         }
     }

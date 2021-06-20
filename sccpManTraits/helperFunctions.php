@@ -88,6 +88,28 @@ trait helperfunctions {
         return $def_val;
     }
 
+    private function getTableEnums($table, $trim_underscore = true) {
+        $enumFields = array();
+        $sccpTableDesc = $this->dbinterface->HWextension_db_SccpTableData("get_columns_{$table}");
+
+        foreach ($sccpTableDesc as $data) {
+            $key = (string) $data['Field'];
+            // function has 2 roles: return actual table keys (trim_underscore = false)
+            // return sanitised keys to add defaults (trim_underscore = true)
+            if ($trim_underscore) {
+                // Remove any leading (or trailing but should be none) underscore
+                // These are only used to hide fields from chan-sccp for compatibility
+                $key = trim($key,'_');
+            }
+            $typeArray = explode('(', $data['Type']);
+            if ($typeArray[0] == 'enum') {
+                $enumOptions = explode(',', trim($typeArray[1],')'));
+                $enumFields[$key] = $enumOptions;
+            }
+        }
+        return $enumFields;
+    }
+
     private function findAllFiles($dir, $file_mask = null, $mode = 'full') {
         $result = null;
         if (empty($dir) || (!file_exists($dir))) {

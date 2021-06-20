@@ -382,7 +382,6 @@ trait ajaxHelper {
                 return $result;
                 break;
             case 'validateMac':
-                dbug('Request', $_REQUEST);
                 break;
         }
 
