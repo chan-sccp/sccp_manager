@@ -366,7 +366,7 @@ function InstallDB_updateSchema($db_config)
                     $count_modify ++;
                 }
                 if (!empty($row_data['def_modify'])) {
-                    $sql_modify .= "MODIFY COLUMN {$row_fld}  SET DEFAULT  {$row_data['def_modify']}, ";
+                    $sql_modify .= "ALTER COLUMN {$row_fld}  SET DEFAULT  '{$row_data['def_modify']}', ";
                     $count_modify ++;
                 }
                 if (!empty($row_data['drop'])) {
