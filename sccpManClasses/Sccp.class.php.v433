@@ -20,7 +20,7 @@
 namespace FreePBX\modules\Core\Drivers;
 class Sccp extends \FreePBX\modules\Core\Driver {
     private $data_fld = array("pin"=>'pin', "label" => 'label', "accountcode" => 'account',
-                           "context" =>'lcontext',"incominglimit"=>'incominglimit',
+                           "context" =>'context',"incominglimit"=>'incominglimit',
                            "callgroup"=>'callgroup',"pickupgroup"=>'pickupgroup',
                            "transfer" => 'transfer', "echocancel" => 'echocancel',
                            "language" => 'language', "description" => 'callerid',
@@ -57,6 +57,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
         $this->freepbx = $parent_class;
         $this->database = $parent_class->Database();
+
         $stmt = $this->database->prepare('DESCRIBE sccpline');
         $stmt->execute();
         $raw_settings = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -515,7 +516,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function getNamedGroup() {
-        $sql = "select namedcallgroup from	sccpline group by namedcallgroup";
+        $sql = "SELECT namedcallgroup FROM sccpline GROUP BY namedcallgroup";
         $sth = $this->database->prepare($sql);
         $result = array();
         $tech = array();
@@ -526,7 +527,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                $tech['namedcallgroup'][] = $val[0];
             }
         } catch(\Exception $e) {}
-        $sql = "select namedpickupgroup from sccpline group by namedpickupgroup";
+        $sql = "SELECT namedpickupgroup FROM sccpline GROUP BY namedpickupgroup";
         $sth = $this->database->prepare($sql);
         try {
             $sth->execute();
