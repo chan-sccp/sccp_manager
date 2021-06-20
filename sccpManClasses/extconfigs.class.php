@@ -15,9 +15,9 @@ class extconfigs
     }
 
     public function info() {
-        $Ver = '13.1.1';
+        $Ver = '13.2.0';
         return array('Version' => $Ver,
-            'about' => 'Default Setings and Enums ver: ' . $Ver);
+            'about' => 'Default Settings and Enums ver: ' . $Ver);
     }
 
     public function getextConfig($id = '', $index = '') {
@@ -216,36 +216,50 @@ class extconfigs
         'New Zealand' => array('offset' => '720', 'daylight' => true)
     );
 
-    public function validate_init_path($confDir = '', $db_vars, $sccp_driver_replace = '')
-    {
-//        global $db;
-//        global $amp_conf;
-// *** Setings for Provision Sccp
-        $adv_config = array('tftproot' => '', 'firmware' => 'firmware', 'settings' => 'settings',
-            'locales' => 'locales', 'languages' => 'languages', 'templates' => 'templates', 'dialplan' => 'dialplan', 'softkey' => 'softkey');
-// 'pro' /tftpboot - root dir
-//       /tftpboot/locales/locales/%Languge_name%
-//       /tftpboot/settings/XMLdefault.cnf.xml
-//       /tftpboot/settings/SEP[MAC].cnf.xml
-//       /tftpboot/firmware/79xx/SCCPxxxx.loads
-        $adv_tree['pro'] = array('templates' => 'tftproot', 'settings' => 'tftproot', 'locales' => 'tftproot', 'firmware' => 'tftproot', 'languages' => 'locales', 'dialplan' => 'tftproot', 'softkey' => 'tftproot');
+    public function validate_init_path($confDir = '', $db_vars) {
+        $adv_config = array('tftproot' => '',
+                          'firmware' => 'firmware',
+                          'settings' => 'settings',
+                          'locales' => 'locales',
+                          'languages' => 'languages',
+                          'templates' => 'templates',
+                          'dialplan' => 'dialplan',
+                          'softkey' => 'softkey'
+                        );
 
-// 'def' /tftpboot - root dir
-//       /tftpboot/languages/%Languge_name%
-//       /tftpboot/XMLdefault.cnf.xml
-//       /tftpboot/SEP[MAC].cnf.xml
-//       /tftpboot/SCCPxxxx.loads
-        $adv_tree['def'] = array('templates' => 'tftproot', 'settings' => '', 'locales' => '', 'firmware' => '', 'languages' => 'tftproot', 'dialplan' => '', 'softkey' => '');
-//        $adv_tree['def']   = Array('templates' => 'tftproot', 'settings' => '', 'locales' => 'tftproot',  'firmware' => 'tftproot', 'languages' => '');
-//        $adv_tree['def'] = Array('templates' => 'tftproot', 'settings' => '', 'locales' => 'tftproot', 'firmware' => 'tftproot', 'languages' => 'tftproot');
-//* **************------ ****
-        $base_tree = array('tftp_templates' => 'templates', 'tftp_path_store' => 'settings', 'tftp_lang_path' => 'languages', 'tftp_firmware_path' => 'firmware', 'tftp_dialplan' => 'dialplan', 'tftp_softkey' => 'softkey');
+        $adv_tree['pro'] = array('templates' => 'tftproot',
+                          'settings' => 'tftproot',
+                          'locales' => 'tftproot',
+                          'firmware' => 'tftproot',
+                          'languages' => 'locales',
+                          'dialplan' => 'tftproot',
+                          'softkey' => 'tftproot'
+                        );
+
+        $adv_tree['def'] = array('templates' => 'tftproot',
+                          'settings' => '',
+                          'locales' => '',
+                          'firmware' => '',
+                          'languages' => 'tftproot',
+                          'dialplan' => '',
+                          'softkey' => ''
+                        );
+
+        $base_tree = array('tftp_templates' => 'templates',
+                          'tftp_path_store' => 'settings',
+                          'tftp_lang_path' => 'languages',
+                          'tftp_firmware_path' => 'firmware',
+                          'tftp_dialplan' => 'dialplan',
+                          'tftp_softkey' => 'softkey'
+                        );
 
         if (empty($confDir)) {
             return array('error' => 'empty СonfDir');
         }
 
-        $base_config = array('asterisk' => $confDir, 'sccp_conf' => $confDir . '/sccp.conf', 'tftp_path' => '');
+        $base_config = array('asterisk' => $confDir,
+                          'sccp_conf' => "$confDir/sccp.conf",
+                          'tftp_path' => '');
 
 //      Test Base dir (/tftproot)
         if (!empty($db_vars["tftp_path"])) {
@@ -314,21 +328,7 @@ class extconfigs
                 }
             }
         }
-        print_r($base_config, 1);
-//        die(print_r($base_config,1));
-//        $base_config['External_ini'] = $adv_config;
-//        $base_config['External_mode'] =  $adv_tree_mode;
 
-        /*
-          if (!empty($this->sccppath["tftp_path"])) {
-          $this->sccppath["tftp_DP"] = $this->sccppath["tftp_path"] . '/Dialplan';
-          if (!file_exists($this->sccppath["tftp_DP"])) {
-          if (!mkdir($this->sccppath["tftp_DP"], 0777, true)) {
-          die('Error creating DialPlan template dir');
-          }
-          }
-          }
-         */
         //    TFTP -REWrite        double model
         if (empty($_SERVER['DOCUMENT_ROOT'])) {
             if (!empty($this->paren_class)) {
@@ -345,27 +345,9 @@ class extconfigs
                 copy($filename, $dst_path . basename($filename));
             }
         }
-
-        $dst = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/core/functions.inc/drivers/Sccp.class.php';
-        if (!file_exists($dst) || $sccp_driver_replace == 'yes') {
-            $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/' . basename($dst) . '.v' . $db_vars['sccp_compatible']['data'];
-            if (file_exists($src_path)) {
-                copy($src_path, $dst);
-            } else {
-                // Set new default
-                $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/' . basename($dst) . '.v433';
-                copy($src_path, $dst);
-            }
-        }
-
-        if (!file_exists($base_config["sccp_conf"])) { // System re Config
-            $sccpfile = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
-            file_put_contents($base_config["sccp_conf"], $sccpfile);
-        }
-
         return $base_config;
     }
-    // Type declaration in below function is incompatible with PHP 5
+
     public function validate_RealTime( $connector )
     {
         // This method only checks that asterisk is correctly configured for Realtime

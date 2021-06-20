@@ -65,6 +65,7 @@ if ($chanSCCPWarning) {
     outn("<font color='red'>Error: installed version of chan-sccp is not compatible. Please upgrade chan-sccp</font>");
 }
 Setup_RealTime();
+addDriver($sccp_compatible);
 outn("<br>");
 outn("Install Complete !");
 outn("<br>");
@@ -848,6 +849,21 @@ function Setup_RealTime()
     if (empty($res_conf)) {
         $res_conf[$def_bd_section] = $def_bd_config;
         $cnf_wr->writeConfig('res_config_mysql.conf', $res_conf, false);
+    }
+}
+
+function addDriver($sccp_compatible) {
+    outn("<li>" . _("Adding driver ...") . "</li>");
+    $file = "/var/www/html/admin/modules/core/functions.inc/drivers/Sccp.class.php";
+    $contents = "<?php include '/var/www/html/admin/modules/sccp_manager/sccpManClasses/Sccp.class.php.v{$sccp_compatible}'; ?>";
+    file_put_contents($file, $contents);
+
+    $cnf_int = \FreePBX::Config();
+    $dir = $cnf_int->get('ASTETCDIR');
+    if (!file_exists("{$dir}/sccp.conf")) { // System re Config
+        outn("<li>" . _("Adding default configuration file ...") . "</li>");
+        $sccpfile = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
+        file_put_contents("{$dir}/sccp.conf", $sccpfile);
     }
 }
 

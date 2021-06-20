@@ -2,9 +2,12 @@
 // vim: set ai ts=4 sw=4 ft=php:
 // Version for SCCP Manager 13.0.X
 //
-//   Template for Sccp Driver
-/*
- *      Required Functions for Core Drivers
+/*  This is the driver for Sccp_manager in FreePBX.
+    It is loaded via an include, written by the installer, at
+    modules/core/functions.inc/drivers
+    and provides the following required methods. it provides the interface between
+    FreePBX extensions and sccp_manager lines
+ *
  *          getInfo
  *          addDevice
  *          delDevice
