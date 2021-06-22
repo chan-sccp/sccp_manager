@@ -894,7 +894,7 @@ function checkTftpServer() {
     }
 
     if (empty($tftpRootPath)) {
-        die_freepbx(_("Either tftp server is down or TFTP root is non standard. Please fix, refresh, and try again"));
+        die_freepbx(_("Either TFTP server is down or TFTP root is non standard. Please fix, refresh, and try again"));
     }
     if (!is_writeable($tftpRootPath)) {
         die_freepbx(_("{$tftpRootPath} is not writable by user asterisk. Please fix, refresh and try again"));
@@ -1012,7 +1012,7 @@ function tftp_put_test_file()
     socket_recvfrom($socket, $buffer, 4, MSG_PEEK, $host, $port);
 
     // Then should send our data packet
-    $packet = chr(0) . chr(3) . chr(0) . chr(1) . 'This is a test file';
+    $packet = chr(0) . chr(3) . chr(0) . chr(1) . 'This is a test file created by Sccp_Manager. It can be deleted without any impact';
     socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, $port);
 
     // finally will recieve an ack packet
