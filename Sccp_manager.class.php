@@ -174,24 +174,23 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     public function showGroup($group_name, $show_Header, $form_prefix = 'sccp', $form_values = array()) {
-        $htmlret = "";
         if (empty($form_values)) {
             $form_values = $this->sccpvalues;
         }
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group[@name="' . $group_name . '"]') as $item) {
-                $htmlret .= load_view(__DIR__ . '/views/formShow.php', array(
+                $htmlret = load_view(__DIR__ . '/views/formShow.php', array(
                     'itm' => $item,
                     'h_show' => $show_Header,
                     'form_prefix' => $form_prefix,
                     'fvalues' => $form_values,
                     'tftp_lang' => $this->tftpLang,
-                    'metainfo' => $this->sccp_metainfo,
-                  )
+                    'metainfo' => $this->sccp_metainfo
+                    )
                 );
             }
         } else {
-            $htmlret .= load_view(__DIR__ . '/views/formShowError.php');
+            $htmlret = load_view(__DIR__ . '/views/formShowError.php');
         }
         return $htmlret;
     }
@@ -201,7 +200,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     public function initVarfromDefs() {
-        foreach ($this->extconfigs->getextConfig('sccpDefaults') as $key => $value) {
+        foreach ($this->extconfigs->getExtConfig('sccpDefaults') as $key => $value) {
             if (empty($this->sccpvalues[$key])) {
                 $this->sccpvalues[$key] = array('keyword' => $key, 'data' => $value, 'type' => '0', 'seq' => '0');
             }
@@ -593,7 +592,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 case 'name':
                     if (!empty($get_settings[$hdr_prefix . 'mac'])) {
                         $value = $get_settings[$hdr_prefix . 'mac'];
-                        $value = strtoupper(str_replace(array('.', '-', ':'), '', $value)); // Delete mac Seporated from string
+                        $value = strtoupper(str_replace(array('.', '-', ':'), '', $value)); // Delete mac separators from string
                         $value = sprintf("%012s", $value);
                         if ($hw_prefix == 'VG') {
                             $value = $hw_prefix . $value . '0';
@@ -605,8 +604,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     break;
                 case 'phonecodepage':
                     $value = 'null';
+                    // TODO: getExtConfig(sccp_lang ....) does not accept any additional arguments and will return an array
                     if (!empty($get_settings[$hdr_prefix . 'devlang'])) {
-                        $lang_data = $this->extconfigs->getextConfig('sccp_lang', $get_settings[$hdr_prefix . 'devlang']);
+                        $lang_data = $this->extconfigs->getExtConfig('sccp_lang', $get_settings[$hdr_prefix . 'devlang']);
                         if (!empty($lang_data)) {
                             $value = $lang_data['codepage'];
                         }
@@ -922,7 +922,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
                     $filename = $dir . DIRECTORY_SEPARATOR . $value . DIRECTORY_SEPARATOR . $this->SCCP_LANG_DICTIONARY;
                     if (file_exists($filename)) {
-                        $lang_ar = $this->extconfigs->getextConfig('sccp_lang');
+                        $lang_ar = $this->extconfigs->getExtConfig('sccp_lang');
                         foreach ($lang_ar as $lang_key => $lang_value) {
                             if ($lang_value['locale'] == $value) {
                                 $result[$lang_key] = $value;
@@ -942,11 +942,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     private function initializeTFtpLanguagePath() {
         $dir = $this->sccppath["tftp_lang_path"];
-        foreach ($this->extconfigs->getextConfig('sccp_lang') as $lang_key => $lang_value) {
+        foreach ($this->extconfigs->getExtConfig('sccp_lang') as $lang_key => $lang_value) {
             $filename = $dir . DIRECTORY_SEPARATOR . $lang_value['locale'];
             if (!file_exists($filename)) {
                 if (!mkdir($filename, 0777, true)) {
-                    die('Error create lang dir');
+                    die('Error creating tftp language directory');
                 }
             }
         }
@@ -1131,7 +1131,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $model_information = $this->getSccpModelInformation($get = "all", $validate = false); // Get All
         }
 
-        $lang_data = $this->extconfigs->getextConfig('sccp_lang');
+        $lang_data = $this->extconfigs->getExtConfig('sccp_lang');
         $data_value['tftp_path'] = $this->sccppath["tftp_path"];
 
         $this->xmlinterface->create_default_XML($this->sccppath["tftp_path_store"], $data_value, $model_information, $lang_data);
@@ -1195,7 +1195,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $data_value[$key] = $value['data'];
         }
         //Get Cisco Code only Old Device
-        $data_value['ntp_timezone_id'] = $this->extconfigs->getextConfig('sccp_timezone', $data_value['ntp_timezone']); // Old Cisco Device
+        $data_value['ntp_timezone_id'] = $this->extconfigs->getExtConfig('sccp_timezone', $data_value['ntp_timezone']); // Old Cisco Device
         // $data_value['ntp_timezone_id'] = $data_value['ntp_timezone']; // New Cisco Device !
         // $data_value['ntp_timezone_id'] = // SPA Cisco Device !
         $data_value['server_if_list'] = $this->getIpInformation('ip4');
@@ -1210,7 +1210,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             }
         }
 
-        $lang_data = $this->extconfigs->getextConfig('sccp_lang');
+        $lang_data = $this->extconfigs->getExtConfig('sccp_lang');
         if (!$sccp_native) {
             return $this->xmlinterface->create_SEP_SIP_XML($this->sccppath["tftp_path_store"], $data_value, $dev_config, $dev_id, $lang_data);
         }
@@ -1310,8 +1310,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         $this->sccp_conf_init['general'][$key] = explode(';', $content);
                         break;
                     case "devlang":
-                        $lang_data = $this->extconfigs->getextConfig('sccp_lang', $value['data']);
+
+                        $lang_data = $this->extconfigs->getExtConfig('sccp_lang', $value['data']);
                         if (!empty($lang_data)) {
+                            // TODO: getExtConfig(sccp_lang ....) does not accept any additional arguments and will return an array
+                            // TODO:  will always get here, but lang_data['codepage'] will be empty as not a valid key
                             $this->sccp_conf_init['general']['phonecodepage'] = $lang_data['codepage'];
                         }
                         break;
@@ -1343,7 +1346,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             );
         }
         // ----- It is a very bad idea to add an external configuration file "sccp_custom.conf" !!!!
-
+        // TODO: Should only rewrite the general section - if users have extensions, this may overwrite
+        // Should read first and then rewrite all existing sections.
         $this->cnf_wr->writeConfig('sccp.conf', $this->sccp_conf_init);
     }
 

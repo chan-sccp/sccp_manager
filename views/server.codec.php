@@ -11,7 +11,7 @@ $def_val = null;
 $dev_id = null;
 $sccp_codec = $this->getCodecs('audio', true);
 $video_codecs = $this->getCodecs('video', true);
-$sccp_disalow_def = $this->extconfigs->getextConfig('sccpDefaults', 'disallow');
+$sccp_disalow_def = $this->extconfigs->getExtConfig('sccpDefaults', 'disallow');
 $sccp_disalow = $sccp_disalow_def;
 
 if (!empty($_REQUEST['id'])) {

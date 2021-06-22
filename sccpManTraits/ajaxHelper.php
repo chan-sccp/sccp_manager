@@ -255,7 +255,7 @@ trait ajaxHelper {
                 if (!empty($request['id'])) {
                     $id_name = preg_replace('/[^A-Za-z0-9]/', '', $request['id']);
                     $this->sccp_conf_init[$id_name]['type'] = "softkeyset";
-                    foreach ($this->extconfigs->getextConfig('keyset') as $keyl => $vall) {
+                    foreach ($this->extconfigs->getExtConfig('keyset') as $keyl => $vall) {
                         if (!empty($request[$keyl])) {
                             $this->sccp_conf_init[$id_name][$keyl] = $request[$keyl];
                         }
@@ -275,7 +275,7 @@ trait ajaxHelper {
                 foreach ($this->aminterface->sccp_list_keysets() as $keyl => $vall) {
                     $result[$i]['softkeys'] = $keyl;
                     if ($keyl == 'default') {
-                        foreach ($this->extconfigs->getextConfig('keyset') as $key => $value) {
+                        foreach ($this->extconfigs->getExtConfig('keyset') as $key => $value) {
                             $result[$i][$key] = str_replace(',', '<br>', $value);
                         }
                     } else {
@@ -509,7 +509,7 @@ trait ajaxHelper {
 
                 case 'ntp_timezone':
                     $tz_id = $value;
-                    $TZdata = $this->extconfigs->getextConfig('sccp_timezone', $tz_id);
+                    $TZdata = $this->extconfigs->getExtConfig('sccp_timezone', $tz_id);
                     if (!empty($TZdata)) {
                         $value = $TZdata['offset']/60;
                         if (!($this->sccpvalues['tzoffset']['data'] == $value)) {

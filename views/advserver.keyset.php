@@ -8,7 +8,7 @@
 $keymultiselect = array('AllRight' =>'>>', 'Right' => '>', 'AllLeft' => '<<', 'Left' => '<');
 
 //   ------------------------------------- Key Set Value ---------------------------------------------------------
-$keysetarray =  $this->extconfigs->getextConfig('keyset');
+$keysetarray =  $this->extconfigs->getExtConfig('keyset');
 
 /*$keysetarray1 = array('onhook'    => array('redial','newcall','cfwdall','dnd','pickup','gpickup','private'),
                     'connected'  => array('hold','endcall','park','vidmode','select','cfwdall','cfwdbusy','idivert'),

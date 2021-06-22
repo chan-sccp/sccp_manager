@@ -31,16 +31,14 @@ if (empty($form_prefix)) {
 $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
         "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
 $mysql_table = array("sccpdevice","sccpdeviceconfig");
-//$time_zone_name = timezone_identifiers_list();
-$time_zone = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',
+
+$timeZoneOffsetList = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',
                    '-08' => 'GMT -8',  '-07' => 'GMT -7',  '-06' => 'GMT -6', '-05' => 'GMT -5',
                    '-04' => 'GMT -4',  '-03' => 'GMT -3',  '-02' => 'GMT -2', '-01' => 'GMT -1',
                    '00'  => 'GMT', '01' => 'GMT +1',  '02'  => 'GMT +2', '03'  => 'GMT +3',
                    '04'  => 'GMT +4',   '05' => 'GMT +5',  '06'  => 'GMT +6', '07'  => 'GMT +7',
                    '08'  => 'GMT +8',   '09' => 'GMT +9',  '10'  => 'GMT +10', '11'=> 'GMT +11', '12' => 'GMT +12');
 
-
-$time_zone_name = array();
 $extension_list = array();
 $sofkey_list = array();
 $model_list = array();
@@ -440,7 +438,7 @@ foreach ($items as $child) {
             $select_opt= $dialplan_list;
         }
 //        if ($child['type'] == 'SLZ') {
-//            $select_opt= $time_zone;
+//            $select_opt= $timeZoneOffsetList;
 //        }
 
         echo '<!-- Begin '.$child->label.' -->';
@@ -500,7 +498,7 @@ foreach ($items as $child) {
             $select_opt= $tftp_lang;
         }
         if ($child['type'] == 'SLZ') {
-            $select_opt= $time_zone;
+            $select_opt= $timeZoneOffsetList;
 //            $child->value = ($system_time_zone[offset]/60);
         }
 

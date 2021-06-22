@@ -20,13 +20,18 @@ class extconfigs
             'about' => 'Default Settings and Enums ver: ' . $Ver);
     }
 
-    public function getextConfig($id = '', $index = '') {
+    public function getExtConfig($id = '', $index = '') {
+        $result = array();
         switch ($id) {
             case 'keyset':
                 $result = $this->keysetdefault;
                 break;
             case 'sccp_lang':
-                $result = $this->cisco_language;
+                if (empty($index)) {
+                    return $this->cisco_language;  // return language array
+                } elseif (!empty($this->cisco_language[$index])) {
+                    return $this->cisco_language[$index]; // return the matched value
+                }
                 break;
             case 'sccpDefaults':
                 $result = $this->sccpDefaults;
@@ -268,8 +273,8 @@ class extconfigs
             }
         }
         if (empty($base_config["tftp_path"])) {
-            if (file_exists($this->getextConfig('sccpDefaults', "tftp_path"))) {
-                $base_config["tftp_path"] = $this->getextConfig('sccpDefaults', "tftp_path");
+            if (file_exists($this->getExtConfig('sccpDefaults', "tftp_path"))) {
+                $base_config["tftp_path"] = $this->getExtConfig('sccpDefaults', "tftp_path");
             }
         }
         if (empty($base_config["tftp_path"])) {
