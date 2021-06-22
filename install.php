@@ -10,6 +10,8 @@ global $version;
 global $aminterface;
 global $mobile_hw;
 global $useAmiForSoftKeys;
+global $settingsFromDb;
+global $cnf_int;
 $mobile_hw = '0';
 $autoincrement = (($amp_conf["AMPDBENGINE"] == "sqlite") || ($amp_conf["AMPDBENGINE"] == "sqlite3")) ? "AUTOINCREMENT" : "AUTO_INCREMENT";
 $table_req = array('sccpdevice', 'sccpline', 'sccpsettings');
@@ -17,8 +19,14 @@ $sccp_compatible = 0;
 $chanSCCPWarning = true;
 $db_config = '';
 $sccp_version = array();
+$cnf_int = \FreePBX::Config();
 
 CheckSCCPManagerDBTables($table_req);
+
+$stmt = $db->prepare("SELECT * FROM sccpsettings");
+$stmt->execute();
+$settingsFromDb = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
 CheckAsteriskVersion();
 
 // Have essential tables so can create Sccp_manager object and verify have aminterface
@@ -66,6 +74,7 @@ if ($chanSCCPWarning) {
 }
 Setup_RealTime();
 addDriver($sccp_compatible);
+checkTftpServer();
 outn("<br>");
 outn("Install Complete !");
 outn("<br>");
@@ -283,7 +292,6 @@ function Get_DB_config($sccp_compatible)
 function CheckSCCPManagerDBTables($table_req)
 {
     // These tables should already exist having been created by FreePBX through module.xml
-    global $amp_conf;
     global $db;
     outn("<li>" . _("Checking for required Sccp_manager database tables..") . "</li>");
     foreach ($table_req as $value) {
@@ -300,17 +308,13 @@ function CheckSCCPManagerDBVersion()
 {
     global $db;
     outn("<li>" . _("Checking for previous version of Sccp_manager.") . "</li>");
-    $check = $db->getRow("SELECT data FROM `sccpsettings` where keyword ='sccp_compatible'", DB_FETCHMODE_ASSOC);
-    if (DB::IsError($check)) {
+
+    if (!isset($settingsFromDb['sccp_compatible']['data'])) {
         outn(_("No previous version found "));
         return false;
     }
-    if (!empty($check['data'])) {
-        outn(_("Found DB Schema : " . $check['data']));
-        return $check['data'];
-    } else {
-        return false;
-    }
+    outn(_("Found DB Schema : {$settingsFromDb['sccp_compatible']['data']}"));
+    return $settingsFromDb['sccp_compatible']['data'];
 }
 
 /* notused */
@@ -707,8 +711,8 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
 function createBackUpConfig()
 {
     global $amp_conf;
+    global $cnf_int;
     outn("<li>" . _("Creating Config BackUp") . "</li>");
-    $cnf_int = \FreePBX::Config();
     $backup_files = array('extensions','extconfig','res_mysql', 'res_config_mysql','sccp','sccp_hardware','sccp_extensions');
     $backup_ext = array('_custom.conf', '_additional.conf','.conf');
     $dir = $cnf_int->get('ASTETCDIR');
@@ -745,9 +749,8 @@ function createBackUpConfig()
 
 function RenameConfig()
 {
-    global $amp_conf;
     outn("<li>" . _("Move Old Config") . "</li>");
-    $cnf_int = \FreePBX::Config();
+    global $cnf_int;
     $rename_files = array('sccp_hardware','sccp_extensions');
     $rename_ext = array('_custom.conf', '_additional.conf','.conf');
     $dir = $cnf_int->get('ASTETCDIR');
@@ -764,7 +767,7 @@ function Setup_RealTime()
 {
     outn("<li>" . _("Checking realtime configuration ...") . "</li>");
     global $amp_conf;
-    $cnf_int = \FreePBX::Config();
+    global $cnf_int;
     $cnf_wr = \FreePBX::WriteConfig();
     $cnf_read = \FreePBX::LoadConfig();
 
@@ -858,13 +861,166 @@ function addDriver($sccp_compatible) {
     $contents = "<?php include '/var/www/html/admin/modules/sccp_manager/sccpManClasses/Sccp.class.php.v{$sccp_compatible}'; ?>";
     file_put_contents($file, $contents);
 
-    $cnf_int = \FreePBX::Config();
+    global $cnf_int;
     $dir = $cnf_int->get('ASTETCDIR');
     if (!file_exists("{$dir}/sccp.conf")) { // System re Config
         outn("<li>" . _("Adding default configuration file ...") . "</li>");
         $sccpfile = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
         file_put_contents("{$dir}/sccp.conf", $sccpfile);
     }
+}
+function checkTftpServer() {
+    global $db;
+    global $cnf_int;
+    $confDir = $cnf_int->get('ASTETCDIR');
+    // TODO: add option to use external server
+    $remoteFile = "TestFileXXX111.txt";  // should not exist
+    tftp_put_test_file();
+
+    $possibleFtpDirs = array('/srv', '/srv/tftp','/var/lib/tftp', '/tftpboot');
+    foreach ($possibleFtpDirs as $dirToTest) {
+        if (file_exists("{$dirToTest}/{$remoteFile}")) {
+            $tftpRootPath = $dirToTest;
+            unlink("{$dirToTest}/{$remoteFile}");
+            outn("<li>" . _("Found ftp root dir at {$dirToTest}") . "</li>");
+
+            $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('tftp_path', '{$tftpRootPath}','0','0');";
+            $results = $db->query($sql);
+            if (DB::IsError($results)) {
+                die_freepbx(sprintf(_("Error updating tftp_path in sccpsettings. Command was: %s; error was: %s "), $sql, $results->getMessage()));
+            }
+            break;
+        }
+    }
+
+    if (empty($tftpRootPath)) {
+        die_freepbx(_("Either tftp server is down or TFTP root is non standard. Please fix, refresh, and try again"));
+    }
+    if (!is_writeable($tftpRootPath)) {
+        die_freepbx(_("{$tftpRootPath} is not writable by user asterisk. Please fix, refresh and try again"));
+    }
+
+    $adv_config = array('tftproot' => '',
+                      'firmware' => 'firmware',
+                      'settings' => 'settings',
+                      'locales' => 'locales',
+                      'languages' => 'languages',
+                      'templates' => 'templates',
+                      'dialplan' => 'dialplan',
+                      'softkey' => 'softkey'
+                    );
+
+    $adv_tree['pro'] = array('templates' => 'tftproot',
+                      'settings' => 'tftproot',
+                      'locales' => 'tftproot',
+                      'firmware' => 'tftproot',
+                      'languages' => 'locales',
+                      'dialplan' => 'tftproot',
+                      'softkey' => 'tftproot'
+                    );
+
+    $adv_tree['def'] = array('templates' => 'tftproot',
+                      'settings' => '',
+                      'locales' => '',
+                      'firmware' => '',
+                      'languages' => 'tftproot',
+                      'dialplan' => '',
+                      'softkey' => ''
+                    );
+
+    $base_tree = array('tftp_templates' => 'templates',
+                      'tftp_path_store' => 'settings',
+                      'tftp_lang_path' => 'languages',
+                      'tftp_firmware_path' => 'firmware',
+                      'tftp_dialplan' => 'dialplan',
+                      'tftp_softkey' => 'softkey'
+                    );
+
+    $base_config = array('asterisk' => $confDir,
+                      'sccp_conf' => "$confDir/sccp.conf",
+                      'tftp_path' => $tftpRootPath);
+
+    if (!empty($db_vars['tftp_rewrite_path'])) {
+        $adv_ini = $db_vars['tftp_rewrite_path']["data"];
+    }
+
+    $adv_tree_mode = 'def';
+    if (empty($db_vars["tftp_rewrite"])) {
+        $db_vars["tftp_rewrite"]["data"] = "off";
+    }
+
+    $adv_config['tftproot'] = $base_config["tftp_path"];
+    if ($settingsFromDb["tftp_rewrite"]["data"] == 'pro') {
+        $adv_tree_mode = 'pro';
+        if (!empty($adv_ini)) { // something found in external conflicts
+            $adv_ini .= '/index.cnf';
+            if (file_exists($adv_ini)) {
+                $adv_ini_array = parse_ini_file($adv_ini);
+                $adv_config = array_merge($adv_config, $adv_ini_array);
+            }
+        }
+    }
+    if ($settingsFromDb["tftp_rewrite"]["data"] == 'on') {
+        $adv_tree_mode = 'def';
+    }
+    foreach ($adv_tree[$adv_tree_mode] as $key => $value) {
+        if (!empty($adv_config[$key])) {
+            if (!empty($value)) {
+                if (substr($adv_config[$key], 0, 1) != "/") {
+                    $adv_config[$key] = $adv_config[$value] . '/' . $adv_config[$key];
+                }
+            } else {
+                $adv_config[$key] = $adv_config['tftproot'];
+            }
+        }
+    }
+    foreach ($base_tree as $key => $value) {
+        $base_config[$key] = $adv_config[$value];
+        if (!file_exists($base_config[$key])) {
+            if (!mkdir($base_config[$key], 0777, true)) {
+                die('Error creating dir : ' . $base_config[$key]);
+            }
+        }
+    }
+
+    if (!file_exists($base_config["tftp_templates"] . '/XMLDefault.cnf.xml_template')) {
+        $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
+        $dst_path = $base_config["tftp_templates"] . '/';
+        foreach (glob($src_path . '*.*_template') as $filename) {
+            copy($filename, $dst_path . basename($filename));
+        }
+    }
+    return $base_config;
+}
+
+function tftp_put_test_file()
+{
+    // https://datatracker.ietf.org/doc/html/rfc1350
+    $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+    $host = "127.0.0.1";  // TODO: Should consider remote TFT Servers in future
+
+    // create the WRQ request packet
+    $packet = chr(0) . chr(2) . "TestFileXXX111.txt" . chr(0) . 'netascii' . chr(0);
+    // UDP is connectionless, so we just send it.
+    socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, 69);
+
+    $buffer = '';
+    $port = '';
+    $ret = '';
+
+    // Should now receive an ack packet
+    socket_recvfrom($socket, $buffer, 4, MSG_PEEK, $host, $port);
+
+    // Then should send our data packet
+    $packet = chr(0) . chr(3) . chr(0) . chr(1) . 'This is a test file';
+    socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, $port);
+
+    // finally will recieve an ack packet
+    socket_recvfrom($socket, $buffer, 4, MSG_PEEK, $host, $port);
+
+    socket_close($socket);
+
+    return;
 }
 
 ?>

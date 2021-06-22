@@ -113,8 +113,7 @@ class extconfigs
         "hotline_extension" => '*60', # !TODO!: Is this a good default extension to dial for hotline ?
         "hotline_label" => 'hotline',
         "devicetable" => 'sccpdevice',
-        "linetable" => 'sccpline',
-        "tftp_path" => '/tftpboot'
+        "linetable" => 'sccpline'
     );
     private $keysetdefault = array('onhook' => 'redial,newcall,cfwdall,cfwdbusy,cfwdnoanswer,pickup,gpickup,dnd,private',
         'connected' => 'hold,endcall,park,vidmode,select,cfwdall,cfwdbusy,idivert,monitor',
@@ -221,137 +220,7 @@ class extconfigs
         'New Zealand' => array('offset' => '720', 'daylight' => true)
     );
 
-    public function validate_init_path($confDir = '', $db_vars) {
-        $adv_config = array('tftproot' => '',
-                          'firmware' => 'firmware',
-                          'settings' => 'settings',
-                          'locales' => 'locales',
-                          'languages' => 'languages',
-                          'templates' => 'templates',
-                          'dialplan' => 'dialplan',
-                          'softkey' => 'softkey'
-                        );
-
-        $adv_tree['pro'] = array('templates' => 'tftproot',
-                          'settings' => 'tftproot',
-                          'locales' => 'tftproot',
-                          'firmware' => 'tftproot',
-                          'languages' => 'locales',
-                          'dialplan' => 'tftproot',
-                          'softkey' => 'tftproot'
-                        );
-
-        $adv_tree['def'] = array('templates' => 'tftproot',
-                          'settings' => '',
-                          'locales' => '',
-                          'firmware' => '',
-                          'languages' => 'tftproot',
-                          'dialplan' => '',
-                          'softkey' => ''
-                        );
-
-        $base_tree = array('tftp_templates' => 'templates',
-                          'tftp_path_store' => 'settings',
-                          'tftp_lang_path' => 'languages',
-                          'tftp_firmware_path' => 'firmware',
-                          'tftp_dialplan' => 'dialplan',
-                          'tftp_softkey' => 'softkey'
-                        );
-
-        if (empty($confDir)) {
-            return array('error' => 'empty СonfDir');
-        }
-
-        $base_config = array('asterisk' => $confDir,
-                          'sccp_conf' => "$confDir/sccp.conf",
-                          'tftp_path' => '');
-
-//      Test Base dir (/tftproot)
-        if (!empty($db_vars["tftp_path"])) {
-            if (file_exists($db_vars["tftp_path"]["data"])) {
-                $base_config["tftp_path"] = $db_vars["tftp_path"]["data"];
-            }
-        }
-        if (empty($base_config["tftp_path"])) {
-            if (file_exists($this->getExtConfig('sccpDefaults', "tftp_path"))) {
-                $base_config["tftp_path"] = $this->getExtConfig('sccpDefaults', "tftp_path");
-            }
-        }
-        if (empty($base_config["tftp_path"])) {
-            if (!empty($this->paren_class)) {
-                $this->paren_class->class_error['tftp_path'] = 'Tftp path not exist or not defined';
-            }
-            return array('error' => 'empty tftp_path');
-        }
-        if (!is_writeable($base_config["tftp_path"])) {
-            if (!empty($this->paren_class)) {
-                $this->paren_class->class_error['tftp_path'] = 'No write permission on tftp DIR';
-            }
-            return array('error' => 'No write permission on tftp DIR');
-        }
-//      END Test Base dir (/tftproot)
-
-        if (!empty($db_vars['tftp_rewrite_path'])) {
-            $adv_ini = $db_vars['tftp_rewrite_path']["data"];
-        }
-
-        $adv_tree_mode = 'def';
-        if (empty($db_vars["tftp_rewrite"])) {
-            $db_vars["tftp_rewrite"]["data"] = "off";
-        }
-
-        $adv_config['tftproot'] = $base_config["tftp_path"];
-        if ($db_vars["tftp_rewrite"]["data"] == 'pro') {
-            $adv_tree_mode = 'pro';
-            if (!empty($adv_ini)) { // something found in external conflicts
-                $adv_ini .= '/index.cnf';
-                if (file_exists($adv_ini)) {
-                    $adv_ini_array = parse_ini_file($adv_ini);
-                    $adv_config = array_merge($adv_config, $adv_ini_array);
-                }
-            }
-        }
-        if ($db_vars["tftp_rewrite"]["data"] == 'on') {
-            $adv_tree_mode = 'def';
-        }
-        foreach ($adv_tree[$adv_tree_mode] as $key => $value) {
-            if (!empty($adv_config[$key])) {
-                if (!empty($value)) {
-                    if (substr($adv_config[$key], 0, 1) != "/") {
-                        $adv_config[$key] = $adv_config[$value] . '/' . $adv_config[$key];
-                    }
-                } else {
-                    $adv_config[$key] = $adv_config['tftproot'];
-                }
-            }
-        }
-        foreach ($base_tree as $key => $value) {
-            $base_config[$key] = $adv_config[$value];
-            if (!file_exists($base_config[$key])) {
-                if (!mkdir($base_config[$key], 0777, true)) {
-                    die('Error creating dir : ' . $base_config[$key]);
-                }
-            }
-        }
-
-        //    TFTP -REWrite        double model
-        if (empty($_SERVER['DOCUMENT_ROOT'])) {
-            if (!empty($this->paren_class)) {
-                $this->paren_class->class_error['DOCUMENT_ROOT'] = 'Empty DOCUMENT_ROOT';
-            }
-            $base_config['error'] = 'Empty DOCUMENT_ROOT';
-            return $base_config;
-        }
-
-        if (!file_exists($base_config["tftp_templates"] . '/XMLDefault.cnf.xml_template')) {
-            $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
-            $dst_path = $base_config["tftp_templates"] . '/';
-            foreach (glob($src_path . '*.*_template') as $filename) {
-                copy($filename, $dst_path . basename($filename));
-            }
-        }
-        return $base_config;
-    }
+  
 
     public function validate_RealTime( $connector )
     {

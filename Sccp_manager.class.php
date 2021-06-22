@@ -956,7 +956,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      *    Check file paths and permissions
      */
 
-    // !TODO!: -TODO-: This function is getting a little big. Might be possible to sperate tftp work into it's own file/class. Initially, you need to remove the not working section and commented out section
     function initializeSccpPath() {
         global $db;
         global $amp_conf;
@@ -978,7 +977,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $driver = $this->FreePBX->Core->getAllDriversInfo();
 
         $this->sccpvalues['sccp_compatible'] = array('keyword' => 'sccp_compatible', 'data' => $ver_id, 'type' => '1', 'seq' => '99');
-        $this->sccppath = $this->extconfigs->validate_init_path($confDir, $this->sccpvalues);
+        //$this->sccppath = $this->extconfigs->validate_init_path($confDir, $this->sccpvalues);
         $driver = $this->FreePBX->Core->getAllDriversInfo(); // Check that Sccp Driver has been updated by above
 
         $read_config = $this->cnf_read->getConfig('sccp.conf');
