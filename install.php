@@ -8,9 +8,11 @@ global $db;
 global $amp_conf;
 global $version;
 global $aminterface;
+global $extConfigs;
 global $mobile_hw;
 global $useAmiForSoftKeys;
 global $settingsFromDb;
+global $thisInstaller;
 global $cnf_int;
 $mobile_hw = '0';
 $autoincrement = (($amp_conf["AMPDBENGINE"] == "sqlite") || ($amp_conf["AMPDBENGINE"] == "sqlite3")) ? "AUTOINCREMENT" : "AUTO_INCREMENT";
@@ -21,7 +23,20 @@ $db_config = '';
 $sccp_version = array();
 $cnf_int = \FreePBX::Config();
 
-CheckSCCPManagerDBTables($table_req);
+$thisInstaller = new class{
+    use \FreePBX\modules\Sccp_Manager\sccpManTraits\helperFunctions;
+};
+
+$requiredClasses = array('amiinterface', 'extconfigs');
+foreach ($requiredClasses as $className) {
+    $class = "\\FreePBX\\Modules\\Sccp_manager\\$className";
+    if (!class_exists($class, false)) {
+        include(__DIR__ . "/sccpManClasses/$className.class.php");
+    }
+    if (class_exists($class, false)) {
+        ${$className} = new $class();
+    }
+}
 
 $stmt = $db->prepare("SELECT * FROM sccpsettings");
 $stmt->execute();
@@ -30,23 +45,17 @@ foreach ($settingsFromDb as $key => $rowArray) {
     $settingsFromDb[$rowArray['keyword']] = $rowArray;
     unset($settingsFromDb[$key]);
 }
+
+// Do not create Sccp_Manager object as not required.
+// Only include required classes
+
+
+
 CheckAsteriskVersion();
-
-// Have essential tables so can create Sccp_manager object and verify have aminterface
-$ss = FreePBX::create()->Sccp_manager;
-
-$class = "\\FreePBX\\Modules\\Sccp_manager\\aminterface";
-if (!class_exists($class, false)) {
-    include(__DIR__ . "/sccpManClasses/aminterface.class.php");
-}
-if (class_exists($class, false)) {
-    $aminterface = new $class();
-}
-
 $sccp_version = CheckChanSCCPCompatible();
 $sccp_compatible = $sccp_version[0];
 $chanSCCPWarning = $sccp_version[1] ^= 1;
-outn("<li>" . _("Sccp model Compatible code : ") . $resultReturned[0] . "</li>");
+outn("<li>" . _("Sccp model Compatible code : ") . $sccp_compatible . "</li>");
 if ($sccp_compatible == 0) {
     outn("<br>");
     outn("<font color='red'>Chan Sccp not Found. Install it before continuing !</font>");
@@ -292,24 +301,10 @@ function Get_DB_config($sccp_compatible)
 
 }
 
-function CheckSCCPManagerDBTables($table_req)
-{
-    // These tables should already exist having been created by FreePBX through module.xml
-    global $db;
-    outn("<li>" . _("Checking for required Sccp_manager database tables..") . "</li>");
-    foreach ($table_req as $value) {
-        $check = $db->getRow("SELECT 1 FROM `$value` LIMIT 0", DB_FETCHMODE_ASSOC);
-        if (DB::IsError($check)) {
-            outn(_("Can't find table: " . $value));
-            outn(_("Please goto the chan-sccp/conf directory and create the DB schema manually (See wiki)"));
-            die_freepbx("!!!! Installation error: Can not find required " . $value . " table !!!!!!\n");
-        }
-    }
-}
-
 function CheckSCCPManagerDBVersion()
 {
     global $db;
+    global $settingsFromDb;
     outn("<li>" . _("Checking for previous version of Sccp_manager.") . "</li>");
 
     if (!isset($settingsFromDb['sccp_compatible']['data'])) {
@@ -333,8 +328,8 @@ function CheckPermissions()
 
 function CheckAsteriskVersion()
 {
-    outn("<li>" . _("Checking Asterisk Version : ") . $version . "</li>");
     $version = FreePBX::Config()->get('ASTVERSION');
+    outn("<li>" . _("Checking Asterisk Version : ") . $version . "</li>");
     if (!empty($version)) {
         // Woo, we have a version
         if (version_compare($version, "12.2.0", ">=")) {
@@ -876,10 +871,12 @@ function checkTftpServer() {
     global $db;
     global $cnf_int;
     global $settingsFromDb;
+    global $extConfigs;
+    global $thisInstaller;
     $confDir = $cnf_int->get('ASTETCDIR');
     // TODO: add option to use external server
     $remoteFile = "TestFileXXX111.txt";  // should not exist
-    tftp_put_test_file();
+    $thisInstaller->tftp_put_test_file();
 
     $possibleFtpDirs = array('/srv', '/srv/tftp','/var/lib/tftp', '/tftpboot');
     foreach ($possibleFtpDirs as $dirToTest) {
@@ -901,112 +898,8 @@ function checkTftpServer() {
         die_freepbx(_("{$tftpRootPath} is not writable by user asterisk. Please fix, refresh and try again"));
     }
 
-    $adv_config = array('tftproot' => $tftpRootPath,
-                      'firmware' => 'firmware',
-                      'settings' => 'settings',
-                      'locales' => 'locales',
-                      'languages' => 'languages',
-                      'templates' => 'templates',
-                      'dialplan' => 'dialplan',
-                      'softkey' => 'softkey'
-                    );
+    $extConfigs->updateTftpStructure($settingsFromDb);
 
-    $adv_tree['pro'] = array('templates' => 'tftproot',
-                      'settings' => 'tftproot',
-                      'locales' => 'tftproot',
-                      'firmware' => 'tftproot',
-                      'languages' => 'locales',
-                      'dialplan' => 'tftproot',
-                      'softkey' => 'tftproot'
-                    );
-
-    $adv_tree['def'] = array('templates' => 'tftproot',
-                      'settings' => '',
-                      'locales' => '',
-                      'firmware' => '',
-                      'languages' => 'tftproot',
-                      'dialplan' => '',
-                      'softkey' => ''
-                    );
-
-    $base_tree = array('tftp_templates' => 'templates',
-                      'tftp_path_store' => 'settings',
-                      'tftp_lang_path' => 'languages',
-                      'tftp_firmware_path' => 'firmware',
-                      'tftp_dialplan' => 'dialplan',
-                      'tftp_softkey' => 'softkey'
-                    );
-
-    $base_config = array('asterisk' => $confDir,
-                      'sccp_conf' => "$confDir/sccp.conf",
-                      'tftp_path' => $tftpRootPath);
-
-    if (!empty($settingsFromDb['tftp_rewrite_path']['data'])) {
-        // Have a setting in sccpsettings. It should start with $tftpRootPath
-        // If not we will replace it with $tftpRootPath. Avoids issues with legacy values
-            if (!strpos($settingsFromDb['tftp_rewrite_path']["data"],$tftpRootPath)) {
-
-                $adv_ini = "{$tftpRootPath}/index.cnf";
-                $settingsToDb['tftp_rewrite_path'] = $settingsFromDb['tftp_rewrite_path'];
-                $settingsToDb['tftp_rewrite_path']['data'] = $tftpRootPath;
-            }
-        $adv_ini = "{$settingsFromDb['tftp_rewrite_path']["data"]}/index.cnf";
-    }
-
-    $adv_tree_mode = 'pro';  // Set to pro so that create full directory structure
-
-// TODO: Below can be simplified for the installer but leave as is until have
-// modified in sccp_manager to account for changed settings.
-
-    switch ($settingsFromDb["tftp_rewrite"]["data"]) {
-        case 'on':
-            break;
-        case 'pro':
-            $adv_tree_mode = 'pro';
-            if (!empty($adv_ini) && file_exists($adv_ini)) {
-                $adv_ini_array = parse_ini_file($adv_ini);
-                $adv_config = array_merge($adv_config, $adv_ini_array);
-            }
-            break;
-        case 'internal':
-            break;
-        case 'off':
-            break;
-        default:
-            // includes case where the value is undefined
-            $settingsToDb["tftp_rewrite"] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'off');
-            // TODO: Need to write this back to sccpsettings
-    }
-
-    foreach ($adv_tree[$adv_tree_mode] as $key => $value) {
-        if (!empty($adv_config[$key])) {
-            if (!empty($value)) {
-                if (substr($adv_config[$key], 0, 1) != "/") {
-                    $adv_config[$key] = $adv_config[$value] . '/' . $adv_config[$key];
-                }
-            } else {
-                $adv_config[$key] = $adv_config['tftproot'];
-            }
-        }
-    }
-    foreach ($base_tree as $key => $value) {
-        $base_config[$key] = $adv_config[$value];
-        // Save to sccpsettings
-        $settingsToDb[$key] =array( 'keyword' => $key, 'seq' => 20, 'type' => 0, 'data' => $adv_config[$value]);
-        if (!file_exists($base_config[$key])) {
-            if (!mkdir($base_config[$key], 0777, true)) {
-                die_freepbx(_('Error creating dir : ' . $base_config[$key]));
-            }
-        }
-    }
-
-    if (!file_exists($base_config["tftp_templates"] . '/XMLDefault.cnf.xml_template')) {
-        $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
-        $dst_path = $base_config["tftp_templates"] . '/';
-        foreach (glob($src_path . '*.*_template') as $filename) {
-            copy($filename, $dst_path . basename($filename));
-        }
-    }
     $settingsToDb['asterisk_etc_path'] =array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
 
     foreach ($settingsToDb as $settingToSave) {
@@ -1016,36 +909,6 @@ function checkTftpServer() {
             die_freepbx(_("Error updating sccpsettings. $sql"));
         }
     }
-    return;
-}
-
-function tftp_put_test_file()
-{
-    // https://datatracker.ietf.org/doc/html/rfc1350
-    $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-    $host = "127.0.0.1";  // TODO: Should consider remote TFT Servers in future
-
-    // create the WRQ request packet
-    $packet = chr(0) . chr(2) . "TestFileXXX111.txt" . chr(0) . 'netascii' . chr(0);
-    // UDP is connectionless, so we just send it.
-    socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, 69);
-
-    $buffer = '';
-    $port = '';
-    $ret = '';
-
-    // Should now receive an ack packet
-    socket_recvfrom($socket, $buffer, 4, MSG_PEEK, $host, $port);
-
-    // Then should send our data packet
-    $packet = chr(0) . chr(3) . chr(0) . chr(1) . 'This is a test file created by Sccp_Manager. It can be deleted without any impact';
-    socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, $port);
-
-    // finally will recieve an ack packet
-    socket_recvfrom($socket, $buffer, 4, MSG_PEEK, $host, $port);
-
-    socket_close($socket);
-
     return;
 }
 

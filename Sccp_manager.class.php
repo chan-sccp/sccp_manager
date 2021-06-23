@@ -140,7 +140,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
 
         $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); // Overwrite Exist
-
         $this->initializeSccpPath();
         $this->initVarfromDefs();
         $this->initTftpLang();
@@ -958,27 +957,25 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     function initializeSccpPath() {
-        global $db;
-        global $amp_conf;
         $driver_revision = array('0' => '', '430' => '.v431', '431' => '.v432', '432' => '.v432', '433' => '.v433' . $this->sccp_branch);
-
-        $confDir = $amp_conf["ASTETCDIR"];
-        if (empty($this->sccppath["asterisk"])) {
-            if (strlen($confDir) < 1) {
-                $this->sccppath["asterisk"] = "/etc/asterisk";
-            } else {
-                $this->sccppath["asterisk"] = $confDir;
-            }
-        }
         $ver_id = $this->aminterface->get_compatible_sccp();
         if (!empty($this->sccpvalues['SccpDBmodel'])) {
             $ver_id = $this->sccpvalues['SccpDBmodel']['data'];
         }
+        $sccppath = array(
+                    'asterisk' => $this->sccpvalues['asterisk_etc_path']['data'],
+                    'tftp_path' => $this->sccpvalues['tftp_path']['data'],
+                    'tftp_templates' => $this->sccpvalues['tftp_templates']['data'],
+                    'tftp_path_store' => $this->sccpvalues['tftp_path_store']['data'],
+                    'tftp_lang_path' => $this->sccpvalues['tftp_lang_path']['data'],
+                    'tftp_firmware_path' => $this->sccpvalues['tftp_firmware_path']['data'],
+                    'tftp_dialplan' => $this->sccpvalues['tftp_dialplan']['data'],
+                    'tftp_softkey' => $this->sccpvalues['tftp_softkey']['data']
+                  );
 
         $driver = $this->FreePBX->Core->getAllDriversInfo();
 
         $this->sccpvalues['sccp_compatible'] = array('keyword' => 'sccp_compatible', 'data' => $ver_id, 'type' => '1', 'seq' => '99');
-        //$this->sccppath = $this->extconfigs->validate_init_path($confDir, $this->sccpvalues);
         $driver = $this->FreePBX->Core->getAllDriversInfo(); // Check that Sccp Driver has been updated by above
 
         $read_config = $this->cnf_read->getConfig('sccp.conf');

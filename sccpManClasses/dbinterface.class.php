@@ -163,10 +163,11 @@ class dbinterface
         $dbh = \FreePBX::Database();
         $stmt = $dbh->prepare('SELECT keyword, data, type, seq FROM sccpsettings ORDER BY type, seq');
         $stmt->execute();
-        foreach ($stmt->fetchAll() as $var) {
-            $mysccpvalues[$var['keyword']] = array('keyword' => $var['keyword'], 'data' => $var['data'], 'seq' => $var['seq'], 'type' => $var['type']);
+        foreach ($stmt->fetchAll() as $key => $rowArray) {
+            $settingsFromDb[$rowArray['keyword']] = $rowArray;
+            unset($settingsFromDb[$key]);
         }
-        return $mysccpvalues;
+        return $settingsFromDb;
     }
 
     public function get_db_sysvalues()

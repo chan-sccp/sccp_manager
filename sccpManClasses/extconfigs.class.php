@@ -220,7 +220,113 @@ class extconfigs
         'New Zealand' => array('offset' => '720', 'daylight' => true)
     );
 
-  
+    public function updateTftpStructure($settingsFromDb) {
+        $adv_config = array('tftproot' => $settingsFromDb['tftp_path']['data'],
+                          'firmware' => 'firmware',
+                          'settings' => 'settings',
+                          'locales' => 'locales',
+                          'languages' => 'languages',
+                          'templates' => 'templates',
+                          'dialplan' => 'dialplan',
+                          'softkey' => 'softkey'
+                        );
+
+        $adv_tree['pro'] = array('templates' => 'tftproot',
+                          'settings' => 'tftproot',
+                          'locales' => 'tftproot',
+                          'firmware' => 'tftproot',
+                          'languages' => 'locales',
+                          'dialplan' => 'tftproot',
+                          'softkey' => 'tftproot'
+                        );
+
+        $adv_tree['def'] = array('templates' => 'tftproot',
+                          'settings' => '',
+                          'locales' => '',
+                          'firmware' => '',
+                          'languages' => 'tftproot',
+                          'dialplan' => '',
+                          'softkey' => ''
+                        );
+
+        $base_tree = array('tftp_templates' => 'templates',
+                          'tftp_path_store' => 'settings',
+                          'tftp_lang_path' => 'languages',
+                          'tftp_firmware_path' => 'firmware',
+                          'tftp_dialplan' => 'dialplan',
+                          'tftp_softkey' => 'softkey'
+                        );
+
+        $base_config = array();
+
+        if (!empty($settingsFromDb['tftp_rewrite_path']['data'])) {
+            // Have a setting in sccpsettings. It should start with $tftpRootPath
+            // If not we will replace it with $tftpRootPath. Avoids issues with legacy values
+                if (!strpos($settingsFromDb['tftp_rewrite_path']["data"],$settingsFromDb['tftp_path']['data'])) {
+
+                    $adv_ini = "{$tftpRootPath}/index.cnf";
+                    $settingsToDb['tftp_rewrite_path'] = $settingsFromDb['tftp_rewrite_path'];
+                    $settingsToDb['tftp_rewrite_path']['data'] = $tftpRootPath;
+                }
+            $adv_ini = "{$settingsFromDb['tftp_rewrite_path']["data"]}/index.cnf";
+        }
+
+        $adv_tree_mode = 'def';
+
+        switch ($settingsFromDb['tftp_rewrite']['data']) {
+            case 'pro':
+                $adv_tree_mode = 'pro';
+                if (!empty($adv_ini) && file_exists($adv_ini)) {
+                    $adv_ini_array = parse_ini_file($adv_ini);
+                    $adv_config = array_merge($adv_config, $adv_ini_array);
+                }
+                break;
+            case 'on':
+            case 'internal':
+            case 'off':
+                break;
+            default:
+                // not defined so set here
+                $settingsToDb["tftp_rewrite"] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'off');
+        }
+
+        foreach ($adv_tree[$adv_tree_mode] as $key => $value) {
+            if (!empty($adv_config[$key])) {
+                if (!empty($value)) {
+                    if (substr($adv_config[$key], 0, 1) != "/") {
+                        $adv_config[$key] = $adv_config[$value] . '/' . $adv_config[$key];
+                    }
+                } else {
+                    $adv_config[$key] = $adv_config['tftproot'];
+                }
+            }
+        }
+        foreach ($base_tree as $key => $value) {
+            $base_config[$key] = $adv_config[$value];
+            // Save to sccpsettings
+            $settingsToDb[$key] =array( 'keyword' => $key, 'seq' => 20, 'type' => 0, 'data' => $adv_config[$value]);
+            if (!file_exists($base_config[$key])) {
+                if (!mkdir($base_config[$key], 0777, true)) {
+                    die_freepbx(_('Error creating dir : ' . $base_config[$key]));
+                }
+            }
+        }
+
+        if (!file_exists($base_config["tftp_templates"] . '/XMLDefault.cnf.xml_template')) {
+            $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
+            $dst_path = $base_config["tftp_templates"] . '/';
+            foreach (glob($src_path . '*.*_template') as $filename) {
+                copy($filename, $dst_path . basename($filename));
+            }
+        }
+
+
+
+
+
+
+        return $base_config;
+    }
 
     public function validate_RealTime( $connector )
     {
