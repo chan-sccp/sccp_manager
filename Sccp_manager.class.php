@@ -140,6 +140,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
 
         $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); // Overwrite Exist
+
         $this->initializeSccpPath();
         $this->initVarfromDefs();
         $this->initTftpLang();

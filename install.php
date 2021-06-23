@@ -1007,6 +1007,7 @@ function checkTftpServer() {
             copy($filename, $dst_path . basename($filename));
         }
     }
+    $settingsToDb['asterisk_etc_path'] =array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
 
     foreach ($settingsToDb as $settingToSave) {
         $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$settingToSave['keyword']}', '{$settingToSave['data']}', {$settingToSave['seq']}, {$settingToSave['type']});";
