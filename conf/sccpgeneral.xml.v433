@@ -666,7 +666,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>enablelldppcport</name>
             <label>Link Layer Discovery PC</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help> Enable Link Layer Discovery Protocol on the PC (computer) port.</help>
