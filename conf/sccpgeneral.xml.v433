@@ -1179,7 +1179,7 @@ and open the template in the editor. Base Version before all crash :-)
             <class>provision_show</class>
             <input>
                 <name>tftp_rewrite_path</name>
-                <default>/tftpboot</default>
+                <default></default>
                 <class>sccp-custom</class>
             </input>
             <help>Use path from provision index.cnf file. You must first make sure that you have properly configured the "Provision"</help>
@@ -1228,7 +1228,7 @@ and open the template in the editor. Base Version before all crash :-)
             <default>no</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
-            <help>Experemental Function Roaming Users</help>
+            <help>Experimental Function Roaming Users</help>
         </item>
     </page_group>
 

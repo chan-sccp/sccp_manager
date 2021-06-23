@@ -26,7 +26,10 @@ CheckSCCPManagerDBTables($table_req);
 $stmt = $db->prepare("SELECT * FROM sccpsettings");
 $stmt->execute();
 $settingsFromDb = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
+foreach ($settingsFromDb as $key => $rowArray) {
+    $settingsFromDb[$rowArray['keyword']] = $rowArray;
+    unset($settingsFromDb[$key]);
+}
 CheckAsteriskVersion();
 
 // Have essential tables so can create Sccp_manager object and verify have aminterface
@@ -872,6 +875,7 @@ function addDriver($sccp_compatible) {
 function checkTftpServer() {
     global $db;
     global $cnf_int;
+    global $settingsFromDb;
     $confDir = $cnf_int->get('ASTETCDIR');
     // TODO: add option to use external server
     $remoteFile = "TestFileXXX111.txt";  // should not exist
@@ -883,11 +887,8 @@ function checkTftpServer() {
             $tftpRootPath = $dirToTest;
             unlink("{$dirToTest}/{$remoteFile}");
             outn("<li>" . _("Found ftp root dir at {$dirToTest}") . "</li>");
-
-            $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('tftp_path', '{$tftpRootPath}','0','0');";
-            $results = $db->query($sql);
-            if (DB::IsError($results)) {
-                die_freepbx(sprintf(_("Error updating tftp_path in sccpsettings. Command was: %s; error was: %s "), $sql, $results->getMessage()));
+            if ($settingsFromDb['tftp_path']['data'] != $tftpRootPath) {
+                $settingsToDb["tftp_path"] =array( 'keyword' => 'tftp_path', 'seq' => 2, 'type' => 0, 'data' => $tftpRootPath);
             }
             break;
         }
@@ -900,7 +901,7 @@ function checkTftpServer() {
         die_freepbx(_("{$tftpRootPath} is not writable by user asterisk. Please fix, refresh and try again"));
     }
 
-    $adv_config = array('tftproot' => '',
+    $adv_config = array('tftproot' => $tftpRootPath,
                       'firmware' => 'firmware',
                       'settings' => 'settings',
                       'locales' => 'locales',
@@ -940,29 +941,43 @@ function checkTftpServer() {
                       'sccp_conf' => "$confDir/sccp.conf",
                       'tftp_path' => $tftpRootPath);
 
-    if (!empty($db_vars['tftp_rewrite_path'])) {
-        $adv_ini = $db_vars['tftp_rewrite_path']["data"];
+    if (!empty($settingsFromDb['tftp_rewrite_path']['data'])) {
+        // Have a setting in sccpsettings. It should start with $tftpRootPath
+        // If not we will replace it with $tftpRootPath. Avoids issues with legacy values
+            if (!strpos($settingsFromDb['tftp_rewrite_path']["data"],$tftpRootPath)) {
+
+                $adv_ini = "{$tftpRootPath}/index.cnf";
+                $settingsToDb['tftp_rewrite_path'] = $settingsFromDb['tftp_rewrite_path'];
+                $settingsToDb['tftp_rewrite_path']['data'] = $tftpRootPath;
+            }
+        $adv_ini = "{$settingsFromDb['tftp_rewrite_path']["data"]}/index.cnf";
     }
 
-    $adv_tree_mode = 'def';
-    if (empty($db_vars["tftp_rewrite"])) {
-        $db_vars["tftp_rewrite"]["data"] = "off";
-    }
+    $adv_tree_mode = 'pro';  // Set to pro so that create full directory structure
 
-    $adv_config['tftproot'] = $base_config["tftp_path"];
-    if ($settingsFromDb["tftp_rewrite"]["data"] == 'pro') {
-        $adv_tree_mode = 'pro';
-        if (!empty($adv_ini)) { // something found in external conflicts
-            $adv_ini .= '/index.cnf';
-            if (file_exists($adv_ini)) {
+// TODO: Below can be simplified for the installer but leave as is until have
+// modified in sccp_manager to account for changed settings.
+
+    switch ($settingsFromDb["tftp_rewrite"]["data"]) {
+        case 'on':
+            break;
+        case 'pro':
+            $adv_tree_mode = 'pro';
+            if (!empty($adv_ini) && file_exists($adv_ini)) {
                 $adv_ini_array = parse_ini_file($adv_ini);
                 $adv_config = array_merge($adv_config, $adv_ini_array);
             }
-        }
+            break;
+        case 'internal':
+            break;
+        case 'off':
+            break;
+        default:
+            // includes case where the value is undefined
+            $settingsToDb["tftp_rewrite"] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'off');
+            // TODO: Need to write this back to sccpsettings
     }
-    if ($settingsFromDb["tftp_rewrite"]["data"] == 'on') {
-        $adv_tree_mode = 'def';
-    }
+
     foreach ($adv_tree[$adv_tree_mode] as $key => $value) {
         if (!empty($adv_config[$key])) {
             if (!empty($value)) {
@@ -976,9 +991,11 @@ function checkTftpServer() {
     }
     foreach ($base_tree as $key => $value) {
         $base_config[$key] = $adv_config[$value];
+        // Save to sccpsettings
+        $settingsToDb[$key] =array( 'keyword' => $key, 'seq' => 20, 'type' => 0, 'data' => $adv_config[$value]);
         if (!file_exists($base_config[$key])) {
             if (!mkdir($base_config[$key], 0777, true)) {
-                die('Error creating dir : ' . $base_config[$key]);
+                die_freepbx(_('Error creating dir : ' . $base_config[$key]));
             }
         }
     }
@@ -990,7 +1007,15 @@ function checkTftpServer() {
             copy($filename, $dst_path . basename($filename));
         }
     }
-    return $base_config;
+
+    foreach ($settingsToDb as $settingToSave) {
+        $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$settingToSave['keyword']}', '{$settingToSave['data']}', {$settingToSave['seq']}, {$settingToSave['type']});";
+        $results = $db->query($sql);
+        if (DB::IsError($results)) {
+            die_freepbx(_("Error updating sccpsettings. $sql"));
+        }
+    }
+    return;
 }
 
 function tftp_put_test_file()
