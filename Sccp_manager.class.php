@@ -962,7 +962,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if (!empty($this->sccpvalues['SccpDBmodel'])) {
             $ver_id = $this->sccpvalues['SccpDBmodel']['data'];
         }
-        $sccppath = array(
+        $this->sccppath = array(
                     'asterisk' => $this->sccpvalues['asterisk_etc_path']['data'],
                     'tftp_path' => $this->sccpvalues['tftp_path']['data'],
                     'tftp_templates' => $this->sccpvalues['tftp_templates']['data'],
@@ -1352,8 +1352,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         // $file_ext = array('.loads', '.LOADS', '.sbn', '.SBN', '.bin', '.BIN','.zup','.ZUP');
         $file_ext = array('.loads', '.sbn', '.bin', '.zup');
         // $dir = $this->sccppath["tftp_path"];
-        $dir = $this->sccppath["tftp_firmware_path"];
-        $dir_tepl = $this->sccppath["tftp_templates"];
+        $dir = $this->sccppath['tftp_firmware_path'];
+        $dir_tepl = $this->sccppath['tftp_templates'];
 
         $search_mode = '';
         if (!empty($this->sccpvalues['tftp_rewrite'])) {
