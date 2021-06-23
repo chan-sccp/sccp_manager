@@ -594,7 +594,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>videocapability</name>
             <label>Video Capability</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help></help>
@@ -602,7 +602,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>webaccess</name>
             <label>Web Access</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable the phone's HTTP server.</help>
@@ -610,7 +610,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>webadmin</name>
             <label>Web Admin</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable remote administration using the phone's HTTP server. 8821 model only.</help>
@@ -618,7 +618,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>pcport</name>
             <label>Pc Port</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Disable the PC (computer) port</help>
@@ -626,7 +626,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>spantopcport</name>
             <label>Span to PC Port</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Forward packets sent and received on the SW (network) port to the PC (computer) port.</help>
@@ -634,7 +634,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>voicevlanaccess</name>
             <label>Voice Vlan Access</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Allow devices connected to the PC (computer) port to access the voice VLAN.</help>
@@ -642,7 +642,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>enablecdpswport</name>
             <label>Cdp Sw Port</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable Cisco Discovery Protocol on the SW (network) port.</help>
@@ -650,7 +650,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>enablecdppcport</name>
             <label>Cdp PC Port</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable Cisco Discovery Protocol on the PC (computer) port.</help>
@@ -658,7 +658,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>enablelldpswport</name>
             <label>Link Layer Discovery Sw</label>
-            <default>"off"</default>
+            <default>off</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help>Enable Link Layer Discovery Protocol on the SW (network) port.</help>
