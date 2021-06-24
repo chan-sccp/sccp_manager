@@ -448,7 +448,7 @@ trait ajaxHelper {
                           'keyword' => $this->sccpvalues[$key]['keyword'],
                           'data' => $value,
                           'seq' => $this->sccpvalues[$key]['seq'],
-                          'type' => $this->sccpvalues[$key1]['type']
+                          'type' => $this->sccpvalues[$key]['type']
                           );
                 }
             }

@@ -143,6 +143,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $this->initializeSccpPath();  //Set required Paths
         $this->updateTimeZone();   // Get timezone from FreePBX
         $this->initTftpLang();
+        $this->saveSccpSettings();
     }
 
     /*
@@ -153,6 +154,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if (empty($form_values)) {
             $form_values = $this->sccpvalues;
         }
+        // load xml data - moved from Construct to simplify Construct
+        $xml_vars = __DIR__ . '/conf/sccpgeneral.xml.v433';
+              $this->xml_data = simplexml_load_file($xml_vars);
+
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group[@name="' . $group_name . '"]') as $item) {
                 $htmlret = load_view(__DIR__ . '/views/formShow.php', array(
@@ -176,9 +181,13 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     public function updateTimeZone() {
-        // Check timezone has not been changed in FreePBX and update if has
-        if ($this->sccpvalues['ntp_timezone'] != \date_default_timezone_get()) {
-            $this->sccpvalues['ntp_timezone'] = array('keyword' => 'ntp_timezone', 'seq'=>95, 'type' => 2, 'data' => \date_default_timezone_get());
+        // Get latest FreePBX time $timeZoneOffsetList
+        $freepbxTZ = \date_default_timezone_get();
+        $this->sccpvalues['ntp_timezone'] = array('keyword' => 'ntp_timezone', 'seq'=>95, 'type' => 2, 'data' => $freepbxTZ);
+        $TZdata = $this->extconfigs->getExtConfig('sccp_timezone', $freepbxTZ);
+        if (!empty($TZdata)) {
+            $value = $TZdata['offset']/60;   // TODO: Is this correct (storing in hours not minutes)
+            $this->sccpvalues['tzoffset'] = array('keyword' => 'tzoffset', 'seq'=>98, 'type' => 2, 'data' => $value);
         }
     }
 
@@ -932,7 +941,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     function getDialPlan($get_file) {
         $file = $this->sccppath["tftp_dialplan"] . '/' . $get_file . '.xml';
         if (file_exists($file)) {
-//            $load_xml_data = simplexml_load_file($file);
 
             $fileContents = file_get_contents($file);
             $fileContents = str_replace(array("\n", "\r", "\t"), '', $fileContents);
