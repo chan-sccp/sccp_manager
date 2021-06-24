@@ -42,9 +42,9 @@
                             <th data-sortable="true" data-field="vendor"><?php echo _('Vendor');?></th>
                             <th data-sortable="false" data-formatter="DisplayDnsFormatter" data-field="dns"><?php echo _('Expansion Module');?></th>
                             <th data-sortable="false" data-field="buttons"><?php echo _('Buttons');?></th>
-                            <th data-sortable="false" data-formatter="SetColColorFirm" data-field="loadimage"><?php echo _('Loadimage');?></th>
+                            <th data-sortable="false" data-formatter="SetColFirmNf" data-field="loadimage"><?php echo _('Loadimage');?></th>
                             <th data-sortable="false" data-field="loadinformationid"><?php echo _('Loadinformation ID');?></th>
-                            <th data-sortable="false" data-formatter="SetColColorTempl" data-field="nametemplate"><?php echo _('Model template');?></th>
+                            <th data-sortable="false" data-formatter="SetColTemplNf" data-field="nametemplate"><?php echo _('Model template');?></th>
                             <th data-field="actions" data-formatter="DispayActionsModelFormatter"><?php echo _('Actions');?></th>
                         </tr>
                     </thead>
@@ -261,13 +261,13 @@
         return  exp_model;
     }
 
-    function SetColColorFirm(value, row, index) {
+    function SetColFirmNf(value, row, index) {
         if (row['validate'].split(';')[0] === 'no') {
             return  "File not found<br />" + value;
         }
         return value;
     }
-    function SetColColorTempl(value, row, index) {
+    function SetColTemplNf(value, row, index) {
         if (row['validate'].split(';')[1] === 'no') {
             return  "File not found<br /> " + value ;
         }

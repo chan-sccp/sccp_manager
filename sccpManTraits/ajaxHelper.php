@@ -320,7 +320,6 @@ trait ajaxHelper {
                         unset($activeDevices[$id_name]);
                     } else {
                         // Device is in db but not connected
-                        $dev_id['description'] = '- -';
                         $dev_id['status'] = 'not connected';
                         $dev_id['address'] = '- -';
                     }
