@@ -281,7 +281,10 @@ function Get_DB_config($sccp_compatible)
               '_echocancel' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_silencesuppression' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
               '_sccp_tos' => array('create' => "VARCHAR(11) NOT NULL default '0x68'", 'modify' => "VARCHAR(11)"),
-              '_sccp_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x4'", 'modify' => "VARCHAR(11)")
+              '_sccp_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x4'", 'modify' => "VARCHAR(11)"),
+              '_dev_sshPassword' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
+              '_dev_sshUserId' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
+              '_phonepersonalization' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')")
             ),
         'sccpline' => array (
               '_regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
@@ -289,7 +292,6 @@ function Get_DB_config($sccp_compatible)
               '_autoselectline_enabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_autocall_select' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_backgroundImageAccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_phonePersonalization' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_callLogBlfEnabled' => array('create' => "enum('3','2') NOT NULL default '2'", 'modify' => "enum('3','2')")
             )
     );

@@ -163,7 +163,7 @@ class dbinterface
         $dbh = \FreePBX::Database();
         $stmt = $dbh->prepare('SELECT keyword, data, type, seq FROM sccpsettings ORDER BY type, seq');
         $stmt->execute();
-        foreach ($stmt->fetchAll() as $key => $rowArray) {
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $key => $rowArray) {
             $settingsFromDb[$rowArray['keyword']] = $rowArray;
             unset($settingsFromDb[$key]);
         }
@@ -254,10 +254,8 @@ class dbinterface
                     $stmt = $dbh->prepare('REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES (:keyword,:data,:seq,:type)');
                 }
                 foreach ($save_value as $key => $dataArr) {
-                    if (!empty($dataArr) && isset($dataArr['data'])) {
-                        if (empty($dataArr['data'])) {
+                    if (empty($dataArr)) {
                             continue;
-                        }
                     }
                     $stmt->bindParam(':keyword',$dataArr['keyword'],\PDO::PARAM_STR);
                     $stmt->bindParam(':data',$dataArr['data'],\PDO::PARAM_STR);

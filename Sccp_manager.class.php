@@ -1102,7 +1102,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 }
             }
         }
-
         foreach ($this->sccpvalues as $key => $value) {
             $data_value[$key] = $value['data'];
         }
@@ -1126,7 +1125,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if (!$sccp_native) {
             return $this->xmlinterface->create_SEP_SIP_XML($this->sccppath["tftp_path_store"], $data_value, $dev_config, $dev_id, $lang_data);
         }
-        return $this->xmlinterface->create_SEP_XML($this->sccppath["tftp_path_store"], $data_value, $dev_config, $dev_id, $lang_data);
+        return $this->xmlinterface->create_SEP_XML($this->sccppath["tftp_templates"], $data_value, $dev_config, $dev_id, $lang_data);
     }
 
     function deleteSccpDeviceXML($dev_id = '') {

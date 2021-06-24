@@ -433,6 +433,14 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="off">Off</button>
             <help>Use simulated enbloc dialing to speedup connection when dialing while onhook (older phones)</help>
         </item>
+        <item type="IS" id="11" seq="98">
+            <name>phonepersonalization</name>
+            <label>Allow push background from server </label>
+            <default>0</default>
+            <button value="on">Enabled</button>
+            <button value="off">Disabled</button>
+            <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
+        </item>
     </page_group>
 
     <page_group name="sccp_dev_softkey">
@@ -1127,14 +1135,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="on">Enabled</button>
             <button value="off">Disabled</button>
             <help>I'm guessing on this one, but on some devices, the background image on the display can be modified at the device. I think this is the thing that allows that to happen.</help>
-        </item>
-        <item type="IS" id="11" seq="98">
-            <name>phonePersonalization</name>
-            <label>Allow push background from server </label>
-            <default>0</default>
-            <button value="on">Enabled</button>
-            <button value="off">Disabled</button>
-            <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
         </item>
         <item type="IS" id="11" seq="98">
             <name>callLogBlfEnabled</name>

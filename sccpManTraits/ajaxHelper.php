@@ -512,14 +512,12 @@ trait ajaxHelper {
                     $TZdata = $this->extconfigs->getExtConfig('sccp_timezone', $tz_id);
                     if (!empty($TZdata)) {
                         $value = $TZdata['offset']/60;
-                        if (!($this->sccpvalues['tzoffset']['data'] == $value)) {
-                            $save_settings[] = array(
-                                'keyword' => 'tzoffset',
-                                'data' => $value,
-                                'seq' => '98',
-                                'type' => '2'
-                                );
-                        }
+                        $save_settings[] = array(
+                            'keyword' => 'tzoffset',
+                            'data' => $value,
+                            'seq' => '98',
+                            'type' => '2'
+                            );
                     }
                     break;
             }
