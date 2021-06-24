@@ -69,8 +69,6 @@
  *     + dir "templates"
  *     + dir "firmware"
  *     + dir "locales"
- *  + Create Simple User Interface
- *       + sccpsimple.xml
  *  + Add error information on the server information page (critical display error - the system can not work correctly)
  *  - Add Warning Information on Server Info Page
  *  - ADD Reload Line
@@ -380,7 +378,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             'monitor' => array('name' => 'Record Calls', 'value' => '')
         );
 
-        // $lines_list = $this->dbinterface->HWextension_db_SccpTableData('SccpExtension');
+        // $lines_list = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
         $max_btn = ((!empty($get_settings['buttonscount']) ? $get_settings['buttonscount'] : 100));
         $last_btn = $max_btn;
         for ($it = $max_btn; $it >= 0; $it--) {
@@ -425,7 +423,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     case 'monitor':
                         $btn_t = 'speeddial';
                         $btn_opt = (string) $get_settings['button' . $it . '_line'];
-                        $db_res = $this->dbinterface->HWextension_db_SccpTableData('SccpExtension', array('name' => $btn_opt));
+                        $db_res = $this->dbinterface->getSccpDeviceTableData('SccpExtension', array('name' => $btn_opt));
                         $btn_n = $db_res[0]['label'];
                         $btn_opt .= ',' . $btn_opt . $this->hint_context['default'];
                         break;
@@ -496,7 +494,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $save_settings = array();
         $save_codec = array();
         $name_dev = '';
-        $db_field = $this->dbinterface->HWextension_db_SccpTableData("get_columns_sccpdevice");
+        $db_field = $this->dbinterface->getSccpDeviceTableData("get_columns_sccpdevice");
         $hw_id = (empty($get_settings['sccp_deviceid'])) ? 'new' : $get_settings['sccp_deviceid'];
         $hw_type = (empty($get_settings['sccp_device_typeid'])) ? 'sccpdevice' : $get_settings['sccp_device_typeid'];
         $update_hw = ($hw_id == 'new') ? 'add' : 'clear'; // Possible values are delete, replace, add, clear.
@@ -623,7 +621,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $save_buttons = array();
         $save_settings = array();
         $name_dev = '';
-        $db_field = $this->dbinterface->HWextension_db_SccpTableData("get_columns_sccpuser");
+        $db_field = $this->dbinterface->getSccpDeviceTableData("get_columns_sccpuser");
         $hw_prefix = 'SEP';
         $name_dev = $get_settings[$hdr_prefix . 'id'];
         $save_buttons = $this->getPhoneButtons($get_settings, $name_dev, 'sccpline');
@@ -977,13 +975,13 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if (!empty($hw_list)) {
             $buton_list = array();
             foreach ($hw_list as $value) {
-                $buton_tmp = $this->dbinterface->HWextension_db_SccpTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial', 'id' => $value['name']));
+                $buton_tmp = $this->dbinterface->getSccpDeviceTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial', 'id' => $value['name']));
                 if (!empty($buton_tmp)) {
                     $buton_list = array_merge($buton_list, $buton_tmp);
                 }
             }
         } else {
-            $buton_list = $this->dbinterface->HWextension_db_SccpTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial'));
+            $buton_list = $this->dbinterface->getSccpDeviceTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial'));
         }
         if (empty($buton_list)) {
             return array('Response' => ' 0 buttons found ', 'data' => '');
@@ -1062,13 +1060,13 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $data_value = array();
         $dev_line_data = null;
 
-        $dev_config = $this->dbinterface->HWextension_db_SccpTableData("get_sccpdevice_byid", array('id' => $dev_id));
+        $dev_config = $this->dbinterface->getSccpDeviceTableData("get_sccpdevice_byid", array('id' => $dev_id));
         // Support Cisco Sip Device
         if (!empty($dev_config['type'])) {
             if (strpos($dev_config['type'], 'sip') !== false) {
                 $sccp_native = false;
                 $tmp_bind = $this->sipconfigs->getSipConfig();
-                $dev_ext_config = $this->dbinterface->HWextension_db_SccpTableData("SccpDevice", array('name' => $dev_id, 'fields' => 'sip_ext'));
+                $dev_ext_config = $this->dbinterface->getSccpDeviceTableData("SccpDevice", array('name' => $dev_id, 'fields' => 'sip_ext'));
                 $data_value = array_merge($data_value, $dev_ext_config);
                 $data_tmp = explode(';', $dev_ext_config['sip_lines']);
                 $data_value['sbind'] = array();
@@ -1344,7 +1342,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
 
         // Update info from sccp_db
-        $tmp_data = $this->dbinterface->HWextension_db_SccpTableData('SccpExtension');
+        $tmp_data = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
         foreach ($tmp_data as $value) {
             $name_l = $value['name'];
             if (!empty($res[$name_l . $default_hint])) {

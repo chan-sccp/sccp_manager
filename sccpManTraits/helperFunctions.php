@@ -72,7 +72,7 @@ trait helperfunctions {
     private function getTableDefaults($table, $trim_underscore = true) {
         $def_val = array();
         // TODO: This is ugly and overkill - needs to be cleaned up in dbinterface
-        $sccpTableDesc = $this->dbinterface->HWextension_db_SccpTableData("get_columns_{$table}");
+        $sccpTableDesc = $this->dbinterface->getSccpDeviceTableData("get_columns_{$table}");
 
         foreach ($sccpTableDesc as $data) {
             $key = (string) $data['Field'];
@@ -90,7 +90,7 @@ trait helperfunctions {
 
     private function getTableEnums($table, $trim_underscore = true) {
         $enumFields = array();
-        $sccpTableDesc = $this->dbinterface->HWextension_db_SccpTableData("get_columns_{$table}");
+        $sccpTableDesc = $this->dbinterface->getSccpDeviceTableData("get_columns_{$table}");
 
         foreach ($sccpTableDesc as $data) {
             $key = (string) $data['Field'];

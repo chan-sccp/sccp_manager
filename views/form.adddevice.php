@@ -19,7 +19,7 @@ if (!empty($_REQUEST['new_id'])) {
     $dev_id = $_REQUEST['new_id'];
 
     // Get device defaults from db
-    $sccpDeviceDesc = $this->dbinterface->HWextension_db_SccpTableData('get_columns_sccpdevice');
+    $sccpDeviceDesc = $this->dbinterface->getSccpDeviceTableData('get_columns_sccpdevice');
 
     foreach ($sccpDeviceDesc as $data) {
         $key = (string) $data['Field'];
@@ -43,7 +43,7 @@ if (!empty($_REQUEST['id'])) {
     // Editing an existing Device. Overwrite any defaults that are already set for this device.
     $dev_id = $_REQUEST['id'];
     $dev_new = $dev_id;
-    $db_res = $this->dbinterface->HWextension_db_SccpTableData('get_sccpdevice_byid', array("id" => $dev_id));
+    $db_res = $this->dbinterface->getSccpDeviceTableData('get_sccpdevice_byid', array("id" => $dev_id));
     foreach ($db_res as $key => $val) {
         if (!empty($val)) {
             switch ($key) {

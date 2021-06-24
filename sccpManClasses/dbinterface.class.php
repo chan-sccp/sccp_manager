@@ -32,7 +32,7 @@ class dbinterface
     public function get_db_SccpTableByID($dataid, $data = array(), $indexField = '')
     {
         $result = array();
-        $raw = $this->HWextension_db_SccpTableData($dataid, $data);
+        $raw = $this->getSccpDeviceTableData($dataid, $data);
         if (empty($raw) || empty($indexField)) {
             return $raw;
         }
@@ -43,7 +43,7 @@ class dbinterface
         return $result;
     }
 
-    public function HWextension_db_SccpTableData($dataid, $data = array())
+    public function getSccpDeviceTableData($dataid, $data = array())
     {
         // $stmt is a single row fetch, $stmts is a fetchAll.
         $dbh = \FreePBX::Database();

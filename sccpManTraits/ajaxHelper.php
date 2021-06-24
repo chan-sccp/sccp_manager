@@ -114,7 +114,7 @@ trait ajaxHelper {
                     }
                 } else {
                     $this->deleteSccpDeviceXML('all');
-                    $models = $this->dbinterface->HWextension_db_SccpTableData("SccpDevice");
+                    $models = $this->dbinterface->getSccpDeviceTableData("SccpDevice");
                 }
 
                 $this->createDefaultSccpXml(); // Default XML
@@ -289,7 +289,7 @@ trait ajaxHelper {
                 return $result;
                 break;
             case 'getExtensionGrid':
-                $result = $this->dbinterface->HWextension_db_SccpTableData('SccpExtension');
+                $result = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
                 if (empty($result)) {
                     return array();
                 }
@@ -300,7 +300,7 @@ trait ajaxHelper {
                 $cmd_type = !empty($request['type']) ? $request['type'] : '';
 
                 // Find all devices defined in the database
-                $dbDevices = $this->dbinterface->HWextension_db_SccpTableData('SccpDevice', array('type' => $cmd_type));
+                $dbDevices = $this->dbinterface->getSccpDeviceTableData('SccpDevice', array('type' => $cmd_type));
                 // Return if only interested in SIP devices
                 if ($cmd_type == 'cisco-sip') {
                     return $dbDevices;     //this may be empty
