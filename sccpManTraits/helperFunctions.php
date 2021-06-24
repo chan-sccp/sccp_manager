@@ -190,5 +190,56 @@ trait helperfunctions {
 
         return;
     }
+
+    public function initVarfromXml() {
+        if ((array) $this->xml_data) {
+            foreach ($this->xml_data->xpath('//page_group') as $item) {
+                foreach ($item->children() as $child) {
+                    $seq = 0;
+                    if (!empty($child['seq'])) {
+                        $seq = (string) $child['seq'];
+                    }
+                    if ($seq < 99) {
+                        if ($child['type'] == 'IE') {
+                            foreach ($child->xpath('input') as $value) {
+                                $tp = 0;
+                                if (empty($value->value)) {
+                                    $datav = (string) $value->default;
+                                } else {
+                                    $datav = (string) $value->value;
+                                }
+                                if (strtolower($value->type) == 'number') {
+                                    $tp = 1;
+                                }
+                                if (empty($this->sccpvalues[(string) $value->name])) {
+                                    $this->sccpvalues[(string) $value->name] = array('keyword' => (string) $value->name, 'data' => $datav, 'type' => $tp, 'seq' => $seq);
+                                }
+                            }
+                        }
+                        if ($child['type'] == 'IS' || $child['type'] == 'IED') {
+                            if (empty($child->value)) {
+                                $datav = (string) $child->default;
+                            } else {
+                                $datav = (string) $child->value;
+                            }
+                            if (empty($this->sccpvalues[(string) $child->name])) {
+                                $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq);
+                            }
+                        }
+                        if (in_array($child['type'], array('SLD', 'SLS', 'SLT', 'SL', 'SLM', 'SLZ', 'SLTZN', 'SLA'))) {
+                            if (empty($child->value)) {
+                                $datav = (string) $child->default;
+                            } else {
+                                $datav = (string) $child->value;
+                            }
+                            if (empty($this->sccpvalues[(string) $child->name])) {
+                                $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 ?>

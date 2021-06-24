@@ -101,19 +101,19 @@ class extconfigs
     }
 
     private $sccpDefaults = array(
-        "servername" => 'VPBXSCCP',
-        "bindaddr" => '0.0.0.0', "port" => '2000', # chan_sccp also supports ipv6
-        "deny" => '0.0.0.0/0.0.0.0',
-        "permit" => '0.0.0.0/0.0.0.0', # !TODO!: please change this to 'internal' which would mean:
-        # permit:127.0.0.0/255.0.0.0,permit:10.0.0.0/255.0.0.0,permit:172.0.0.0/255.224.0.0,permit:192.168.0.0/255.255.0.0"
-        "dateformat" => 'D.M.Y',
-        "disallow" => 'all', "allow" => 'alaw;ulaw',
-        "hotline_enabled" => 'off',
-        "hotline_context" => 'default', # !TODO!: Should this not be from-internal on FreePBX ?
-        "hotline_extension" => '*60', # !TODO!: Is this a good default extension to dial for hotline ?
-        "hotline_label" => 'hotline',
-        "devicetable" => 'sccpdevice',
-        "linetable" => 'sccpline'
+        'servername' => 'VPBXSCCP',
+        'bindaddr' => '0.0.0.0', "port" => '2000', # chan_sccp also supports ipv6
+        'deny' => '0.0.0.0/0.0.0.0',
+        'permit' => '0.0.0.0/0.0.0.0', # !TODO!: please change this to 'internal' which would mean:
+        'dateformat' => 'D.M.Y',
+        'disallow' => 'all', "allow" => 'alaw;ulaw',
+        'hotline_enabled' => 'off',
+        'hotline_context' => 'default', # !TODO!: Should this not be from-internal on FreePBX ?
+        'hotline_extension' => '*60', # !TODO!: Is this a good default extension to dial for hotline ?
+        'hotline_label' => 'hotline',
+        'devicetable' => 'sccpdevice',
+        'linetable' => 'sccpline',
+        'displayconfig' => 'sccpgeneral'
     );
     private $keysetdefault = array('onhook' => 'redial,newcall,cfwdall,cfwdbusy,cfwdnoanswer,pickup,gpickup,dnd,private',
         'connected' => 'hold,endcall,park,vidmode,select,cfwdall,cfwdbusy,idivert,monitor',
@@ -311,7 +311,7 @@ class extconfigs
                 }
             }
         }
-
+        // TODO: Need to add index.cnf, after setting defaults correctly
         if (!file_exists($base_config["tftp_templates"] . '/XMLDefault.cnf.xml_template')) {
             $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
             $dst_path = $base_config["tftp_templates"] . '/';
@@ -319,12 +319,8 @@ class extconfigs
                 copy($filename, $dst_path . basename($filename));
             }
         }
-
-
-
-
-
-
+        // Remove keys that are not required before returning $base_config.
+        unset($base_config['asterisk'], $base_config['sccp_conf'], $base_config['tftp_path']);
         return $base_config;
     }
 

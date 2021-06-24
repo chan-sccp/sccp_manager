@@ -139,34 +139,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             return;
         }
 
-        $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); // Overwrite Exist
-        $this->initializeSccpPath();
-        $this->initVarfromDefs();
+        $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); //Initialise core settings
+        $this->initializeSccpPath();  //Set required Paths
+        $this->updateTimeZone();   // Get timezone from FreePBX
         $this->initTftpLang();
-
-        if (!empty($this->sccpvalues['SccpDBmodel'])) {
-            if ($this->sccpvalues['sccp_compatible']['data'] > $this->sccpvalues['SccpDBmodel']['data']) {
-                $this->sccpvalues['sccp_compatible']['data'] = $this->sccpvalues['SccpDBmodel']['data'];
-            }
-        }
-        // Load Advanced Form Constructor Data
-        if (empty($this->sccpvalues['displayconfig'])) {
-            $xml_vars = __DIR__ . '/conf/sccpgeneral.xml.v' . $this->sccpvalues['sccp_compatible']['data'];
-        } else {
-            $xml_vars = __DIR__ . '/conf/' . $this->sccpvalues['displayconfig']['data'] . '.xml.v' . $this->sccpvalues['sccp_compatible']['data'];
-        }
-        if (!file_exists($xml_vars)) {
-            $xml_vars = __DIR__ . '/conf/sccpgeneral.xml';
-        }
-        if (file_exists($xml_vars)) {
-            $this->xml_data = simplexml_load_file($xml_vars);
-            $this->initVarfromXml(); // Overwrite Exist
-        }
-
-        //if (get_class($freepbx) === 'FreePBX') {
-            // only save settings when building a new FreePBX object
-            $this->saveSccpSettings();
-        //}
     }
 
     /*
@@ -199,70 +175,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      *    Load config vars from base array
      */
 
-    public function initVarfromDefs() {
-        foreach ($this->extconfigs->getExtConfig('sccpDefaults') as $key => $value) {
-            if (empty($this->sccpvalues[$key])) {
-                $this->sccpvalues[$key] = array('keyword' => $key, 'data' => $value, 'type' => '0', 'seq' => '0');
-            }
-        }
+    public function updateTimeZone() {
         // Check timezone has not been changed in FreePBX and update if has
         if ($this->sccpvalues['ntp_timezone'] != \date_default_timezone_get()) {
             $this->sccpvalues['ntp_timezone'] = array('keyword' => 'ntp_timezone', 'seq'=>95, 'type' => 2, 'data' => \date_default_timezone_get());
-        }
-    }
-
-    /*
-     *    Load config vars from xml
-     */
-
-    public function initVarfromXml() {
-        if ((array) $this->xml_data) {
-            foreach ($this->xml_data->xpath('//page_group') as $item) {
-                foreach ($item->children() as $child) {
-                    $seq = 0;
-                    if (!empty($child['seq'])) {
-                        $seq = (string) $child['seq'];
-                    }
-                    if ($seq < 99) {
-                        if ($child['type'] == 'IE') {
-                            foreach ($child->xpath('input') as $value) {
-                                $tp = 0;
-                                if (empty($value->value)) {
-                                    $datav = (string) $value->default;
-                                } else {
-                                    $datav = (string) $value->value;
-                                }
-                                if (strtolower($value->type) == 'number') {
-                                    $tp = 1;
-                                }
-                                if (empty($this->sccpvalues[(string) $value->name])) {
-                                    $this->sccpvalues[(string) $value->name] = array('keyword' => (string) $value->name, 'data' => $datav, 'type' => $tp, 'seq' => $seq);
-                                }
-                            }
-                        }
-                        if ($child['type'] == 'IS' || $child['type'] == 'IED') {
-                            if (empty($child->value)) {
-                                $datav = (string) $child->default;
-                            } else {
-                                $datav = (string) $child->value;
-                            }
-                            if (empty($this->sccpvalues[(string) $child->name])) {
-                                $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq);
-                            }
-                        }
-                        if (in_array($child['type'], array('SLD', 'SLS', 'SLT', 'SL', 'SLM', 'SLZ', 'SLTZN', 'SLA'))) {
-                            if (empty($child->value)) {
-                                $datav = (string) $child->default;
-                            } else {
-                                $datav = (string) $child->value;
-                            }
-                            if (empty($this->sccpvalues[(string) $child->name])) {
-                                $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq);
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -957,11 +873,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     function initializeSccpPath() {
-        $driver_revision = array('0' => '', '430' => '.v431', '431' => '.v432', '432' => '.v432', '433' => '.v433' . $this->sccp_branch);
-        $ver_id = $this->aminterface->get_compatible_sccp();
-        if (!empty($this->sccpvalues['SccpDBmodel'])) {
-            $ver_id = $this->sccpvalues['SccpDBmodel']['data'];
-        }
+
         $this->sccppath = array(
                     'asterisk' => $this->sccpvalues['asterisk_etc_path']['data'],
                     'tftp_path' => $this->sccpvalues['tftp_path']['data'],
@@ -972,11 +884,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     'tftp_dialplan' => $this->sccpvalues['tftp_dialplan']['data'],
                     'tftp_softkey' => $this->sccpvalues['tftp_softkey']['data']
                   );
-
-        $driver = $this->FreePBX->Core->getAllDriversInfo();
-
-        $this->sccpvalues['sccp_compatible'] = array('keyword' => 'sccp_compatible', 'data' => $ver_id, 'type' => '1', 'seq' => '99');
-        $driver = $this->FreePBX->Core->getAllDriversInfo(); // Check that Sccp Driver has been updated by above
 
         $read_config = $this->cnf_read->getConfig('sccp.conf');
         $this->sccp_conf_init['general'] = $read_config['general'];
@@ -1317,7 +1224,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         break;
                     case "netlang": // Remove Key
                     case "tftp_path":
-                    case "sccp_compatible":
+                    case "sccp_compatible":    // This is equal to SccpDBmodel
                         break;
                     default:
                         if (!empty($value['data'])) {

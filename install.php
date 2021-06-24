@@ -8,7 +8,7 @@ global $db;
 global $amp_conf;
 global $version;
 global $aminterface;
-global $extConfigs;
+global $extconfigs;
 global $mobile_hw;
 global $useAmiForSoftKeys;
 global $settingsFromDb;
@@ -23,11 +23,14 @@ $db_config = '';
 $sccp_version = array();
 $cnf_int = \FreePBX::Config();
 
+// Do not create Sccp_Manager object as not required.
+// Only include required classes and create anonymous class for thisInstaller
+
 $thisInstaller = new class{
     use \FreePBX\modules\Sccp_Manager\sccpManTraits\helperFunctions;
 };
 
-$requiredClasses = array('amiinterface', 'extconfigs');
+$requiredClasses = array('aminterface', 'extconfigs');
 foreach ($requiredClasses as $className) {
     $class = "\\FreePBX\\Modules\\Sccp_manager\\$className";
     if (!class_exists($class, false)) {
@@ -38,6 +41,7 @@ foreach ($requiredClasses as $className) {
     }
 }
 
+// Get current default settings from db
 $stmt = $db->prepare("SELECT * FROM sccpsettings");
 $stmt->execute();
 $settingsFromDb = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -45,11 +49,18 @@ foreach ($settingsFromDb as $key => $rowArray) {
     $settingsFromDb[$rowArray['keyword']] = $rowArray;
     unset($settingsFromDb[$key]);
 }
+// Check that required settings are initialised and update db and $settingsFromDb if not
+foreach ($extconfigs->getExtConfig('sccpDefaults') as $key => $value) {
+    if (empty($settingsFromDb[$key])) {
+        $settingsFromDb[$key] = array('keyword' => $key, 'data' => $value, 'type' => 0, 'seq' => 0);
 
-// Do not create Sccp_Manager object as not required.
-// Only include required classes
-
-
+        $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$key}', '{$value}', 0, 0)";
+        $results = $db->query($sql);
+        if (DB::IsError($results)) {
+            die_freepbx(_("Error updating sccpsettings: $key"));
+        }
+    }
+}
 
 CheckAsteriskVersion();
 $sccp_version = CheckChanSCCPCompatible();
@@ -871,7 +882,7 @@ function checkTftpServer() {
     global $db;
     global $cnf_int;
     global $settingsFromDb;
-    global $extConfigs;
+    global $extconfigs;
     global $thisInstaller;
     $confDir = $cnf_int->get('ASTETCDIR');
     // TODO: add option to use external server
@@ -886,6 +897,8 @@ function checkTftpServer() {
             outn("<li>" . _("Found ftp root dir at {$dirToTest}") . "</li>");
             if ($settingsFromDb['tftp_path']['data'] != $tftpRootPath) {
                 $settingsToDb["tftp_path"] =array( 'keyword' => 'tftp_path', 'seq' => 2, 'type' => 0, 'data' => $tftpRootPath);
+                // Need to set the new value here to pass to extconfigs below
+                $settingsFromDb['tftp_path']['data'] = $tftpRootPath;
             }
             break;
         }
@@ -898,8 +911,6 @@ function checkTftpServer() {
         die_freepbx(_("{$tftpRootPath} is not writable by user asterisk. Please fix, refresh and try again"));
     }
 
-    $extConfigs->updateTftpStructure($settingsFromDb);
-
     $settingsToDb['asterisk_etc_path'] =array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
 
     foreach ($settingsToDb as $settingToSave) {
@@ -908,7 +919,19 @@ function checkTftpServer() {
         if (DB::IsError($results)) {
             die_freepbx(_("Error updating sccpsettings. $sql"));
         }
+        unset($settingsToDb[$settingToSave['keyword']]);
     }
+
+    $settingsToDb = $extconfigs->updateTftpStructure($settingsFromDb);
+
+    foreach ($settingsToDb as $settingKey => $settingVal) {
+        $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$settingKey}', '{$settingVal}', 20, 0)";
+        $results = $db->query($sql);
+        if (DB::IsError($results)) {
+            die_freepbx(_("Error updating sccpsettings. $sql"));
+        }
+    }
+
     return;
 }
 
