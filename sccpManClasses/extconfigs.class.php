@@ -271,7 +271,7 @@ class extconfigs
                         );
 
         $base_tree = array('tftp_templates' => 'templates',
-                          'tftp_path_store' => 'settings',
+                          'tftp_store_path' => 'settings',
                           'tftp_lang_path' => 'languages',
                           'tftp_firmware_path' => 'firmware',
                           'tftp_dialplan' => 'dialplan',

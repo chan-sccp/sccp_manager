@@ -429,7 +429,7 @@ function InstallDB_updateSchema($db_config)
                 }
             } else {
                 if (!empty($row_data['rename'])) {
-                    $sql_modify .= "CHANGE COLUMN  {$row_fld}  {$row_data['rename']} {$row_data['create']}, ";
+                    $sql_modify .= "RENAME COLUMN  {$row_fld} TO {$row_data['rename']}, ";
                     $count_modify ++;
                 }
                 $row_data['fieldModified'] = FALSE;

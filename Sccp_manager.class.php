@@ -885,7 +885,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     'asterisk' => $this->sccpvalues['asterisk_etc_path']['data'],
                     'tftp_path' => $this->sccpvalues['tftp_path']['data'],
                     'tftp_templates' => $this->sccpvalues['tftp_templates']['data'],
-                    'tftp_path_store' => $this->sccpvalues['tftp_path_store']['data'],
+                    'tftp_store_path' => $this->sccpvalues['tftp_store_path']['data'],
                     'tftp_lang_path' => $this->sccpvalues['tftp_lang_path']['data'],
                     'tftp_firmware_path' => $this->sccpvalues['tftp_firmware_path']['data'],
                     'tftp_dialplan' => $this->sccpvalues['tftp_dialplan']['data'],
@@ -1044,7 +1044,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $lang_data = $this->extconfigs->getExtConfig('sccp_lang');
         $data_value['tftp_path'] = $this->sccppath["tftp_path"];
 
-        $this->xmlinterface->create_default_XML($this->sccppath["tftp_path_store"], $data_value, $model_information, $lang_data);
+        $this->xmlinterface->create_default_XML($this->sccppath["tftp_store_path"], $data_value, $model_information, $lang_data);
     }
 
     /*
@@ -1121,7 +1121,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
         $lang_data = $this->extconfigs->getExtConfig('sccp_lang');
         if (!$sccp_native) {
-            return $this->xmlinterface->create_SEP_SIP_XML($this->sccppath["tftp_path_store"], $data_value, $dev_config, $dev_id, $lang_data);
+            return $this->xmlinterface->create_SEP_SIP_XML($this->sccppath["tftp_store_path"], $data_value, $dev_config, $dev_id, $lang_data);
         }
         return $this->xmlinterface->create_SEP_XML($this->sccppath["tftp_templates"], $data_value, $dev_config, $dev_id, $lang_data);
     }
@@ -1131,17 +1131,17 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             return false;
         }
         if ($dev_id == 'all') {
-            $xml_name = $this->sccppath["tftp_path_store"] . '/SEP*.cnf.xml';
+            $xml_name = $this->sccppath["tftp_store_path"] . '/SEP*.cnf.xml';
             array_map("unlink", glob($xml_name));
-            $xml_name = $this->sccppath["tftp_path_store"] . '/ATA*.cnf.xml';
+            $xml_name = $this->sccppath["tftp_store_path"] . '/ATA*.cnf.xml';
             array_map("unlink", glob($xml_name));
-            $xml_name = $this->sccppath["tftp_path_store"] . '/VG*.cnf.xml';
+            $xml_name = $this->sccppath["tftp_store_path"] . '/VG*.cnf.xml';
             array_map("unlink", glob($xml_name));
         } else {
             if (!strpos($dev_id, 'SEP')) {
                 return false;
             }
-            $xml_name = $this->sccppath["tftp_path_store"] . '/' . $dev_id . '.cnf.xml';
+            $xml_name = $this->sccppath["tftp_store_path"] . '/' . $dev_id . '.cnf.xml';
             if (file_exists($xml_name)) {
                 unlink($xml_name);
             }

@@ -66,7 +66,7 @@ if (!empty($_REQUEST['ru_id'])) {
         <h3><i class="fa fa-minus"></i><?php echo _($forminfo[0]['label']) ?></h3>
     </div>
     <div class="section" data-id="<?php echo $forminfo[0]['name'];?>">
-    <div class="row"> <div class="form-group"> 
+    <div class="row"> <div class="form-group">
             <div class="col-sm-2">
                 <label class="control-label">Help</label>
                 <i class="fa fa-question-circle fpbx-help-icon" data-for="frmbuttons"></i>
@@ -87,11 +87,10 @@ if (!empty($_REQUEST['ru_id'])) {
                     hold = To be implemented</li><li>transfer = To be implemented</li><li>multiblink = To be implemented</li><li>mobility = To be implemented</li><li>conference = To be implemented</li>
                     </ui></ui>");?></span>
             </div>
-         
-    </div></div>        
+
+    </div></div>
     <?php
     for ($line_id = 0; $line_id <=$max_buttons; $line_id ++) {
-//          print_r($db_buttons[$line_id]);
         $show_form_mode = '';
         $defaul_tv = (empty($db_buttons[$line_id])) ?  "empty": $db_buttons[$line_id]['buttontype'];
         $defaul_btn = (empty($db_buttons[$line_id])) ?  "": $db_buttons[$line_id]['name'];
@@ -143,16 +142,12 @@ if (!empty($_REQUEST['ru_id'])) {
                 }
             }
         }
-//            print_r($def_hint_btn);
-//            print_r($defaul_opt);
-            
+
         echo '<!-- Begin button :'.$line_id.' -->';
         echo '<div class="line_button element-container" '.(($line_id < $show_buttons)?"":"hidden ").'data-id="'.$line_id.'">';
-//            echo 'Mode : '.$show_form_mode. ' opt: ';
-//            print_r( $defaul_opt);
 
-        ?>    
-            <div class="row"> <div class="form-group"> 
+        ?>
+            <div class="row"> <div class="form-group">
                     <div class="col-sm-2">
                         <label class="control-label" for="<?php echo $forminfo[1]['name'].$line_id; ?> "><?php echo _($forminfo[1]['label'].$line_id).(($line_id =="0")?' Default ':''); ?></label>
                     </div>
@@ -212,7 +207,7 @@ if (!empty($_REQUEST['ru_id'])) {
                             echo '</div><div class="col-xs-5">';
 
                             echo '<select  class="form-control" name="'.$forminfo[1]['name'].$line_id.'_hline" >';
-                                
+
                             foreach ($hint_list as $data) {
                                 $select = (($data['key']==$def_hint_btn)?"selected":"");
                                 echo '<option value="'.$data['key'].'" '.$select.' >'.$data['exten'].' / '.$data['label'].'</option>';
@@ -221,7 +216,7 @@ if (!empty($_REQUEST['ru_id'])) {
                             echo '</div>';
                             ?>
                         </div>
-<!--  if Line Type = feature Show Futures  Park --> 
+<!--  if Line Type = feature Show Futures  Park -->
                         <div data-type='feature' class="lineid_<?php echo $line_id.(($show_form_mode=='feature')? '':' hidden');?>" name="<?php echo $forminfo[1]['name'].$line_id.'_hint';?>">
                             <div class="col-xs-4">
                             <?php
@@ -248,7 +243,7 @@ if (!empty($_REQUEST['ru_id'])) {
                             ?>
                             </div>
                         </div>
-<!--  if Line Type = feature Show Futures  Park --> 
+<!--  if Line Type = feature Show Futures  Park -->
                         <div data-type='featurep' class="lineid_<?php echo $line_id.(($show_form_mode=='feature')? (($defaul_ftr=='parkinglot')? ' ':' hidden'):' hidden');?>" name="<?php echo $forminfo[1]['name'].$line_id.'_park';?>">
                             <div class="col-xs-4">
                                 <div class="radioset" data-toggle="buttons">
@@ -267,12 +262,12 @@ if (!empty($_REQUEST['ru_id'])) {
         <?php
         echo '<!-- End button :'.$line_id.' -->';
     }
-        
-    ?>    
-        
-                        
-        
-    </div>    
+
+    ?>
+
+
+
+    </div>
 </form>
 <div class="section-butom" data-for="<?php echo $forminfo[0]['name'];?>">
         <h3></h3>
