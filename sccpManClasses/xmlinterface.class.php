@@ -136,10 +136,16 @@ class xmlinterface
             'phoneServices' => 'null', 'certHash' => 'null',
             'deviceSecurityMode' => '1');
 
-        $data_path = $dev_config['tftp_templates'];
+        $data_path = $dev_config['tftp_templates_path'];
         if (empty($data_path)) {
-            die('Create_SEP_XML data_path not defined');
+            die('Create_SEP_XML tftp_templates_path not defined');
         }
+
+        $store_path = $dev_config['tftp_store_path'];
+        if (empty($store_path)) {
+            die('Create_SEP_XML tftp_store_path not defined');
+        }
+
         if (!empty($dev_config['nametemplate'])) {
             $xml_template = "{$data_path}/{$dev_config['nametemplate']}";
         } else {
@@ -577,7 +583,7 @@ class xmlinterface
                                 case 'softKeyFile':
                                 case 'dialTemplate': // Доработать !
                                     $xml_ext_file = '';
-                                    $templet_path = (($dkey == 'softKeyFile') ? $dev_config['tftp_softkey'] : $dev_config['tftp_dialplan']);
+                                    $templet_path = (($dkey == 'softKeyFile') ? $dev_config['tftp_softkey_path'] : $dev_config['tftp_dialplan_path']);
                                     $tmp_key = ($dkey == 'softKeyFile') ? 'softkeyset' : '_dialrules';
                                     if (!empty($dev_config[$tmp_key])) {
                                         $xml_ext_file = (($dkey == 'softKeyFile') ? 'softkey' . $dev_config[$tmp_key] . '.xml' : $dev_config[$tmp_key] . '.xml');
@@ -721,9 +727,9 @@ class xmlinterface
     {
         if (empty($config[$name])) {
             if ($name == 'default') {
-                $typeSoft = $confDir["tftp_templates"] . '/SIPDefaultSoftKey.xml_template';
+                $typeSoft = $confDir["tftp_templates_path"] . '/SIPDefaultSoftKey.xml_template';
                 if (file_exists($typeSoft)) {
-                    $file = $confDir["tftp_softkey"] . '/softkey' . $name . '.xml';
+                    $file = $confDir["tftp_softkey_path"] . '/softkey' . $name . '.xml';
                     if (!copy($typeSoft, $file)) {
                         return array('error' => 'Access error' . $name);
                     }
@@ -736,7 +742,7 @@ class xmlinterface
         $errors = array();
         $xmlstr = "<softKeyCfg>\n";
         $xmlstr .= "<versionStamp>" . time() . "</versionStamp>\n";
-        $typeSoft = $confDir["tftp_templates"] . '/SIPTypeSoftKey.xml_template';
+        $typeSoft = $confDir["tftp_templates_path"] . '/SIPTypeSoftKey.xml_template';
         $read_soft = "";
         if (file_exists($typeSoft)) {
             $f_read = fopen($typeSoft, 'r');
@@ -758,7 +764,7 @@ class xmlinterface
 
         $xmlstr .= '</softKeyCfg>';
         if (empty($errors)) {
-            $file = $confDir["tftp_softkey"] . '/softkey' . $name . '.xml';
+            $file = $confDir["tftp_softkey_path"] . '/softkey' . $name . '.xml';
             file_put_contents($file, $xmlstr);
         }
 

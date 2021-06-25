@@ -884,12 +884,12 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $this->sccppath = array(
                     'asterisk' => $this->sccpvalues['asterisk_etc_path']['data'],
                     'tftp_path' => $this->sccpvalues['tftp_path']['data'],
-                    'tftp_templates' => $this->sccpvalues['tftp_templates']['data'],
+                    'tftp_templates_path' => $this->sccpvalues['tftp_templates_path']['data'],
                     'tftp_store_path' => $this->sccpvalues['tftp_store_path']['data'],
                     'tftp_lang_path' => $this->sccpvalues['tftp_lang_path']['data'],
                     'tftp_firmware_path' => $this->sccpvalues['tftp_firmware_path']['data'],
-                    'tftp_dialplan' => $this->sccpvalues['tftp_dialplan']['data'],
-                    'tftp_softkey' => $this->sccpvalues['tftp_softkey']['data']
+                    'tftp_dialplan_path' => $this->sccpvalues['tftp_dialplan_path']['data'],
+                    'tftp_softkey_path' => $this->sccpvalues['tftp_softkey_path']['data']
                   );
 
         $read_config = $this->cnf_read->getConfig('sccp.conf');
@@ -925,8 +925,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     function getDialPlanList() {
-        $dir = $this->sccppath["tftp_dialplan"] . '/dial*.xml';
-        $base_len = strlen($this->sccppath["tftp_dialplan"]) + 1;
+        $dir = $this->sccppath["tftp_dialplan_path"] . '/dial*.xml';
+        $base_len = strlen($this->sccppath["tftp_dialplan_path"]) + 1;
         $res = glob($dir);
         $dp_list = array();
         foreach ($res as $key => $value) {
@@ -937,7 +937,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     function getDialPlan($get_file) {
-        $file = $this->sccppath["tftp_dialplan"] . '/' . $get_file . '.xml';
+        $file = $this->sccppath["tftp_dialplan_path"] . '/' . $get_file . '.xml';
         if (file_exists($file)) {
 
             $fileContents = file_get_contents($file);
@@ -951,7 +951,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     function deleteDialPlan($get_file) {
         if (!empty($get_file)) {
-            $file = $this->sccppath["tftp_dialplan"] . '/' . $get_file . '.xml';
+            $file = $this->sccppath["tftp_dialplan_path"] . '/' . $get_file . '.xml';
             if (file_exists($file)) {
                 $res = unlink($file);
             }
@@ -961,7 +961,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     function saveDialPlan($get_settings) {
 
-        $confDir = $this->sccppath["tftp_dialplan"];
+        $confDir = $this->sccppath["tftp_dialplan_path"];
         return $this->xmlinterface->saveDialPlan($confDir, $get_settings);
     }
 
@@ -1123,7 +1123,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if (!$sccp_native) {
             return $this->xmlinterface->create_SEP_SIP_XML($this->sccppath["tftp_store_path"], $data_value, $dev_config, $dev_id, $lang_data);
         }
-        return $this->xmlinterface->create_SEP_XML($this->sccppath["tftp_templates"], $data_value, $dev_config, $dev_id, $lang_data);
+        return $this->xmlinterface->create_SEP_XML($this->sccppath["tftp_templates_path"], $data_value, $dev_config, $dev_id, $lang_data);
     }
 
     function deleteSccpDeviceXML($dev_id = '') {
@@ -1265,7 +1265,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $file_ext = array('.loads', '.sbn', '.bin', '.zup');
         // $dir = $this->sccppath["tftp_path"];
         $dir = $this->sccppath['tftp_firmware_path'];
-        $dir_tepl = $this->sccppath['tftp_templates'];
+        $dir_tepl = $this->sccppath['tftp_templates_path'];
 
         $search_mode = '';
         if (!empty($this->sccpvalues['tftp_rewrite'])) {

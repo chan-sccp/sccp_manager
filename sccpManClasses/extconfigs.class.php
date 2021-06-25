@@ -270,12 +270,12 @@ class extconfigs
                           'softkey' => ''
                         );
 
-        $base_tree = array('tftp_templates' => 'templates',
+        $base_tree = array('tftp_templates_path' => 'templates',
                           'tftp_store_path' => 'settings',
                           'tftp_lang_path' => 'languages',
                           'tftp_firmware_path' => 'firmware',
-                          'tftp_dialplan' => 'dialplan',
-                          'tftp_softkey' => 'softkey'
+                          'tftp_dialplan_path' => 'dialplan',
+                          'tftp_softkey_path' => 'softkey'
                         );
 
         $base_config = array();
@@ -333,9 +333,9 @@ class extconfigs
             }
         }
         // TODO: Need to add index.cnf, after setting defaults correctly
-        if (!file_exists($base_config["tftp_templates"] . '/XMLDefault.cnf.xml_template')) {
+        if (!file_exists($base_config["tftp_templates_path"] . '/XMLDefault.cnf.xml_template')) {
             $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
-            $dst_path = $base_config["tftp_templates"] . '/';
+            $dst_path = $base_config["tftp_templates_path"] . '/';
             foreach (glob($src_path . '*.*_template') as $filename) {
                 copy($filename, $dst_path . basename($filename));
             }
