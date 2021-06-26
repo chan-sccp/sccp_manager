@@ -161,34 +161,35 @@ trait helperfunctions {
         return $result;
     }
 
-    public function tftp_put_test_file()
+    function tftpReadTestFile($remoteFileName)
     {
         // https://datatracker.ietf.org/doc/html/rfc1350
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-        $host = "127.0.0.1";  // TODO: Should consider remote TFT Servers in future
+        if ($socket) {
+            $host = "127.0.0.1";  // TODO: Should consider remote TFT Servers in future
+            $port = 69;
 
-        // create the WRQ request packet
-        $packet = chr(0) . chr(2) . "TestFileXXX111.txt" . chr(0) . 'netascii' . chr(0);
-        // UDP is connectionless, so we just send it.
-        socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, 69);
+            // create the RRQ request packet
+            $packet = chr(0) . chr(1) . $remoteFileName . chr(0) . 'netascii' . chr(0);
+            // UDP is connectionless, so we just send it.
+            socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, $port);
 
-        $buffer = '';
-        $port = '';
-        $ret = '';
+            $buffer = null;
+            $port = "";
+            $ret = "";
 
-        // Should now receive an ack packet
-        socket_recvfrom($socket, $buffer, 4, MSG_PEEK, $host, $port);
+            // fetch file content
+            $numbytes = socket_recvfrom($socket, $buffer, 84, MSG_WAITALL, $host, $port);
+            
+            // unpack the returned buffer and discard the first two bytes
+            $pkt = unpack("n2/a*data", $buffer);
 
-        // Then should send our data packet
-        $packet = chr(0) . chr(3) . chr(0) . chr(1) . 'This is a test file created by Sccp_Manager. It can be deleted without any impact';
-        socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, $port);
-
-        // finally will recieve an ack packet
-        socket_recvfrom($socket, $buffer, 4, MSG_PEEK, $host, $port);
-
-        socket_close($socket);
-
-        return;
+            socket_close($socket);
+            if ($numbytes) {
+                return $pkt["data"];
+            }
+        }
+        return false;
     }
 
     public function initVarfromXml() {
