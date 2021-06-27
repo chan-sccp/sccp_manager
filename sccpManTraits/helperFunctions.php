@@ -179,11 +179,21 @@ trait helperfunctions {
             $ret = "";
 
             // fetch file content
-            $numbytes = socket_recvfrom($socket, $buffer, 84, MSG_WAITALL, $host, $port);
+            $count = 0;
+            while ( 0 == $numbytes = socket_recvfrom($socket, $buffer, 84, MSG_DONTWAIT, $host, $port)) {
+                sleep(1);
+                $count ++;
+                if ($count > 5) {
+                    break;
+                }
+            };
 
             // unpack the returned buffer and discard the first two bytes
-            $pkt = unpack("nopcode/nblockno/a*data", $buffer);
-
+            try {
+                $pkt = unpack("nopcode/nblockno/a*data", $buffer);
+            } catch (\Exception $e) {
+                die_freepbx("TFTP server is not responding. Check that it is running and then reload this page \n");
+            }
             // send ack
             $packet = chr(4) . chr($pkt["blockno"]);
             socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, $port);

@@ -431,14 +431,19 @@ class aminterface
         }
         return $result;
     }
+    function getSCCPConfigMetaData($segment = '') {
+        if ($this->_connect_state) {
+            $_action = new \FreePBX\modules\Sccp_manager\aminterface\SCCPConfigMetaDataAction($segment);
+            $metadata = $this->send($_action)->getResult();
+        }
+        return $metadata;
+    }
+
     function getSCCPVersion()
     {
         //Initialise result array
         $result = array( 'RevisionHash' => '', 'vCode' => 0, 'RevisionNum' => 0, 'futures' => '', 'Version' => 0);
-        if ($this->_connect_state) {
-            $_action = new \FreePBX\modules\Sccp_manager\aminterface\SCCPConfigMetaDataAction();
-            $metadata = $this->send($_action)->getResult();
-        }
+        $metadata = $this->getSCCPConfigMetaData();
 
         if (isset($metadata['Version'])) {
             $result['Version'] = $metadata['Version'];

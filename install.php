@@ -98,6 +98,7 @@ if ($chanSCCPWarning) {
 Setup_RealTime();
 addDriver($sccp_compatible);
 checkTftpServer();
+getConfigMetaData('general');
 outn("<br>");
 outn("Install Complete !");
 outn("<br>");
@@ -293,7 +294,10 @@ function Get_DB_config($sccp_compatible)
               '_autocall_select' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_backgroundImageAccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               '_callLogBlfEnabled' => array('create' => "enum('3','2') NOT NULL default '2'", 'modify' => "enum('3','2')")
-            )
+            ),
+        'sccpsettings' => array (
+              'systemdefault' => array('create' => "VARCHAR(255) NULL default ''")
+        )
     );
 
     if ($sccp_compatible >= 433) {
@@ -305,6 +309,7 @@ function Get_DB_config($sccp_compatible)
         if ($sccp_compatible >= 433) {
             $db_config_v4['sccpdevice'] = array_merge($db_config_v4['sccpdevice'],$db_config_v5['sccpdevice']);
             $db_config_v4['sccpline'] = array_merge($db_config_v4['sccpline'],$db_config_v5['sccpline']);
+            $db_config_v4['sccpsettings'] = $db_config_v5['sccpsettings'];
         }
         return $db_config_v4;
     }
@@ -456,6 +461,8 @@ function InstallDB_updateSchema($db_config)
             }
         }
         if (!empty($sql_update)) {
+            outn("<li>" . _("Updating table rows :") . $affected_rows . "</li>");
+            dbug('create', $sql_update);
             $sql_update = 'BEGIN; ' . $sql_update . ' COMMIT;';
             sql($sql_update);
             $affected_rows = $db->affectedRows();
@@ -463,16 +470,17 @@ function InstallDB_updateSchema($db_config)
         }
 
         if (!empty($sql_create)) {
-            outn("<li>" . _("Adding new FILTER_VALIDATE_INT") . "</li>");
+            outn("<li>" . _("Adding new columns ...") . "</li>");
             $sql_create = "ALTER TABLE {$tabl_name} " .substr($sql_create, 0, -2);
+            dbug('create', $sql_create);
             try {
             $check = $db->query($sql_create);
             } catch (\Exception $e) {
-                die_freepbx("Can add column to {$tabl_name}. SQL:  {$sql_create} \n");
+                die_freepbx("Can't add column to {$tabl_name}. SQL:  {$sql_create} \n");
             }
         }
         if (!empty($sql_modify)) {
-            outn("<li>" . _("Modifying table ") . $tabl_name ."</li>");
+            outn("<li>" . _("Modifying table columns") . $tabl_name ."</li>");
 
             $sql_modify = "ALTER TABLE {$tabl_name} " . substr($sql_modify, 0, -2);
             try {
@@ -881,6 +889,7 @@ function addDriver($sccp_compatible) {
     }
 }
 function checkTftpServer() {
+    outn("<li>" . _("Checking TFTP server path and availability ...") . "</li>");
     global $db;
     global $cnf_int;
     global $settingsFromDb;
@@ -928,6 +937,7 @@ function checkTftpServer() {
     }
 
     $settingsToDb['asterisk_etc_path'] =array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
+    $settingsFromDb['asterisk_etc_path']['data'] = $confDir;
 
     foreach ($settingsToDb as $settingToSave) {
         $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$settingToSave['keyword']}', '{$settingToSave['data']}', {$settingToSave['seq']}, {$settingToSave['type']});";
@@ -941,6 +951,7 @@ function checkTftpServer() {
     $settingsToDb = $extconfigs->updateTftpStructure($settingsFromDb);
 
     foreach ($settingsToDb as $settingKey => $settingVal) {
+        $settingsFromDb[$settingKey]['data'] = $settingVal;
         $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$settingKey}', '{$settingVal}', 20, 0)";
         $results = $db->query($sql);
         if (DB::IsError($results)) {
@@ -948,6 +959,28 @@ function checkTftpServer() {
         }
     }
     return;
+}
+
+function getConfigMetaData($segment) {
+    global $aminterface;
+    global $db;
+    global $settingsFromDb;
+    $sysConfiguration = $aminterface->getSCCPConfigMetaData($segment);
+    foreach ($sysConfiguration['Options'] as $key => $valueArray) {
+        if ($valueArray['Flags'][0] == 'Obsolete' || $valueArray['Flags'][0] == 'Deprecated') {
+            continue;
+        }
+        $sysConfiguration[$valueArray['Name']] = $valueArray;
+        if (array_key_exists($valueArray['Name'],$settingsFromDb)) {
+            if (!empty($sysConfiguration[$valueArray['Name']]['DefaultValue'])) {
+                $sql = "REPLACE INTO sccpsettings (keyword, systemdefault) VALUES ('{$valueArray['Name']}', '{$valueArray['DefaultValue']}');";
+                $results = $db->query($sql);
+            }
+        }
+        unset($sysConfiguration[$key]);
+    }
+    unset($sysConfiguration['Options']);
+    dbug('sysconfig', $sysConfiguration);
 }
 
 ?>
