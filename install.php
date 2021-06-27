@@ -465,9 +465,10 @@ function InstallDB_updateSchema($db_config)
         if (!empty($sql_create)) {
             outn("<li>" . _("Adding new FILTER_VALIDATE_INT") . "</li>");
             $sql_create = "ALTER TABLE {$tabl_name} " .substr($sql_create, 0, -2);
+            try {
             $check = $db->query($sql_create);
-            if (DB::IsError($check)) {
-                die_freepbx("Can not create {$tabl_name}. SQL:  {$sql_create} \n");
+            } catch (\Exception $e) {
+                die_freepbx("Can not modify {$tabl_name}. SQL:  {$sql_create} \n");
             }
         }
         if (!empty($sql_modify)) {
@@ -477,7 +478,6 @@ function InstallDB_updateSchema($db_config)
             try {
                 $check = $db->query($sql_modify);
             } catch (\Exception $e) {
-                  dbug('exception is', $e);
                   die_freepbx("Can not modify {$tabl_name}. SQL:  {$sql_create} \n");
             }
         }
