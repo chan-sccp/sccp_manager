@@ -180,12 +180,12 @@ trait helperfunctions {
 
             // fetch file content
             $numbytes = socket_recvfrom($socket, $buffer, 84, MSG_WAITALL, $host, $port);
-            
+
             // unpack the returned buffer and discard the first two bytes
             $pkt = unpack("nopcode/nblockno/a*data", $buffer);
-            
+
             // send ack
-            $packet = chr(4) . chr(pkt["blockno"]);
+            $packet = chr(4) . chr($pkt["blockno"]);
             socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, $port);
 
             socket_close($socket);

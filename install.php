@@ -474,11 +474,11 @@ function InstallDB_updateSchema($db_config)
             outn("<li>" . _("Modifying table ") . $tabl_name ."</li>");
 
             $sql_modify = "ALTER TABLE `" . $tabl_name . "` " . substr($sql_modify, 0, -2) . ';';
-            $check = $db->query($sql_modify);
-            if (DB::IsError($check)) {
-                out("<li>" . print_r($check, 1) . "</li>");
-                die("Can not modify " . $tabl_name . " table sql: " . $sql_modify . "n");
-                die_freepbx("Can not modify " . $tabl_name . " table sql: " . $sql_modify . "n");
+            try {
+                $check = $db->query($sql_modify);
+            } catch (\Exception $e) {
+                  dbug('exception is', $e);
+                  die_freepbx("Can not modify {$tabl_name}. SQL:  {$sql_create} \n");
             }
         }
     }
