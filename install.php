@@ -898,12 +898,7 @@ function checkTftpServer() {
     foreach ($possibleFtpDirs as $dirToTest) {
         if (is_dir($dirToTest) && is_writable($dirToTest) && empty($tftpRootPath)) {
             $tempFile = "${dirToTest}/{$remoteFileName}";
-            $FH = fopen($tempFile, "w");
-            if ($FH == null) {
-                continue;
-            }
-            fwrite($FH, $remoteFileContent);
-            fclose($FH);
+            file_put_contents($tempFile, $remoteFileContent);
 
             // try to pull the written file through tftp.
             // this way we can determine if tftp server is active, and what it's 
