@@ -326,8 +326,8 @@ class extconfigs
             $base_config[$key] = $adv_config[$value];
             // Save to sccpsettings
             $settingsToDb[$key] =array( 'keyword' => $key, 'seq' => 20, 'type' => 0, 'data' => $adv_config[$value]);
-            if (!file_exists($base_config[$key])) {
-                if (!mkdir($base_config[$key], 0777, true)) {
+            if (!is_dir($base_config[$key])) {
+                if (!mkdir($base_config[$key], 0755, true)) {
                     die_freepbx(_('Error creating dir : ' . $base_config[$key]));
                 }
             }

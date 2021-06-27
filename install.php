@@ -1,4 +1,4 @@
-AS<?php
+<?php
 
 if (!defined('FREEPBX_IS_AUTH')) {
     die_freepbx('No direct script access allowed');
@@ -887,32 +887,41 @@ function checkTftpServer() {
     global $extconfigs;
     global $thisInstaller;
     $confDir = $cnf_int->get('ASTETCDIR');
-    // TODO: add option to use external server
-    $remoteFile = "TestFileXXX111.txt";  // should not exist
-    $thisInstaller->tftp_put_test_file();
+    $tftpRootPath = "";
 
+    // TODO: add option to use external server
+    $remoteFileName = ".sccp_manager_installer_probe_sentinel_temp".mt_rand(0, 9999999);
+    $remoteFileContent = "# This is a test file created by Sccp_Manager. It can be deleted without impact";
     $possibleFtpDirs = array('/srv', '/srv/tftp','/var/lib/tftp', '/tftpboot');
+    
+    // write a couple of sentinels to different distro tftp locations in the filesystem
     foreach ($possibleFtpDirs as $dirToTest) {
-        if (file_exists("{$dirToTest}/{$remoteFile}")) {
-            $tftpRootPath = $dirToTest;
-            unlink("{$dirToTest}/{$remoteFile}");
-            outn("<li>" . _("Found ftp root dir at {$dirToTest}") . "</li>");
-            if ($settingsFromDb['tftp_path']['data'] != $tftpRootPath) {
-                $settingsToDb["tftp_path"] =array( 'keyword' => 'tftp_path', 'seq' => 2, 'type' => 0, 'data' => $tftpRootPath);
-                // Need to set the new value here to pass to extconfigs below
-                $settingsFromDb['tftp_path']['data'] = $tftpRootPath;
+        if (is_dir($dirToTest) && is_writable($dirToTest) && empty($tftpRootPath)) {
+            $tempFile = "${dirToTest}/{$remoteFileName}";
+            file_put_contents($tempFile, $remoteFileContent);
+
+            // try to pull the written file through tftp.
+            // this way we can determine if tftp server is active, and what it's 
+            // source directory is.
+            if ($remoteFileContent == $thisInstaller->tftpReadTestFile($remoteFileName)) {
+                $tftpRootPath = $dirToTest;
+                outn("<li>" . _("Found ftp root dir at {$tftpRootPath}") . "</li>");
+                if ($settingsFromDb['tftp_path']['data'] != $tftpRootPath) {
+                    $settingsToDb["tftp_path"] = array( 'keyword' => 'tftp_path', 'seq' => 2, 'type' => 0, 'data' => $tftpRootPath);
+                    // Need to set the new value here to pass to extconfigs below
+                    $settingsFromDb['tftp_path']['data'] = $tftpRootPath;
+                }
             }
-            break;
+            // remove all sentinel file
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
         }
     }
-
     if (empty($tftpRootPath)) {
         die_freepbx(_("Either TFTP server is down or TFTP root is non standard. Please fix, refresh, and try again"));
     }
-    if (!is_writeable($tftpRootPath)) {
-        die_freepbx(_("{$tftpRootPath} is not writable by user asterisk. Please fix, refresh and try again"));
-    }
-
+    
     $settingsToDb['asterisk_etc_path'] =array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
 
     foreach ($settingsToDb as $settingToSave) {
@@ -933,7 +942,6 @@ function checkTftpServer() {
             die_freepbx(_("Error updating sccpsettings. $sql"));
         }
     }
-
     return;
 }
 
