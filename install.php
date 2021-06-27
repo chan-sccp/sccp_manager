@@ -896,7 +896,7 @@ function checkTftpServer() {
 
     // write a couple of sentinels to different distro tftp locations in the filesystem
     foreach ($possibleFtpDirs as $dirToTest) {
-        if (is_dir($dirToTest) && is_writable($dirToTest) && empty($tftpRootPath)) {
+        if (is_dir($dirToTest) && is_writable($dirToTest)) {
             $tempFile = "${dirToTest}/{$remoteFileName}";
             file_put_contents($tempFile, $remoteFileContent);
 
