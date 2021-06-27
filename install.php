@@ -893,7 +893,7 @@ function checkTftpServer() {
     $remoteFileName = ".sccp_manager_installer_probe_sentinel_temp".mt_rand(0, 9999999);
     $remoteFileContent = "# This is a test file created by Sccp_Manager. It can be deleted without impact";
     $possibleFtpDirs = array('/srv', '/srv/tftp','/var/lib/tftp', '/tftpboot');
-    
+
     // write a couple of sentinels to different distro tftp locations in the filesystem
     foreach ($possibleFtpDirs as $dirToTest) {
         if (is_dir($dirToTest) && is_writable($dirToTest) && empty($tftpRootPath)) {
@@ -901,7 +901,7 @@ function checkTftpServer() {
             file_put_contents($tempFile, $remoteFileContent);
 
             // try to pull the written file through tftp.
-            // this way we can determine if tftp server is active, and what it's 
+            // this way we can determine if tftp server is active, and what it's
             // source directory is.
             if ($remoteFileContent == $thisInstaller->tftpReadTestFile($remoteFileName)) {
                 $tftpRootPath = $dirToTest;
@@ -911,8 +911,13 @@ function checkTftpServer() {
                     // Need to set the new value here to pass to extconfigs below
                     $settingsFromDb['tftp_path']['data'] = $tftpRootPath;
                 }
+                // Found sentinel file. Remove it and exit loop
+                if (file_exists($tempFile)) {
+                    unlink($tempFile);
+                }
+                break;
             }
-            // remove all sentinel file
+            // Did not find sentinel so remove and continue
             if (file_exists($tempFile)) {
                 unlink($tempFile);
             }
@@ -921,7 +926,7 @@ function checkTftpServer() {
     if (empty($tftpRootPath)) {
         die_freepbx(_("Either TFTP server is down or TFTP root is non standard. Please fix, refresh, and try again"));
     }
-    
+
     $settingsToDb['asterisk_etc_path'] =array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
 
     foreach ($settingsToDb as $settingToSave) {

@@ -583,15 +583,15 @@ class xmlinterface
                                 case 'softKeyFile':
                                 case 'dialTemplate': // Доработать !
                                     $xml_ext_file = '';
-                                    $templet_path = (($dkey == 'softKeyFile') ? $dev_config['tftp_softkey_path'] : $dev_config['tftp_dialplan_path']);
+                                    $template_path = (($dkey == 'softKeyFile') ? $dev_config['tftp_softkey_path'] : $dev_config['tftp_dialplan_path']);
                                     $tmp_key = ($dkey == 'softKeyFile') ? 'softkeyset' : '_dialrules';
                                     if (!empty($dev_config[$tmp_key])) {
                                         $xml_ext_file = (($dkey == 'softKeyFile') ? 'softkey' . $dev_config[$tmp_key] . '.xml' : $dev_config[$tmp_key] . '.xml');
                                     }
-                                    if (empty($xml_ext_file) || !file_exists($templet_path . '/' . $xml_ext_file)) {
+                                    if (empty($xml_ext_file) || !file_exists($template_path . '/' . $xml_ext_file)) {
                                         $xml_ext_file = (($dkey == 'softKeyFile') ? 'softkeydefault.xml' : 'dialplan.xml');
                                     }
-                                    if (file_exists($templet_path . '/' . $xml_ext_file)) {
+                                    if (file_exists($template_path . '/' . $xml_ext_file)) {
                                         $xml_node->$dkey = $xml_ext_file;
                                     } else {
                                         $xml_node->$dkey = null;
