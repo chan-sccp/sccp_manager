@@ -973,7 +973,7 @@ function getConfigMetaData($segment) {
         $sysConfiguration[$valueArray['Name']] = $valueArray;
         if (array_key_exists($valueArray['Name'],$settingsFromDb)) {
             if (!empty($sysConfiguration[$valueArray['Name']]['DefaultValue'])) {
-                $sql = "REPLACE INTO sccpsettings (keyword, systemdefault) VALUES ('{$valueArray['Name']}', '{$valueArray['DefaultValue']}');";
+                $sql = "UPDATE sccpsettings SET systemdefault = {$valueArray['DefaultValue']} WHERE keyword like '{($valueArray['Name']}'"
                 $results = $db->query($sql);
             }
         }
