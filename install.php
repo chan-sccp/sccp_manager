@@ -468,13 +468,13 @@ function InstallDB_updateSchema($db_config)
             try {
             $check = $db->query($sql_create);
             } catch (\Exception $e) {
-                die_freepbx("Can not modify {$tabl_name}. SQL:  {$sql_create} \n");
+                die_freepbx("Can add column to {$tabl_name}. SQL:  {$sql_create} \n");
             }
         }
         if (!empty($sql_modify)) {
             outn("<li>" . _("Modifying table ") . $tabl_name ."</li>");
 
-            $sql_modify = "ALTER TABLE `" . $tabl_name . "` " . substr($sql_modify, 0, -2) . ';';
+            $sql_modify = "ALTER TABLE {$tabl_name} " . substr($sql_modify, 0, -2);
             try {
                 $check = $db->query($sql_modify);
             } catch (\Exception $e) {
@@ -851,16 +851,16 @@ function Setup_RealTime()
             $cnf_wr->writeConfig('res_mysql.conf', $res_conf);
             outn("<li>" . _("Updating res_mysql.conf file ...") . "</li>");
         }
-    }
-    if (file_exists($dir . '/res_config_mysql.conf')) {
+    } elseif (file_exists($dir . '/res_config_mysql.conf')) {
         $res_conf = $cnf_read->getConfig('res_config_mysql.conf');
         if (empty($res_conf[$def_bd_section])) {
             $res_conf[$def_bd_section] = $def_bd_config;
             $cnf_wr->writeConfig('res_config_mysql.conf', $res_conf);
             outn("<li>" . _("Updating res_config_mysql.conf file ...") . "</li>");
         }
-    }
-    if (empty($res_conf)) {
+    } else {
+        // Have not found either res_mysql.conf or res_config_mysql.config
+        // So create the latter
         $res_conf[$def_bd_section] = $def_bd_config;
         $cnf_wr->writeConfig('res_config_mysql.conf', $res_conf, false);
     }
@@ -868,7 +868,7 @@ function Setup_RealTime()
 
 function addDriver($sccp_compatible) {
     outn("<li>" . _("Adding driver ...") . "</li>");
-    $file = "/var/www/html/admin/modules/core/functions.inc/drivers/Sccp.class.php";
+    $file = "{$_SERVER['DOCUMENT_ROOT']}/admin/modules/core/functions.inc/drivers/Sccp.class.php";
     $contents = "<?php include '/var/www/html/admin/modules/sccp_manager/sccpManClasses/Sccp.class.php.v{$sccp_compatible}'; ?>";
     file_put_contents($file, $contents);
 
@@ -876,7 +876,7 @@ function addDriver($sccp_compatible) {
     $dir = $cnf_int->get('ASTETCDIR');
     if (!file_exists("{$dir}/sccp.conf")) { // System re Config
         outn("<li>" . _("Adding default configuration file ...") . "</li>");
-        $sccpfile = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
+        $sccpfile = file_get_contents("{$_SERVER['DOCUMENT_ROOT']}/admin/modules/sccp_manager/conf/sccp.conf");
         file_put_contents("{$dir}/sccp.conf", $sccpfile);
     }
 }
