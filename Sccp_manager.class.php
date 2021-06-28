@@ -198,6 +198,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $action = !empty($request['action']) ? $request['action'] : '';
 
         $this->pagedata = array(
+            "siteConfig" => array(
+                'name' => _('Site Default Values'),
+                'page' => 'views/siteDefaults.php'
+              ),
             "general" => array(
                 "name" => _("General SCCP Settings"),
                 "page" => 'views/server.setting.php'
