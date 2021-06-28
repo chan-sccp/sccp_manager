@@ -161,7 +161,7 @@ class dbinterface
     public function get_db_SccpSetting()
     {
         $dbh = \FreePBX::Database();
-        $stmt = $dbh->prepare('SELECT keyword, data, type, seq FROM sccpsettings ORDER BY type, seq');
+        $stmt = $dbh->prepare('SELECT keyword, seq, type, data, systemdefault FROM sccpsettings ORDER BY type, seq');
         $stmt->execute();
         foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $key => $rowArray) {
             $settingsFromDb[$rowArray['keyword']] = $rowArray;
@@ -247,11 +247,12 @@ class dbinterface
         $result = false;
         switch ($table_name) {
             case 'sccpsettings':
+                dbug('savevalue', $save_value);
                 if ($mode == 'replace') {  // Change mode name to be more transparent
                     $dbh->prepare('TRUNCATE sccpsettings')->execute();
                     $stmt = $dbh->prepare('INSERT INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES (:keyword,:data,:seq,:type,:systemdefault)');
                 } else {
-                    $stmt = $dbh->prepare('REPLACE INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES (:keyword,:data,:seq,:type, :systemdefault)');
+                    $stmt = $dbh->prepare('REPLACE INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES (:keyword,:data,:seq,:type,:systemdefault)');
                 }
                 foreach ($save_value as $key => $dataArr) {
                     if (empty($dataArr)) {

@@ -447,7 +447,8 @@ trait ajaxHelper {
                           'keyword' => $this->sccpvalues[$key]['keyword'],
                           'data' => $value,
                           'seq' => $this->sccpvalues[$key]['seq'],
-                          'type' => $this->sccpvalues[$key]['type']
+                          'type' => $this->sccpvalues[$key]['type'],
+                          'systemdefault' => $this->sccpvalues[$key]['systemdefault']
                           );
                 }
             }
@@ -486,7 +487,8 @@ trait ajaxHelper {
                             'keyword' => $this->sccpvalues[$key]['keyword'],
                             'data' => $arr_data,
                             'seq' => $this->sccpvalues[$key]['seq'],
-                            'type' => $this->sccpvalues[$key]['type']
+                            'type' => $this->sccpvalues[$key]['type'],
+                            'systemdefault' => $this->sccpvalues[$key]['systemdefault']
                             );
                     }
                 }
@@ -500,9 +502,13 @@ trait ajaxHelper {
                     };
                     $tmpv = implode(";", $save_codec);
                     if ($tmpv !== $this->sccpvalues['allow']['data']) {
-                        $save_settings[] = array('keyword' => 'allow', 'data' => $tmpv,
+                        $save_settings[] = array(
+                            'keyword' => 'allow',
+                            'data' => $tmpv,
                             'seq' => $this->sccpvalues['allow']['seq'],
-                            'type' => $this->sccpvalues['allow']['type']);
+                            'type' => $this->sccpvalues['allow']['type'],
+                            'systemdefault' => $this->sccpvalues['allow']['systemdefault']
+                          );
                     }
                     break;
 
@@ -515,7 +521,8 @@ trait ajaxHelper {
                             'keyword' => 'tzoffset',
                             'data' => $value,
                             'seq' => '98',
-                            'type' => '2'
+                            'type' => '2',
+                            'systemdefault' => ''
                             );
                     }
                     break;
