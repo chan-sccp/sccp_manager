@@ -161,7 +161,7 @@ trait helperfunctions {
         return $result;
     }
 
-    function tftpReadTestFile($remoteFileName, $host = "127.0.0.1";)
+    function tftpReadTestFile($remoteFileName, $host = "127.0.0.1")
     {
         // https://datatracker.ietf.org/doc/html/rfc1350
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);

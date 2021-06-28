@@ -249,9 +249,9 @@ class dbinterface
             case 'sccpsettings':
                 if ($mode == 'replace') {  // Change mode name to be more transparent
                     $dbh->prepare('TRUNCATE sccpsettings')->execute();
-                    $stmt = $dbh->prepare('INSERT INTO sccpsettings (keyword, data, seq, type) VALUES (:keyword,:data,:seq,:type)');
+                    $stmt = $dbh->prepare('INSERT INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES (:keyword,:data,:seq,:type,:systemdefault)');
                 } else {
-                    $stmt = $dbh->prepare('REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES (:keyword,:data,:seq,:type)');
+                    $stmt = $dbh->prepare('REPLACE INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES (:keyword,:data,:seq,:type, :systemdefault)');
                 }
                 foreach ($save_value as $key => $dataArr) {
                     if (empty($dataArr)) {
@@ -261,6 +261,7 @@ class dbinterface
                     $stmt->bindParam(':data',$dataArr['data'],\PDO::PARAM_STR);
                     $stmt->bindParam(':seq',$dataArr['seq'],\PDO::PARAM_INT);
                     $stmt->bindParam(':type',$dataArr['type'],\PDO::PARAM_INT);
+                    $stmt->bindParam(':systemdefault',$dataArr['systemdefault'],\PDO::PARAM_STR);
                     $result = $stmt->execute();
                 }
                 break;

@@ -14,6 +14,7 @@ global $useAmiForSoftKeys;
 global $settingsFromDb;
 global $thisInstaller;
 global $cnf_int;
+global $sccp_compatible;
 $mobile_hw = '0';
 $autoincrement = (($amp_conf["AMPDBENGINE"] == "sqlite") || ($amp_conf["AMPDBENGINE"] == "sqlite3")) ? "AUTOINCREMENT" : "AUTO_INCREMENT";
 $table_req = array('sccpdevice', 'sccpline', 'sccpsettings');
@@ -41,27 +42,6 @@ foreach ($requiredClasses as $className) {
     }
 }
 
-// Get current default settings from db
-$stmt = $db->prepare("SELECT * FROM sccpsettings");
-$stmt->execute();
-$settingsFromDb = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-foreach ($settingsFromDb as $key => $rowArray) {
-    $settingsFromDb[$rowArray['keyword']] = $rowArray;
-    unset($settingsFromDb[$key]);
-}
-// Check that required settings are initialised and update db and $settingsFromDb if not
-foreach ($extconfigs->getExtConfig('sccpDefaults') as $key => $value) {
-    if (empty($settingsFromDb[$key])) {
-        $settingsFromDb[$key] = array('keyword' => $key, 'data' => $value, 'type' => 0, 'seq' => 0);
-
-        $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$key}', '{$value}', 0, 0)";
-        $results = $db->query($sql);
-        if (DB::IsError($results)) {
-            die_freepbx(_("Error updating sccpsettings: $key"));
-        }
-    }
-}
-
 CheckAsteriskVersion();
 $sccp_version = CheckChanSCCPCompatible();
 $sccp_compatible = $sccp_version[0];
@@ -72,21 +52,15 @@ if ($sccp_compatible == 0) {
     outn("<font color='red'>Chan Sccp not Found. Install it before continuing !</font>");
     die();
 }
-$db_config   = Get_DB_config($sccp_compatible);
-$sccp_db_ver = CheckSCCPManagerDBVersion();
 
 // BackUp Old config
 createBackUpConfig();
 RenameConfig();
 
+$db_config   = Get_DB_config($sccp_compatible);
 InstallDB_updateSchema($db_config);
-$stmt = $db->prepare('SELECT CASE WHEN EXISTS(SELECT 1 FROM sccpdevmodel) THEN 0 ELSE 1 END AS IsEmpty;');
-$stmt->execute();
-$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-if ($result[0]['IsEmpty']) {
-    outn("Populating sccpdevmodel...");
-    InstallDB_fillsccpdevmodel();
-}
+
+cleanUpSccpSettings();
 
 InstallDB_createButtonConfigTrigger();
 InstallDB_CreateSccpDeviceConfigView($sccp_compatible);
@@ -98,7 +72,7 @@ if ($chanSCCPWarning) {
 Setup_RealTime();
 addDriver($sccp_compatible);
 checkTftpServer();
-getConfigMetaData('general');
+
 outn("<br>");
 outn("Install Complete !");
 outn("<br>");
@@ -321,16 +295,7 @@ function Get_DB_config($sccp_compatible)
 
 function CheckSCCPManagerDBVersion()
 {
-    global $db;
-    global $settingsFromDb;
-    outn("<li>" . _("Checking for previous version of Sccp_manager.") . "</li>");
 
-    if (!isset($settingsFromDb['sccp_compatible']['data'])) {
-        outn(_("No previous version found "));
-        return false;
-    }
-    outn(_("Found DB Schema : {$settingsFromDb['sccp_compatible']['data']}"));
-    return $settingsFromDb['sccp_compatible']['data'];
 }
 
 /* notused */
@@ -462,7 +427,6 @@ function InstallDB_updateSchema($db_config)
         }
         if (!empty($sql_update)) {
             outn("<li>" . _("Updating table rows :") . $affected_rows . "</li>");
-            dbug('create', $sql_update);
             $sql_update = 'BEGIN; ' . $sql_update . ' COMMIT;';
             sql($sql_update);
             $affected_rows = $db->affectedRows();
@@ -472,7 +436,6 @@ function InstallDB_updateSchema($db_config)
         if (!empty($sql_create)) {
             outn("<li>" . _("Adding new columns ...") . "</li>");
             $sql_create = "ALTER TABLE {$tabl_name} " .substr($sql_create, 0, -2);
-            dbug('create', $sql_create);
             try {
             $check = $db->query($sql_create);
             } catch (\Exception $e) {
@@ -491,14 +454,16 @@ function InstallDB_updateSchema($db_config)
         }
     }
     outn("<li>" . _("Total modify count :") . $count_modify . "</li>");
-    return true;
-}
 
-function InstallDB_fillsccpdevmodel()
-{
-    global $db;
-    outn("<li>" . _("Fill sccpdevmodel") . "</li>");
-    $sql = "REPLACE INTO sccpdevmodel (model, vendor, dns, buttons, loadimage, loadinformationid, enabled, nametemplate) VALUES
+    $stmt = $db->prepare('SELECT CASE WHEN EXISTS(SELECT 1 FROM sccpdevmodel) THEN 0 ELSE 1 END AS IsEmpty;');
+    $stmt->execute();
+    $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    if (!$result[0]['IsEmpty']) {
+        return;
+    } else {
+        outn("Populating sccpdevmodel...");
+        outn("<li>" . _("Fill sccpdevmodel") . "</li>");
+        $sql = "REPLACE INTO sccpdevmodel (model, vendor, dns, buttons, loadimage, loadinformationid, enabled, nametemplate) VALUES
                   ('12 SP', 'CISCO', 1, 1, '', 'loadInformation3', 0, NULL),
                   ('12 SP+', 'CISCO', 1, 1, '', 'loadInformation2', 0, NULL),
                   ('30 SP+', 'CISCO', 1, 1, '', 'loadInformation1', 0, NULL),
@@ -626,11 +591,12 @@ function InstallDB_fillsccpdevmodel()
                   ('7911-sip', 'CISCO-SIP', 1, 1, 'SIP11.9-2-1S', 'loadInformation307', 1, 'SEP0000000000.cnf.xml_791x_sip_template'),
                   ('9951-sip', 'CISCO-SIP', 1, 1, 'sip9951.9-2-2SR1-9', 'loadinformation537', 1, 'SEP0000000000.cnf.xml_99xx_sip_template'),
                   ('VGC Virtual', 'CISCO', 1, 1, '', 'loadInformation11', 0, NULL);";
-    $check = $db->query($sql);
-    if (DB::IsError($check)) {
-        die_freepbx("Can not create sccpdevmodel table, error:$check\n");
+        $check = $db->query($sql);
+        if (DB::IsError($check)) {
+            die_freepbx("Can not create sccpdevmodel table, error:$check\n");
+        }
     }
-    return true;
+    return;
 }
 
 function InstallDB_createButtonConfigTrigger()
@@ -961,11 +927,62 @@ function checkTftpServer() {
     return;
 }
 
-function getConfigMetaData($segment) {
-    global $aminterface;
-    global $db;
+function cleanUpSccpSettings() {
+    global $thisInstaller;
     global $settingsFromDb;
-    $sysConfiguration = $aminterface->getSCCPConfigMetaData($segment);
+    global $db;
+    global $aminterface;
+    global $sccp_compatible;
+
+    // Get current default settings from db
+    $stmt = $db->prepare("SELECT * FROM sccpsettings");
+    $stmt->execute();
+    $settingsFromDb = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    foreach ($settingsFromDb as $key => $rowArray) {
+        $settingsFromDb[$rowArray['keyword']] = $rowArray;
+        unset($settingsFromDb[$key]);
+    }
+    // See if a previous version was installed
+    outn("<li>" . _("Checking for previous version of Sccp_manager.") . "</li>");
+    if (!isset($settingsFromDb['sccp_compatible']['data'])) {
+        outn(_("No previous version found "));
+    } else {
+    outn(_("Found DB Schema : {$settingsFromDb['sccp_compatible']['data']}"));
+    }
+    // Check that required settings are initialised and update db and $settingsFromDb if not
+    /*
+    foreach ($extconfigs->getExtConfig('sccpDefaults') as $key => $value) {
+        if (empty($settingsFromDb[$key])) {
+            $settingsFromDb[$key] = array('keyword' => $key, 'data' => $value, 'type' => 0, 'seq' => 0);
+
+            $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$key}', '{$value}', 0, 0)";
+            $results = $db->query($sql);
+            if (DB::IsError($results)) {
+                die_freepbx(_("Error updating sccpsettings: $key"));
+            }
+        }
+    }
+    */
+
+    // Clean up sccpsettings to remove legacy values.
+    $xml_vars = "{$_SERVER['DOCUMENT_ROOT']}/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}";
+    $thisInstaller->xml_data = simplexml_load_file($xml_vars);
+    $thisInstaller->initVarfromXml();
+    foreach ( array_diff_key($settingsFromDb,$thisInstaller->sccpvalues) as $key => $valueArray) {
+        // Remove legacy values
+        unset($settingsFromDb[$key]);
+    }
+    foreach ($settingsFromDb as $key => $valueArray) {
+        $settingsFromDb[$key]['seq'] = $thisInstaller->sccpvalues[$key]['seq'];
+        $settingsFromDb[$key]['type'] = $thisInstaller->sccpvalues[$key]['type'];
+    }
+    $settingsFromDb = array_merge($settingsFromDb, array_diff_key($thisInstaller->sccpvalues, $settingsFromDb));
+    unset($thisInstaller->sccpvalues);
+
+    // get chan-sccp defaults
+
+    $sysConfiguration = $aminterface->getSCCPConfigMetaData('general');
+
     foreach ($sysConfiguration['Options'] as $key => $valueArray) {
         if ($valueArray['Flags'][0] == 'Obsolete' || $valueArray['Flags'][0] == 'Deprecated') {
             continue;
@@ -973,14 +990,29 @@ function getConfigMetaData($segment) {
         $sysConfiguration[$valueArray['Name']] = $valueArray;
         if (array_key_exists($valueArray['Name'],$settingsFromDb)) {
             if (!empty($sysConfiguration[$valueArray['Name']]['DefaultValue'])) {
-                $sql = "UPDATE sccpsettings SET systemdefault = '{$valueArray['DefaultValue']}' WHERE keyword = '{$valueArray['Name']}'";
-                $results = $db->query($sql);
+                $settingsFromDb[$valueArray['Name']]['systemdefault'] = $sysConfiguration[$valueArray['Name']]['DefaultValue'];
             }
+        } else {
+            $settingsFromDb[$valueArray['Name']] = array('keyword' => $valueArray['Name'], 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$valueArray['Name']]['DefaultValue']);
         }
         unset($sysConfiguration[$key]);
     }
     unset($sysConfiguration['Options']);
-    dbug('sysconfig', $sysConfiguration);
-}
 
+    // Write settings back to db
+    $sql = "TRUNCATE sccpsettings";
+    $results = $db->query($sql);
+    foreach ( $settingsFromDb as $key =>$valueArray ) {
+        $sql = "REPLACE INTO sccpsettings
+                (keyword, seq, type, data, systemdefault)
+                    VALUES
+                ( '{$settingsFromDb[$key]['keyword']}',
+                  {$settingsFromDb[$key]['seq']},
+                  {$settingsFromDb[$key]['type']},
+                  '{$settingsFromDb[$key]['data']}',
+                  '{$settingsFromDb[$key]['systemdefault']}'
+                )";
+        $results = $db->query($sql);
+    }
+}
 ?>
