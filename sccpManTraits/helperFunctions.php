@@ -161,13 +161,15 @@ trait helperfunctions {
         return $result;
     }
 
-    function tftpReadTestFile($remoteFileName)
+    function tftpReadTestFile($remoteFileName, $host = "127.0.0.1";)
     {
         // https://datatracker.ietf.org/doc/html/rfc1350
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+        // Set timeout so that do not hang if no data received.
+        socket_set_option($socket,SOL_SOCKET, SO_RCVTIMEO, array('sec'=>1, 'usec'=>0));
+
         if ($socket) {
-            $host = "127.0.0.1";  // TODO: Should consider remote TFT Servers in future
-            $port = 69;
+            $port = 69;   // Initial TFTP port. Changed in received packet.
 
             // create the RRQ request packet
             $packet = chr(0) . chr(1) . $remoteFileName . chr(0) . 'netascii' . chr(0);
@@ -177,24 +179,17 @@ trait helperfunctions {
             $buffer = null;
             $port = "";
             $ret = "";
+            // MSG_WAITALL is blocking but socket has timeout set to 1 sec.
+            $numbytes = socket_recvfrom($socket, $buffer, 84, MSG_WAITALL, $host, $port);
 
-            // fetch file content
-            $count = 0;
-            while ( 0 == $numbytes = socket_recvfrom($socket, $buffer, 84, MSG_DONTWAIT, $host, $port)) {
-                sleep(1);
-                $count ++;
-                if ($count > 5) {
-                    break;
-                }
-            };
-
-            // unpack the returned buffer and discard the first two bytes
-            try {
-                $pkt = unpack("nopcode/nblockno/a*data", $buffer);
-            } catch (\Exception $e) {
-                die_freepbx("TFTP server is not responding. Check that it is running and then reload this page \n");
+            if ($numbytes < 2) {
+                // socket has timed out before data received.
+                return false;
             }
-            // send ack
+            // unpack the returned buffer and discard the first two bytes.
+            $pkt = unpack("nopcode/nblockno/a*data", $buffer);
+
+            // send ack and close socket.
             $packet = chr(4) . chr($pkt["blockno"]);
             socket_sendto($socket, $packet, strlen($packet), MSG_EOR, $host, $port);
 
