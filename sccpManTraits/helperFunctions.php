@@ -72,8 +72,11 @@ trait helperfunctions {
     private function getTableDefaults($table, $trim_underscore = true) {
         $def_val = array();
         // TODO: This is ugly and overkill - needs to be cleaned up in dbinterface
+        if ($table == 'sccpsettings') {
+            // sccpsettings has a different structure and already have values in $sccpvalues
+            return $this->sccpvalues;
+        }
         $sccpTableDesc = $this->dbinterface->getSccpDeviceTableData("get_columns_{$table}");
-
         foreach ($sccpTableDesc as $data) {
             $key = (string) $data['Field'];
             // function has 2 roles: return actual table keys (trim_underscore = false)

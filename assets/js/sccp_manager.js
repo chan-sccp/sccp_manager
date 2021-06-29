@@ -1055,3 +1055,24 @@ function sleep(milliseconds)
         }
     }
 }
+
+$(".custom").click(function() {
+	$(this).parents(".element-container").removeClass("has-error");
+	var id = $(this).data("for"), input = $("#" + id);
+  var edit_style = document.getElementById("edit_" + id).style;
+  console.log(id);
+	if (input.length === 0) {
+		return;
+	}
+	if ($(this).is(":checked")) {
+    edit_style.display = 'block';
+		input.prop("readonly", false);
+		input.val(input.data("custom"));
+    input.focus();
+	} else {
+    edit_style.display = 'none';
+		input.data("custom", input.val());
+		input.prop("readonly", true);
+		input.val(input.data("default"));
+	}
+});

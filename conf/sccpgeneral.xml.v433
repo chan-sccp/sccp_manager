@@ -70,12 +70,11 @@ and open the template in the editor. Base Version before all crash :-)
 
     <page_group name="sccp_general">
         <label>SCCP Server config</label>
-
         <item type="IE" id="2">
             <label>SCCP Server Name</label>
             <input>
                 <name>servername</name>
-                <default>Vt</default>
+                <default>Asterisk XML</default>
             </input>
             <help>Servername: This is the type of server - usually, it will be Asterisk.</help>
         </item>

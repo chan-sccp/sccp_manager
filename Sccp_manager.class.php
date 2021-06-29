@@ -158,15 +158,27 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group[@name="' . $group_name . '"]') as $item) {
-                $htmlret = load_view(__DIR__ . '/views/formShow.php', array(
-                    'itm' => $item,
-                    'h_show' => $show_Header,
-                    'form_prefix' => $form_prefix,
-                    'fvalues' => $form_values,
-                    'tftp_lang' => $this->tftpLang,
-                    'metainfo' => $this->sccp_metainfo
-                    )
-                );
+                // TODO: Clean up below after debug
+                if ($group_name == 'sccp_general') {
+                    $htmlret = load_view(__DIR__ . '/views/formShowSysDefs.php', array(
+                        'itm' => $item,
+                        'h_show' => $show_Header,
+                        'form_prefix' => $form_prefix,
+                        'fvalues' => $form_values,
+                        'tftp_lang' => $this->tftpLang,
+                        'metainfo' => $this->sccp_metainfo
+                      ));
+                } else {
+                    $htmlret = load_view(__DIR__ . '/views/formShow.php', array(
+                        'itm' => $item,
+                        'h_show' => $show_Header,
+                        'form_prefix' => $form_prefix,
+                        'fvalues' => $form_values,
+                        'tftp_lang' => $this->tftpLang,
+                        'metainfo' => $this->sccp_metainfo
+                        )
+                      );
+                }
             }
         } else {
             $htmlret = load_view(__DIR__ . '/views/formShowError.php');
@@ -198,12 +210,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $action = !empty($request['action']) ? $request['action'] : '';
 
         $this->pagedata = array(
-            "siteConfig" => array(
-                'name' => _('Site Default Values'),
-                'page' => 'views/siteDefaults.php'
-              ),
             "general" => array(
-                "name" => _("General SCCP Settings"),
+                "name" => _("Site Default Settings"),
                 "page" => 'views/server.setting.php'
               ),
             "sccpdevice" => array(
