@@ -58,6 +58,9 @@ if (function_exists('music_list')) {
 if (!is_array($moh_list)) {
     $moh_list = array('default');
 }
+if (empty($fvalues)) {
+    $fvalues = $sccp_defaults;
+}
 
 $items = $itm -> children();
 

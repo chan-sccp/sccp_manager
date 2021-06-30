@@ -184,7 +184,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         'form_prefix' => $form_prefix,
                         'fvalues' => $form_values,
                         'tftp_lang' => $this->tftpLang,
-                        'metainfo' => $this->sccp_metainfo
+                        'metainfo' => $this->sccp_metainfo,
+                        'sccp_defaults' => $this->sccpvalues
                         )
                       );
                 }
