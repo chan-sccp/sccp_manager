@@ -175,13 +175,11 @@ foreach ($items as $child) {
                             echo ($usingSysDefaults) ? "Customise" : "Use chan-sccp defaults";
                             ?>
                         </label>
-
                       </span>
                     </div>
                 </div>
             </div>
             <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none">
-    <!--        <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none;"> -->
                 <div class="form-group <?php echo $res_sec_class; ?>">
                     <div class="col-md-3">
                         <i><?php echo "Enter new site value for {$shortId}"; ?></i>
@@ -401,17 +399,17 @@ foreach ($items as $child) {
                 $child->help = $metaInfo[$res_n];
             }
         }
-
-             // --- Add Hiden option
+        // --- Add Hidden option
         $res_sec_class ='';
         if (!empty($child ->class)) {
             $res_sec_class = (string)$child ->class;
         }
 
-            echo '<!-- Begin '.$child->label.' -->';
+        echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
-            <div class="row"><div class="form-group <?php echo $res_sec_class;?>">
+            <div class="row">
+                <div class="form-group <?php echo $res_sec_class;?>">
                     <div class="col-md-3 radioset">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -459,11 +457,13 @@ foreach ($items as $child) {
                             $i++;
                         }
                         ?>
-                        </div>
-                </div></div>
+                    </div>
+                </div>
+            </div>
             <div class="row"><div class="col-md-12">
                     <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
-            </div></div>
+            </div>
+          </div>
         </div>
 
         <?php
