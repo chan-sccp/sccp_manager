@@ -103,12 +103,10 @@ foreach ($items as $child) {
         if (!empty($child ->class)) {
             $res_sec_class = (string)$child ->class;
         }
-
         if (empty($child->nameseparator)) {
             $child->nameseparator = ' / ';
         }
         $i = 0;
-
         echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
@@ -125,12 +123,12 @@ foreach ($items as $child) {
             $res_n =  (string)$value->name;
             $res_name = $npref . $res_n;
             //if (!empty($fvalues[$res_n])) {
-                //if (!empty($fvalues[$res_n]['data'])) {
+                if (!empty($fvalues[$res_n]['data'])) {
                     if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $fvalues[$res_n]['data'])) {
                         $usingSysDefaults = false;
                     }
                     $value->value = $fvalues[$res_n]['data'];
-                //}
+                }
             //}
             // Default to chan-sccp defaults, not xml defaults.
             //if (empty($value->value)) {
@@ -145,6 +143,7 @@ foreach ($items as $child) {
             if ($i > 0) {
                 echo $child->nameseparator;
             }
+            // Output current value
             echo $value->value;
             $i ++;
         }
@@ -175,6 +174,7 @@ foreach ($items as $child) {
                             echo ($usingSysDefaults) ? "Customise" : "Use chan-sccp defaults";
                             ?>
                         </label>
+
                       </span>
                     </div>
                 </div>
@@ -368,7 +368,6 @@ foreach ($items as $child) {
                                 $i++;
                             }
                             ?>
-
                                 </div>
                             <?php
                             if (!empty($child->addbutton)) {
@@ -399,7 +398,8 @@ foreach ($items as $child) {
                 $child->help = $metaInfo[$res_n];
             }
         }
-        // --- Add Hidden option
+
+            // --- Add Hidden option
         $res_sec_class ='';
         if (!empty($child ->class)) {
             $res_sec_class = (string)$child ->class;
@@ -411,10 +411,73 @@ foreach ($items as $child) {
             <div class="row">
                 <div class="form-group <?php echo $res_sec_class;?>">
                     <div class="col-md-3 radioset">
-                        <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
+                        <label class="control-label" for="<?php echo $res_id ?>"><?php echo _($child->label)?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
                     </div>
+                    <div class="col-md-3">
+
+                    <?php
+                    $i = 0;
+//                          $res_v = 'no';
+                    $opt_hide = '';
+                    $res_v = '';
+                    // set res_v according to precedence Default here, value here, supplied value
+
+                    if (!empty($child->default)) {
+                        $res_v = (string)$child->default;
+                    }
+                    if (!empty($child->value)) {
+                         $res_v = (string)$child->value;
+                    }
+                    if (!empty($fvalues[$res_n])) {
+                        if (($fvalues[$res_n]['data'] != '') ) {
+                            $res_v = (string)$fvalues[$res_n]['data'];
+                        }
+                    }
+                    if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $res_v)) {
+                        $usingSysDefaults = false;
+                    }
+
+                    // Output current value
+                    echo $res_v;
+                    ?>
+                    </div>
+                    <div class="col-md-4">
+                      <span class="radioset">
+                        <input type="checkbox"
+                            <?php
+                            if ($usingSysDefaults) {
+                                // Setting a site specific value
+                                echo " data-for={$res_id}";
+                                echo " class=sccp-edit";
+                                echo " id=usedefault_{$res_id}";
+                                echo " :checked";
+                            } else {
+                                // reverting to chan-sccp default values
+                                echo " data-for={$res_id}";
+                                echo " class=sccp-restore";
+                                echo " id=usedefault_{$res_id}";
+                                echo " ";
+                            }
+                            ?>
+                        >
+                        <label
+                            <?php
+                            echo "for=usedefault_{$res_id} >";
+                            echo ($usingSysDefaults) ? "Customise" : "Use chan-sccp defaults";
+                            ?>
+                        </label>
+                      </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none">
+                <div class="form-group <?php echo $res_sec_class; ?>">
+                    <div class="col-md-3">
+                        <i><?php echo "Enter new site value for {$shortId}"; ?></i>
+                    </div>
                     <div class="col-md-9 radioset " data-hide="on">
+
                         <?php
                           $i = 0;
 //                          $res_v = 'no';
@@ -457,13 +520,12 @@ foreach ($items as $child) {
                             $i++;
                         }
                         ?>
+                        </div>
                     </div>
                 </div>
-            </div>
             <div class="row"><div class="col-md-12">
                     <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
-            </div>
-          </div>
+            </div></div>
         </div>
 
         <?php
