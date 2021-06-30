@@ -107,7 +107,6 @@ and open the template in the editor. Base Version before all crash :-)
                 <class>sccp-custom</class>
                 <options placeholder="Host Name"></options>
             </input>
-
             <help>External IP Address of the firewall, required in case the PBX is running on a separate host behind it. IP Address that we're going to notify in RTP media stream as the pbx source address. Resolve Hostname (if dynamic) that we're going to resolve when setting up the RTP media stream (only active if externip=0.0.0.0 and host is natted.)</help>
             <meta_help>1</meta_help>
             <nameseparator> / </nameseparator>

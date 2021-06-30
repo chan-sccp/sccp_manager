@@ -92,7 +92,7 @@ foreach ($items as $child) {
         $res_id = $npref.$res_oid;
         if (!empty($metainfo[$res_oid])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_oid]['Description'];
+                $child->help = $metainfo[$res_oid];
             }
         }
 
@@ -179,7 +179,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 //        $res_value
@@ -323,7 +323,7 @@ foreach ($items as $child) {
         $res_ext = str_replace($npref,'',$res_n);
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -410,7 +410,7 @@ foreach ($items as $child) {
         $res_id = $npref.$res_n;
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -490,7 +490,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -582,7 +582,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -643,7 +643,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -935,7 +935,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 

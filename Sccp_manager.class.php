@@ -101,7 +101,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     public $xml_data;
     public $class_error; //error construct
     public $info_warning;
-    public $sccp_metainfo = array();
+    public $sccpHelpInfo = array();
 
     // Move all non sccp_manager specific functions to traits
     use \FreePBX\modules\Sccp_Manager\sccpManTraits\helperFunctions;
@@ -155,11 +155,13 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $xml_vars = __DIR__ . '/conf/sccpgeneral.xml.v433';
               $this->xml_data = simplexml_load_file($xml_vars);
         // load metainfo from chan-sccp - help information if not in xml. Only load first time as static data.
-        if (empty($this->sccp_metainfo)) {
+        if (empty($this->sccpHelpInfo)) {
             $sysConfiguration = $this->aminterface->getSCCPConfigMetaData('general');
 
             foreach ($sysConfiguration['Options'] as $key => $valueArray) {
-                $this->sccp_metainfo[$valueArray['Name']] = $valueArray['Description'];
+                foreach ($valueArray['Description'] as $descKey => $descValue) {
+                    $this->sccpHelpInfo[$valueArray['Name']] .= $descValue . '<br>';
+                }
             }
             unset($sysConfiguration);
         }
@@ -174,7 +176,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         'form_prefix' => $form_prefix,
                         'fvalues' => $form_values,
                         'tftp_lang' => $this->tftpLang,
-                        'metainfo' => $this->sccp_metainfo,
+                        'chanSccpHelp' => $this->sccpHelpInfo,
                         'sccp_defaults' => $this->sccpvalues
                       ));
                 } else {
@@ -184,7 +186,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         'form_prefix' => $form_prefix,
                         'fvalues' => $form_values,
                         'tftp_lang' => $this->tftpLang,
-                        'metainfo' => $this->sccp_metainfo,
+                        'chanSccpHelp' => $this->sccpHelpInfo,
                         'sccp_defaults' => $this->sccpvalues
                         )
                       );

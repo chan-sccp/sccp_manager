@@ -89,11 +89,11 @@ foreach ($items as $child) {
         $res_input = '';
         $res_name = '';
         $usingSysDefaults = true;
-        $res_oid = (string)$child->input[0]->name;
-        $res_id = $npref.$res_oid;
-        if (!empty($metainfo[$res_oid])) {
+        $shortId = (string)$child->input[0]->name;
+        $res_id = $npref.$shortId;
+        if (!empty($metainfo[$shortId])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_oid]['Description'];
+                $child->help = $metainfo[$shortId];
             }
         }
 
@@ -109,7 +109,17 @@ foreach ($items as $child) {
         $i = 0;
 
         echo '<!-- Begin '.$child->label.' -->';
-
+        ?>
+        <div class="element-container">
+            <div class="row">
+                <div class="form-group <?php echo $res_sec_class; ?>">
+                    <div class="col-md-3">
+                        <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
+                        <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
+                    </div>
+                    <div class="col-md-3">
+        <?php
+        // Can have multiple inputs for a field displayed with a separator
         foreach ($child->xpath('input') as $value) {
                 $res_n =  (string)$value->name;
                 $res_name = $npref . $res_n;
@@ -133,19 +143,16 @@ foreach ($items as $child) {
             if (empty($value->class)) {
                 $value->class = 'form-control';
             }
+            // TODO: This is a temporary workaround and should be fixed
             $item = array('id' => $res_id, 'setting' => $child->label, 'feature' => $res_id, 'iscustom' => 'checked');
+
+            if ($i > 0) {
+                echo $child->nameseparator;
+            }
+            echo $value->value;
             $i ++;
         }
         ?>
-        <div class="element-container">
-            <div class="row">
-                <div class="form-group <?php echo $res_sec_class; ?>">
-                    <div class="col-md-3">
-                        <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
-                    </div>
-                    <div class="col-md-3">
-                        <?php echo $value->value; ?>
                     </div>
                     <div class="col-md-4">
                       <span class="radioset">
@@ -158,11 +165,12 @@ foreach ($items as $child) {
             <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none;">
                 <div class="form-group <?php echo $res_sec_class; ?>">
                     <div class="col-md-3">
-                        <i><?php echo "Enter new site value for {$res_oid}"; ?></i>
+                        <i><?php echo "Enter new site value for {$shortId}"; ?></i>
                     </div>
                     <div class="col-md-9">
                         <?php
                         $i=0;
+                        // Can have multiple inputs for a field displayed with a separator
                         foreach ($child->xpath('input') as $value) {
                                 $res_n =  (string)$value->name;
                                 $res_name = $npref . $res_n;
@@ -225,7 +233,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 //        $res_value
@@ -369,7 +377,7 @@ foreach ($items as $child) {
         $res_ext = str_replace($npref,'',$res_n);
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -456,7 +464,7 @@ foreach ($items as $child) {
         $res_id = $npref.$res_n;
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -536,7 +544,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -628,7 +636,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -689,7 +697,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
@@ -981,7 +989,7 @@ foreach ($items as $child) {
 
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_n]['Description'];
+                $child->help = $metaInfo[$res_n];
             }
         }
 
