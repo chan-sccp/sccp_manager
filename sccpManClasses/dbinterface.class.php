@@ -247,7 +247,6 @@ class dbinterface
         $result = false;
         switch ($table_name) {
             case 'sccpsettings':
-                dbug('savevalue', $save_value);
                 if ($mode == 'replace') {  // Change mode name to be more transparent
                     $dbh->prepare('TRUNCATE sccpsettings')->execute();
                     $stmt = $dbh->prepare('INSERT INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES (:keyword,:data,:seq,:type,:systemdefault)');

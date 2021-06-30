@@ -58,6 +58,9 @@ if (function_exists('music_list')) {
 if (!is_array($moh_list)) {
     $moh_list = array('default');
 }
+if (empty($fvalues)) {
+    $fvalues = $sccp_defaults;
+}
 
 $items = $itm -> children();
 
@@ -115,8 +118,7 @@ foreach ($items as $child) {
             }
             if (!empty($fvalues[$res_n])) {
                 if (!empty($fvalues[$res_n]['data'])) {
-                    // TODO: Need to store sysvalues in a separate array
-                    if (!empty($fvalues[$res_n]['systemdefault']) && ($fvalues[$res_n]['systemdefault'] != $fvalues[$res_n]['data'])) {
+                    if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $fvalues[$res_n]['data'])) {
                         $usingSysDefaults = false;
                     }
                     $value->value = $fvalues[$res_n]['data'];

@@ -94,7 +94,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     private $hint_context = array('default' => '@ext-local'); /// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Get it from Config !!!
     private $val_null = 'NONE'; /// REPLACE to null Field
     public $sccp_model_list = array();
-    public $sccp_metainfo = array();
     private $cnf_wr = null;
     public $sccppath = array();
     public $sccpvalues = array();
@@ -102,6 +101,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     public $xml_data;
     public $class_error; //error construct
     public $info_warning;
+    public $sccp_metainfo = array();
 
     // Move all non sccp_manager specific functions to traits
     use \FreePBX\modules\Sccp_Manager\sccpManTraits\helperFunctions;
@@ -149,12 +149,20 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     public function showGroup($group_name, $show_Header, $form_prefix = 'sccp', $form_values = array()) {
-        if (empty($form_values)) {
-            $form_values = $this->sccpvalues;
-        }
-        // load xml data - moved from Construct to simplify Construct
+
+        // load xml data - moved from Construct to simplify Construct.
+        // TODO: This is static data so only load first time. Left as is for dbug.
         $xml_vars = __DIR__ . '/conf/sccpgeneral.xml.v433';
               $this->xml_data = simplexml_load_file($xml_vars);
+        // load metainfo from chan-sccp - help information if not in xml. Only load first time as static data.
+        if (empty($this->sccp_metainfo)) {
+            $sysConfiguration = $this->aminterface->getSCCPConfigMetaData('general');
+
+            foreach ($sysConfiguration['Options'] as $key => $valueArray) {
+                $this->sccp_metainfo[$valueArray['Name']] = $valueArray['Description'];
+            }
+            unset($sysConfiguration);
+        }
 
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group[@name="' . $group_name . '"]') as $item) {
@@ -166,7 +174,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         'form_prefix' => $form_prefix,
                         'fvalues' => $form_values,
                         'tftp_lang' => $this->tftpLang,
-                        'metainfo' => $this->sccp_metainfo
+                        'metainfo' => $this->sccp_metainfo,
+                        'sccp_defaults' => $this->sccpvalues
                       ));
                 } else {
                     $htmlret = load_view(__DIR__ . '/views/formShow.php', array(
