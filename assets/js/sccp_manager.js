@@ -1088,7 +1088,6 @@ $(".sccp-edit").click(function() {
 	if ($(this).is(":checked")) {
     edit_style.display = 'block';
 		input.prop("readonly", false);
-		input.val(input.data("custom"));
     input.focus();
 	} else {
     edit_style.display = 'none';

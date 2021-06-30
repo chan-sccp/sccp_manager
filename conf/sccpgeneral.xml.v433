@@ -1170,7 +1170,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <default>/tftpboot</default>
                 <class>sccp-custom</class>
             </input>
-            <help>Path to tftp home directory</help>
+            <help>Path to tftp home directory. This was determined by the Sccp_manager installer and should only be changed if the tftp root has been modified since installation</help>
         </item>
         <item type="IE" id="1" seq="20">
             <label>Provision SERVER Path</label>
