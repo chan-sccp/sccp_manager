@@ -89,6 +89,7 @@ foreach ($items as $child) {
         $res_input = '';
         $res_name = '';
         $usingSysDefaults = true;
+        // if there are multiple inputs, take the first for res_id and shortId
         $shortId = (string)$child->input[0]->name;
         $res_id = $npref.$shortId;
         if (!empty($metainfo[$shortId])) {
@@ -121,31 +122,26 @@ foreach ($items as $child) {
         <?php
         // Can have multiple inputs for a field displayed with a separator
         foreach ($child->xpath('input') as $value) {
-                $res_n =  (string)$value->name;
-                $res_name = $npref . $res_n;
-            if (empty($res_id)) {
-                $res_id = $res_name;
-            }
-            if (!empty($fvalues[$res_n])) {
-                if (!empty($fvalues[$res_n]['data'])) {
+            $res_n =  (string)$value->name;
+            $res_name = $npref . $res_n;
+            //if (!empty($fvalues[$res_n])) {
+                //if (!empty($fvalues[$res_n]['data'])) {
                     if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $fvalues[$res_n]['data'])) {
                         $usingSysDefaults = false;
                     }
                     $value->value = $fvalues[$res_n]['data'];
-                }
-            }
-            if (empty($value->value)) {
-                $value->value = $value->default;
-            }
+                //}
+            //}
+            // Default to chan-sccp defaults, not xml defaults.
+            //if (empty($value->value)) {
+                //$value->value = $sccp_defaults[$res_n]['systemdefault'];
+            //}
             if (empty($value->type)) {
                 $value->type = 'text';
             }
             if (empty($value->class)) {
                 $value->class = 'form-control';
             }
-            // TODO: This is a temporary workaround and should be fixed
-            $item = array('id' => $res_id, 'setting' => $child->label, 'feature' => $res_id, 'iscustom' => 'checked');
-
             if ($i > 0) {
                 echo $child->nameseparator;
             }
@@ -156,13 +152,36 @@ foreach ($items as $child) {
                     </div>
                     <div class="col-md-4">
                       <span class="radioset">
-                        <input type="checkbox" data-for="<?php echo $item['id']?>" name="fc[<?php echo $item['setting']?>][<?php echo $item['feature']?>][customize]" class="custom" id="usedefault_<?php echo $item['id']?>" <?php echo ($usingSysDefaults) ? ':checked' : '';?>>
-                        <label for="usedefault_<?php echo $item['id']?>"><?php echo ($usingSysDefaults) ? _("Customize") : _("Use chan-sccp defaults")?></label>
+                        <input type="checkbox"
+                            <?php
+                            if ($usingSysDefaults) {
+                                // Setting a site specific value
+                                echo " data-for={$res_id}";
+                                echo " class=sccp-edit";
+                                echo " id=usedefault_{$res_id}";
+                                echo " :checked";
+                            } else {
+                                // reverting to chan-sccp default values
+                                echo " data-for={$res_id}";
+                                echo " class=sccp-restore";
+                                echo " id=usedefault_{$res_id}";
+                                echo " ";
+                            }
+                            ?>
+                        >
+                        <label
+                            <?php
+                            echo "for=usedefault_{$res_id} >";
+                            echo ($usingSysDefaults) ? "Customise" : "Use chan-sccp defaults";
+                            ?>
+                        </label>
+
                       </span>
                     </div>
                 </div>
             </div>
-            <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none;">
+            <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none">
+    <!--        <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none;"> -->
                 <div class="form-group <?php echo $res_sec_class; ?>">
                     <div class="col-md-3">
                         <i><?php echo "Enter new site value for {$shortId}"; ?></i>
@@ -182,8 +201,12 @@ foreach ($items as $child) {
                                     $value->value = $fvalues[$res_n]['data'];
                                 }
                             }
+                            // Default to chan-sccp defaults, not xml defaults.
                             if (empty($value->value)) {
-                                $value->value = $value->default;
+                                $value->value = $sccp_defaults[$res_n]['systemdefault'];
+                            }
+                            if (!$usingSysDefaults) {
+                                $value->value = $sccp_defaults[$res_n]['systemdefault'];
                             }
                             if (empty($value->type)) {
                                 $value->type = 'text';
@@ -194,7 +217,6 @@ foreach ($items as $child) {
                             if ($i > 0) {
                                 echo $child->nameseparator;
                             }
-//
                             echo '<input type="' . $value->type . '" class="' . $value->class . '" id="' . $res_id . '" name="' . $res_name . '" value="' . $value->value.'"';
                             if (isset($value->options)) {
                                 foreach ($value->options ->attributes() as $optkey => $optval) {
@@ -226,7 +248,6 @@ foreach ($items as $child) {
     }
     if ($child['type'] == 'IED') {
         $res_input = '';
-        $res_name = '';
         $res_value = '';
         $opt_at = array();
         $res_n =  (string)$child->name;
@@ -802,7 +823,6 @@ foreach ($items as $child) {
     }
     if ($child['type'] == 'ITED') {
         $res_input = '';
-        $res_name = '';
         $res_na =  (string)$child->name;
 
 //        $res_value

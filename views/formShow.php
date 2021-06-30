@@ -88,11 +88,11 @@ foreach ($items as $child) {
     if ($child['type'] == 'IE') {
         $res_input = '';
         $res_name = '';
-        $res_oid = (string)$child->input[0]->name;
-        $res_id = $npref.$res_oid;
-        if (!empty($metainfo[$res_oid])) {
+        $shortID = (string)$child->input[0]->name;
+        $res_id = $npref.$shortID;
+        if (!empty($metainfo[$shortID])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metainfo[$res_oid];
+                $child->help = $metainfo[$shortID];
             }
         }
 
@@ -172,7 +172,6 @@ foreach ($items as $child) {
     }
     if ($child['type'] == 'IED') {
         $res_input = '';
-        $res_name = '';
         $res_value = '';
         $opt_at = array();
         $res_n =  (string)$child->name;
@@ -748,7 +747,6 @@ foreach ($items as $child) {
     }
     if ($child['type'] == 'ITED') {
         $res_input = '';
-        $res_name = '';
         $res_na =  (string)$child->name;
 
 //        $res_value

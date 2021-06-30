@@ -1056,11 +1056,32 @@ function sleep(milliseconds)
     }
 }
 
-$(".custom").click(function() {
-	$(this).parents(".element-container").removeClass("has-error");
+$(".sccp-restore").click(function() {
+  //input is sent by data-for where for is an attribute
 	var id = $(this).data("for"), input = $("#" + id);
   var edit_style = document.getElementById("edit_" + id).style;
-  console.log(id);
+
+  console.log(input);
+	if (input.length === 0) {
+		return;
+	}
+	if ($(this).is(":checked")) {
+    edit_style.display = 'block';
+		input.prop("readonly", true);
+	} else {
+    edit_style.display = 'none';
+		input.data("custom", input.val());
+		input.prop("readonly", true);
+		input.val(input.data("default"));
+	}
+});
+
+$(".sccp-edit").click(function() {
+  //input is sent by data-for where for is an attribute
+	var id = $(this).data("for"), input = $("#" + id);
+  var edit_style = document.getElementById("edit_" + id).style;
+
+  console.log(input);
 	if (input.length === 0) {
 		return;
 	}
