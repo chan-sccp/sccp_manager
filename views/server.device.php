@@ -10,6 +10,13 @@
 <form autocomplete="off" name="frm_device" id="frm_device" class="fpbx-submit" action="" method="post">
     <input type="hidden" name="category" value="deviceform">
     <input type="hidden" name="Submit" value="Submit">
+    <div class="fpbx-container container-fluid">
+        <div class="row">
+            <div class="container">
+                <h2 style="border:2px solid Tomato;color:Tomato;" ><?php echo _("Warning : Any changes to the device configuration can cause all phones to restart"); ?></h2>
+            </div>
+        </div>
+    </div>
 <?php
 
         $def_val_line = $this->getTableDefaults('sccpline');

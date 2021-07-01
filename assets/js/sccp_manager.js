@@ -1057,7 +1057,7 @@ function sleep(milliseconds)
 }
 
 $(".sccp-restore").click(function() {
-  //input is sent by data-for where for is an attribute
+  //input is sent by data-for where for as an attribute
 	var id = $(this).data("for"), input = $("#" + id);
   var edit_style = document.getElementById("edit_" + id).style;
 
@@ -1066,9 +1066,11 @@ $(".sccp-restore").click(function() {
 		return;
 	}
 	if ($(this).is(":checked")) {
+    console.log('restore/checked');
     edit_style.display = 'block';
 		input.prop("readonly", true);
 	} else {
+    console.log('restore/unchecked');
     edit_style.display = 'none';
 		input.data("custom", input.val());
 		input.prop("readonly", true);
@@ -1077,20 +1079,36 @@ $(".sccp-restore").click(function() {
 });
 
 $(".sccp-edit").click(function() {
-  //input is sent by data-for where for is an attribute
-	var id = $(this).data("for"), input = $("#" + id);
+  var id = $(this).data("for"), input = $("#" + id);
   var edit_style = document.getElementById("edit_" + id).style;
+  //input is sent by data-for where for is an attribute
+  if ($(this).data("type") === 'radio') {
+      input = 'radio';
+      console.log('have radio type');
+      // $(':radio:not(:checked)').attr('disabled', true); to make readonly
+      // Need to use getElementBy Name
+  }
+
+
 
   console.log(input);
 	if (input.length === 0) {
 		return;
 	}
 	if ($(this).is(":checked")) {
+    console.log('edit/checked');
     edit_style.display = 'block';
+    if (input == 'radio') {
+        return;
+    }
 		input.prop("readonly", false);
     input.focus();
 	} else {
+    console.log('edit/unchecked');
     edit_style.display = 'none';
+    if (input == 'radio') {
+        return;
+    }
 		input.data("custom", input.val());
 		input.prop("readonly", true);
 		input.val(input.data("default"));
