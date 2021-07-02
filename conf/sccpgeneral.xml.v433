@@ -342,8 +342,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>echocancel</name>
             <label>Echo Cancel</label>
             <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">On</button>
+            <button value="no">Off</button>
             <help>Echo Cancel: Echo Cancellation (On or Off).</help>
         </item>
         <item type="IS" id="9">

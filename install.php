@@ -171,7 +171,7 @@ function Get_DB_config($sccp_compatible)
             'disallow' => array('create' => "VARCHAR(255) NULL DEFAULT NULL"),
             'allow' => array('create' => "VARCHAR(255) NULL DEFAULT NULL"),
             'id' => array('create' => 'MEDIUMINT(9) NOT NULL AUTO_INCREMENT, ADD UNIQUE(id);', 'modify' => "MEDIUMINT(9)", 'index' => 'id'),
-            'echocancel' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+            'echocancel' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
             'silencesuppression' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
             'dnd' => array('create' => "enum('off','reject','silent','user') NOT NULL default 'reject'", 'modify' => "enum('off','reject','silent','user')", 'def_modify' => "reject")
         ),
@@ -253,7 +253,7 @@ function Get_DB_config($sccp_compatible)
               '_callwaiting_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
               '_callanswerorder' => array('create' => "enum('oldestfirst','latestfirst') NOT NULL default 'latestfirst'",
                                     'modify' => "enum('oldestfirst','latestfirst')"),
-              '_echocancel' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              '_echocancel' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
               '_silencesuppression' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
               '_sccp_tos' => array('create' => "VARCHAR(11) NOT NULL default '0x68'", 'modify' => "VARCHAR(11)"),
               '_sccp_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x4'", 'modify' => "VARCHAR(11)"),
@@ -443,7 +443,7 @@ function InstallDB_updateSchema($db_config)
             }
         }
         if (!empty($sql_modify)) {
-            outn("<li>" . _("Modifying table columns") . $tabl_name ."</li>");
+            outn("<li>" . _("Modifying table columns ") . $tabl_name ."</li>");
 
             $sql_modify = "ALTER TABLE {$tabl_name} " . substr($sql_modify, 0, -2);
             try {

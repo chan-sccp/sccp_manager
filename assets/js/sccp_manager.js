@@ -1075,7 +1075,6 @@ $(".sccp-restore").click(function() {
     edit_style.display = 'block';
     if ($(this).data("type") === 'radio') {
         // simulate read only for checkboxes
-
         $(':radio:not(:checked)').attr('disabled', true)
         return;
     }

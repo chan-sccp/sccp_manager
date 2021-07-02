@@ -169,7 +169,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group[@name="' . $group_name . '"]') as $item) {
                 // TODO: Clean up below after debug
-                if (($group_name == 'sccp_general') || ($group_name == 'sccp_qos_config') || ($group_name =='sccp_dev_config')) {
+                if (($group_name == 'sccp_general') || ($group_name == 'sccp_qos_config') ||
+                    ($group_name =='sccp_dev_config') || ($group_name =='sccp_dev_group_config') ||
+                    ($group_name =='sccp_hotline_config') || ($group_name =='sccp_dev_softkey') || ($group_name =='sccp_dev_advconfig')) {
                     $htmlret = load_view(__DIR__ . '/views/formShowSysDefs.php', array(
                         'itm' => $item,
                         'h_show' => $show_Header,

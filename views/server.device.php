@@ -22,10 +22,11 @@
         $def_val_line = $this->getTableDefaults('sccpline');
         $def_val_device = $this->getTableDefaults('sccpdevice');
 
-        echo $this->showGroup('sccp_dev_config', 1, 'sccpdevice', $def_val_device);
-        echo $this->showGroup('sccp_dev_group_config', 1, 'sccpline', $def_val_line);
-        echo $this->showGroup('sccp_dev_advconfig', 1, 'sccpdevice', $def_val_device);
-        echo $this->showGroup('sccp_dev_softkey', 1, 'sccpdevice', $def_val_device);
-        echo $this->showGroup('sccp_hotline_config', 1, 'sccpdevice', $def_val_device);
+        //echo $this->showGroup('sccp_dev_config', 1, 'sccpdevice', $def_val_device);
+        echo $this->showGroup('sccp_dev_config', 1);
+        echo $this->showGroup('sccp_dev_group_config', 1);
+        echo $this->showGroup('sccp_dev_advconfig', 1);
+        echo $this->showGroup('sccp_dev_softkey', 1);
+        echo $this->showGroup('sccp_hotline_config', 1);
 ?>
 </form>

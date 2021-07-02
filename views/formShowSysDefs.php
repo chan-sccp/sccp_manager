@@ -118,16 +118,16 @@ foreach ($items as $child) {
                     </div>
                     <div class="col-md-3">
         <?php
-        // Can have multiple inputs for a field displayed with a separator
+        // Can have multiple inputs for a field which are displayed with a separator
         foreach ($child->xpath('input') as $value) {
             $res_n =  (string)$value->name;
             $res_name = $npref . $res_n;
             //if (!empty($fvalues[$res_n])) {
+            $value->value = $fvalues[$res_n]['data'];
                 if (!empty($fvalues[$res_n]['data'])) {
                     if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $fvalues[$res_n]['data'])) {
                         $usingSysDefaults = false;
-                    }
-                    $value->value = $fvalues[$res_n]['data'];
+                    }    
                 }
             //}
             // Default to chan-sccp defaults, not xml defaults.
@@ -144,6 +144,9 @@ foreach ($items as $child) {
                 echo $child->nameseparator;
             }
             // Output current value
+            if (empty($value->value)) {
+                echo "Value not found for {$res_n}";
+            }
             echo $value->value;
             $i ++;
         }
