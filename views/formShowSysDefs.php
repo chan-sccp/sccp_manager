@@ -500,6 +500,9 @@ foreach ($items as $child) {
                                 $res_v = (string)$fvalues[$res_n]['data'];
                             }
                         }
+                        if (!$usingSysDefaults) {
+                            $res_v = $sccp_defaults[$res_n]['systemdefault'];
+                        }
                         if (!empty($child->option_hide)) {
                             $opt_hide = ' class="sccp_button_hide" data-vhide="'.$child->option_hide.'" data-clhide="'.$child->option_hide['class'].'" ';
                         }

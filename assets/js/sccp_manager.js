@@ -1060,6 +1060,11 @@ $(".sccp-restore").click(function() {
   //input is sent by data-for where for as an attribute
 	var id = $(this).data("for"), input = $("#" + id);
   var edit_style = document.getElementById("edit_" + id).style;
+  if ($(this).data("type") === 'radio') {
+      input = document.getElementsByName(id);
+      console.log('have radio type');
+      // Need to use getElementBy Name
+  }
 
   console.log(input);
 	if (input.length === 0) {
@@ -1068,6 +1073,12 @@ $(".sccp-restore").click(function() {
 	if ($(this).is(":checked")) {
     console.log('restore/checked');
     edit_style.display = 'block';
+    if ($(this).data("type") === 'radio') {
+        // simulate read only for checkboxes
+
+        $(':radio:not(:checked)').attr('disabled', true)
+        return;
+    }
 		input.prop("readonly", true);
 	} else {
     console.log('restore/unchecked');
@@ -1079,17 +1090,15 @@ $(".sccp-restore").click(function() {
 });
 
 $(".sccp-edit").click(function() {
+  //input is sent by data-xxx where xxx is an attribute
   var id = $(this).data("for"), input = $("#" + id);
   var edit_style = document.getElementById("edit_" + id).style;
-  //input is sent by data-for where for is an attribute
   if ($(this).data("type") === 'radio') {
-      input = 'radio';
+      input = document.getElementsByName(id);
       console.log('have radio type');
       // $(':radio:not(:checked)').attr('disabled', true); to make readonly
       // Need to use getElementBy Name
   }
-
-
 
   console.log(input);
 	if (input.length === 0) {
@@ -1098,7 +1107,8 @@ $(".sccp-edit").click(function() {
 	if ($(this).is(":checked")) {
     console.log('edit/checked');
     edit_style.display = 'block';
-    if (input == 'radio') {
+    if ($(this).data("type") === 'radio') {
+        $(':radio:not(:checked)').attr('disabled', false)
         return;
     }
 		input.prop("readonly", false);
