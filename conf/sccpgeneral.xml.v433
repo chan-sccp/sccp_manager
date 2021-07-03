@@ -343,8 +343,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>private</name>
             <label>Private Calling</label>
             <default>on</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Private Calling Enabled: Place a call with privacy Options (no Caller ID) turned on. Needs to be supported in Asterisk to work through SIP and DAHDI trunks.</help>
         </item>
         <item type="IS" id="13">
@@ -379,9 +379,9 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="15">
             <name>mwioncall</name>
             <label>Message Lamp On Call</label>
-            <default>off</default>
-            <button value="on">Yes</button>
-            <button value="off">No</button>
+            <default></default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Set the MWI on call.</help>
         </item>
     </page_group>
@@ -412,8 +412,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>simulate_enbloc</name>
             <label>Simulated Enbloc Dialing</label>
             <default>on</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Use simulated enbloc dialing to speedup connection when dialing while onhook (older phones)</help>
         </item>
         <item type="IS" id="11" seq="98">
@@ -463,9 +463,9 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="1" seq="0">
             <name>transfer</name>
             <label>Transfer</label>
-            <default>on</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <default></default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Allow the use of the transfer feature</help>
         </item>
     </page_group>
@@ -1057,16 +1057,16 @@ and open the template in the editor. Base Version before all crash :-)
             <name>pickup_modeanswer</name>
             <label>Directed Pickup</label>
             <default>off</default>
-            <button value="on">Enabled</button>
-            <button value="off">Disabled</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Directed Pickup Mode (Answer): If a call is sent with the "directed pickup" flag, the phone will answer when set to "Yes".</help>
         </item>
         <item type="IS" id="12">
             <name>transfer_on_hangup</name>
             <label>Transfer on hangup</label>
             <default>off</default>
-            <button value="on">Enabled</button>
-            <button value="off">Disabled</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Complete transfer on hangup, without pressing transfer a second time. Will complete transfer, when the transferer puts the receiver on hook, after the destination has been reached. To cancel the transfer, either press resume on the transferred channel, press the 'endcall' softkey, or have the receiving party hangup first.</help>
         </item>
 
