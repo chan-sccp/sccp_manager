@@ -396,6 +396,7 @@ foreach ($items as $child) {
         $res_n =  (string)$child->name;
         $res_id = $npref.$res_n;
         $res_ext = str_replace($npref,'',$res_n);
+        $usingSysDefaults = true;
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
                 $child->help = $metaInfo[$res_n];
@@ -444,7 +445,8 @@ foreach ($items as $child) {
                     }
 
                     // Output current value
-                    echo $res_v;
+                    // TODO: This is debug code and needs to be set to only echo res_v
+                    echo $res_v . $res_n . $sccp_defaults[$res_n]['systemdefault'] . $usingSysDefaults;
                     ?>
                     </div>
                     <div class="col-md-4">
@@ -527,7 +529,7 @@ foreach ($items as $child) {
                                 } else {$val_check = "";}
                             }
                             echo "<input type=radio name= {$res_id} id=${res_id}_{$i} value={$value[@value]} {$val_check}{$opt_hide}>";
-                            echo '<label for="' . $res_id. '_' . $i . '">' . _($value) .  '</label>';
+                            echo "<label for= {$res_id}_{$i}>{$value}</label>";
                             $i++;
                         }
                         ?>

@@ -28,5 +28,6 @@
         echo $this->showGroup('sccp_dev_advconfig', 1);
         echo $this->showGroup('sccp_dev_softkey', 1);
         echo $this->showGroup('sccp_hotline_config', 1);
+        echo $this->showGroup('sccp_qos_config', 1, 'sccpdevice', $def_val_device);
 ?>
 </form>

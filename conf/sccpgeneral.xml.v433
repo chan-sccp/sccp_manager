@@ -338,22 +338,7 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Call Waiting Tone: The tone played when a call is waiting. If you set this one to '0', you will not get a tone in your current call if a new call comes in, so you might want to disable call waiting for this line instead.</help>
         </item>
-        <item type="IS" id="8">
-            <name>echocancel</name>
-            <label>Echo Cancel</label>
-            <default>off</default>
-            <button value="yes">On</button>
-            <button value="no">Off</button>
-            <help>Echo Cancel: Echo Cancellation (On or Off).</help>
-        </item>
-        <item type="IS" id="9">
-            <name>silencesuppression</name>
-            <label>Silence Suppression</label>
-            <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
-            <help>Silence Suppression: Slience Suppression on the phone.</help>
-        </item>
+
         <item type="IS" id="10">
             <name>private</name>
             <label>Private Calling</label>
@@ -406,9 +391,9 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="4" seq="0">
             <name>directrtp</name>
             <label>Direct RTP</label>
-            <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <default></default>
+            <button value="yes">Yes</button>
+            <button value="no">NO</button>
             <help>This option set global allow devices to do direct RTP sessions (default Off)</help>
         </item>
         <item type="IS" id="5" seq="0">
@@ -447,24 +432,24 @@ and open the template in the editor. Base Version before all crash :-)
             <name>cfwdall</name>
             <label>Call Forward</label>
             <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Activate the callforward softkeys. Default is On</help>
         </item>
         <item type="IS" id="3" seq="0">
             <name>cfwdbusy</name>
             <label>Call Forward busy</label>
             <default>off</default>
-            <button value="on">On</button>Call Forward
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>Call Forward
+            <button value="no">No</button>
             <help>Activate the callforward busy softkeys. Default is On</help>
         </item>
         <item type="IS" id="3" seq="0">
             <name>cfwdnoanswer</name>
             <label>Call Forward NOANSWER</label>
             <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Activate the callforward NOANSWER stuff and softkeys. Default is On</help>
         </item>
         <item type="IS" id="5" seq="0">
@@ -995,8 +980,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>hotline_enabled</name>
             <label>Hotline</label>
             <default>off</default>
-            <button value="on">Enabled</button>
-            <button value="off">Disabled</button>
+            <button value="no">No</button>
+            <button value="yes">Yes</button>
             <help>Hotline Enabled: This allows unregistered extensions to connect to the system and dial the number listed below.</help>
         </item>
         <item type="IE" id="2">
@@ -1141,6 +1126,22 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="3">Enabled</button>
             <button value="2">Disabled</button>
             <help>Show numbers you can redial, but also include their current device state, so you know when they are currently busy. Note that the other phonebook entries will now also monitor the remove device state and show the current device state</help>
+        </item>
+        <item type="IS" id="8">
+            <name>echocancel</name>
+            <label>Echo Cancel</label>
+            <default>off</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Echo Cancel: Echo Cancellation (On or Off).</help>
+        </item>
+        <item type="IS" id="9">
+            <name>silencesuppression</name>
+            <label>Silence Suppression</label>
+            <default>off</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Silence Suppression: Slience Suppression on the phone.</help>
         </item>
         <item type="SLM" id="6">
             <label>Music On Hold Class</label>
@@ -1399,24 +1400,24 @@ and open the template in the editor. Base Version before all crash :-)
             <name>cfwdall</name>
             <label>Call Forward</label>
             <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="No">No</button>
             <help>Activate the callforward softkeys. Default is On</help>
         </item>
         <item type="IS" id="3" seq="99">
             <name>cfwdbusy</name>
             <label>Call Forward busy</label>
             <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Activate the callforward busy softkeys. Default is On</help>
         </item>
         <item type="IS" id="3" seq="0">
             <name>cfwdnoanswer</name>
             <label>Call Forward NOANSWER</label>
             <default>on</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Activate the callforward NOANSWER stuff and softkeys. Default is On</help>
         </item>
         <item type="IS" id="5" seq="99">
@@ -1621,10 +1622,10 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="4" seq="99">
             <name>directrtp</name>
             <label>Direct RTP</label>
-            <default>off</default>
+            <default></default>
             <button- value="off">Auto</button->
-            <button value="off">Off</button>
-            <button value="on">On</button>
+            <button value="no">NO</button>
+            <button value="Yes">Yes</button>
             <help>This option allow devices to do direct RTP sessions (default Off)</help>
         </item>
         <item type="IS" id="5" seq="99">

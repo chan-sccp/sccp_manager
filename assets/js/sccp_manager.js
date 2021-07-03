@@ -1057,14 +1057,12 @@ function sleep(milliseconds)
 }
 
 $(".sccp-restore").click(function() {
-  //input is sent by data-for where for as an attribute
-	var id = $(this).data("for"), input = $("#" + id), radId = id + "_";
+  //input is sent by data-for where for is an attribute
+	var id = $(this).data("for"), input = $("#" + id);
   var edit_style = document.getElementById("edit_" + id).style;
   if ($(this).data("type") === 'radio') {
       input = document.getElementsByName(id);
   }
-
-  console.log(input);
 	if (input.length === 0) {
 		return;
 	}
@@ -1109,8 +1107,6 @@ $(".sccp-edit").click(function() {
   if ($(this).data("type") === 'radio') {
       input = document.getElementsByName(id);
   }
-
-  console.log(input);
 	if (input.length === 0) {
 		return;
 	}
@@ -1121,9 +1117,7 @@ $(".sccp-edit").click(function() {
         // Security - attribute should not exist.
        input.forEach(
           function(radioElement) {
-              if (radioElement.hasAttribute('disabled')) {
-                  radioElement.removeAttribute('disabled');
-              }
+              radioElement.removeAttribute('disabled');
           }
        );
     return;
