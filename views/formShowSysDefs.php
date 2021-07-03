@@ -127,7 +127,7 @@ foreach ($items as $child) {
                 if (!empty($fvalues[$res_n]['data'])) {
                     if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $fvalues[$res_n]['data'])) {
                         $usingSysDefaults = false;
-                    }    
+                    }
                 }
             //}
             // Default to chan-sccp defaults, not xml defaults.
@@ -526,7 +526,7 @@ foreach ($items as $child) {
                                    } else {$val_check = "";}
                                 } else {$val_check = "";}
                             }
-                            echo '<input type="radio" name="' . $res_id . '" id="' . $res_id. '_' . $i .'" value="' . $value[@value] . '"' . $val_check . $opt_hide.'>';
+                            echo "<input type=radio name= {$res_id} id=${res_id}_{$i} value={$value[@value]} {$val_check}{$opt_hide}>";
                             echo '<label for="' . $res_id. '_' . $i . '">' . _($value) .  '</label>';
                             $i++;
                         }

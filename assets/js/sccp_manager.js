@@ -1058,12 +1058,10 @@ function sleep(milliseconds)
 
 $(".sccp-restore").click(function() {
   //input is sent by data-for where for as an attribute
-	var id = $(this).data("for"), input = $("#" + id);
+	var id = $(this).data("for"), input = $("#" + id), radId = id + "_";
   var edit_style = document.getElementById("edit_" + id).style;
   if ($(this).data("type") === 'radio') {
       input = document.getElementsByName(id);
-      console.log('have radio type');
-      // Need to use getElementBy Name
   }
 
   console.log(input);
@@ -1075,13 +1073,29 @@ $(".sccp-restore").click(function() {
     edit_style.display = 'block';
     if ($(this).data("type") === 'radio') {
         // simulate read only for checkboxes
-        $(':radio:not(:checked)').attr('disabled', true)
-        return;
+       input.forEach(
+          function(radioElement) {
+              radioElement.setAttribute('disabled', true);
+              if (radioElement.hasAttribute('checked')) {
+                  radioElement.removeAttribute('disabled');
+              }
+          }
+       );
+    return;
     }
 		input.prop("readonly", true);
 	} else {
     console.log('restore/unchecked');
     edit_style.display = 'none';
+    if ($(this).data("type") === 'radio') {
+        // simulate read only for checkboxes
+       input.forEach(
+          function(radioElement) {
+              radioElement.removeAttribute('disabled');
+          }
+       );
+    return;
+    }
 		input.data("custom", input.val());
 		input.prop("readonly", true);
 		input.val(input.data("default"));
@@ -1094,9 +1108,6 @@ $(".sccp-edit").click(function() {
   var edit_style = document.getElementById("edit_" + id).style;
   if ($(this).data("type") === 'radio') {
       input = document.getElementsByName(id);
-      console.log('have radio type');
-      // $(':radio:not(:checked)').attr('disabled', true); to make readonly
-      // Need to use getElementBy Name
   }
 
   console.log(input);
@@ -1107,15 +1118,22 @@ $(".sccp-edit").click(function() {
     console.log('edit/checked');
     edit_style.display = 'block';
     if ($(this).data("type") === 'radio') {
-        $(':radio:not(:checked)').attr('disabled', false)
-        return;
+        // Security - attribute should not exist.
+       input.forEach(
+          function(radioElement) {
+              if (radioElement.hasAttribute('disabled')) {
+                  radioElement.removeAttribute('disabled');
+              }
+          }
+       );
+    return;
     }
 		input.prop("readonly", false);
     input.focus();
 	} else {
     console.log('edit/unchecked');
     edit_style.display = 'none';
-    if (input == 'radio') {
+    if ($(this).data("type") === 'radio') {
         return;
     }
 		input.data("custom", input.val());
