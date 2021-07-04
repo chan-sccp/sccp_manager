@@ -411,7 +411,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="5" seq="0">
             <name>simulate_enbloc</name>
             <label>Simulated Enbloc Dialing</label>
-            <default>on</default>
+            <default></default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
             <help>Use simulated enbloc dialing to speedup connection when dialing while onhook (older phones)</help>
@@ -897,7 +897,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <default>0x4</default>
                 <class>sccp-custom</class>
             </input>
-            <help>SCCP Type Of Service / Class Of Service: SCCP Type or Class of Service - this is modifiable, but don't.</help>
+            <help>SCCP Signalling Type Of Service / Class Of Service - this is modifiable, but it is not recommended to change</help>
         </item>
         <item type="IE" id="2">
             <label>SCCP Audio ToS / CoS</label>
@@ -911,7 +911,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <default>0x6</default>
                 <class>sccp-custom</class>
             </input>
-            <help>Audio Type Of Service / Class Of Service: Audio Type or Class of Service - this is modifiable, but don't.</help>
+            <help>Audio Type Of Service / Class Of Service - this is modifiable, but it is not recommended to change</help>
         </item>
         <item type="IE" id="3">
             <label>SCCP Video ToS / CoS</label>
@@ -925,7 +925,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <default>0x5</default>
                 <class>sccp-custom</class>
             </input>
-            <help>Video Type Of Service / Class Of Service: Video Type or Class of Service - this is modifiable, but don't.</help>
+            <help>Video Type Of Service / Class Of Service - this is modifiable, but it is not recommended to change</help>
         </item>
     </page_group>
 

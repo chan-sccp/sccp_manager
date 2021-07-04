@@ -420,6 +420,13 @@ foreach ($items as $child) {
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label)?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
                     </div>
+
+                    <?php
+                    if (!empty($sccp_defaults[$res_n]['systemdefault'])) {
+                    // There is a system default, so add button to customise or reset
+                    // the closing } is after the code to include the button at line ~498
+                    ?>
+                    <!-- Start include of defaults button -->
                     <div class="col-md-3">
 
                     <?php
@@ -486,6 +493,12 @@ foreach ($items as $child) {
                     <div class="col-md-3">
                         <i><?php echo "Enter new site value for {$res_n}"; ?></i>
                     </div>
+                    <!-- Finish include of defaults button -->
+                    <?php
+                    // Close the conditional include of the defaults button opened at line ~425
+                    }
+                    ?>
+
                     <div class="col-md-9 radioset " data-hide="on">
 
                         <?php
