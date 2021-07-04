@@ -18,74 +18,15 @@
  *    Help elemen          HLP - Help Element
  */
 
-// This will not work if the field already has the underscore
-$npref = $form_prefix.'_';
-$napref = $form_prefix.'-ar_';
-if (empty($form_prefix)) {
-    $npref = "sccp_";
-    $napref ="sccp-ar_";
-//} elseif ($form_prefix == 'vendorconfig') {
-//    $npref = 'vendorconfig';
-//    $napref = 'vendorconfig-ar';
-}
-$day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
-        "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
-$mysql_table = array("sccpdevice","sccpdeviceconfig");
 
-$timeZoneOffsetList = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',
-                   '-08' => 'GMT -8',  '-07' => 'GMT -7',  '-06' => 'GMT -6', '-05' => 'GMT -5',
-                   '-04' => 'GMT -4',  '-03' => 'GMT -3',  '-02' => 'GMT -2', '-01' => 'GMT -1',
-                   '00'  => 'GMT', '01' => 'GMT +1',  '02'  => 'GMT +2', '03'  => 'GMT +3',
-                   '04'  => 'GMT +4',   '05' => 'GMT +5',  '06'  => 'GMT +6', '07'  => 'GMT +7',
-                   '08'  => 'GMT +8',   '09' => 'GMT +9',  '10'  => 'GMT +10', '11'=> 'GMT +11', '12' => 'GMT +12');
+// Execution continues at end of file after the class definition. Anonymous class
+// instantiated to allow function grouping into discrete methods, and avoid multiple includes.
+$thisSccpView = new class{
+    public function __construct($parent_class = null) {
 
-$extension_list = array();
-$sofkey_list = array();
-$model_list = array();
-$device_list = array();
-$dialplan_list = array();
-
-if (\FreePBX::Modules()->checkStatus("soundlang")) {
-    $syslangs = \FreePBX::Soundlang()->getLanguages();
-    if (!is_array($syslangs)) {
-        $syslangs = array();
     }
-}
-if (function_exists('music_list')) {
-    $moh_list = music_list();
-//    $cur = (isset($mohsilence) && $mohsilence != "" ? $mohsilence : 'default');
-}
-if (!is_array($moh_list)) {
-    $moh_list = array('default');
-}
-if (empty($fvalues)) {
-    $fvalues = $sccp_defaults;
-}
 
-$items = $itm -> children();
-
-if ($h_show==1) {
-    $sec_class ='';
-    if (!empty($items ->class)) {
-        $sec_class = (string)$items ->class;
-    }
-    ?>
-
- <div class="section-title" data-for="<?php echo $npref.$itm['name'];?>">
-    <h3><i class="fa fa-minus"></i><?php echo _($items ->label) ?></h3>
- </div>
- <div class="section <?php echo $sec_class;?>" data-id="<?php echo $npref.$itm['name'];?>">
-
-    <?php
-}
-foreach ($items as $child) {
-    if (empty($child->help)) {
-        $child->help = 'Help is not available.';
-        $child->meta_help = '1';
-    }
-//    $child->meta_help = '1';          // Remove comments to see original help !
-
-    if ($child['type'] == 'IE') {
+    function addElementIE ($child, $fvalues, $sccp_defaults, $npref) {
         $res_input = '';
         $res_name = '';
         $usingSysDefaults = true;
@@ -107,7 +48,6 @@ foreach ($items as $child) {
             $child->nameseparator = ' / ';
         }
         $i = 0;
-        echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
             <div class="row">
@@ -243,11 +183,10 @@ foreach ($items as $child) {
                 </div>
             </div>
         </div>
-
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
-    if ($child['type'] == 'IED') {
+
+    function addElementIED($child, $fvalues, $sccp_defaults,$npref, $napref) {
         $res_input = '';
         $res_value = '';
         $opt_at = array();
@@ -258,7 +197,7 @@ foreach ($items as $child) {
                 $child->help = $metaInfo[$res_n];
             }
         }
-//        $res_value
+    //        $res_value
         $lnhtm = '';
         $res_id = $napref.$child->name;
         $i = 0;
@@ -274,10 +213,8 @@ foreach ($items as $child) {
         }
         if (empty($res_value)) {
             $res_value = array((string) $child->default);
-//            $res_value = explode('/', (string) $child->default);
+    //            $res_value = explode('/', (string) $child->default);
         }
-
-        echo '<!-- Begin '.$child->label.' -->';
         ?>
     <div class="element-container">
             <div class="row">
@@ -389,10 +326,9 @@ foreach ($items as $child) {
             </div></div>
     </div>
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
 
-    if ($child['type'] == 'IS') {
+    function addElementIS($child, $fvalues, $sccp_defaults,$npref) {
         $res_n =  (string)$child->name;
         $res_id = $npref.$res_n;
         $res_ext = str_replace($npref,'',$res_n);
@@ -403,15 +339,11 @@ foreach ($items as $child) {
             }
         }
 
-            // --- Add Hidden option
+        // --- Add Hidden option
         $res_sec_class ='';
         if (!empty($child ->class)) {
             $res_sec_class = (string)$child ->class;
-        } else {
-            $res_sec_class = 'sccp-custom';
         }
-
-        echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
             <div class="row">
@@ -422,17 +354,6 @@ foreach ($items as $child) {
                     </div>
 
                     <?php
-                    if (!empty($sccp_defaults[$res_n]['systemdefault'])) {
-                    // There is a system default, so add button to customise or reset
-                    // the closing } is after the code to include the button at line ~498
-                    ?>
-                    <!-- Start include of defaults button -->
-                    <div class="col-md-3">
-
-                    <?php
-                    $i = 0;
-//                          $res_v = 'no';
-                    $opt_hide = '';
                     $res_v = '';
                     // set res_v according to precedence Default here, value here, supplied value
 
@@ -447,6 +368,13 @@ foreach ($items as $child) {
                             $res_v = (string)$fvalues[$res_n]['data'];
                         }
                     }
+                    if (!empty($sccp_defaults[$res_n]['systemdefault'])) {
+                    // There is a system default, so add button to customise or reset
+                    // the closing } is after the code to include the button at line ~498
+
+                    //-- Start include of defaults button --
+                    echo "<div class=col-md-3>";
+
                     if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $res_v)) {
                         $usingSysDefaults = false;
                     }
@@ -501,23 +429,10 @@ foreach ($items as $child) {
 
                     <div class="col-md-9 radioset " data-hide="on">
 
-                        <?php
-                          $i = 0;
-//                          $res_v = 'no';
-                          $opt_hide = '';
-                        $res_v = '';
-                        // set res_v according to precedence Default here, value here, supplied value
-                        if (!empty($child->default)) {
-                            $res_v = (string)$child->default;
-                        }
-                        if (!empty($child->value)) {
-                             $res_v = (string)$child->value;
-                        }
-                        if (!empty($fvalues[$res_n])) {
-                            if (($fvalues[$res_n]['data'] != '') ) {
-                                $res_v = (string)$fvalues[$res_n]['data'];
-                            }
-                        }
+                      <?php
+                        $i = 0;
+                        $opt_hide = '';
+
                         if (!$usingSysDefaults) {
                             $res_v = $sccp_defaults[$res_n]['systemdefault'];
                         }
@@ -555,22 +470,30 @@ foreach ($items as $child) {
         </div>
 
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
 
-/*
- *    Input element Select SLD - Date format
- *                         SLZ - Time Zone
- *
- *                         SLM - Music on hold
- *                         SLK - System KeySet
- *                         SLP - Dial Paterns
- */
-
-    if ($child['type'] == 'SLD'  || $child['type'] == 'SLM'|| $child['type'] == 'SLK'|| $child['type'] == 'SLP') {
-//        $value = $child -> select;
+    function addElementSL($child, $fvalues, $sccp_defaults, $npref) {
+        /*
+        *    Input element Select SLD - Date format
+        *                         SLZ - Time Zone
+        *
+        *                         SLM - Music on hold
+        *                         SLK - System KeySet
+        *                         SLP - Dial Paterns
+        */
+        $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
+               "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
+        $select_opt = array();
+        $softKeyList = array();
+        $dialplan_list = array();
+        if (function_exists('music_list')) {
+            $moh_list = music_list();
+        }
+        if (!is_array($moh_list)) {
+            $moh_list = array('default');
+        }
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
                 $child->help = $metaInfo[$res_n];
@@ -589,26 +512,18 @@ foreach ($items as $child) {
             $select_opt= $moh_list;
         }
         if ($child['type'] == 'SLK') {
-            if (empty($sofkey_list)) {
-                $sofkey_list = \FreePBX::Sccp_manager()->aminterface->sccp_list_keysets();
+            if (empty($softKeyList)) {
+                $softKeyList = \FreePBX::Sccp_manager()->aminterface->sccp_list_keysets();
             }
-            $select_opt= $sofkey_list;
+            $select_opt= $softKeyList;
         }
         if ($child['type'] == 'SLP') {
-            if (empty($dialplan_list)) {
-                foreach (\FreePBX::Sccp_manager()->getDialPlanList() as $tmpkey) {
-                    $tmp_id = $tmpkey['id'];
-                    $dialplan_list[$tmp_id] = $tmp_id;
-                }
+            foreach (\FreePBX::Sccp_manager()->getDialPlanList() as $tmpkey) {
+                $tmp_id = $tmpkey['id'];
+                $dialplan_list[$tmp_id] = $tmp_id;
             }
             $select_opt= $dialplan_list;
         }
-//        if ($child['type'] == 'SLZ') {
-//            $select_opt= $timeZoneOffsetList;
-//        }
-
-        echo '<!-- Begin '.$child->label.' -->';
-
         ?>
         <div class="element-container">
            <div class="row"> <div class="form-group">
@@ -639,67 +554,67 @@ foreach ($items as $child) {
             </div></div>
         </div>
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
-/*
- *    Input element Select SLS - System Language
- */
 
-    if ($child['type'] == 'SLS' || $child['type'] == 'SLT' || $child['type'] == 'SLA' || $child['type'] == 'SLZ') {
-//        $value = $child -> select;
+    function addElementSL2($child, $fvalues, $sccp_defaults,$npref) {
+    //       Input element Select SLS - System Language
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
         $child->value ='';
-
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
                 $child->help = $metaInfo[$res_n];
             }
         }
-
-        if ($child['type'] == 'SLS') {
-            $select_opt= $syslangs;
-        }
-        if ($child['type'] == 'SLT') {
-            $select_opt= $tftp_lang;
-        }
-        if ($child['type'] == 'SLZ') {
-            $select_opt= $timeZoneOffsetList;
-//            $child->value = ($system_time_zone[offset]/60);
-        }
-
-        if ($child['type'] == 'SLA') {
+        switch ($child['type']) {
+            case 'SLS':
+                if (\FreePBX::Modules()->checkStatus("soundlang")) {
+                   $syslangs = \FreePBX::Soundlang()->getLanguages();
+                   if (!is_array($syslangs)) {
+                       $syslangs = array();
+                   }
+                }
+                $select_opt= $syslangs;
+                break;
+            case 'SLT':
+                $select_opt= $tftp_lang;
+                break;
+            case 'SLZ':
+                $timeZoneOffsetList = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',
+                                   '-08' => 'GMT -8',  '-07' => 'GMT -7',  '-06' => 'GMT -6', '-05' => 'GMT -5',
+                                   '-04' => 'GMT -4',  '-03' => 'GMT -3',  '-02' => 'GMT -2', '-01' => 'GMT -1',
+                                   '00'  => 'GMT', '01' => 'GMT +1',  '02'  => 'GMT +2', '03'  => 'GMT +3',
+                                   '04'  => 'GMT +4',   '05' => 'GMT +5',  '06'  => 'GMT +6', '07'  => 'GMT +7',
+                                   '08'  => 'GMT +8',   '09' => 'GMT +9',  '10'  => 'GMT +10', '11'=> 'GMT +11', '12' => 'GMT +12');
+                $select_opt= $timeZoneOffsetList;
+                break;
+            case 'SLA':
             $select_opt ='';
-            if (!empty($fvalues[$res_n])) {
-                if (!empty($fvalues[$res_n]['data'])) {
-                    $res_value = explode(';', $fvalues[$res_n]['data']);
+                if (!empty($fvalues[$res_n])) {
+                    if (!empty($fvalues[$res_n]['data'])) {
+                        $res_value = explode(';', $fvalues[$res_n]['data']);
+                    }
+                    if (empty($res_value)) {
+                        $res_value = array((string) $child->default);
+                    }
+                    foreach ($res_value as $key) {
+                        $select_opt[$key]= $key;
+                    }
                 }
-                if (empty($res_value)) {
-                    $res_value = array((string) $child->default);
-                }
-                foreach ($res_value as $key) {
-                    $select_opt[$key]= $key;
-                }
-            }
         }
-
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
-
         if (!empty($fvalues[$res_n])) {
             if (!empty($fvalues[$res_n]['data'])) {
                 $child->value = $fvalues[$res_n]['data'];
             }
         }
-
         if (empty($child->value)) {
             if (!empty($child->default)) {
                 $child->value = $child->default;
             }
         }
-
-        echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
            <div class="row"> <div class="form-group">
@@ -731,15 +646,10 @@ foreach ($items as $child) {
                 <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
             </div></div>
         </div>
-        <!--END System Language-->
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
-/*
- *    Input element Select
- */
 
-    if ($child['type'] == 'SL') {
+    function addElementSL3($child, $fvalues, $sccp_defaults,$npref) {
         $res_n =  (string)$child->name;
         $res_id = $npref.$child->name;
 
@@ -752,8 +662,6 @@ foreach ($items as $child) {
         if (empty($child ->class)) {
             $child->class = 'form-control';
         }
-        echo '<!-- Begin '.$child->label.' -->';
-
         ?>
         <div class="element-container">
            <div class="row"> <div class="form-group">
@@ -790,17 +698,14 @@ foreach ($items as $child) {
             </div></div>
         </div>
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
 
- /*
- *    Input element Select SDM  - Model List
- *                         SDMS - Sip model List
- *                         SDE  - Extension List
- */
-
-    if ($child['type'] == 'SDM' || $child['type'] == 'SDMS' || $child['type'] == 'SDE' || $child['type'] == 'SDD') {
-//        $value = $child -> select;
+    function addElementSD($child, $fvalues, $sccp_defaults,$npref) {
+      /*
+      *    Input element Select SDM  - Model List
+      *                         SDMS - Sip model List
+      *                         SDE  - Extension List
+      */
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
 
@@ -813,20 +718,16 @@ foreach ($items as $child) {
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
-        if ($child['type'] == 'SDM') {
-            if (empty($model_list)) {
+        switch ($child['type']) {
+            case 'SDM':
                 $model_list = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData("HWDevice");
-            }
-            $select_opt= $model_list;
-        }
-        if ($child['type'] == 'SDMS') {
-            if (empty($model_list)) {
+                $select_opt= $model_list;
+                break;
+            case 'SDMS':
                 $model_list = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData("HWSipDevice");
-            }
-            $select_opt= $model_list;
-        }
-        if ($child['type'] == 'SDE') {
-            if (empty($extension_list)) {
+                $select_opt= $model_list;
+                break;
+            case 'SDE':
                 $extension_list = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData("HWextension");
                 $extension_list[]=array( 'model' => 'NONE', 'vendor' => 'CISCO', 'dns' => '0');
                 foreach ($extension_list as &$data) {
@@ -838,19 +739,14 @@ foreach ($items as $child) {
                     }
                 }
                 unset($data);
-            }
-            $select_opt= $extension_list;
-        }
-        if ($child['type'] == 'SDD') {
-            if (empty($device_list)) {
+                $select_opt= $extension_list;
+                break;
+            case 'SDD':
                 $device_list = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData("SccpDevice");
                 $device_list[]=array('name' => 'NONE', 'description' => 'No Device');
-            }
-            $select_opt = $device_list;
+                $select_opt = $device_list;
+                break;
         }
-
-        echo '<!-- Begin '.$child->label.' -->';
-
         ?>
         <div class="element-container">
            <div class="row"> <div class="form-group">
@@ -907,13 +803,13 @@ foreach ($items as $child) {
             </div></div>
         </div>
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
-    if ($child['type'] == 'ITED') {
+
+    function addElementITED($child, $fvalues, $sccp_defaults, $npref, $napref) {
         $res_input = '';
         $res_na =  (string)$child->name;
 
-//        $res_value
+    //        $res_value
         $lnhtm = '';
         $res_id = $napref.$child->name;
         $i = 0;
@@ -925,14 +821,9 @@ foreach ($items as $child) {
         }
         if (empty($res_value)) {
             $res_value = array((string) $child->default);
-//            $res_value = explode('/', (string) $child->default);
         }
+        echo "<table class=table table-striped id=dp-table-{$res_id}>";
 
-        echo '<!-- Begin '.$res_id.' -->';
-        ?>
-        <table class="table table-striped" id="dp-table-<?php echo $res_id;?>">
-
-        <?php
         foreach ($res_value as $dat_v) {
             echo '<tr data-nextid="'.($i+1).'" class="'.$res_id.'" id="'.$res_id.'-row-'.($i).'"> ';
             if (!empty($child->label)) {
@@ -1009,17 +900,14 @@ foreach ($items as $child) {
             $i++;
         }
         echo '</table>';
-        echo '<!-- END '.$res_id.' -->';
     }
 
-    if ($child['type'] == 'HLP') {
+    function addElementHLP($child, $fvalues, $sccp_defaults,$npref) {
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
-        echo '<!-- Begin '.$child->label.' -->';
-
         ?>
 
         <div class="panel panel-default">
@@ -1052,19 +940,17 @@ foreach ($items as $child) {
             }
         }
         ?>
-
             </div>
         </div>
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
-    if ($child['type'] == 'MINFO') {
+
+    function addElementMINFO($child,$npref) {
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
-        echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="modal fade malert" tabindex="-1" role="dialog" id="<?php echo $res_id;?>" aria-labelledby="<?php echo $res_n;?>">
             <div class="modal-dialog" role="document">
@@ -1083,14 +969,10 @@ foreach ($items as $child) {
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
-/*
- *    Input element Select SLTZN - System Time Zone
- */
 
-    if ($child['type'] == 'SLTZN') {
-//        $value = $child -> select;
+    function addElementSLTZN($child, $fvalues, $sccp_defaults,$npref) {
+    //       Input element Select SLTZN - System Time Zone
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
         $child->value ='';
@@ -1112,8 +994,6 @@ foreach ($items as $child) {
         }
 
         $child->value = \date_default_timezone_get();
-
-        echo '<!-- Begin '.$child->label.' -->';
         ?>
         <div class="element-container">
            <div class="row">
@@ -1132,13 +1012,94 @@ foreach ($items as $child) {
                 <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
             </div></div>
         </div>
-        <!--END System Language-->
         <?php
-        echo '<!-- END '.$child->label.' -->';
     }
+};
+// End of class thisSCCPView ---------------------------------------------------
+// Start building page here ------------------------------------------------
+// This will not work if the field already has the underscore
+$npref = $form_prefix.'_';
+$napref = $form_prefix.'-ar_';
+if (empty($form_prefix)) {
+    $npref = "sccp_";
+    $napref ="sccp-ar_";
+//} elseif ($form_prefix == 'vendorconfig') {
+//    $npref = 'vendorconfig';
+//    $napref = 'vendorconfig-ar';
 }
-?>
+if (empty($fvalues)) {
+    $fvalues = $sccp_defaults;
+}
+$items = $itm -> children();
+
+if ($h_show==1) {
+    $sec_class ='';
+    if (!empty($items ->class)) {
+        $sec_class = (string)$items ->class;
+    }
+    ?>
+
+ <div class="section-title" data-for="<?php echo $npref.$itm['name'];?>">
+    <h3><i class="fa fa-minus"></i><?php echo _($items ->label) ?></h3>
+ </div>
+ <div class="section <?php echo $sec_class;?>" data-id="<?php echo $npref.$itm['name'];?>">
+
 <?php
+}
+
+foreach ($items as $child) {
+    if (empty($child->help)) {
+        $child->help = 'Help is not available.';
+        $child->meta_help = '1';
+    }
+    echo "<!-- Begin {$child->label} -->";
+//    $child->meta_help = '1';          // Remove comments to see chan-sccp supplied help !
+    switch ($child['type']) {
+        case 'IE':
+            $thisSccpView->addElementIE($child, $fvalues, $sccp_defaults,$npref);
+            break;
+        case 'IED':
+            $thisSccpView->addElementIED($child, $fvalues, $sccp_defaults,$npref, $napref);
+            break;
+        case 'IS':
+            $thisSccpView->addElementIS($child, $fvalues, $sccp_defaults,$npref);
+            break;
+        case 'SLD':
+        case 'SLM':
+        case 'SLK':
+        case 'SLP':
+            $thisSccpView->addElementSL($child, $fvalues, $sccp_defaults,$npref);
+            break;
+        case 'SLS':
+        case 'SLT':
+        case 'SLA':
+        case 'SLZ':
+            $thisSccpView->addElementSL2($child, $fvalues, $sccp_defaults,$npref);
+            break;
+        case 'SL':
+            $thisSccpView->addElementSL3($child, $fvalues, $sccp_defaults,$npref);
+            break;
+        case 'SDM':
+        case 'SDMS':
+        case 'SDE':
+        case 'SDD':
+            $thisSccpView->addElementSD($child, $fvalues, $sccp_defaults,$npref);
+            break;
+        case 'ITED':
+            $thisSccpView->addElementITED($child, $fvalues, $sccp_defaults, $npref, $napref);
+            break;
+        case 'HLP':
+            $thisSccpView->addElementHLP($child, $fvalues, $sccp_defaults,$npref);
+            break;
+        case 'MINFO':
+            $thisSccpView->addElementMINFO($child, $npref);
+            break;
+        case 'SLTZN':
+            $thisSccpView->addElementSLTZN($child, $fvalues, $sccp_defaults,$npref);
+            break;
+    }
+    echo "<!-- END {$child->label} -->";
+}
 if ($h_show==1) {
     echo '</div>';
 }
