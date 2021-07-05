@@ -387,6 +387,7 @@ trait ajaxHelper {
     }
 
     function handleSubmit($request, $validateonly = false) {
+      dbug('request is:', $request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -494,21 +495,48 @@ trait ajaxHelper {
                 }
             }
             switch ($key) {
+                case 'disallow':
+                    if (is_array($value)) {
+                        foreach ($value as $keycodeс => $valcodeс) {
+                            $save_codec[$i] = $keycodeс;
+                            $i++;
+                        };
+                        $tmpv = implode(",", $save_codec);
+                    } else {
+                        $tmpv = $value;
+                    }
+
+                    if (empty($save_settings['disallow|allow']['data'])) {
+                        $save_settings['disallow|allow']['data'] = $tmpv . "|";
+                    } else {
+                        $save_settings[] = array(
+                        'keyword' => 'disallow|allow',
+                        'data' => $tmpv . "|" .$save_settings['disallow|allow']['data'],
+                        'seq' => $this->sccpvalues['disallow|allow']['seq'],
+                        'type' => $this->sccpvalues['disallow|allow']['type'],
+                        'systemdefault' => $this->sccpvalues['disallow|allow']['systemdefault']
+                      );
+                      unset($save_settings['disallow|allow']['data']);
+                    }
+                    break;
                 case 'voicecodecs':
                 case 'vcodec':
                     foreach ($value as $keycodeс => $valcodeс) {
                         $save_codec[$i] = $keycodeс;
                         $i++;
                     };
-                    $tmpv = implode(";", $save_codec);
-                    if ($tmpv !== $this->sccpvalues['allow']['data']) {
+                    $tmpv = implode(",", $save_codec);
+                    if (empty($save_settings['disallow|allow']['data'])) {
+                        $save_settings['disallow|allow']['data'] = $tmpv;
+                    } else {
                         $save_settings[] = array(
-                            'keyword' => 'allow',
-                            'data' => $tmpv,
-                            'seq' => $this->sccpvalues['allow']['seq'],
-                            'type' => $this->sccpvalues['allow']['type'],
-                            'systemdefault' => $this->sccpvalues['allow']['systemdefault']
-                          );
+                        'keyword' => 'disallow|allow',
+                        'data' => $save_settings['disallow|allow']['data'] . $tmpv,
+                        'seq' => $this->sccpvalues['disallow|allow']['seq'],
+                        'type' => $this->sccpvalues['disallow|allow']['type'],
+                        'systemdefault' => $this->sccpvalues['disallow|allow']['systemdefault']
+                      );
+                      unset($save_settings['disallow|allow']['data']);
                     }
                     break;
 

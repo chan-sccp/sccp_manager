@@ -728,7 +728,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     public function getMyConfig($var = null, $id = "noid") {
         switch ($var) {
             case "voicecodecs":
-                $val = explode(";", $this->sccpvalues['allow']['data']);
+                $val = explode(",", explode("|", $this->sccpvalues['disallow|allow']['data'])[1]);
                 $final = array();
                 $i = 1;
                 foreach ($val as $value) {
@@ -766,6 +766,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             case 'audio':
                 $lcodecs = $this->getMyConfig('voicecodecs');
                 $allCodecs = $this->FreePBX->Codecs->getAudio();
+                dbug('FPBX audio', $allCodecs);
                 break;
             case 'video':
                 $lcodecs = $this->getMyConfig('voicecodecs');
@@ -807,11 +808,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     $codecs[$c] = false;
                 }
             }
-
             return $codecs;
         } else {
             //Remove non digits
             $final = array();
+            dbug('codecs', $codecs);
             foreach ($codecs as $codec => $order) {
                 $order = trim($order);
                 if (ctype_digit($order)) {
