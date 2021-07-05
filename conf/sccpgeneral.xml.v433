@@ -396,17 +396,13 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="no">NO</button>
             <help>This option set global allow devices to do direct RTP sessions (default Off)</help>
         </item>
-        <item type="IS" id="5" seq="0">
+        <item type="IS" id="5" seq="99">
             <name>earlyrtp</name>
             <label>Early RTP</label>
-            <default>none</default>
-            <button-d value="immediate">Immediate</button-d>
-            <button value="offhook">Offhook</button>
-            <button value="dialing">Dial</button>
-            <button value="ringout">Ringout</button>
-            <button value="progress">Progress</button>
-            <button value="none">None</button>
-            <help>The audio strem will be open in the progress and connected state. Valid options: NONE, progress, offhook, dial, ringout. Default may be Progress.</help>
+            <default></default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>The audio stream will be open in the progress and connected state. Valid options: Yes/ No</help>
         </item>
         <item type="IS" id="5" seq="0">
             <name>simulate_enbloc</name>
@@ -1623,7 +1619,6 @@ and open the template in the editor. Base Version before all crash :-)
             <name>directrtp</name>
             <label>Direct RTP</label>
             <default></default>
-            <button- value="off">Auto</button->
             <button value="no">NO</button>
             <button value="Yes">Yes</button>
             <help>This option allow devices to do direct RTP sessions (default Off)</help>
@@ -1631,14 +1626,10 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="5" seq="99">
             <name>earlyrtp</name>
             <label>Early RTP</label>
-            <default>NONE</default>
-            <button-d value="immediate">Immediate</button-d>
-            <button value="offhook">Offhook</button>
-            <button value="dialing">Dial</button>
-            <button value="ringout">Ringout</button>
-            <button value="progress">Progress</button>
-            <button value="none">None</button>
-            <help>The audio stream will be open in the progress and connected state. Valid options: none, progress, offhook, dial, ringout. Default may be Progress.</help>
+            <default></default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>The audio stream will be open in the progress and connected state. Valid options: Yes/ No</help>
         </item>
     </page_group>
 
