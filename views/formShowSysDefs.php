@@ -639,6 +639,9 @@ $thisSccpView = new class{
                 }
                 $select_opt= $dialplan_list;
                 break;
+            case 'SL':
+                $select_opt = array();
+                break;
         }
         if (empty($child->class)) {
             $child->class = 'form-control';
@@ -683,8 +686,10 @@ $thisSccpView = new class{
                         echo '>' . $opt_val. '</option>';
                     }
                     ?> </select>
-                    <!-- </div> --> </div>
-            </div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             <div class="row"><div class="col-md-12">
                 <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
             </div></div>

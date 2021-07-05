@@ -1195,13 +1195,13 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="pro">Provision</button>
             <help>Support the use of regular-expression-based filename remapping</help>
         </item>
-        <item type="SL" id="2">
+        <item type="IE" id="2">
             <label>SCCP SERVER MySQL Device Table</label>
-            <name>devicetable</name>
-            <default>sccpdevice</default>
-            <select>sccpdevice</select>
-            <select>sccpdeviceconfig</select>
-            <class>sccp-custom</class>
+            <input>
+                <name>devicetable</name>
+                <default>sccpdevice</default>
+                <class>sccp-custom</class>
+            </input>
             <help>Device Table: This is the devicetable for your realtime configuration. Don't change this unless you know what you are doing and have made all the appropriate changes in the rest of your Asterisk config files. There are two reasonable settings for this - the sccpdevice table or the sccpdeviceconfig view. If you do not want to use the realtime database anymore, you can set this to blank. NOT RECOMMENDED.</help>
         </item>
         <item type="IE" id="3">
