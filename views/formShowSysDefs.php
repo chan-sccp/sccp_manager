@@ -473,72 +473,70 @@ $thisSccpView = new class{
     }
 
     function addElementSL($child, $fvalues, $sccp_defaults, $npref) {
+        // TODO: Unused function. Integrated into SL2. To be removed after full testing.
         /*
         *    Input element Select SLD - Date format
-        *                         SLZ - Time Zone
-        *
         *                         SLM - Music on hold
         *                         SLK - System KeySet
         *                         SLP - Dial Paterns
         */
-        $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
-               "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
+        // $select_opt is a simple array for these types.
         $select_opt = array();
-        $softKeyList = array();
-        $dialplan_list = array();
-        if (function_exists('music_list')) {
-            $moh_list = music_list();
-        }
-        if (!is_array($moh_list)) {
-            $moh_list = array('default');
-        }
+
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
                 $child->help = $metaInfo[$res_n];
             }
         }
-
         if (empty($child->class)) {
             $child->class = 'form-control';
         }
-
-        if ($child['type'] == 'SLD') {
-            $select_opt= $day_format;
-        }
-
-        if ($child['type'] == 'SLM') {
-            $select_opt= $moh_list;
-        }
-        if ($child['type'] == 'SLK') {
-            if (empty($softKeyList)) {
+        switch ($child['type']) {
+            case 'SLD':
+                $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
+                   "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
+                $select_opt= $day_format;
+                break;
+            case 'SLM':
+                if (function_exists('music_list')) {
+                    $moh_list = music_list();
+                }
+                if (!is_array($moh_list)) {
+                    $moh_list = array('default');
+                }
+                $select_opt= $moh_list;
+                break;
+            case 'SLK':
                 $softKeyList = \FreePBX::Sccp_manager()->aminterface->sccp_list_keysets();
-            }
-            $select_opt= $softKeyList;
+                $select_opt= $softKeyList;
+                break;
+            case 'SLP':
+                $dialplan_list = array();
+                foreach (\FreePBX::Sccp_manager()->getDialPlanList() as $tmpkey) {
+                    $tmp_id = $tmpkey['id'];
+                    $dialplan_list[$tmp_id] = $tmp_id;
+                }
+                $select_opt= $dialplan_list;
+                break;
         }
-        if ($child['type'] == 'SLP') {
-            foreach (\FreePBX::Sccp_manager()->getDialPlanList() as $tmpkey) {
-                $tmp_id = $tmpkey['id'];
-                $dialplan_list[$tmp_id] = $tmp_id;
+        if (!empty($fvalues[$res_n])) {
+            if (!empty($fvalues[$res_n]['data'])) {
+                $child->value = $fvalues[$res_n]['data'];
             }
-            $select_opt= $dialplan_list;
         }
         ?>
         <div class="element-container">
            <div class="row"> <div class="form-group">
-
                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
                     </div>
-                    <div class="col-md-9"><div class = "lnet form-group form-inline" data-nextid=1> <?php
+                    <div class="col-md-9"><div class = "lnet form-group form-inline" data-nextid=1>
+                    <?php
                             echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
-                    if (!empty($fvalues[$res_n])) {
-                        if (!empty($fvalues[$res_n]['data'])) {
-                            $child->value = $fvalues[$res_n]['data'];
-                        }
-                    }
+
                     foreach ($select_opt as $key) {
                         echo '<option value="' . $key . '"';
                         if ($key == $child->value) {
@@ -546,12 +544,16 @@ $thisSccpView = new class{
                         }
                         echo '>' . $key . '</option>';
                     }
-                    ?> </select>
-                    </div></div>
-            </div></div>
+                    ?>
+                    </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
             <div class="row"><div class="col-md-12">
                 <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
-            </div></div>
+            </div>
+          </div>
         </div>
         <?php
     }
@@ -561,6 +563,7 @@ $thisSccpView = new class{
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
         $child->value ='';
+        // $select_opt is an associative array for these types.
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
                 $child->help = $metaInfo[$res_n];
@@ -575,6 +578,15 @@ $thisSccpView = new class{
                    }
                 }
                 $select_opt= $syslangs;
+
+                foreach (array_keys($select_opt) as $k => $v) {
+                  if ($k !== $v) {
+                    dbug('sys list is an associative array');
+                  } else {
+                  dbug('sys list is a simple array');
+                  }
+                }
+
                 break;
             case 'SLT':
                 $select_opt= $tftp_lang;
@@ -601,6 +613,32 @@ $thisSccpView = new class{
                         $select_opt[$key]= $key;
                     }
                 }
+            case 'SLM':
+                if (function_exists('music_list')) {
+                    $moh_list = music_list();
+                }
+                if (!is_array($moh_list)) {
+                    $moh_list = array('default');
+                }
+                $select_opt= $moh_list;
+                break;
+            case 'SLD':
+                $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
+                   "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
+                $select_opt= $day_format;
+                break;
+            case 'SLK':
+                $softKeyList = \FreePBX::Sccp_manager()->aminterface->sccp_list_keysets();
+                $select_opt= $softKeyList;
+                break;
+            case 'SLP':
+                $dialplan_list = array();
+                foreach (\FreePBX::Sccp_manager()->getDialPlanList() as $tmpkey) {
+                    $tmp_id = $tmpkey['id'];
+                    $dialplan_list[$tmp_id] = $tmp_id;
+                }
+                $select_opt= $dialplan_list;
+                break;
         }
         if (empty($child->class)) {
             $child->class = 'form-control';
@@ -618,19 +656,24 @@ $thisSccpView = new class{
         ?>
         <div class="element-container">
            <div class="row"> <div class="form-group">
-
                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
                     </div>
-                    <div class="col-md-9"> <!-- <div class = "lnet form-group form-inline" data-nextid=1> --> <?php
+                    <div class="col-md-9"><div class = "lnet form-group form-inline" data-nextid=1>
+                    <?php
                             echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
                     foreach ($select_opt as $key => $val) {
                         if (is_array($val)) {
                             $opt_key = (isset($val['id'])) ? $val['id'] : $key;
                             $opt_val = (isset($val['val'])) ? $val['val'] : $val;
-                        } else {
+                        } else if (\FreePBX::Sccp_manager()->is_assoc($select_opt)){
+                            // have associative array
                             $opt_key = $key;
+                            $opt_val = $val;
+                        } else {
+                            // Have simple array
+                            $opt_key = $val;
                             $opt_val = $val;
                         }
                         echo '<option value="' . $opt_key . '"';
@@ -641,57 +684,6 @@ $thisSccpView = new class{
                     }
                     ?> </select>
                     <!-- </div> --> </div>
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
-            </div></div>
-        </div>
-        <?php
-    }
-
-    function addElementSL3($child, $fvalues, $sccp_defaults,$npref) {
-        $res_n =  (string)$child->name;
-        $res_id = $npref.$child->name;
-
-        if (!empty($metainfo[$res_n])) {
-            if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metaInfo[$res_n];
-            }
-        }
-
-        if (empty($child ->class)) {
-            $child->class = 'form-control';
-        }
-        ?>
-        <div class="element-container">
-           <div class="row"> <div class="form-group">
-
-                   <div class="col-md-3">
-                        <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
-                    </div>
-                    <div class="col-md-9"> <div class = "lnet form-group form-inline" data-nextid=1> <?php
-                        echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
-                    if (!empty($fvalues[$res_n])) {
-                        if (!empty($fvalues[$res_n]['data'])) {
-                            $child->value = $fvalues[$res_n]['data'];
-                        }
-                    }
-                    foreach ($child->xpath('select') as $value) {
-                        if (!empty($value[@value])) {
-                                $key = $value[@value];
-                        } else {
-                            $key =  (string)$value;
-                        }
-                             echo '<option value="' . $key . '"';
-                        if (strtolower((string)$key) == strtolower((string)$child->value)) {
-                            echo ' selected="selected"';
-                        }
-                             echo '>' . (string)$value. '</option>';
-                    }
-                    ?> </select>
-
-                    </div> </div>
             </div></div>
             <div class="row"><div class="col-md-12">
                 <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
@@ -795,9 +787,12 @@ $thisSccpView = new class{
                         echo '</option>';
                     }
 
-                    ?> </select>
-                    </div></div>
-            </div></div>
+                    ?>
+                    </select>
+                    </div>
+                  </div>
+                </div>
+            </div>
             <div class="row"><div class="col-md-12">
                 <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
             </div></div>
@@ -945,32 +940,6 @@ $thisSccpView = new class{
         <?php
     }
 
-    function addElementMINFO($child,$npref) {
-        $res_n =  (string)$child ->name;
-        $res_id = $npref.$res_n;
-        if (empty($child->class)) {
-            $child->class = 'form-control';
-        }
-        ?>
-        <div class="modal fade malert" tabindex="-1" role="dialog" id="<?php echo $res_id;?>" aria-labelledby="<?php echo $res_n;?>">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Modal title</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>One fine body&hellip;</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-        <?php
-    }
-
     function addElementSLTZN($child, $fvalues, $sccp_defaults,$npref) {
     //       Input element Select SLTZN - System Time Zone
         $res_n =  (string)$child ->name;
@@ -1068,16 +1037,14 @@ foreach ($items as $child) {
         case 'SLM':
         case 'SLK':
         case 'SLP':
-            $thisSccpView->addElementSL($child, $fvalues, $sccp_defaults,$npref);
-            break;
+            //$thisSccpView->addElementSL($child, $fvalues, $sccp_defaults,$npref);
+            //break;
         case 'SLS':
         case 'SLT':
         case 'SLA':
         case 'SLZ':
-            $thisSccpView->addElementSL2($child, $fvalues, $sccp_defaults,$npref);
-            break;
         case 'SL':
-            $thisSccpView->addElementSL3($child, $fvalues, $sccp_defaults,$npref);
+            $thisSccpView->addElementSL2($child, $fvalues, $sccp_defaults,$npref);
             break;
         case 'SDM':
         case 'SDMS':
@@ -1090,9 +1057,6 @@ foreach ($items as $child) {
             break;
         case 'HLP':
             $thisSccpView->addElementHLP($child, $fvalues, $sccp_defaults,$npref);
-            break;
-        case 'MINFO':
-            $thisSccpView->addElementMINFO($child, $npref);
             break;
         case 'SLTZN':
             $thisSccpView->addElementSLTZN($child, $fvalues, $sccp_defaults,$npref);

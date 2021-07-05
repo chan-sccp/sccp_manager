@@ -164,6 +164,14 @@ trait helperfunctions {
         return $result;
     }
 
+    function is_assoc($array) {
+        foreach (array_keys($array) as $k => $v) {
+            if ($k !== $v)
+              return true;
+            }
+        return false;
+    }
+
     function tftpReadTestFile($remoteFileName, $host = "127.0.0.1")
     {
         // https://datatracker.ietf.org/doc/html/rfc1350
