@@ -727,67 +727,38 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     public function getCodecs($type, $showDefaults = false) {
         $allSupported = array();
-        $Sccp_Codec = array('alaw', 'ulaw', 'g722', 'g723', 'g726', 'g729', 'gsm', 'h264', 'h263', 'h261');
+        $sccpCodec = array_fill_keys(array('alaw', 'ulaw', 'g722', 'g723', 'g726', 'g729', 'gsm', 'h264', 'h263', 'h261'),0);
         // First see if have any site defaults
         $val = $this->sccpvalues['allow']['data'];
         if (empty($val)) {
             // No site defaults so return chan-sccp defaults
             $val = $this->sccpvalues['allow']['systemdefault'];
         }
-        $lcodecs = explode(',',$val);
+        $siteCodecs = array_fill_keys(explode(',',$val), 1);
         switch ($type) {
             case 'audio':
-                $allCodecs = $this->FreePBX->Codecs->getAudio();
+                $fpbxCodecs = $this->FreePBX->Codecs->getAudio();
                 break;
             case 'video':
-                $allCodecs = $this->FreePBX->Codecs->getVideo();
+                $fpbxCodecs = $this->FreePBX->Codecs->getVideo();
                 break;
             case 'text':
-                $lcodecs = $this->getConfig('textcodecs');
-                $allCodecs = $this->FreePBX->Codecs->getText(true);
+                $siteCodecs = $this->getConfig('textcodecs');
+                $fpbxCodecs = $this->FreePBX->Codecs->getText(true);
                 break;
             case 'image':
-                $lcodecs = $this->getConfig('imagecodecs');
-                $allCodecs = $this->FreePBX->Codecs->getImage(true);
+                $siteCodecs = $this->getConfig('imagecodecs');
+                $fpbxCodecs = $this->FreePBX->Codecs->getImage(true);
                 break;
         }
-        foreach ($allCodecs as $c => $v) {
-            if (in_array($c, $Sccp_Codec)) {
-                $allSupported[$c] = $v;
-            }
-        }
-        if (empty($lcodecs)) {
-            if (empty($allSupported)) {
-                $lcodecs = $allCodecs;
-            } else {
-                $lcodecs = $allSupported;
-            }
-        } else {
-            foreach ($lcodecs as $c) {
-                if (isset($allSupported[$c])) {
-                    $codecs[$c] = true;
-                }
-            }
-        }
-        if ($showDefaults) {
-            foreach ($allSupported as $c => $v) {
-                if (!isset($codecs[$c])) {
-                    $codecs[$c] = false;
-                }
-            }
-            return $codecs;
-        } else {
-            //Remove non digits
-            $final = array();
-            foreach ($codecs as $codec => $order) {
-                $order = trim($order);
-                if (ctype_digit($order)) {
-                    $final[$codec] = $order;
-                }
-            }
-            asort($final);
-            return $final;
-        }
+        // These have value set to 1
+        $enabledCodecs = array_intersect_key($siteCodecs, $sccpCodec, $fpbxCodecs);
+        // These have value set to 0
+        $allSupported = array_intersect_key($sccpCodec,$fpbxCodecs);
+        $disabledCodecs = array_diff_key($allSupported,$enabledCodecs);
+        $codecs = array_merge($enabledCodecs, $disabledCodecs);
+
+        return $codecs;
     }
 
     /**

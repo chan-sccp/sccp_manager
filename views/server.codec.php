@@ -8,8 +8,8 @@
 
 $def_val = null;
 $dev_id = null;
-$audio_codecs = $this->getCodecs('audio', true);
-$video_codecs = $this->getCodecs('video', true);
+$audio_codecs = $this->getCodecs('audio');
+$video_codecs = $this->getCodecs('video');
 $sccp_disallow_def = $this->sccpvalues['disallow']['data'];
 $sys_disallow_def = $this->sccpvalues['disallow']['systemdefault'];
 
