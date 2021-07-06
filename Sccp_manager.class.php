@@ -751,6 +751,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $fpbxCodecs = $this->FreePBX->Codecs->getImage(true);
                 break;
         }
+        // Below could be squashed to 1 line, but would be unreadable.
         // These have value set to 1
         $enabledCodecs = array_intersect_key($siteCodecs, $sccpCodec, $fpbxCodecs);
         // These have value set to 0
