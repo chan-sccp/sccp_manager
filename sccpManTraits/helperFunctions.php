@@ -213,6 +213,15 @@ trait helperfunctions {
         return false;
     }
 
+    // temporary helper function to save xml with proper indentation
+    public function saveXml($xml, $filename) {
+       $dom = new \DOMDocument("1.0");
+       $dom->preserveWhiteSpace = false;
+       $dom->formatOutput = true;
+       $dom->loadXML($xml->asXML());
+       $dom->save($filename);
+    }
+
     public function initVarfromXml() {
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group') as $item) {

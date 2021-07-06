@@ -112,7 +112,7 @@ class xmlinterface
                     $node->addAttribute('model', $var['vendor'] . ' ' . $var['model']);
                 }
             }
-            $xml_work->asXml($xml_name);  // Save  XMLDefault1.cnf.xml
+            \FreePBX::Sccp_manager()->saveXml($xml_work, $xml_name);  // Save  XMLDefault1.cnf.xml
         }
     }
 
@@ -347,7 +347,7 @@ class xmlinterface
             }
         }
 
-        $xml_work->asXml($xml_name);  // Save
+        \FreePBX::Sccp_manager()->saveXml($xml_work, $xml_name);  // Save
 
         return time();
     }
@@ -667,7 +667,7 @@ class xmlinterface
                 }
             }
 
-            $xml_work->asXml($xml_name);  // Save
+            \FreePBX::Sccp_manager()->saveXml($xml_work, $xml_name);  // Save
         } else {
             die('Error Hardware template :' . $xml_template . ' not found');
         }
