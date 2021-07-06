@@ -57,7 +57,7 @@ if (!empty($_REQUEST['id'])) {
                             </div>
                             <div class="col-md-9 radioset">
                                 <input id="sccp_disallow" type="text" name="sccp_disallow" value="<?php echo $sccp_disallow ?>">
-                                <label for="sccp_disallow"><?php echo _("default : " . $sccp_disallow_def) ?></label>
+                                <label for="sccp_disallow"><?php echo _("Current value : " . $sccp_disallow_def . "<br>Recomended default: all") ?></label>
                             </div>
                         </div>
                     </div>
