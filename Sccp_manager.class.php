@@ -725,51 +725,21 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         return $save_settings;
     }
 
-    public function getMyConfig($var = null, $id = "noid") {
-        switch ($var) {
-            case "voicecodecs":
-                $val = explode(",", explode("|", $this->sccpvalues['disallow|allow']['data'])[1]);
-                $final = array();
-                $i = 1;
-                foreach ($val as $value) {
-                    $final[$value] = $i;
-                    $i++;
-                }
-                break;
-            case "softkeyset":
-                $final = array();
-                $i = 0;
-                if ($id == "noid") {
-                    foreach ($this->sccp_conf_init as $key => $value) {
-                        if ($this->sccp_conf_init[$key]['type'] == 'softkeyset') {
-                            $final[$i] = $value;
-                            $i++;
-                        }
-                    }
-                } else {
-                    if (!empty($this->sccp_conf_init[$id])) {
-                        if ($this->sccp_conf_init[$id]['type'] == 'softkeyset') {
-                            $final = $this->sccp_conf_init[$id];
-                        }
-                    }
-                }
-
-                break;
-        }
-        return $final;
-    }
-
     public function getCodecs($type, $showDefaults = false) {
         $allSupported = array();
         $Sccp_Codec = array('alaw', 'ulaw', 'g722', 'g723', 'g726', 'g729', 'gsm', 'h264', 'h263', 'h261');
+        // First see if have any site defaults
+        $val = $this->sccpvalues['allow']['data'];
+        if (empty($val)) {
+            // No site defaults so return chan-sccp defaults
+            $val = $this->sccpvalues['allow']['systemdefault'];
+        }
+        $lcodecs = explode(',',$val);
         switch ($type) {
             case 'audio':
-                $lcodecs = $this->getMyConfig('voicecodecs');
                 $allCodecs = $this->FreePBX->Codecs->getAudio();
-                dbug('FPBX audio', $allCodecs);
                 break;
             case 'video':
-                $lcodecs = $this->getMyConfig('voicecodecs');
                 $allCodecs = $this->FreePBX->Codecs->getVideo();
                 break;
             case 'text':
@@ -780,23 +750,20 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $lcodecs = $this->getConfig('imagecodecs');
                 $allCodecs = $this->FreePBX->Codecs->getImage(true);
                 break;
-            default:
-                throw new Exception(_('Unknown Type'));
-                break;
         }
         foreach ($allCodecs as $c => $v) {
             if (in_array($c, $Sccp_Codec)) {
                 $allSupported[$c] = $v;
             }
         }
-        if (empty($lcodecs) || (!is_array($lcodecs))) {
+        if (empty($lcodecs)) {
             if (empty($allSupported)) {
                 $lcodecs = $allCodecs;
             } else {
                 $lcodecs = $allSupported;
             }
         } else {
-            foreach ($lcodecs as $c => $v) {
+            foreach ($lcodecs as $c) {
                 if (isset($allSupported[$c])) {
                     $codecs[$c] = true;
                 }
@@ -812,7 +779,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         } else {
             //Remove non digits
             $final = array();
-            dbug('codecs', $codecs);
             foreach ($codecs as $codec => $order) {
                 $order = trim($order);
                 if (ctype_digit($order)) {
@@ -822,37 +788,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             asort($final);
             return $final;
         }
-    }
-
-    /**
-     * Update or Set Codecs
-     * @param {string} $type           Codec Type
-     * @param {array} $codecs=array() The codecs with order, if blank set defaults
-     */
-    public function setCodecs($type, $codecs = array()) {
-        $default = empty($codecs) ? true : false;
-        switch ($type) {
-            case 'audio':
-                $codecs = $default ? $this->FreePBX->Codecs->getAudio(true) : $codecs;
-                $this->setConfig("voicecodecs", $codecs);
-                break;
-            case 'video':
-                $codecs = $default ? $this->FreePBX->Codecs->getVideo(true) : $codecs;
-                $this->setConfig("videocodecs", $codecs);
-                break;
-            case 'text':
-                $codecs = $default ? $this->FreePBX->Codecs->getText(true) : $codecs;
-                $this->setConfig("textcodecs", $codecs);
-                break;
-            case 'image':
-                $codecs = $default ? $this->FreePBX->Codecs->getImage(true) : $codecs;
-                $this->setConfig("imagecodecs", $codecs);
-                break;
-            default:
-                throw new Exception(_('Unknown Type'));
-                break;
-        }
-        return true;
     }
 
     /**

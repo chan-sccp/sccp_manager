@@ -387,7 +387,6 @@ trait ajaxHelper {
     }
 
     function handleSubmit($request, $validateonly = false) {
-      dbug('request is:', $request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -495,30 +494,6 @@ trait ajaxHelper {
                 }
             }
             switch ($key) {
-                case 'disallow':
-                    if (is_array($value)) {
-                        foreach ($value as $keycodeс => $valcodeс) {
-                            $save_codec[$i] = $keycodeс;
-                            $i++;
-                        };
-                        $tmpv = implode(",", $save_codec);
-                    } else {
-                        $tmpv = $value;
-                    }
-
-                    if (empty($save_settings['disallow|allow']['data'])) {
-                        $save_settings['disallow|allow']['data'] = $tmpv . "|";
-                    } else {
-                        $save_settings[] = array(
-                        'keyword' => 'disallow|allow',
-                        'data' => $tmpv . "|" .$save_settings['disallow|allow']['data'],
-                        'seq' => $this->sccpvalues['disallow|allow']['seq'],
-                        'type' => $this->sccpvalues['disallow|allow']['type'],
-                        'systemdefault' => $this->sccpvalues['disallow|allow']['systemdefault']
-                      );
-                      unset($save_settings['disallow|allow']['data']);
-                    }
-                    break;
                 case 'voicecodecs':
                 case 'vcodec':
                     foreach ($value as $keycodeс => $valcodeс) {
@@ -526,17 +501,14 @@ trait ajaxHelper {
                         $i++;
                     };
                     $tmpv = implode(",", $save_codec);
-                    if (empty($save_settings['disallow|allow']['data'])) {
-                        $save_settings['disallow|allow']['data'] = $tmpv;
-                    } else {
+                    if (!($this->sccpvalues['allow']['data'] == $tmpv)) {
                         $save_settings[] = array(
-                        'keyword' => 'disallow|allow',
-                        'data' => $save_settings['disallow|allow']['data'] . $tmpv,
-                        'seq' => $this->sccpvalues['disallow|allow']['seq'],
-                        'type' => $this->sccpvalues['disallow|allow']['type'],
-                        'systemdefault' => $this->sccpvalues['disallow|allow']['systemdefault']
-                      );
-                      unset($save_settings['disallow|allow']['data']);
+                        'keyword' => 'allow',
+                        'data' => $tmpv,
+                        'seq' => $this->sccpvalues['allow']['seq'],
+                        'type' => $this->sccpvalues['allow']['type'],
+                        'systemdefault' => $this->sccpvalues['allow']['systemdefault']
+                        );
                     }
                     break;
 
@@ -570,6 +542,32 @@ trait ajaxHelper {
         $save_settings[] = array('status' => true);
         $this->createDefaultSccpXml();
         return $save_settings;
+    }
+
+    public function getMyConfig($var = null, $id = "noid") {
+        // TODO: this function has little purpose - need to integrate into AjaxHelper
+        switch ($var) {
+            case "softkeyset":
+                $final = array();
+                $i = 0;
+                if ($id == "noid") {
+                    foreach ($this->sccp_conf_init as $key => $value) {
+                        if ($this->sccp_conf_init[$key]['type'] == 'softkeyset') {
+                            $final[$i] = $value;
+                            $i++;
+                        }
+                    }
+                } else {
+                    if (!empty($this->sccp_conf_init[$id])) {
+                        if ($this->sccp_conf_init[$id]['type'] == 'softkeyset') {
+                            $final = $this->sccp_conf_init[$id];
+                        }
+                    }
+                }
+
+                break;
+        }
+        return $final;
     }
 }
 

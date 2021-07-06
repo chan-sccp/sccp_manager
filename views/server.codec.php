@@ -6,37 +6,16 @@
  * and open the template in the editor.
  */
 
-
 $def_val = null;
 $dev_id = null;
 $audio_codecs = $this->getCodecs('audio', true);
 $video_codecs = $this->getCodecs('video', true);
-$sccp_disallow_def = $this->sccpvalues['disallow|allow']['data'];
-$sccp_disallow_def = explode("|",$sccp_disallow_def)[0];
-$sccp_disallow = $sccp_disallow_def;
+$sccp_disallow_def = $this->sccpvalues['disallow']['data'];
+$sys_disallow_def = $this->sccpvalues['disallow']['systemdefault'];
 
-if (!empty($_REQUEST['id'])) {
-    $dev_id = $_REQUEST['id'];
-    $db_res = $this->dbinterface->getSccpDeviceTableData('get_sccpdevice_byid', array("id" => $dev_id));
-    if (!empty($db_res['allow'])) {
-        $i = 1;
-        foreach (explode(';', $db_res['allow']) as $c) {
-            $codec_list[$c] = $i;
-            $i ++;
-        }
-        foreach ($audio_codecs as $c => $v) {
-            if (!isset($codec_list[$c])) {
-                    $codec_list[$c] = false;
-            }
-        }
-    }
-    if (!empty($db_res['disallow'])) {
-        $sccp_disallow = $db_res['disallow'];
-    }
-} else {
-    $codec_list = $audio_codecs;
+if (empty($sccp_disallow_def)) {
+    $sccp_disallow_def = $sys_disallow_def;
 }
-
 ?>
 
 <!-- Codec selection is at the line level - this page sets site defaults based on chan-sccp defaults -->
@@ -56,8 +35,8 @@ if (!empty($_REQUEST['id'])) {
                                 <i class="fa fa-question-circle fpbx-help-icon" data-for="sccp_disallow"></i>
                             </div>
                             <div class="col-md-9 radioset">
-                                <input id="sccp_disallow" type="text" name="sccp_disallow" value="<?php echo $sccp_disallow ?>">
-                                <label for="sccp_disallow"><?php echo _("Current value : " . $sccp_disallow_def . "<br>Recomended default: all") ?></label>
+                                <input id="sccp_disallow" type="text" name="sccp_disallow" value="<?php echo $sccp_disallow_def ?>">
+                                <label for="sccp_disallow"><?php echo _("Recomended default: all") ?></label>
                             </div>
                         </div>
                     </div>
@@ -65,7 +44,7 @@ if (!empty($_REQUEST['id'])) {
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <span id="sccp_disallow-help" class="help-block fpbx-help-block"><?php echo _("Default : all. Please enter format: alaw,ulaw,...") ?></span>
+                    <span id="sccp_disallow-help" class="help-block fpbx-help-block"><?php echo _("Default : all. If you wish to change (Not Recommended) please enter a comma separated list for example: alaw,ulaw,...") ?></span>
                 </div>
             </div>
         </div>
@@ -90,13 +69,17 @@ if (!empty($_REQUEST['id'])) {
                             </div>
                             <div class="col-md-9">
                                 <div>
-                                <?php echo show_help(_("This is the default Codec setting for SCCP Device.")) ?>
+                                <?php echo show_help(_("These are the default audio codec settings for this site. Unchecked codecs cannot be assigned to extensions.
+                                      <br>Order can be changed by dragging and dropping to indicate priority. This priority applies for all extensions
+                                      <br>Higher priority enabled codecs are at the top
+                                      <br>Precedence for ulaw and alaw, if used, should be set according to your region
+                                      <br>If your region uses alaw, it is important that alaw has the highest priority"),"Helpful information",true) ?>
                                 </div>
                                 <?php
                                 $seq = 1;
 
                                 echo '<ul class="sortable">';
-                                foreach ($codec_list as $codec => $codec_state) {
+                                foreach ($audio_codecs as $codec => $codec_state) {
                                     $codec_trans = _($codec);
                                     $codec_checked = $codec_state ? 'checked' : '';
                                     echo '<li><a href="#">'
@@ -141,7 +124,7 @@ if (!empty($_REQUEST['id'])) {
                             </div>
                             <div class="col-md-9">
                                 <div>
-                                <?php echo show_help(_("This is the default Codec setting for SCCP Device.")) ?>
+                                <?php echo show_help(_("These are the default video codec settings for this site.")) ?>
                                 </div>
                                 <?php
                                 $seq = 1;
@@ -154,9 +137,9 @@ if (!empty($_REQUEST['id'])) {
                                     . '<img src="assets/sipsettings/images/arrow_up_down.png" height="16" width="16" border="0" alt="move" style="float:none; margin-left:-6px; margin-bottom:-3px;cursor:move" /> '
                                     . '<input type="checkbox" '
                                     . ($codec_checked ? 'value="' . $seq++ . '" ' : '')
-                                    . 'name="voicecodecs[' . $codec . ']" '
+                                    . 'name="videocodecs[' . $codec . ']" '
                                     . 'id="' . $codec . '" '
-                                    . 'class="audio-codecs" '
+                                    . 'class="video-codecs" '
                                     . $codec_checked
                                     . ' />'
                                     . '&nbsp;&nbsp;<label for="' . $codec . '"> '
