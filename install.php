@@ -978,13 +978,36 @@ function cleanUpSccpSettings() {
         if ($valueArray['Flags'][0] == 'Obsolete' || $valueArray['Flags'][0] == 'Deprecated') {
             continue;
         }
-        $sysConfiguration[$valueArray['Name']] = $valueArray;
-        if (array_key_exists($valueArray['Name'],$settingsFromDb)) {
-            if (!empty($sysConfiguration[$valueArray['Name']]['DefaultValue'])) {
-                $settingsFromDb[$valueArray['Name']]['systemdefault'] = $sysConfiguration[$valueArray['Name']]['DefaultValue'];
+
+        // 2 special cases deny|permit & disallow|allow where need to parse on |.
+        $newKeyword = explode("|", $valueArray['Name'], 2);
+        if (isset($newKeyword[1])) {
+            dbug('',$newKeyword);
+            $newSysDef = explode("|", $valueArray['DefaultValue'], 2);
+            $i = 0;
+            foreach ($newKeyword as $dummy) {
+                if (array_key_exists($newKeyword[$i],$settingsFromDb)) {
+                    if (!empty($newSysDef[$i])) {
+                        $settingsFromDb[$newKeyword[$i]]['systemdefault'] = $newSysDef[$i];
+                    }
+                } else {
+                    $settingsFromDb[$newKeyword[$i]] = array('keyword' => $newKeyword[$i], 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $newSysDef[$i]);
+                }
+                $i++;
+            }
+            if (array_key_exists($valueArray['Name'],$settingsFromDb)){
+                unset($settingsFromDb[$valueArray['Name']]);
             }
         } else {
-            $settingsFromDb[$valueArray['Name']] = array('keyword' => $valueArray['Name'], 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$valueArray['Name']]['DefaultValue']);
+            $sysConfiguration[$valueArray['Name']] = $valueArray;
+            if (array_key_exists($valueArray['Name'],$settingsFromDb)) {
+                if (!empty($sysConfiguration[$valueArray['Name']]['DefaultValue'])) {
+                    $settingsFromDb[$valueArray['Name']]['systemdefault'] = $sysConfiguration[$valueArray['Name']]['DefaultValue'];
+                }
+            } else {
+
+                    $settingsFromDb[$valueArray['Name']] = array('keyword' => $valueArray['Name'], 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$valueArray['Name']]['DefaultValue']);
+            }
         }
         unset($sysConfiguration[$key]);
     }
