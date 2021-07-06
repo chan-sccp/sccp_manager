@@ -982,7 +982,6 @@ function cleanUpSccpSettings() {
         // 2 special cases deny|permit & disallow|allow where need to parse on |.
         $newKeyword = explode("|", $valueArray['Name'], 2);
         if (isset($newKeyword[1])) {
-            dbug('',$newKeyword);
             $newSysDef = explode("|", $valueArray['DefaultValue'], 2);
             $i = 0;
             foreach ($newKeyword as $dummy) {

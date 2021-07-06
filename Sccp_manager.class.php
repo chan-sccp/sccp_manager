@@ -976,10 +976,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     private function saveSccpSettings($save_value = array()) {
-//        global $db;
-//        global $amp_conf;
 
-//        $save_settings = array();
         if (empty($save_value)) {
             $this->dbinterface->write('sccpsettings', $this->sccpvalues, 'replace'); //Change to replace as clearer
         } else {

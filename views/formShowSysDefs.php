@@ -578,15 +578,6 @@ $thisSccpView = new class{
                    }
                 }
                 $select_opt= $syslangs;
-
-                foreach (array_keys($select_opt) as $k => $v) {
-                  if ($k !== $v) {
-                    dbug('sys list is an associative array');
-                  } else {
-                  dbug('sys list is a simple array');
-                  }
-                }
-
                 break;
             case 'SLT':
                 $select_opt= $tftp_lang;

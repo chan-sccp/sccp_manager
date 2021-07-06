@@ -397,6 +397,11 @@ trait ajaxHelper {
         $errors = array();
         $i = 0;
         $action = isset($request['sccp_createlangdir']) ? $request['sccp_createlangdir'] : '';
+        // if uncheck all codecs, voicecodecs key is missing so nothing changes in db.
+        // Unsetting all codecs will now return to chan-sccp defaults.
+        if (!isset($request['voicecodecs'])) {
+            $request['voicecodecs'] = array_fill_keys(explode(',',$this->sccpvalues['allow']['systemdefault']),true);
+        }
         if ($action == 'yes') {
             $this->initializeTFtpLanguagePath();
         }

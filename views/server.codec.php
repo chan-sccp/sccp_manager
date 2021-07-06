@@ -73,7 +73,8 @@ if (empty($sccp_disallow_def)) {
                                       <br>Order can be changed by dragging and dropping to indicate priority. This priority applies for all extensions
                                       <br>Higher priority enabled codecs are at the top
                                       <br>Precedence for ulaw and alaw, if used, should be set according to your region
-                                      <br>If your region uses alaw, it is important that alaw has the highest priority"),"Helpful information",true) ?>
+                                      <br>If your region uses alaw, it is important that alaw has the highest priority
+                                      <br>To return to chan-sccp defaults, uncheck all codecs."),"Helpful information",true) ?>
                                 </div>
                                 <?php
                                 $seq = 1;
