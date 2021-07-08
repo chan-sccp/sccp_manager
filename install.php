@@ -162,7 +162,7 @@ function Get_DB_config($sccp_compatible)
             'video_cos' => array('drop' => "yes"),
             'videomode' => array('create' => "enum('user','auto','off') NOT NULL default 'auto'", 'modify' => "enum('user','auto','off')"),
             'incominglimit' => array('create' => "INT(11) DEFAULT '6'", 'modify' => 'INT(11)', 'def_modify' => "6"),
-            'transfer' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+            'transfer' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
             'vmnum' => array('def_modify' => "*97"),
             'musicclass' => array('def_modify' => "default"),
             'disallow' => array('create' => "VARCHAR(255) NULL DEFAULT NULL"),

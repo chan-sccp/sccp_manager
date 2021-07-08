@@ -15,6 +15,7 @@ and open the template in the editor. Base Version before all crash :-)
  *                         SLT - TFTP Lang
  *                         SLM - Music on hold
  *                         SLK - System KeySet
+ *                         SLG - call groups
  *  * Input element Select SLS - System Language
  *    Input element Select SDM - Model List
  *                         SDE - Extension List tftp_rewrite
@@ -1920,6 +1921,149 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <add_pluss>+</add_pluss>
             <help></help>
+        </item>
+    </page_group>
+
+    <page_group name="sccp_extension_config">
+        <label>SCCP Extension Details</label>
+        <item type="IE" id="4">
+            <label>Mailbox</label>
+            <input>
+                <name>mailbox</name>
+                <default></default>
+                <class>sccp-custom</class>
+            </input>
+            <help>Name or id of linked maibox</help>
+        </item>
+        <item type="IE" id="4">
+            <label>Incoming Call Limit</label>
+            <input>
+                <name>incominglimit</name>
+                <default></default>
+                <class>sccp-custom</class>
+            </input>
+            <help>The SCCP channel number for this port. If you are planning to use this line as 'Shared' or use on several devices - leave this field blank or set limit to 10 calls.</help>
+        </item>
+        <item type="IE" id="4">
+            <label>Line Context</label>
+            <input>
+                <name>context</name>
+                <default></default>
+                <class>sccp-custom</class>
+            </input>
+            <help>Context: This is the context in which your phones will operate. It should match the context you are using for the rest of your phones (if you have any). The FreePBX default is 'from-internal'</help>
+        </item>
+        <item type="IE" id="7">
+            <label>Directed pickup context</label>
+            <input>
+                <name>directed_pickup_context</name>
+                <default></default>
+                <options placeholder="from_internal"></options>
+                <class>sccp-custom</class>
+            </input>
+            <help>Context where direct pickup search for extensions. if not set current context will be use.</help>
+        </item>
+        <item type="SLG" id="7">
+            <label>Named Call Group</label>
+            <name>namedcallgroup</name>
+            <select>
+                <default></default>
+            </select>
+            <help>Sets the named caller groups this line is a member of</help>
+        </item>
+        <item type="SLG" id="7">
+            <label>Named Pickup Group</label>
+            <name>namedpickupgroup</name>
+            <select>
+                <default></default>
+            </select>
+            <help>Named PickupGroup - the list is of pickup groups used on the system</help>
+        </item>
+        <item type="IE" id="7">
+            <label>Secondary dialtone digits</label>
+            <input>
+                <name>secondary_dialtone_digits</name>
+                <default></default>
+                <class>sccp-custom</class>
+            </input>
+            <help>Digits to indicate an external line to user (secondary dialtone) Sample 9 or 8 (max 9 digits)</help>
+        </item>
+        <item type="SLD" id="1">
+            <name>secondary_dialtone_tone</name>
+            <label>Secondary dialtone</label>
+            <select>
+                <default></default>
+            </select>
+            <help>Outside dialtone frequency (default 0x22)</help>
+        </item>
+        <item type="IS" id="11">
+            <name>directed_pickup</name>
+            <label>Directed Pickup</label>
+            <default></default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Enable/disable Pickup button to do directed pickup from a specific extension.</help>
+        </item>
+        <item type="IS" id="11">
+            <name>pickup_modeanswer</name>
+            <label>Directed Pickup Answer</label>
+            <default>off</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Directed Pickup Mode (Answer): If a call is sent with the "directed pickup" flag, the phone will answer when set to "Yes".</help>
+        </item>
+        <item type="IS" id="1" seq="0">
+            <name>transfer</name>
+            <label>Transfer</label>
+            <default></default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Allow the use of the transfer feature</help>
+        </item>
+        <item type="IS" id="8">
+            <name>echocancel</name>
+            <label>Echo Cancel</label>
+            <default>off</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Echo Cancel: Echo Cancellation (On or Off).</help>
+        </item>
+        <item type="IS" id="5" seq="0">
+            <name>dnd</name>
+            <label>DND</label>
+            <default></default>
+            <button value="off">Off</button>
+            <button value="reject">Reject</button>
+            <button value="silent">Silent</button>
+            <button value="cycle">Cycle</button>
+            <help>DND: Means how will dnd react when it is set on the device level dnd can have three states: off / busy(reject) / silent / Cycle
+                  Cycle  - DND that cycles through all three states off -> reject -> silent -> off (this is the normal behaviour)
+                  Reject - Users can only switch off and on (in reject/busy mode)
+                  Silent - Users can only switch off and on (in silent mode)</help>
+        </item>
+        <item type="IS" id="9">
+            <name>silencesuppression</name>
+            <label>Silence Suppression</label>
+            <default>off</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Silence Suppression: Silence Suppression on the phone.</help>
+        </item>
+        <item type="SLM" id="6">
+            <label>Music On Hold Class</label>
+            <name>musicclass</name>
+            <default>NONE</default>
+            <select></select>
+            <class>form-control</class>
+            <help>Music Class: Available MOH Classes. These are the MOH classes listed in your current server.</help>
+        </item>
+        <item type="IE" id="2" seq="99">
+            <label>User Pincode</label>
+            <input>
+                <name>pin</name>
+                <default></default>
+            </input>
+            <help>Help!</help>
         </item>
     </page_group>
 
