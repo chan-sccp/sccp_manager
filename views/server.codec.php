@@ -74,7 +74,7 @@ if (empty($sccp_disallow_def)) {
                                       <br>Higher priority enabled codecs are at the top
                                       <br>Precedence for ulaw and alaw, if used, should be set according to your region
                                       <br>If your region uses alaw, it is important that alaw has the highest priority
-                                      <br>To return to chan-sccp defaults, uncheck all codecs."),"Helpful information",true) ?>
+                                      <br>To return to chan-sccp defaults, uncheck ALL codecs (both Audio and Video)."),"Helpful information",true) ?>
                                 </div>
                                 <?php
                                 $seq = 1;
@@ -87,7 +87,7 @@ if (empty($sccp_disallow_def)) {
                                     . '<img src="assets/sipsettings/images/arrow_up_down.png" height="16" width="16" border="0" alt="move" style="float:none; margin-left:-6px; margin-bottom:-3px;cursor:move" /> '
                                     . '<input type="checkbox" '
                                     . ($codec_checked ? 'value="' . $seq++ . '" ' : '')
-                                    . 'name="voicecodecs[' . $codec . ']" '
+                                    . 'name="audiocodecs[' . $codec . ']" '
                                     . 'id="' . $codec . '" '
                                     . 'class="audio-codecs" '
                                     . $codec_checked
@@ -131,6 +131,7 @@ if (empty($sccp_disallow_def)) {
                                 $seq = 1;
 
                                 echo '<ul class="sortable">';
+                                // Although classed as video codecs, all stored under allow so name is audiocodecs.
                                 foreach ($video_codecs as $codec => $codec_state) {
                                     $codec_trans = _($codec);
                                     $codec_checked = $codec_state ? 'checked' : '';
@@ -138,7 +139,7 @@ if (empty($sccp_disallow_def)) {
                                     . '<img src="assets/sipsettings/images/arrow_up_down.png" height="16" width="16" border="0" alt="move" style="float:none; margin-left:-6px; margin-bottom:-3px;cursor:move" /> '
                                     . '<input type="checkbox" '
                                     . ($codec_checked ? 'value="' . $seq++ . '" ' : '')
-                                    . 'name="videocodecs[' . $codec . ']" '
+                                    . 'name="audiocodecs[' . $codec . ']" '
                                     . 'id="' . $codec . '" '
                                     . 'class="video-codecs" '
                                     . $codec_checked

@@ -397,10 +397,10 @@ trait ajaxHelper {
         $errors = array();
         $i = 0;
         $action = isset($request['sccp_createlangdir']) ? $request['sccp_createlangdir'] : '';
-        // if uncheck all codecs, voicecodecs key is missing so nothing changes in db.
+        // if uncheck all codecs, audiocodecs key is missing so nothing changes in db.
         // Unsetting all codecs will now return to chan-sccp defaults.
-        if (!isset($request['voicecodecs'])) {
-            $request['voicecodecs'] = array_fill_keys(explode(',',$this->sccpvalues['allow']['systemdefault']),true);
+        if (!isset($request['audiocodecs'])) {
+            $request['audiocodecs'] = array_fill_keys(explode(',',$this->sccpvalues['allow']['systemdefault']),true);
         }
         if ($action == 'yes') {
             $this->initializeTFtpLanguagePath();
@@ -499,8 +499,7 @@ trait ajaxHelper {
                 }
             }
             switch ($key) {
-                case 'voicecodecs':
-                case 'vcodec':
+                case 'audiocodecs':
                     foreach ($value as $keycodeс => $valcodeс) {
                         $save_codec[$i] = $keycodeс;
                         $i++;
@@ -515,6 +514,10 @@ trait ajaxHelper {
                         'systemdefault' => $this->sccpvalues['allow']['systemdefault']
                         );
                     }
+                    break;
+                case 'videocodecs':
+                    // currently not used. To reach this case, name in video codec section of
+                    // server.codec needs to be changed from audiocodecs to videocodecs.
                     break;
 
                 case 'ntp_timezone':

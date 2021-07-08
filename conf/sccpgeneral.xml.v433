@@ -1051,11 +1051,19 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
         <item type="IS" id="11">
             <name>pickup_modeanswer</name>
-            <label>Directed Pickup</label>
+            <label>Directed Pickup Answer</label>
             <default>off</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
             <help>Directed Pickup Mode (Answer): If a call is sent with the "directed pickup" flag, the phone will answer when set to "Yes".</help>
+        </item>
+        <item type="IS" id="11">
+            <name>directed_pickup</name>
+            <label>Directed Pickup</label>
+            <default>off</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Enable/disable Pickup button to do directed pickup from a specific extension.</help>
         </item>
         <item type="IS" id="12">
             <name>transfer_on_hangup</name>
