@@ -1426,7 +1426,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Activate the callforward NOANSWER stuff and softkeys. Default is On</help>
         </item>
         <item type="IS" id="5" seq="99">
-            <name>dndFeature</name>
+            <name>dnd</name>
             <label>DND Button on Device</label>
             <default>off</default>
             <button value="on">On</button>
@@ -1628,7 +1628,7 @@ and open the template in the editor. Base Version before all crash :-)
             <name>directrtp</name>
             <label>Direct RTP</label>
             <default></default>
-            <button value="no">NO</button>
+            <button value="no">No</button>
             <button value="Yes">Yes</button>
             <help>This option allow devices to do direct RTP sessions (default Off)</help>
         </item>
@@ -2031,7 +2031,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="5" seq="0">
             <name>dnd</name>
             <label>DND</label>
-            <default></default>
+            <default>Reject</default>
             <button value="off">Off</button>
             <button value="reject">Reject</button>
             <button value="silent">Silent</button>

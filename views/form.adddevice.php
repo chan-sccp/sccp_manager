@@ -37,7 +37,7 @@ if (!empty($_REQUEST['new_id'])) {
     }
 }
 
-//Get default values. Will use these dor a new device, and modify for an existing.
+//Get default values. Will use these for a new device, and modify for an existing.
 $def_val = $this->getTableDefaults('sccpdevice');
 if (!empty($_REQUEST['id'])) {
     // Editing an existing Device. Overwrite any defaults that are already set for this device.
