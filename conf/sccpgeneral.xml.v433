@@ -1926,14 +1926,14 @@ and open the template in the editor. Base Version before all crash :-)
 
     <page_group name="sccp_extension_config">
         <label>SCCP Extension Details</label>
-        <item type="IE" id="4">
+        <item type="IE" id="51">
             <label>Mailbox</label>
             <input>
                 <name>mailbox</name>
                 <default></default>
                 <class>sccp-custom</class>
             </input>
-            <help>Name or id of linked maibox</help>
+            <help>Name or id of linked maibox: Voicemail has to be enabled for this to be available</help>
         </item>
         <item type="IE" id="4">
             <label>Incoming Call Limit</label>

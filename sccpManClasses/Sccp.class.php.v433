@@ -47,7 +47,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                            "secondary_dialtone_digits" => 'secondary_dialtone_digits', "secondary_dialtone_tone" => 'secondary_dialtone_tone',
                            'namedcallgroup'=>'namedcallgroup', 'namedpickupgroup' => 'namedpickupgroup'
                       );
-    // These are gui defaults used by freePBX to for the elements in the SCCP tab in add/edit phone.
+    // These are gui defaults used by freePBX for the elements in the SCCP tab in add/edit phone.
     private $guiDefaults =array(
                       'gui_checkset' => array( "elemname" => "",
                                         "prompttext" => "",    //ok
@@ -102,7 +102,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
     public function addDevice($id, $settings) {
         // This is actually save line and is used by add and edit.
-        global $currentcomponent;
         $add_fld = array ("name"=>'label',"outboundcid"=>'cid_num',"langcode"=>'language',"extdisplay"=>'description','devinfo_mailbox'=>'mailbox');
         $settings['cid_num']['value'] = '';
         $settings['cid_name']['value'] = '';
@@ -116,7 +115,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                 }
             }
         }
-        dbug('addD', $settings);
         $allow_codec = array();
         foreach($settings as $key => $val) {
             if (strncmp($key,'codec_',6) === 0 ) {
@@ -124,6 +122,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         }
         $settings['allow']['value'] = implode(",", $allow_codec);
+        // Reset to line defaults if no value selected
+        if (empty($settings['allow']['value'])) {
+              $settings['allow']['value'] = $this->line_defaults['allow'];
+        }
 
 	      // If set, parse outboundcid content into cid_num and cid_name sccpline fields
         if (!empty($settings['cid_num']['value'])) {
@@ -134,6 +136,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             } else if (is_integer($outboundcid)) {
                 $settings['cid_num']['value'] = $outboundcid;
             }
+        }
+
+        if ($this->line_defaults['dndFeature'] == 'off') {
+            $settings['dnd']['value'] = 'off';
         }
 
         if (!empty($_REQUEST['vm']) && ($_REQUEST['vm'] =='enabled')){ // mailbox
@@ -156,13 +162,12 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         }
         $sql = "REPLACE INTO sccpline ( {$sqlCol} ) VALUES ( {$sqlVal} )";
-dbug('sql', $sql);
         $sth = $this->database->prepare($sql);
         $sth->execute();
         /*
         If called from SCCP Phone, redirect to SCCP Phone page on submit.
         This was last function in add so should be safe.
-        Prefer to add in Hooks, but is not followed even if set for $currentcomponent
+        Prefer to add in Hooks, but is not followed even if set for $currentComponent
         Do nothing if called from QuickCreateExtension when display is not set
         */
         if (isset($_REQUEST['display'])) {
@@ -210,8 +215,9 @@ dbug('sql', $sql);
       	return array('dial' => 'SCCP', 'settings' => $settings);
     }
 
-    public function getDeviceDisplay($display, $deviceInfo, $currentcomponent, $primarySection) {
-      dbug('devInfo', $deviceInfo);
+    public function getDeviceDisplay($display, $deviceInfo, $currentComponent, $primarySection) {
+        dbug('',$primarySection);
+        $activeCodecs = array();
         // load xml data to get help from same source as rest of module
         $xml_vars = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccpgeneral.xml.v433';
             $this->xml_data = simplexml_load_file($xml_vars);
@@ -229,31 +235,33 @@ dbug('sql', $sql);
     		$section = _("SCCP Extension Details");
     		$section_с = _("SCCP Codec Details");
         $gn_category = "sccp";
-        global $currentcomponent, $display;
         //add sccp category
-        $currentcomponent->addTabTranslation('sccp',_('SCCP'));
-        // TODO: If we have upgraded the system codecs, need to allow new options here.
+        $currentComponent->addTabTranslation('sccp',_('SCCP'));
+
+        // get site and system defaults
+        $systemCodecs = array_fill_keys(explode(',',$this->line_defaults['allow']),true);
+        $siteAudioCodecs = array_intersect_key($systemCodecs, $this->freepbx->Codecs->getAudio());
+        $siteVideoCodecs = array_intersect_key($systemCodecs, $this->freepbx->Codecs->getVideo());
+
         if (empty($deviceInfo['allow'])) {
-            // Need a codec and have none, so use system defaults
-            $systemCodecs = array_fill_keys(explode(",",$this->line_defaults['allow']),true);
-            $siteAudioCodecs = array_intersect_key($systemCodecs, $this->freepbx->Codecs->getAudio());
-            $siteVideoCodecs = array_intersect_key($systemCodecs, $this->freepbx->Codecs->getVideo());
+            // No allowed codecs so reset to site defaults
+            foreach ($systemCodecs as $lineCodec => $dummyVal) {
+                $activeCodecs[] = "devinfo_codec_{$lineCodec}";
+            }
         } else {
-            // TODO: Need to show disabled options
-            // Have codecs for this device.
-            $systemCodecs = array_fill_keys(explode(",",$deviceInfo['allow']),true); //pb is here
-            $siteAudioCodecs = array_intersect_key($systemCodecs, $this->freepbx->Codecs->getAudio());
-            $siteVideoCodecs = array_intersect_key($systemCodecs, $this->freepbx->Codecs->getVideo());
+            // have allowed codecs for this line
+            foreach (explode(',',$deviceInfo['allow']) as $lineCodec) {
+                $activeCodecs[] = "devinfo_codec_{$lineCodec}";
+            }
         }
+
         // Fill Audio codecs information
         foreach ($siteAudioCodecs as $key => $value) {
             $audioCodecButtons[] = array('value' => "devinfo_codec_{$key}", 'text' => $key);
-            $activeAudioCodecs[] ="devinfo_codec_{$key}";
         }
         // Fill Video codecs information
         foreach ($siteVideoCodecs as $key => $value) {
             $videoCodecButtons[] = array('value' => "devinfo_codec_{$key}", 'text' => $key);
-            $activeVideoCodecs[] ="devinfo_codec_{$key}";
         }
 
         $tmparr['disallow'] = array('prompttext' => _('Disallowed Codecs'),
@@ -267,26 +275,26 @@ dbug('sql', $sql);
         $el = array(
             "elemname" => "devinfo_sccp_codec",
             "prompttext" => _('Line Audio Codec:'),
-            "helptext" => _("Line Audio Codec"),
-            "currentvalue" => $activeAudioCodecs,
+            "helptext" => _("Line Audio Codec. Uncheck all Audio and Video codecs to return to site defaults"),
+            "currentvalue" => $activeCodecs,
             "valarray" => $audioCodecButtons,
             "class" => $section_с,
             "disable" => 0
         );
         // Override defaults with $el
-        $currentcomponent->addguielem($section_с, new \gui_checkset(array_merge($this->guiDefaults['gui_checkset'],$el)), $gn_category);
+        $currentComponent->addguielem($section_с, new \gui_checkset(array_merge($this->guiDefaults['gui_checkset'],$el)), $gn_category);
         unset($el);
 
         $el = array(
             "elemname" => "devinfo_sccp_vcodec",
             "prompttext" => _('Line Video Codec:'),
             "helptext" => _("Line Video Codec"),
-            "currentvalue" => $activeVideoCodecs,
+            "currentvalue" => $activeCodecs,
             "valarray" => $videoCodecButtons,
             "class" => $section_с,
             "disable" => 0
         );
-        $currentcomponent->addguielem($section_с, new \gui_checkset(array_merge($this->guiDefaults['gui_checkset'],$el)), $gn_category);
+        $currentComponent->addguielem($section_с, new \gui_checkset(array_merge($this->guiDefaults['gui_checkset'],$el)), $gn_category);
 
         $pageGroup = $this->xml_data->xpath('//page_group[@name="sccp_extension_config"]');
         $elements = $pageGroup[0]->children();
@@ -313,15 +321,22 @@ dbug('sql', $sql);
                                           );
                     break;
                 case 'IS':
+                    dbug('', $child);
                     $select = array();
                     foreach ($child->xpath('button') as $value) {
                         $select[] = array('value' => strtolower((string)$value[@value]), 'text' => (string)$value);
+                    }
+                    $hideButton = false;
+                    if (($this->line_defaults['dndFeature'] == 'off') && ($child['id'] == 5)) {
+                        $hideButton = true;
                     }
                     $tmparr[(string)$child->name] = array('prompttext' => _((string)$child->label),
                                             'value' => $this->line_defaults[(string)$child->name],
                                             'tt' => (string)$child->help,
                                             'select' => $select,
                                             'level' => 1,
+                                            'disable' => $hideButton,
+                                            'hidden' => $hideButton,
                                             'type' => 'radio',
                                             'section' => $section,
                                             'category' => $gn_category
@@ -394,11 +409,14 @@ dbug('sql', $sql);
                             $select[] = array('value' => $val, 'text' => $val);
                         }
                     }
+                    // Disable and hide list elements if there are no valid values
                     $tmparr[(string)$child->name] = array('prompttext' => _((string)$child->label),
                                                 'value' => $this->line_defaults[(string)$child->name],
                                                 'tt' => (string)$child->help,
                                                 'select' => $select,
                                                 'level' => 1,
+                                                'disable' => empty($named_group[$elementID][0]),
+                                                'hidden' => empty($named_group[$elementID][0]),
                                                 'section' => $section,
                                                 'category' => $gn_category
                                               );
