@@ -998,16 +998,20 @@ function cleanUpSccpSettings() {
                 unset($settingsFromDb[$valueArray['Name']]);
             }
         } else {
+            ($sysConfiguration[$valueArray['Name']]['DefaultValue'] == '(null)') ? '' : $sysConfiguration[$valueArray['Name']]['DefaultValue'];
             $sysConfiguration[$valueArray['Name']] = $valueArray;
             if (array_key_exists($valueArray['Name'],$settingsFromDb)) {
                 if (!empty($sysConfiguration[$valueArray['Name']]['DefaultValue'])) {
+                    // Preserve sequence and type
                     $settingsFromDb[$valueArray['Name']]['systemdefault'] = $sysConfiguration[$valueArray['Name']]['DefaultValue'];
                 }
             } else {
-
-                    $settingsFromDb[$valueArray['Name']] = array('keyword' => $valueArray['Name'], 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$valueArray['Name']]['DefaultValue']);
+                $settingsFromDb[$valueArray['Name']] = array('keyword' => $valueArray['Name'], 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$valueArray['Name']]['DefaultValue']);
             }
         }
+        // Override certain chan-sccp defaults as they are based on a non-FreePbx system
+        $settingsFromDb['context']['systemdefault'] = 'from-internal'
+
         unset($sysConfiguration[$key]);
     }
     unset($sysConfiguration['Options']);
