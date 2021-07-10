@@ -1278,16 +1278,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>The MAC address of the phone</help>
         </item>
-        <item type="SDM-remove" id="2" seq="99">
-            <label>Type</label>
-            <name>type</name>
-            <default>7911</default>
-            <select name="model" dataid="dns" dataval="buttons">model</select>
-            <options disabled="true"></options>
-            <class>hw_select sccp-custom</class>
-            <help>The type of phone: 7911, 7940, 7960, etc. Important note: the 'G' models are handled as the base model (e.g., 7962G is handled as 7962). In the Display mode, this field is read-only because the MAC address and the model number are a pair.</help>
-        </item>
-
         <item type="IE" id="2" seq="99">
             <label>Type</label>
             <input>
@@ -1346,7 +1336,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="SLT" id="5" seq="98">
             <label>SCCP Phone Device Language</label>
             <name>devlang</name>
-            <default>Russian_Russia</default>
+            <default>English_United_States</default>
             <select> </select>
             <help>The user locale allows the phone to display text (menu items, soft keys etc.) native to the phone's language.</help>
         </item>

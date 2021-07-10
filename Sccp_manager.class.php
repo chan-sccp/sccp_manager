@@ -168,37 +168,16 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group[@name="' . $group_name . '"]') as $item) {
-                // TODO: Clean up below after debug
-                if (($group_name == 'sccp_general') || ($group_name == 'sccp_qos_config') ||
-                    ($group_name =='sccp_dev_config') || ($group_name =='sccp_dev_group_config') ||
-                    ($group_name =='sccp_hotline_config') || ($group_name =='sccp_dev_softkey') ||
-                    ($group_name =='sccp_dev_advconfig') || ($group_name == 'sccp_extpath_config') ||
-                    ($group_name =='sccp_dev_vendor_conf') || ($group_name =='sccp_hw_dev_softkey') ||
-                    ($group_name =='sccp_hw_dev_advance') || ($group_name =='sccp_hw_dev_conference') ||
-                    ($group_name =='sccp_hw_dev_network') || ($group_name == 'sccp_hw_dev_edit')
+                $htmlret = load_view(__DIR__ . '/views/formShowSysDefs.php', array(
+                    'itm' => $item,
+                    'h_show' => $show_Header,
+                    'form_prefix' => $form_prefix,
+                    'fvalues' => $form_values,
+                    'tftpLang' => $this->tftpLang,
+                    'chanSccpHelp' => $this->sccpHelpInfo,
+                    'sccp_defaults' => $this->sccpvalues
                     )
-                    {
-                    $htmlret = load_view(__DIR__ . '/views/formShowSysDefs.php', array(
-                        'itm' => $item,
-                        'h_show' => $show_Header,
-                        'form_prefix' => $form_prefix,
-                        'fvalues' => $form_values,
-                        'tftp_lang' => $this->tftpLang,
-                        'chanSccpHelp' => $this->sccpHelpInfo,
-                        'sccp_defaults' => $this->sccpvalues
-                      ));
-                } else {
-                    $htmlret = load_view(__DIR__ . '/views/formShow.php', array(
-                        'itm' => $item,
-                        'h_show' => $show_Header,
-                        'form_prefix' => $form_prefix,
-                        'fvalues' => $form_values,
-                        'tftp_lang' => $this->tftpLang,
-                        'chanSccpHelp' => $this->sccpHelpInfo,
-                        'sccp_defaults' => $this->sccpvalues
-                        )
-                      );
-                }
+                  );
             }
         } else {
             $htmlret = load_view(__DIR__ . '/views/formShowError.php');
@@ -775,7 +754,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     private function initTftpLang() {
         $result = array();
         if (empty($this->sccppath["tftp_path"]) || empty($this->sccppath["tftp_lang_path"])) {
-            return;
+            return $result;
         }
         $dir = $this->sccppath["tftp_lang_path"];
 

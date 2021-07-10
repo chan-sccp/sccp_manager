@@ -55,7 +55,6 @@ foreach ($items as $child) {
         $child->meta_help = '1';
     }
     echo "<!-- Begin {$child->label} -->";
-//    $child->meta_help = '1';          // Remove comments to see chan-sccp supplied help !
     switch ($child['type']) {
         case 'IE':
             \FreePbx::sccp_manager()->formcreate->addElementIE($child, $fvalues, $sccp_defaults,$npref);
@@ -70,14 +69,12 @@ foreach ($items as $child) {
         case 'SLM':
         case 'SLK':
         case 'SLP':
-            //$this->formcreate->addElementSL($child, $fvalues, $sccp_defaults,$npref);
-            //break;
         case 'SLS':
         case 'SLT':
         case 'SLA':
         case 'SLZ':
         case 'SL':
-            \FreePbx::sccp_manager()->formcreate->addElementSL2($child, $fvalues, $sccp_defaults,$npref);
+            \FreePbx::sccp_manager()->formcreate->addElementSL2($child, $fvalues, $sccp_defaults,$npref, $tftpLang);
             break;
         case 'SDM':
         case 'SDMS':

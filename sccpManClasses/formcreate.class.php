@@ -43,8 +43,14 @@ class formcreate
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
                     </div>
-                    <div class="col-md-3">
         <?php
+                    if (!empty($sccp_defaults[$shortId]['systemdefault'])) {
+                    // There is a system default, so add button to customise or reset
+                    // the closing } is after the code to include the button at line ~498
+
+                    //-- Start include of defaults button --
+                    echo "<div class=col-md-3>";
+
         // Can have multiple inputs for a field which are displayed with a separator
         foreach ($child->xpath('input') as $value) {
             $res_n =  (string)$value->name;
@@ -114,6 +120,13 @@ class formcreate
                     <div class="col-md-3">
                         <i><?php echo "Enter new {$this->buttonHelpLabel} value for {$shortId}"; ?></i>
                     </div>
+
+                    <!-- Finish include of defaults button -->
+                    <?php
+                    // Close the conditional include of the defaults button opened at line ~425
+                    }
+                    ?>
+
                     <div class="col-md-9">
                         <?php
                         $i=0;
@@ -364,7 +377,7 @@ class formcreate
                     // the closing } is after the code to include the button at line ~498
 
                     //-- Start include of defaults button --
-                    echo "<div class=col-md-3>";
+                    echo "<div class='col-md-3'>";
 
                     if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $res_v)) {
                         $usingSysDefaults = false;
@@ -549,7 +562,7 @@ class formcreate
         <?php
     }
 
-    function addElementSL2($child, $fvalues, $sccp_defaults,$npref) {
+    function addElementSL2($child, $fvalues, $sccp_defaults,$npref, $tftpLang) {
     //       Input element Select SLS - System Language
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
@@ -562,16 +575,14 @@ class formcreate
         }
         switch ($child['type']) {
             case 'SLS':
+                $syslangs = array();
                 if (\FreePBX::Modules()->checkStatus("soundlang")) {
                    $syslangs = \FreePBX::Soundlang()->getLanguages();
-                   if (!is_array($syslangs)) {
-                       $syslangs = array();
-                   }
                 }
                 $select_opt= $syslangs;
                 break;
             case 'SLT':
-                $select_opt= $tftp_lang;
+                $select_opt= $tftpLang;
                 break;
             case 'SLZ':
                 $timeZoneOffsetList = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',
@@ -610,6 +621,7 @@ class formcreate
                 $select_opt= $day_format;
                 break;
             case 'SLK':
+                $softKeyList = array();
                 $softKeyList = \FreePBX::Sccp_manager()->aminterface->sccp_list_keysets();
                 $select_opt= $softKeyList;
                 break;
@@ -648,6 +660,7 @@ class formcreate
                     <div class="col-md-9"><div class = "lnet form-group form-inline" data-nextid=1>
                     <?php
                             echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
+                    dbug('', $res_id);
                     foreach ($select_opt as $key => $val) {
                         if (is_array($val)) {
                             $opt_key = (isset($val['id'])) ? $val['id'] : $key;
