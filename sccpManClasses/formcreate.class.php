@@ -476,93 +476,7 @@ class formcreate
         <?php
     }
 
-    function addElementSL($child, $fvalues, $sccp_defaults, $npref) {
-        // TODO: Unused function. Integrated into SL2. To be removed after full testing.
-        /*
-        *    Input element Select SLD - Date format
-        *                         SLM - Music on hold
-        *                         SLK - System KeySet
-        *                         SLP - Dial Paterns
-        */
-        $res_n =  (string)$child ->name;
-        $res_id = $npref.$res_n;
-        // $select_opt is a simple array for these types.
-        $select_opt = array();
-
-        if (!empty($metainfo[$res_n])) {
-            if ($child->meta_help == '1' || $child->help == 'Help!') {
-                $child->help = $metaInfo[$res_n];
-            }
-        }
-        if (empty($child->class)) {
-            $child->class = 'form-control';
-        }
-        switch ($child['type']) {
-            case 'SLD':
-                $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
-                   "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
-                $select_opt= $day_format;
-                break;
-            case 'SLM':
-                if (function_exists('music_list')) {
-                    $moh_list = music_list();
-                }
-                if (!is_array($moh_list)) {
-                    $moh_list = array('default');
-                }
-                $select_opt= $moh_list;
-                break;
-            case 'SLK':
-                $softKeyList = \FreePBX::Sccp_manager()->aminterface->sccp_list_keysets();
-                $select_opt= $softKeyList;
-                break;
-            case 'SLP':
-                $dialplan_list = array();
-                foreach (\FreePBX::Sccp_manager()->getDialPlanList() as $tmpkey) {
-                    $tmp_id = $tmpkey['id'];
-                    $dialplan_list[$tmp_id] = $tmp_id;
-                }
-                $select_opt= $dialplan_list;
-                break;
-        }
-        if (!empty($fvalues[$res_n])) {
-            if (!empty($fvalues[$res_n]['data'])) {
-                $child->value = $fvalues[$res_n]['data'];
-            }
-        }
-        ?>
-        <div class="element-container">
-           <div class="row"> <div class="form-group">
-                   <div class="col-md-3">
-                        <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
-                    </div>
-                    <div class="col-md-9"><div class = "lnet form-group form-inline" data-nextid=1>
-                    <?php
-                            echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
-
-                    foreach ($select_opt as $key) {
-                        echo '<option value="' . $key . '"';
-                        if ($key == $child->value) {
-                            echo ' selected="selected"';
-                        }
-                        echo '>' . $key . '</option>';
-                    }
-                    ?>
-                    </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <div class="row"><div class="col-md-12">
-                <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
-            </div>
-          </div>
-        </div>
-        <?php
-    }
-
-    function addElementSL2($child, $fvalues, $sccp_defaults,$npref, $tftpLang) {
+    function addElementSL($child, $fvalues, $sccp_defaults,$npref, $tftpLang) {
     //       Input element Select SLS - System Language
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
@@ -652,42 +566,46 @@ class formcreate
         }
         ?>
         <div class="element-container">
-           <div class="row"> <div class="form-group">
-                   <div class="col-md-3">
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
                     </div>
-                    <div class="col-md-9"><div class = "lnet form-group form-inline" data-nextid=1>
-                    <?php
+                    <div class="col-md-9">
+                        <div class = "lnet form-group form-inline" data-nextid=1>
+                            <?php
                             echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
-                    dbug('', $res_id);
-                    foreach ($select_opt as $key => $val) {
-                        if (is_array($val)) {
-                            $opt_key = (isset($val['id'])) ? $val['id'] : $key;
-                            $opt_val = (isset($val['val'])) ? $val['val'] : $val;
-                        } else if (\FreePBX::Sccp_manager()->is_assoc($select_opt)){
-                            // have associative array
-                            $opt_key = $key;
-                            $opt_val = $val;
-                        } else {
-                            // Have simple array
-                            $opt_key = $val;
-                            $opt_val = $val;
-                        }
-                        echo '<option value="' . $opt_key . '"';
-                        if ($opt_key == $child->value) {
-                            echo ' selected="selected"';
-                        }
-                        echo '>' . $opt_val. '</option>';
-                    }
-                    ?> </select>
+                            foreach ($select_opt as $key => $val) {
+                                if (is_array($val)) {
+                                    $opt_key = (isset($val['id'])) ? $val['id'] : $key;
+                                    $opt_val = (isset($val['val'])) ? $val['val'] : $val;
+                                } else if (\FreePBX::Sccp_manager()->is_assoc($select_opt)){
+                                    // have associative array
+                                    $opt_key = $key;
+                                    $opt_val = $val;
+                                } else {
+                                    // Have simple array
+                                    $opt_key = $val;
+                                    $opt_val = $val;
+                                }
+                                echo '<option value="' . $opt_key . '"';
+                                if ($opt_key == $child->value) {
+                                    echo ' selected="selected"';
+                                }
+                                echo "> {$opt_val} </option>";
+                            }
+                            ?>
+                            </select>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-            <div class="row"><div class="col-md-12">
+            </div>
+            <div class="row">
+                <div class="col-md-12">
                 <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
-            </div></div>
+                </div>
+            </div>
         </div>
         <?php
     }

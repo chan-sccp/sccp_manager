@@ -249,27 +249,27 @@ class extconfigs
                           'languages' => 'languages',
                           'templates' => 'templates',
                           'dialplan' => 'dialplan',
-                          'softkey' => 'softkey'
+                          'softkey' => 'softkey',
+                          'ringtones' => 'ringtones',
+                          'wallpapers' => 'wallpapers'
                         );
-
-        $adv_tree['pro'] = array('templates' => 'tftproot',
-                          'settings' => 'tftproot',
-                          'locales' => 'tftproot',
-                          'firmware' => 'tftproot',
-                          'languages' => 'locales',
-                          'dialplan' => 'tftproot',
-                          'softkey' => 'tftproot'
-                        );
-
-        $adv_tree['def'] = array('templates' => 'tftproot',
-                          'settings' => '',
-                          'locales' => '',
-                          'firmware' => '',
-                          'languages' => 'tftproot',
-                          'dialplan' => '',
-                          'softkey' => ''
-                        );
-
+        $adv_tree = array('pro' => array('templates' => 'tftproot',
+                                  'settings' => 'tftproot',
+                                  'locales' => 'tftproot',
+                                  'firmware' => 'tftproot',
+                                  'languages' => 'locales',
+                                  'dialplan' => 'tftproot',
+                                  'softkey' => 'tftproot'
+                                ),
+                            'def' => array('templates' => 'tftproot',
+                                  'settings' => '',
+                                  'locales' => '',
+                                  'firmware' => '',
+                                  'languages' => 'tftproot',
+                                  'dialplan' => '',
+                                  'softkey' => ''
+                                )
+                          );
         $base_tree = array('tftp_templates_path' => 'templates',
                           'tftp_store_path' => 'settings',
                           'tftp_lang_path' => 'languages',
@@ -277,18 +277,17 @@ class extconfigs
                           'tftp_dialplan_path' => 'dialplan',
                           'tftp_softkey_path' => 'softkey'
                         );
-
         $base_config = array();
 
         if (!empty($settingsFromDb['tftp_rewrite_path']['data'])) {
-            // Have a setting in sccpsettings. It should start with $tftpRootPath
-            // If not we will replace it with $tftpRootPath. Avoids issues with legacy values
-                if (!strpos($settingsFromDb['tftp_rewrite_path']["data"],$settingsFromDb['tftp_path']['data'])) {
+            // Have a setting in sccpsettings. It should start with $tftp_path
+            // If not we will replace it with $tftp_path. Avoids issues with legacy values
+            if (!strpos($settingsFromDb['tftp_rewrite_path']["data"],$settingsFromDb['tftp_path']['data'])) {
 
-                    $adv_ini = "{$tftpRootPath}/index.cnf";
-                    $settingsToDb['tftp_rewrite_path'] = $settingsFromDb['tftp_rewrite_path'];
-                    $settingsToDb['tftp_rewrite_path']['data'] = $tftpRootPath;
-                }
+                $adv_ini = "{$settingsFromDb['tftp_path']['data']}/index.cnf";
+                $settingsToDb['tftp_rewrite_path'] = $settingsFromDb['tftp_rewrite_path'];
+                $settingsToDb['tftp_rewrite_path']['data'] = $settingsFromDb['tftp_path']['data'];
+            }
             $adv_ini = "{$settingsFromDb['tftp_rewrite_path']["data"]}/index.cnf";
         }
 
@@ -301,14 +300,14 @@ class extconfigs
                     $adv_ini_array = parse_ini_file($adv_ini);
                     $adv_config = array_merge($adv_config, $adv_ini_array);
                 }
+                $settingsToDb['tftp_rewrite'] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'pro', 'systemdefault' => '');
                 break;
             case 'on':
             case 'internal':
             case 'off':
-                break;
             default:
-                // not defined so set here
-                $settingsToDb["tftp_rewrite"] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'off');
+                // not defined so set here to off
+                $settingsToDb['tftp_rewrite'] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'off', 'systemdefault' => '');
         }
 
         foreach ($adv_tree[$adv_tree_mode] as $key => $value) {
@@ -322,10 +321,11 @@ class extconfigs
                 }
             }
         }
+
         foreach ($base_tree as $key => $value) {
             $base_config[$key] = $adv_config[$value];
             // Save to sccpsettings
-            $settingsToDb[$key] =array( 'keyword' => $key, 'seq' => 20, 'type' => 0, 'data' => $adv_config[$value]);
+            $settingsToDb[$key] =array( 'keyword' => $key, 'seq' => 20, 'type' => 0, 'data' => $adv_config[$value], 'systemdefault' => '');
             if (!is_dir($base_config[$key])) {
                 if (!mkdir($base_config[$key], 0755, true)) {
                     die_freepbx(_('Error creating dir : ' . $base_config[$key]));
@@ -342,7 +342,18 @@ class extconfigs
         }
         // Remove keys that are not required before returning $base_config.
         unset($base_config['asterisk'], $base_config['sccp_conf'], $base_config['tftp_path']);
-        return $base_config;
+        return $settingsToDb;
+    }
+    private function initializeTFtpLanguagePath() {
+        $dir = $this->sccppath["tftp_lang_path"];
+        foreach ($this->extconfigs->getExtConfig('sccp_lang') as $lang_key => $lang_value) {
+            $filename = $dir . DIRECTORY_SEPARATOR . $lang_value['locale'];
+            if (!file_exists($filename)) {
+                if (!mkdir($filename, 0777, true)) {
+                    die('Error creating tftp language directory');
+                }
+            }
+        }
     }
 
     public function validate_RealTime( $connector )

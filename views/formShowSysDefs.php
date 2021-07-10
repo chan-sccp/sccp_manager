@@ -74,7 +74,7 @@ foreach ($items as $child) {
         case 'SLA':
         case 'SLZ':
         case 'SL':
-            \FreePbx::sccp_manager()->formcreate->addElementSL2($child, $fvalues, $sccp_defaults,$npref, $tftpLang);
+            \FreePbx::sccp_manager()->formcreate->addElementSL($child, $fvalues, $sccp_defaults,$npref, $tftpLang);
             break;
         case 'SDM':
         case 'SDMS':

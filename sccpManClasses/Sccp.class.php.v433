@@ -216,7 +216,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function getDeviceDisplay($display, $deviceInfo, $currentComponent, $primarySection) {
-        dbug('',$primarySection);
         $activeCodecs = array();
         // load xml data to get help from same source as rest of module
         $xml_vars = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccpgeneral.xml.v433';
@@ -321,7 +320,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                                           );
                     break;
                 case 'IS':
-                    dbug('', $child);
                     $select = array();
                     foreach ($child->xpath('button') as $value) {
                         $select[] = array('value' => strtolower((string)$value[@value]), 'text' => (string)$value);

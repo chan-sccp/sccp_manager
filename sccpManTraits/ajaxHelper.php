@@ -405,6 +405,7 @@ trait ajaxHelper {
         if ($action == 'yes') {
             $this->initializeTFtpLanguagePath();
         }
+
         foreach ($request as $key => $value) {
             // Originally saved all to sccpvalues. Now will save to db defaults if appropriate
             // TODO: Need to verify the tables defined in showGroup - some options maybe
@@ -448,7 +449,7 @@ trait ajaxHelper {
             $key = (str_replace($hdr_prefix, '', $key, $count_mods));
             if ($count_mods) {
                 if (!empty($this->sccpvalues[$key]) && (!($this->sccpvalues[$key]['data'] == $value))) {
-                    $save_settings[] = array(
+                    $save_settings[$this->sccpvalues[$key]['keyword']] = array(
                           'keyword' => $this->sccpvalues[$key]['keyword'],
                           'data' => $value,
                           'seq' => $this->sccpvalues[$key]['seq'],
@@ -457,7 +458,6 @@ trait ajaxHelper {
                           );
                 }
             }
-
             $key = (str_replace($hdr_arprefix, '', $key, $count_mods));
             if ($count_mods) {
                 $arr_data = '';
@@ -537,10 +537,13 @@ trait ajaxHelper {
             }
         }
 
+        $extSettings = $this->extconfigs->updateTftpStructure(array_merge($this->sccpvalues, $save_settings));
+        $save_settings = array_merge($save_settings, $extSettings);
         if (!empty($save_settings)) {
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
         }
+
 
         foreach ($dbSaveArray as $rowToSave) {
             $this->dbinterface->updateTableDefaults($rowToSave['table'], $rowToSave['field'], $rowToSave['Default']);
@@ -549,6 +552,9 @@ trait ajaxHelper {
         $this->createDefaultSccpConfig(); // Rewrite Config.
         $save_settings[] = array('status' => true);
         $this->createDefaultSccpXml();
+
+
+
         return $save_settings;
     }
 
