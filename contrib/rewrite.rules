@@ -58,13 +58,13 @@ ri ^(P00405000700.sbn)$ firmware/7910/\1
 ri ^(CP7912080004SCCP080108A.sbin)$ firmware/7912/\1
 
 # 7915 firmware (ancient)
-ri ^(B015-1-0-)(+\.SBN)$ firmware/7915/\1
+ri ^(B015-1-0-)(.+\.SBN)$ firmware/7915/\1\2
 
 # 7916 firmware (ancient)
-ri ^(B016-1-0-)(+\.SBN)$ firmware/7916/\1
+ri ^(B016-1-0-)(.+\.SBN)$ firmware/7916/\1\2
 
 # 7920 firmware (ancient)
-ri ^(cmterm_7920)(+\.bin)$ firmware/7920/\1
+ri ^(cmterm_7920)(.+\.bin)$ firmware/7920/\1\2
 
 # 7921_7925 firmware (ancient)
 ri ^(APPS-1.4.3.4.SBN)$ firmware/7921/\1
@@ -106,10 +106,10 @@ ri ^(cmterm_7936.3-3-21-0.bin)$ firmware/7936/\1
 ri ^(apps37sccp.1-4-5-7.bin)$ firmware/7937/\1
 
 # 7940_7960 firmware (ancient)
-ri ^(P0030801SR)(.+\.bin)$ firmware/7940/\1
-ri ^(P0030801SR)(.+\.loads)$ firmware/7940/\1
-ri ^(P0030801SR)(.+\.sb2)$ firmware/7940/\1
-ri ^(P0030801SR)(.+\.sbn)$ firmware/7940/\1
+ri ^(P0030801SR)(.+\.bin)$ firmware/7940/\1\2
+ri ^(P0030801SR)(.+\.loads)$ firmware/7940/\1\2
+ri ^(P0030801SR)(.+\.sb2)$ firmware/7940/\1\2
+ri ^(P0030801SR)(.+\.sbn)$ firmware/7940/\1\2
 
 # 7941_7961 firmware (java-based)
 ri ^(apps41)(.+\.sbn)$ firmware/7941/\1\2
@@ -192,6 +192,7 @@ ri ^(.+)\/(.+-dictionary-ext.xml)$ languages/\1/\2
 ri ^(.+)\/(.+-tones.xml)$ languages/\1/\2
 ri ^(.+)\/(.+-font.xml)$ languages/\1/\2
 ri ^(.+)\/(.+-kate.xml)$ languages/\1/\2
+ri ^(.+)\/(gk.+)(\.cfg)$ languages/\1/\2\3
 
 #ri ^(.+)\/(.+-tones.xml)$ locales/countries/\1/\2
 
