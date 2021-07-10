@@ -174,7 +174,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     ($group_name =='sccp_hotline_config') || ($group_name =='sccp_dev_softkey') ||
                     ($group_name =='sccp_dev_advconfig') || ($group_name == 'sccp_extpath_config') ||
                     ($group_name =='sccp_dev_vendor_conf') || ($group_name =='sccp_hw_dev_softkey') ||
-                    ($group_name =='sccp_hw_dev_advance') || ($group_name =='sccp_hw_dev_conference'))
+                    ($group_name =='sccp_hw_dev_advance') || ($group_name =='sccp_hw_dev_conference') ||
+                    ($group_name =='sccp_hw_dev_network') || ($group_name == 'sccp_hw_dev_edit')
+                    )
                     {
                     $htmlret = load_view(__DIR__ . '/views/formShowSysDefs.php', array(
                         'itm' => $item,

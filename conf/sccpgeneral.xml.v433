@@ -1389,8 +1389,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>transfer</name>
             <label>Transfer</label>
             <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Transfer allowed</help>
         </item>
         <item type="IS" id="1" seq="99">
