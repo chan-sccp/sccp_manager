@@ -205,6 +205,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     public function settingsShowPage() {
+        $this->checkTftpMapping();
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
 

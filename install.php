@@ -893,8 +893,8 @@ function checkTftpServer() {
         die_freepbx(_("Either TFTP server is down or TFTP root is non standard. Please fix, refresh, and try again"));
     }
 
-    $settingsToDb['asterisk_etc_path'] =array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
-    $settingsFromDb['asterisk_etc_path']['data'] = $confDir;
+    $settingsToDb['asterisk_etc_path'] =  array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
+    $settingsFromDb['asterisk_etc_path'] = $settingsToDb['asterisk_etc_path'];
 
     foreach ($settingsToDb as $settingToSave) {
         $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$settingToSave['keyword']}', '{$settingToSave['data']}', {$settingToSave['seq']}, {$settingToSave['type']});";
@@ -904,7 +904,11 @@ function checkTftpServer() {
         }
         unset($settingsToDb[$settingToSave['keyword']]);
     }
-
+    // put the rewrite rules into the required location
+    if (file_exists("{$confDir}/sccpManagerRewrite.rules")) {
+        rename("{$confDir}/sccpManagerRewrite.rules", "{$confDir}/sccpManagerRewrite.rules.bu");
+    }
+    copy($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/contrib/rewrite.rules',"{$confDir}/sccpManagerRewrite.rules");
     $settingsToDb = $extconfigs->updateTftpStructure($settingsFromDb);
 
     foreach ($settingsToDb as $settingKey => $settingVal) {

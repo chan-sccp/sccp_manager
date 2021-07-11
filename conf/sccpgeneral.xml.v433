@@ -1163,9 +1163,9 @@ and open the template in the editor. Base Version before all crash :-)
             <label>Rewrite HELP </label>
             <name>Help_tftp_rewrite</name>
             <element type='p'>This section is responsible for the modes of operation of external services: tftp http.</element>
-            <element type='p'> * off - Flat model cisco. All data is in the directory /tftproot</element>
-            <element type='p'> * Custom - The directory structure is strictly defined in the manager (for internal use). Requires tftpd rewrite support.</element>
-            <element type='p'> * Provision - Directory structure data is read from an external file. This project supports phones that can work on tftp and http. Support rewrite.</element>
+            <element type='p'> * off - Flat model cisco. All data is in the directory TFTP Server Path</element>
+            <element type='p'> * Provision - The directory structure is strictly defined in the manager. Requires tftpd mapping support.</element>
+            <element type='p'> * Custom - TFTP Directory structure can be extended by index.cnf. This supports phones that can work on tftp and http. Remapping support is required</element>
         </item>
         <label>SCCP Server Path config</label>
         <item type="IE" id="1" seq="2">
@@ -1173,7 +1173,7 @@ and open the template in the editor. Base Version before all crash :-)
             <class>provision_hide</class>
             <input>
                 <name>tftp_path</name>
-                <default>/tftpboot</default>
+                <default></default>
                 <class>sccp-custom</class>
             </input>
             <help>Path to tftp home directory. This was determined by the Sccp_manager installer and should only be changed if the tftp root has been modified since installation</help>
@@ -1188,16 +1188,18 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Use path from provision index.cnf file. You must first make sure that you have properly configured the "Provision"</help>
         </item>
-        <item type="IS" id="2" seq="20">
+        <item type="IS" id="21" seq="20">
             <name>tftp_rewrite</name>
             <label>TFTP SERVER remapping support</label>
             <default>off</default>
-            <option_hide class=".provision_hide">pro</option_hide>
-            <option_show class=".provision_show">pro</option_show>
-            <button value="off">Disabled</button>
-            <button-d value="internal">Internal</button-d>
-            <button value="on">Custom</button>
+            <option_hide class=".custom_hide">custom</option_hide>
+            <option_show class=".custom_show">custom</option_show>
+            <option_disable class=".custom_disable">Custom</option_disable>
+            <option_disable class=".provision_disable">Provision</option_disable>
+            <option_disable class=".off_disable">Off</option_disable>
+            <button value="off">Off</button>
             <button value="pro">Provision</button>
+            <button value="custom">Custom</button>
             <help>Support the use of regular-expression-based filename remapping</help>
         </item>
         <item type="IE" id="2">

@@ -36,29 +36,35 @@ $info['aminterface'] = $this->aminterface->info();
 $info['XML'] = $this->xmlinterface->info();
 $info['sccp_class'] = $driver['sccp'];
 $info['Core_sccp'] = array('Version' => $core['Version'],
-                    'about' => 'Sccp ver.' . $core['Version'] .
-                            ' r' . $core['vCode'] . ' Revision :' .
-                            $core['RevisionNum'] . ' Hash :' .
-                            $core['RevisionHash']);
-/*
-if (!$this->srvinterface->useAmiInterface) {
-    $info['aminterface']['about'] .= ' -- Disabled';
-    $info['Core_sccp'] = array('Version' => $core['Version'], 'about' => 'Sccp ver.' . $core['Version'] . ' r' . $core['vCode'] . ' Revision :' . $core['RevisionNum'] . ' Hash :' . $core['RevisionHash'] . ' ----Warning: Upgrade chan_sccp to use full ami functionality');
-}
-*/
-$info['Asterisk'] = array('Version' => FreePBX::Config()->get('ASTVERSION'), 'about' => 'Asterisk.');
+                            'about' => "Sccp ver: {$core['Version']}   r{$core['vCode']}   Revision: {$core['RevisionNum']}   Hash: {$core['RevisionHash']}");
 
+$info['Asterisk'] = array('Version' => FreePBX::Config()->get('ASTVERSION'), 'about' => 'Asterisk.');
 
 if (!empty($this->sccpvalues['SccpDBmodel'])) {
     $info['DB Model'] = array('Version' => $this->sccpvalues['SccpDBmodel']['data'], 'about' => 'SCCP DB Configure');
 }
-if (!empty($this->sccpvalues['tftp_rewrite'])) {
-    if ($this->sccpvalues['tftp_rewrite']['data'] == 'pro') {
-        $info['Provision_SCCP'] = array('Version' => 'base', 'about' => 'Provision Sccp enabled');
-    } else {
-        $info['TFTP_Rewrite'] = array('Version' => 'base', 'about' => 'Rewrite Supported');
+
+// Start testing tftp server settings - this should be moved after debug to extConfigs
+
+if (!empty($this->sccpvalues['tftp_rewrite']['data'])) {
+    switch ($this->sccpvalues['tftp_rewrite']['data']) {
+      case 'custom':
+      case 'pro':
+          $info['Provision_SCCP'] = array('Version' => 'base', 'about' => 'Provision Sccp enabled');
+          break;
+      case 'unavailable':
+          $info['TFTP Mapping'] = array('Version' => 'off', 'about' => 'remapping is available, but mapping file not included in tftpd-hpa default settings.<br>
+                                          Add option <br>
+                                          -m /etc/asterisk/sccpManagerRewrite.rules <br>
+                                          to the tftpd defaults, location dependant on the system, and restart the tftpd server');
+          break;
+      default:
+          $info['TFTP_Mapping'] = array('Version' => 'off', 'about' => 'Rewrite Supported');
+          break;
     }
 }
+
+// Finished testing tftp server options
 $info['Сompatible'] = array('Version' => $compatible, 'about' => 'Ok');
 if (!empty($this->sccpvalues['SccpDBmodel'])) {
     if ($compatible > $this->sccpvalues['SccpDBmodel']['data']) {

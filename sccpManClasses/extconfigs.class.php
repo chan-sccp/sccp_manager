@@ -254,12 +254,15 @@ class extconfigs
                           'wallpapers' => 'wallpapers'
                         );
         $adv_tree = array('pro' => array('templates' => 'tftproot',
+                                  'firmware' => 'tftproot',
                                   'settings' => 'tftproot',
                                   'locales' => 'tftproot',
-                                  'firmware' => 'tftproot',
                                   'languages' => 'locales',
+                                  'templates' => 'tftproot',
                                   'dialplan' => 'tftproot',
-                                  'softkey' => 'tftproot'
+                                  'softkey' => 'tftproot',
+                                  'ringtones' => 'tftproot',
+                                  'wallpapers' => 'tftproot'
                                 ),
                             'def' => array('templates' => 'tftproot',
                                   'settings' => '',
@@ -300,8 +303,21 @@ class extconfigs
                     $adv_ini_array = parse_ini_file($adv_ini);
                     $adv_config = array_merge($adv_config, $adv_ini_array);
                 }
+                // rewrite adv_ini to reflect the new $adv_config
+                if (file_exists($adv_ini)){
+                    rename($adv_ini, "{$adv_ini}.old");
+                }
+                $indexFile = fopen($adv_ini,'w');
+                fwrite($indexFile, "[main]\n");
+                foreach ($adv_config as $advKey => $advVal) {
+                    fwrite($indexFile, "{$advKey} = {$advVal}\n");
+                }
+                fclose($indexFile);
+
                 $settingsToDb['tftp_rewrite'] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'pro', 'systemdefault' => '');
                 break;
+            case 'unavailable':
+                $settingsToDb['tftp_rewrite'] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'unavailable', 'systemdefault' => '');
             case 'on':
             case 'internal':
             case 'off':
@@ -330,6 +346,12 @@ class extconfigs
                 if (!mkdir($base_config[$key], 0755, true)) {
                     die_freepbx(_('Error creating dir : ' . $base_config[$key]));
                 }
+            }
+        }
+        // Set up tftproot/settings so that can test if mapping is Enabled and configured.
+        if (!is_dir("{$settingsFromDb['tftp_path']['data']}/settings")) {
+            if (!mkdir("{$settingsFromDb['tftp_path']['data']}/settings", 0755, true)) {
+                die_freepbx(_('Error creating dir : ' . $base_config[$key]));
             }
         }
         // TODO: Need to add index.cnf, after setting defaults correctly

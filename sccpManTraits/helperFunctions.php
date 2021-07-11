@@ -213,6 +213,40 @@ trait helperfunctions {
         return false;
     }
 
+    public function checkTftpMapping(){
+        exec('in.tftpd -V', $tftpInfo);
+        $info['TFTP Server'] = array('Version' => 'Not Found', 'about' => 'Mapping not available');
+
+        if (isset($tftpInfo[0])) {
+            $tftpInfo = explode(',',$tftpInfo[0]);
+            $info['TFTP Server'] = array('Version' => $tftpInfo[0], 'about' => 'Mapping not available');
+            $tftpInfo[1] = trim($tftpInfo[1]);
+            $this->sccpvalues['tftp-rewrite']['data'] = 'unavailable';
+            if ($tftpInfo[1] == 'with remap') {
+                $info['TFTP Server'] = array('Version' => $tftpInfo[0], 'about' => $tftpInfo[1]);
+
+                $remoteFileName = ".sccp_manager_remap_probe_sentinel_temp".mt_rand(0, 9999999).".tlzz";
+                $remoteFileContent = "# This is a test file created by Sccp_Manager. It can be deleted without impact";
+                $testFtpDir = "{$this->sccpvalues['tftp_path']['data']}/settings";
+
+                // write a sentinel to a tftp subdirectory to see if mapping is working
+
+                if (is_dir($testFtpDir) && is_writable($testFtpDir)) {
+                    // TODO: Need to be sure that installer creates this directory
+                    $tempFile = "${testFtpDir}/{$remoteFileName}";
+                    file_put_contents($tempFile, $remoteFileContent);
+
+                    // try to pull the written file through tftp.
+                    // this way we can determine if mapping is active and using sccp_manager maps
+                    if ($remoteFileContent != $this->tftpReadTestFile($remoteFileName)) {
+                        // Did not find sentinel so mapping not available
+                        $this->sccpvalues['tftp_rewrite']['data'] = 'unavailable';
+                    }
+                    unlink($tempFile);
+                }
+            }
+        }
+    }
     // temporary helper function to save xml with proper indentation
     public function saveXml($xml, $filename) {
        $dom = new \DOMDocument("1.0");

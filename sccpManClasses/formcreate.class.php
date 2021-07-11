@@ -449,7 +449,20 @@ class formcreate
                             }
                             $opt_hide .= ' data-vshow="'.$child->option_show.'" data-clshow="'.$child->option_show['class'].'" ';
                         }
+                        // If TFTP remapping is not available, disable options that require it
+                        $disabledButtons = array();
+                        if (($child['id'] == 21) && ($sccp_defaults['tftp_rewrite']['data'] == 'unavailable')) {
+                            $disabledButtons = (array)$child->option_disable;
+                            $unavailableButton = $child->addChild('button','Unavailable');
+                            $unavailableButton->addAttribute('value', 'unavailable');
+                            dbug('',$child);
+                        }
+
                         foreach ($child->xpath('button') as $value) {
+                            $opt_disabled = '';
+                            if (in_array($value, $disabledButtons )) {
+                                $opt_disabled = 'disabled';
+                            }
                             $val_check = strtolower((string)$value[@value]);
                             if ($val_check == strtolower($res_v)) {
                                 $val_check = " checked";
@@ -460,7 +473,7 @@ class formcreate
                                    } else {$val_check = "";}
                                 } else {$val_check = "";}
                             }
-                            echo "<input type=radio name= {$res_id} id=${res_id}_{$i} value={$value[@value]} {$val_check}{$opt_hide}>";
+                            echo "<input type=radio name= {$res_id} id=${res_id}_{$i} value={$value[@value]} {$val_check} {$opt_hide} {$opt_disabled}>";
                             echo "<label for= {$res_id}_{$i}>{$value}</label>";
                             $i++;
                         }
