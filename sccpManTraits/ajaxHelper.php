@@ -387,7 +387,6 @@ trait ajaxHelper {
     }
 
     function handleSubmit($request, $validateonly = false) {
-    dbug('',$request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -555,7 +554,7 @@ trait ajaxHelper {
         $save_settings[] = array('status' => true);
         $this->createDefaultSccpXml();
 
-
+        $this->getFilesFromProvisioner();
 
         return $save_settings;
     }

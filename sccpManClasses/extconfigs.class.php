@@ -265,20 +265,24 @@ class extconfigs
                                   'wallpapers' => 'tftproot'
                                 ),
                             'def' => array('templates' => 'tftproot',
+                                  'firmware' => '',
                                   'settings' => '',
                                   'locales' => '',
-                                  'firmware' => '',
                                   'languages' => 'tftproot',
                                   'dialplan' => '',
-                                  'softkey' => ''
+                                  'softkey' => '',
+                                  'ringtones' => '',
+                                  'wallpapers' => ''
                                 )
                           );
         $base_tree = array('tftp_templates_path' => 'templates',
+                          'tftp_firmware_path' => 'firmware',
                           'tftp_store_path' => 'settings',
                           'tftp_lang_path' => 'languages',
-                          'tftp_firmware_path' => 'firmware',
                           'tftp_dialplan_path' => 'dialplan',
-                          'tftp_softkey_path' => 'softkey'
+                          'tftp_softkey_path' => 'softkey',
+                          'tftp_ringtones_path' => 'ringtones',
+                          'tftp_wallpapers_path' => 'wallpapers'
                         );
         $baseConfig = array();
 

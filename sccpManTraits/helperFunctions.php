@@ -259,6 +259,20 @@ trait helperfunctions {
        $dom->save($filename);
     }
 
+    public function getFilesFromProvisioner() {
+
+        $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/tftpboot/";
+        // Ringtones
+        $ringDir = 'ringtones/';
+        $ringList = 'ringlist.xml';
+        $xmlData = simplexml_load_file("{$provisionerUrl}{$ringDir}{$ringList}");
+        //preg_match_all("|>([0-9a-z]+.xml)</a></span>|U", $availableFiles, $out);
+        foreach ($xmlData as $child) {
+            $fileToSave = str_replace("\\","/",(string)$child->FileName);
+            file_put_contents("{$this->sccppath['tftp_path']}/{$fileToSave}",file_get_contents("{$provisionerUrl}{$fileToSave}"));
+        }
+    }
+
     public function initVarfromXml() {
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group') as $item) {
