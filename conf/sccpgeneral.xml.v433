@@ -1227,6 +1227,14 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Say 'yes' if you need to create cisco default language directory in tftp path.</help>
         </item>
         <item type="IS" id="4" seq="90">
+            <name>getExternalData</name>
+            <label>Get data files from Provision</label>
+            <default>no</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>If this is set to yes, Sccp_manager will try to get data files from dkgroot/Provision (languages, ring tones, firmware etc). This is enabled at your own risk - Sccp_Manager cannot vouch for the security or accuracy of these files, and this option is included to assist in getting up to speed as rapidly as possible.</help>
+        </item>
+        <item type="IS" id="4" seq="90">
             <name>system_rouminguser</name>
             <label>User Roaming</label>
             <default>no</default>
@@ -1356,7 +1364,7 @@ and open the template in the editor. Base Version before all crash :-)
                 <default></default>
                 <class>sccp-custom</class>
             </input>
-            <help>The ringtone that the phone will default to. Can be overridden in the phone. The files RINGLIST.XML provice the basic phone ring tones, while DISTINCTIVERINGLIST.XML defines the list of possible ring tones for your other line types. They, along with the actual 'raw' ringtones, are stored in the /tftpboot/ringtones directory with the rest of the config files.</help>
+            <help>The ringtone that the phone will default to. Can be overridden in the phone. The files RINGLIST.XML provides the basic phone ring tones, while DISTINCTIVERINGLIST.XML defines the list of possible ring tones for your other line types. They, along with the actual 'raw' ringtones, are stored in the /tftpboot/ringtones directory with the rest of the config files.</help>
         </item>
     </page_group>
 

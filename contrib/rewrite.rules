@@ -1,10 +1,5 @@
 #
-# TFTPd Rewrite for SCCP_Manager Custom remapping
-#
-# This file is maintained by Sccp_Manager, and will be overwritten by the installer
-# a copy of the original can be found at sccpManagerRewrite.rules.bu
-# For any changes to this file to be effective, the tftp server will have to be restarted.
-#
+# TFTPd Rewrite for SCCP_Manager Custom remaping
 #	/firmware
 #	/settings
 #	/wallpapers
@@ -179,8 +174,6 @@ ri ^(ATA030204SCCP090202A.zup)$ firmware/ata186/\1
 # Sub-Directory Handling
 
 # settings
-# Do not disable the first rule - this is required by sccp_manager
-ri ^(.+\.tlzz)?$ settings/\1
 #ri ^(.+\.tlv)?$ settings/\1
 #ri ^\/(.+\.tlv)?$ settings/\1
 #ri ^((.+\.cnf.xml)(\.enc)?(\.sgn)?)$ settings/\1

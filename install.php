@@ -858,8 +858,9 @@ function checkTftpServer() {
     if (file_exists("{$confDir}/sccpManagerRewrite.rules")) {
         rename("{$confDir}/sccpManagerRewrite.rules", "{$confDir}/sccpManagerRewrite.rules.bu");
     }
-    copy($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/contrib/rewrite.rules',"{$confDir}/sccpManagerRewrite.rules");
-
+    copy($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/mappingRulesHeader',"{$confDir}/sccpManagerRewrite.rules");
+    file_put_contents("{$confDir}/sccpManagerRewrite.rules", file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/contrib/rewrite.rules'), FILE_APPEND);
+    file_put_contents("{$confDir}/sccpManagerRewrite.rules", "\n# Do not disable this rule - this is required by sccp_manager\nri ^(.+\.tlzz)?$ settings/\\1", FILE_APPEND);
     // TODO: add option to use external server
     $remoteFileName = ".sccp_manager_installer_probe_sentinel_temp".mt_rand(0, 9999999);
     $remoteFileContent = "# This is a test file created by Sccp_Manager. It can be deleted without impact";

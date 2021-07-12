@@ -280,7 +280,7 @@ trait helperfunctions {
                                     $tp = 1;
                                 }
                                 if (empty($this->sccpvalues[(string) $value->name])) {
-                                    $this->sccpvalues[(string) $value->name] = array('keyword' => (string) $value->name, 'data' => $datav, 'type' => $tp, 'seq' => $seq);
+                                    $this->sccpvalues[(string) $value->name] = array('keyword' => (string) $value->name, 'data' => $datav, 'type' => $tp, 'seq' => $seq, 'systemdefault' => '');
                                 }
                             }
                         }
@@ -291,7 +291,7 @@ trait helperfunctions {
                                 $datav = (string) $child->value;
                             }
                             if (empty($this->sccpvalues[(string) $child->name])) {
-                                $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq);
+                                $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq, 'systemdefault' => '');
                             }
                         }
                         if (in_array($child['type'], array('SLD', 'SLS', 'SLT', 'SL', 'SLM', 'SLZ', 'SLTZN', 'SLA'))) {
@@ -301,7 +301,7 @@ trait helperfunctions {
                                 $datav = (string) $child->value;
                             }
                             if (empty($this->sccpvalues[(string) $child->name])) {
-                                $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq);
+                                $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq, 'systemdefault' => '');
                             }
                         }
                     }

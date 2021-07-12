@@ -541,7 +541,6 @@ trait ajaxHelper {
 
         $extSettings = $this->extconfigs->updateTftpStructure(array_merge($this->sccpvalues, $save_settings));
         $save_settings = array_merge($save_settings, $extSettings);
-        dbug('saveSettingsAfter', $save_settings);
         if (!empty($save_settings)) {
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
