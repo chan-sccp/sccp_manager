@@ -387,6 +387,7 @@ trait ajaxHelper {
     }
 
     function handleSubmit($request, $validateonly = false) {
+    dbug('',$request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -448,15 +449,16 @@ trait ajaxHelper {
 
             $key = (str_replace($hdr_prefix, '', $key, $count_mods));
             if ($count_mods) {
-                if (!empty($this->sccpvalues[$key]) && (!($this->sccpvalues[$key]['data'] == $value))) {
-                    $save_settings[$this->sccpvalues[$key]['keyword']] = array(
-                          'keyword' => $this->sccpvalues[$key]['keyword'],
+                if (!empty($this->sccpvalues[$key]) && ($this->sccpvalues[$key]['data'] != $value)) {
+                    $save_settings[$key] = array(
+                          'keyword' => $key,
                           'data' => $value,
                           'seq' => $this->sccpvalues[$key]['seq'],
                           'type' => $this->sccpvalues[$key]['type'],
                           'systemdefault' => $this->sccpvalues[$key]['systemdefault']
                           );
                 }
+
             }
             $key = (str_replace($hdr_arprefix, '', $key, $count_mods));
             if ($count_mods) {
@@ -488,8 +490,8 @@ trait ajaxHelper {
                         $arr_data = substr($arr_data, 0, -1);
                     }
                     if (!($this->sccpvalues[$key]['data'] == $arr_data)) {
-                        $save_settings[] = array(
-                            'keyword' => $this->sccpvalues[$key]['keyword'],
+                        $save_settings[$key] = array(
+                            'keyword' => $key,
                             'data' => $arr_data,
                             'seq' => $this->sccpvalues[$key]['seq'],
                             'type' => $this->sccpvalues[$key]['type'],
@@ -506,7 +508,7 @@ trait ajaxHelper {
                     };
                     $tmpv = implode(",", $save_codec);
                     if (!($this->sccpvalues['allow']['data'] == $tmpv)) {
-                        $save_settings[] = array(
+                        $save_settings['allow'] = array(
                         'keyword' => 'allow',
                         'data' => $tmpv,
                         'seq' => $this->sccpvalues['allow']['seq'],
@@ -525,7 +527,7 @@ trait ajaxHelper {
                     $TZdata = $this->extconfigs->getExtConfig('sccp_timezone', $tz_id);
                     if (!empty($TZdata)) {
                         $value = $TZdata['offset']/60;
-                        $save_settings[] = array(
+                        $save_settings['tzoffset'] = array(
                             'keyword' => 'tzoffset',
                             'data' => $value,
                             'seq' => '98',
@@ -539,6 +541,7 @@ trait ajaxHelper {
 
         $extSettings = $this->extconfigs->updateTftpStructure(array_merge($this->sccpvalues, $save_settings));
         $save_settings = array_merge($save_settings, $extSettings);
+        dbug('saveSettingsAfter', $save_settings);
         if (!empty($save_settings)) {
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();

@@ -854,6 +854,11 @@ function checkTftpServer() {
     global $thisInstaller;
     $confDir = $cnf_int->get('ASTETCDIR');
     $tftpRootPath = "";
+    // put the rewrite rules into the required location
+    if (file_exists("{$confDir}/sccpManagerRewrite.rules")) {
+        rename("{$confDir}/sccpManagerRewrite.rules", "{$confDir}/sccpManagerRewrite.rules.bu");
+    }
+    copy($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/contrib/rewrite.rules',"{$confDir}/sccpManagerRewrite.rules");
 
     // TODO: add option to use external server
     $remoteFileName = ".sccp_manager_installer_probe_sentinel_temp".mt_rand(0, 9999999);
@@ -873,9 +878,7 @@ function checkTftpServer() {
                 $tftpRootPath = $dirToTest;
                 outn("<li>" . _("Found ftp root dir at {$tftpRootPath}") . "</li>");
                 if ($settingsFromDb['tftp_path']['data'] != $tftpRootPath) {
-                    $settingsToDb["tftp_path"] = array( 'keyword' => 'tftp_path', 'seq' => 2, 'type' => 0, 'data' => $tftpRootPath);
-                    // Need to set the new value here to pass to extconfigs below
-                    $settingsFromDb['tftp_path']['data'] = $tftpRootPath;
+                    $settingsFromDb["tftp_path"] = array( 'keyword' => 'tftp_path', 'seq' => 2, 'type' => 0, 'data' => $tftpRootPath, 'systemdefault' => '');
                 }
                 // Found sentinel file. Remove it and exit loop
                 if (file_exists($tempFile)) {
@@ -893,27 +896,19 @@ function checkTftpServer() {
         die_freepbx(_("Either TFTP server is down or TFTP root is non standard. Please fix, refresh, and try again"));
     }
 
-    $settingsToDb['asterisk_etc_path'] =  array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir);
-    $settingsFromDb['asterisk_etc_path'] = $settingsToDb['asterisk_etc_path'];
+    $settingsFromDb['asterisk_etc_path'] =  array( 'keyword' => 'asterisk_etc_path', 'seq' => 20, 'type' => 0, 'data' => $confDir, 'systemdefault' => '');
 
-    foreach ($settingsToDb as $settingToSave) {
-        $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$settingToSave['keyword']}', '{$settingToSave['data']}', {$settingToSave['seq']}, {$settingToSave['type']});";
-        $results = $db->query($sql);
-        if (DB::IsError($results)) {
-            die_freepbx(_("Error updating sccpsettings. $sql"));
-        }
-        unset($settingsToDb[$settingToSave['keyword']]);
+    // Get TFTP mapping Status
+    $settingsFromDb['tftp_rewrite'] = array('keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 0, 'data' => 'off', 'systemdefault' => '');
+    if (\FreePbx::Sccp_manager()->checkTftpMapping()) {
+        $settingsFromDb['tftp_rewrite']['data'] = 'pro';
     }
-    // put the rewrite rules into the required location
-    if (file_exists("{$confDir}/sccpManagerRewrite.rules")) {
-        rename("{$confDir}/sccpManagerRewrite.rules", "{$confDir}/sccpManagerRewrite.rules.bu");
-    }
-    copy($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/contrib/rewrite.rules',"{$confDir}/sccpManagerRewrite.rules");
-    $settingsToDb = $extconfigs->updateTftpStructure($settingsFromDb);
 
-    foreach ($settingsToDb as $settingKey => $settingVal) {
-        $settingsFromDb[$settingKey]['data'] = $settingVal;
-        $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$settingKey}', '{$settingVal}', 20, 0)";
+    // Populate TFTP paths in SccpSettings
+    $settingsFromDb = $extconfigs->updateTftpStructure($settingsFromDb);
+
+    foreach ($settingsFromDb as $settingToSave) {
+        $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES ('{$settingToSave['keyword']}', '{$settingToSave['data']}', {$settingToSave['seq']}, {$settingToSave['type']}, '{$settingToSave['systemdefault']}')";
         $results = $db->query($sql);
         if (DB::IsError($results)) {
             die_freepbx(_("Error updating sccpsettings. $sql"));
@@ -1014,7 +1009,7 @@ function cleanUpSccpSettings() {
             }
         }
         // Override certain chan-sccp defaults as they are based on a non-FreePbx system
-        $settingsFromDb['context']['systemdefault'] = 'from-internal'
+        $settingsFromDb['context']['systemdefault'] = 'from-internal';
 
         unset($sysConfiguration[$key]);
     }

@@ -50,6 +50,7 @@ if ($h_show==1) {
 }
 
 foreach ($items as $child) {
+    $disabledButtons = array();
     if (empty($child->help)) {
         $child->help = 'Help is not available.';
         $child->meta_help = '1';
@@ -62,8 +63,14 @@ foreach ($items as $child) {
         case 'IED':
             \FreePbx::sccp_manager()->formcreate->addElementIED($child, $fvalues, $sccp_defaults,$npref, $napref);
             break;
+        case 'ISC':
+            // This is a special case for Provision mode. Set some parameters here and fall through to IS.
+            $disabledButtons = array('pro' => 'Provision');
+            if ($sccp_defaults['tftp_rewrite']['data'] == 'pro') {
+                $disabledButtons = array('off' => 'Off');
+            }
         case 'IS':
-            \FreePbx::sccp_manager()->formcreate->addElementIS($child, $fvalues, $sccp_defaults,$npref);
+            \FreePbx::sccp_manager()->formcreate->addElementIS($child, $fvalues, $sccp_defaults,$npref, $disabledButtons);
             break;
         case 'SLD':
         case 'SLM':

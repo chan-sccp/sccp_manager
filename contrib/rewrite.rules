@@ -179,7 +179,7 @@ ri ^(ATA030204SCCP090202A.zup)$ firmware/ata186/\1
 
 # settings
 # Do not disable the first rule - this is required by sccp_manager
-#ri ^(.+\.tlzz)?$ settings/\1
+ri ^(.+\.tlzz)?$ settings/\1
 #ri ^(.+\.tlv)?$ settings/\1
 #ri ^\/(.+\.tlv)?$ settings/\1
 #ri ^((.+\.cnf.xml)(\.enc)?(\.sgn)?)$ settings/\1

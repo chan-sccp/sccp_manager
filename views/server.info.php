@@ -44,7 +44,17 @@ if (!empty($this->sccpvalues['SccpDBmodel'])) {
     $info['DB Model'] = array('Version' => $this->sccpvalues['SccpDBmodel']['data'], 'about' => 'SCCP DB Configure');
 }
 
-// Start testing tftp server settings - this should be moved after debug to extConfigs
+exec('in.tftpd -V', $tftpInfo);
+$info['TFTP Server'] = array('Version' => 'Not Found', 'about' => 'Mapping not available');
+
+if (isset($tftpInfo[0])) {
+    $tftpInfo = explode(',',$tftpInfo[0]);
+    $info['TFTP Server'] = array('Version' => $tftpInfo[0], 'about' => 'Mapping not available');
+    $tftpInfo[1] = trim($tftpInfo[1]);
+    if ($tftpInfo[1] == 'with remap') {
+        $info['TFTP Server'] = array('Version' => $tftpInfo[0], 'about' => $tftpInfo[1]);
+    }
+}
 
 if (!empty($this->sccpvalues['tftp_rewrite']['data'])) {
     switch ($this->sccpvalues['tftp_rewrite']['data']) {
@@ -52,14 +62,16 @@ if (!empty($this->sccpvalues['tftp_rewrite']['data'])) {
       case 'pro':
           $info['Provision_SCCP'] = array('Version' => 'base', 'about' => 'Provision Sccp enabled');
           break;
-      case 'unavailable':
-          $info['TFTP Mapping'] = array('Version' => 'off', 'about' => 'remapping is available, but mapping file not included in tftpd-hpa default settings.<br>
-                                          Add option <br>
-                                          -m /etc/asterisk/sccpManagerRewrite.rules <br>
-                                          to the tftpd defaults, location dependant on the system, and restart the tftpd server');
-          break;
       default:
-          $info['TFTP_Mapping'] = array('Version' => 'off', 'about' => 'Rewrite Supported');
+          if ($tftpInfo[1] == 'with remap') {
+              $info['TFTP_Mapping'] = array('Version' => 'off', 'about' => "TFTP mapping is available but the mapping file is not included in tftpd-hpa default settings.<br>
+                                            To enable Provision mode, add option <br>
+                                            -m /etc/asterisk/sccpManagerRewrite.rules <br>
+                                            to the tftpd defaults, (location dependant on the system), and restart the tftpd server");
+
+          } else {
+              $info['TFTP_Mapping'] = array('Version' => 'off', 'about' => "Mapping capability is not built into the TFTP server. To enable Provision, upgrade the TFTP server.");
+          }
           break;
     }
 }

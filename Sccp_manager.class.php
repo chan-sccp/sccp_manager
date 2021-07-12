@@ -749,7 +749,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     /**
      * Retrieve Active Codecs
-     * return fiends Lag pack
+     * return finds Languageg pack
      */
 
     private function initTftpLang() {

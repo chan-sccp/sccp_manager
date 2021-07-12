@@ -328,7 +328,7 @@ class formcreate
         <?php
     }
 
-    function addElementIS($child, $fvalues, $sccp_defaults,$npref) {
+    function addElementIS($child, $fvalues, $sccp_defaults,$npref, $disabledButtons) {
       if ($npref == 'sccp_hw_') {
           $this->buttonDefLabel = 'site';
           $this->buttonHelpLabel = 'device';
@@ -449,14 +449,7 @@ class formcreate
                             }
                             $opt_hide .= ' data-vshow="'.$child->option_show.'" data-clshow="'.$child->option_show['class'].'" ';
                         }
-                        // If TFTP remapping is not available, disable options that require it
-                        $disabledButtons = array();
-                        if (($child['id'] == 21) && ($sccp_defaults['tftp_rewrite']['data'] == 'unavailable')) {
-                            $disabledButtons = (array)$child->option_disable;
-                            $unavailableButton = $child->addChild('button','Unavailable');
-                            $unavailableButton->addAttribute('value', 'unavailable');
-                            dbug('',$child);
-                        }
+
 
                         foreach ($child->xpath('button') as $value) {
                             $opt_disabled = '';

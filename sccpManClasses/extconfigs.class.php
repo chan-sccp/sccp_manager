@@ -280,7 +280,7 @@ class extconfigs
                           'tftp_dialplan_path' => 'dialplan',
                           'tftp_softkey_path' => 'softkey'
                         );
-        $base_config = array();
+        $baseConfig = array();
 
         if (!empty($settingsFromDb['tftp_rewrite_path']['data'])) {
             // Have a setting in sccpsettings. It should start with $tftp_path
@@ -288,8 +288,7 @@ class extconfigs
             if (!strpos($settingsFromDb['tftp_rewrite_path']["data"],$settingsFromDb['tftp_path']['data'])) {
 
                 $adv_ini = "{$settingsFromDb['tftp_path']['data']}/index.cnf";
-                $settingsToDb['tftp_rewrite_path'] = $settingsFromDb['tftp_rewrite_path'];
-                $settingsToDb['tftp_rewrite_path']['data'] = $settingsFromDb['tftp_path']['data'];
+                $settingsFromDb['tftp_rewrite_path']['data'] = $settingsFromDb['tftp_path']['data'];
             }
             $adv_ini = "{$settingsFromDb['tftp_rewrite_path']["data"]}/index.cnf";
         }
@@ -313,17 +312,14 @@ class extconfigs
                     fwrite($indexFile, "{$advKey} = {$advVal}\n");
                 }
                 fclose($indexFile);
-
-                $settingsToDb['tftp_rewrite'] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'pro', 'systemdefault' => '');
+                $settingsFromDb['tftp_rewrite']['data'] = 'pro';
                 break;
-            case 'unavailable':
-                $settingsToDb['tftp_rewrite'] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'unavailable', 'systemdefault' => '');
             case 'on':
             case 'internal':
             case 'off':
             default:
                 // not defined so set here to off
-                $settingsToDb['tftp_rewrite'] =array( 'keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 2, 'data' => 'off', 'systemdefault' => '');
+                $settingsFromDb['tftp_rewrite']['data'] = 'off';
         }
 
         foreach ($adv_tree[$adv_tree_mode] as $key => $value) {
@@ -339,43 +335,31 @@ class extconfigs
         }
 
         foreach ($base_tree as $key => $value) {
-            $base_config[$key] = $adv_config[$value];
-            // Save to sccpsettings
-            $settingsToDb[$key] =array( 'keyword' => $key, 'seq' => 20, 'type' => 0, 'data' => $adv_config[$value], 'systemdefault' => '');
-            if (!is_dir($base_config[$key])) {
-                if (!mkdir($base_config[$key], 0755, true)) {
-                    die_freepbx(_('Error creating dir : ' . $base_config[$key]));
+            $baseConfig[$key] = $adv_config[$value];
+            if (!is_dir($baseConfig[$key])) {
+                if (!mkdir($baseConfig[$key], 0755, true)) {
+                    die_freepbx(_("Error creating dir: $baseConfig[$key]"));
                 }
             }
         }
         // Set up tftproot/settings so that can test if mapping is Enabled and configured.
         if (!is_dir("{$settingsFromDb['tftp_path']['data']}/settings")) {
             if (!mkdir("{$settingsFromDb['tftp_path']['data']}/settings", 0755, true)) {
-                die_freepbx(_('Error creating dir : ' . $base_config[$key]));
+                die_freepbx(_("Error creating dir: {$settingsFromDb['tftp_path']['data']}/settings"));
             }
         }
         // TODO: Need to add index.cnf, after setting defaults correctly
-        if (!file_exists($base_config["tftp_templates_path"] . '/XMLDefault.cnf.xml_template')) {
-            $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
-            $dst_path = $base_config["tftp_templates_path"] . '/';
-            foreach (glob($src_path . '*.*_template') as $filename) {
+        if (!file_exists("{$baseConfig['tftp_templates_path']}/XMLDefault.cnf.xml_template")) {
+            $src_path = "{$_SERVER['DOCUMENT_ROOT']}/admin/modules/sccp_manager/conf/";
+            $dst_path = "{$baseConfig["tftp_templates_path"]}/";
+            foreach (glob("{$src_path}*.*_template") as $filename) {
                 copy($filename, $dst_path . basename($filename));
             }
         }
-        // Remove keys that are not required before returning $base_config.
-        unset($base_config['asterisk'], $base_config['sccp_conf'], $base_config['tftp_path']);
-        return $settingsToDb;
-    }
-    private function initializeTFtpLanguagePath() {
-        $dir = $this->sccppath["tftp_lang_path"];
-        foreach ($this->extconfigs->getExtConfig('sccp_lang') as $lang_key => $lang_value) {
-            $filename = $dir . DIRECTORY_SEPARATOR . $lang_value['locale'];
-            if (!file_exists($filename)) {
-                if (!mkdir($filename, 0777, true)) {
-                    die('Error creating tftp language directory');
-                }
-            }
+        foreach ($baseConfig as $baseKey => $baseValue) {
+            $settingsFromDb[$baseKey] = array('keyword' => $baseKey, 'seq' => 20, 'type' => 0, 'data' => $baseValue, 'systemdefault' => '');
         }
+        return $settingsFromDb;
     }
 
     public function validate_RealTime( $connector )

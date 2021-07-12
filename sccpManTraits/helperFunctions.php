@@ -221,7 +221,7 @@ trait helperfunctions {
             $tftpInfo = explode(',',$tftpInfo[0]);
             $info['TFTP Server'] = array('Version' => $tftpInfo[0], 'about' => 'Mapping not available');
             $tftpInfo[1] = trim($tftpInfo[1]);
-            $this->sccpvalues['tftp-rewrite']['data'] = 'unavailable';
+            $this->sccpvalues['tftp_rewrite']['data'] = 'off';
             if ($tftpInfo[1] == 'with remap') {
                 $info['TFTP Server'] = array('Version' => $tftpInfo[0], 'about' => $tftpInfo[1]);
 
@@ -232,20 +232,23 @@ trait helperfunctions {
                 // write a sentinel to a tftp subdirectory to see if mapping is working
 
                 if (is_dir($testFtpDir) && is_writable($testFtpDir)) {
-                    // TODO: Need to be sure that installer creates this directory
                     $tempFile = "${testFtpDir}/{$remoteFileName}";
                     file_put_contents($tempFile, $remoteFileContent);
-
                     // try to pull the written file through tftp.
                     // this way we can determine if mapping is active and using sccp_manager maps
-                    if ($remoteFileContent != $this->tftpReadTestFile($remoteFileName)) {
+                    if ($remoteFileContent == $this->tftpReadTestFile($remoteFileName)) {
+                        //found the file and contents are correct
+                        $this->sccpvalues['tftp_rewrite']['data'] = 'pro';
+                    } else {
                         // Did not find sentinel so mapping not available
-                        $this->sccpvalues['tftp_rewrite']['data'] = 'unavailable';
+                        $this->sccpvalues['tftp_rewrite']['data'] = 'off';
                     }
                     unlink($tempFile);
                 }
+                return true;
             }
         }
+        return false;
     }
     // temporary helper function to save xml with proper indentation
     public function saveXml($xml, $filename) {
