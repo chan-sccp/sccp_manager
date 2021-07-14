@@ -21,6 +21,7 @@ trait ajaxHelper {
             case 'getUserGrid':
             case 'getSoftKey':
             case 'getDialTemplate':
+            case 'get_ext_files':
             case 'create_hw_tftp':
             case 'reset_dev':
             case 'reset_token':
@@ -382,6 +383,11 @@ trait ajaxHelper {
                 break;
             case 'validateMac':
                 break;
+            case 'get_ext_files':
+                dbug('request is ', $_REQUEST);
+                return true;
+                break;
+
         }
 
     }
@@ -554,7 +560,7 @@ trait ajaxHelper {
         $save_settings[] = array('status' => true);
         $this->createDefaultSccpXml();
 
-        $this->getFilesFromProvisioner();
+        //$this->getFileListFromProvisioner();
 
         return $save_settings;
     }

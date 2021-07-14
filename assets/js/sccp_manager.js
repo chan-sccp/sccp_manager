@@ -513,7 +513,16 @@ $(document).ready(function () {
         }
 
 // ----------------------- Server.model form ----------------
+        if ($(this).data('id') === 'get_ext_files') {
+            var dev_cmd = 'get_ext_files';
+            var dev_fld = ["device"];
+            datas = 'enabled=0' + 'type=firmware' + 'name=' + '&';
 
+            for (var i = 0; i < dev_fld.length; i++) {
+                datas = datas + dev_fld[i] + '=' + $('#ext_' + dev_fld[i]).val() + '&';
+            }
+            ;
+        }
         if ($(this).data('id') === 'model_add') {
             var dev_cmd = 'model_add';
 //            var dev_fld = ["model","vendor","dns","buttons","loadimage","loadinformationid","validate","enabled"];

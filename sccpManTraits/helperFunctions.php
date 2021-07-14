@@ -250,7 +250,7 @@ trait helperfunctions {
         }
         return false;
     }
-    // temporary helper function to save xml with proper indentation
+    // helper function to save xml with proper indentation
     public function saveXml($xml, $filename) {
        $dom = new \DOMDocument("1.0");
        $dom->preserveWhiteSpace = false;
@@ -259,13 +259,28 @@ trait helperfunctions {
        $dom->save($filename);
     }
 
-    public function getFilesFromProvisioner() {
+    public function getFileListFromProvisioner() {
 
-        $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/tftpboot/";
+        $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
+
+        // Get master tftpboot directory structure
+
+        file_put_contents("{$this->sccppath['tftp_path']}/masterFilesStructure.xml",file_get_contents("{$provisionerUrl}tools/tftpbootFiles.xml"));
+        //$xmlData = simplexml_load_file("{$provisionerUrl}tools/tftpbootFiles.xml");
+        return true;
+
+    }
+
+    public function getFilesFromProvisioner($type = "",$name = "",$device = "") {
+
+        $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
+
+        // Get master tftpboot directory structure
+        $xmlData = simplexml_load_file("{$provisionerUrl}tools/tftpbootFiles.xml");
         // Ringtones
-        $ringDir = 'ringtones/';
+        $ringDir = 'tftpboot/ringtones/';
         $ringList = 'ringlist.xml';
-        $xmlData = simplexml_load_file("{$provisionerUrl}{$ringDir}{$ringList}");
+        //$xmlData = simplexml_load_file("{$provisionerUrl}{$ringDir}{$ringList}");
         //preg_match_all("|>([0-9a-z]+.xml)</a></span>|U", $availableFiles, $out);
         foreach ($xmlData as $child) {
             $fileToSave = str_replace("\\","/",(string)$child->FileName);
