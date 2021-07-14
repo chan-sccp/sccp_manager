@@ -272,21 +272,34 @@ trait helperfunctions {
     }
 
     public function getFilesFromProvisioner($type = "",$name = "",$device = "") {
-
+        $filesToGet = array();
         $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
+        if (!$tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
+            $this->getFileListFromProvisioner();
+            $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
+        }
+        switch ($type) {
+            case 'firmware':
+                if (!is_dir("{$this->sccppath['tftp_path']}/firmware/{$device}")) {
+                    mkdir("{$this->sccppath['tftp_path']}/firmware/{$device}", 0755);
+                }
+                $firmwareDir = $tftpBootXml->xpath("//Directory[@name='firmware']");
+                $result = $firmwareDir[0]->xpath("//Directory[@name={$device}]");
+                $filesToGet = (array)$result[0]->FileName;
+                foreach ($filesToGet as $srcFile) {
+                    file_put_contents("{$this->sccppath['tftp_path']}/firmware/{$device}/{$srcFile}",
+                        file_get_contents("{$provisionerUrl}" . (string)$result[0]->DirectoryPath . $srcFile));
+                }
+            return "thanks for trying Diederik :-)";
+            break;
 
-        // Get master tftpboot directory structure
-        $xmlData = simplexml_load_file("{$provisionerUrl}tools/tftpbootFiles.xml");
-        // Ringtones
-        $ringDir = 'tftpboot/ringtones/';
-        $ringList = 'ringlist.xml';
-        //$xmlData = simplexml_load_file("{$provisionerUrl}{$ringDir}{$ringList}");
-        //preg_match_all("|>([0-9a-z]+.xml)</a></span>|U", $availableFiles, $out);
-        foreach ($xmlData as $child) {
-            $fileToSave = str_replace("\\","/",(string)$child->FileName);
-            file_put_contents("{$this->sccppath['tftp_path']}/{$fileToSave}",file_get_contents("{$provisionerUrl}{$fileToSave}"));
+          default:
+              return false;
+              break;
         }
     }
+    file_get_contents(https://github.com/dkgroot/provision_sccp/raw/master/tftpboot/firmware/7911/SCCP11.9-4-2SR3-1S.loads): failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found
+    File:/var/www/html/admin/modules/sccp_manager/sccpManTraits/helperFunctions.php:291
 
     public function initVarfromXml() {
         if ((array) $this->xml_data) {

@@ -384,12 +384,10 @@ trait ajaxHelper {
             case 'validateMac':
                 break;
             case 'get_ext_files':
-                dbug('request is ', $_REQUEST);
-                return true;
+                $result = $this->getFilesFromProvisioner($request['type'],$request['name'],$request['device']);
+                return $result;
                 break;
-
         }
-
     }
 
     function handleSubmit($request, $validateonly = false) {

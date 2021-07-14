@@ -516,7 +516,7 @@ $(document).ready(function () {
         if ($(this).data('id') === 'get_ext_files') {
             var dev_cmd = 'get_ext_files';
             var dev_fld = ["device"];
-            datas = 'enabled=0' + 'type=firmware' + 'name=' + '&';
+            datas = 'enabled=0' + '&' + 'type=firmware' + '&' + 'name=' + '&';
 
             for (var i = 0; i < dev_fld.length; i++) {
                 datas = datas + dev_fld[i] + '=' + $('#ext_' + dev_fld[i]).val() + '&';
