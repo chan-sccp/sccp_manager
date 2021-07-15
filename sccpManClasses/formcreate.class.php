@@ -482,7 +482,7 @@ class formcreate
         <?php
     }
 
-    function addElementSL($child, $fvalues, $sccp_defaults,$npref, $tftpLang) {
+    function addElementSL($child, $fvalues, $sccp_defaults,$npref, $installedLangs) {
     //       Input element Select SLS - System Language
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
@@ -502,7 +502,7 @@ class formcreate
                 $select_opt= $syslangs;
                 break;
             case 'SLT':
-                $select_opt= $tftpLang;
+                $select_opt= $installedLangs;
                 break;
             case 'SLZ':
                 $timeZoneOffsetList = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',

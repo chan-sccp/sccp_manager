@@ -84,12 +84,11 @@ namespace FreePBX\modules;
 
 class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     /* Field Values for type  seq */
-    private $SCCP_LANG_DICTIONARY = 'be-sccp.jar'; // CISCO LANG file search in /tftp-path
     private $pagedata = null;
     private $sccp_driver_ver = '11.4';             // Ver fore SCCP.CLASS.PHP
     public $sccp_manager_ver = '14.1.0.0';
     public $sccp_branch = 'm';                       // Ver fore SCCP.CLASS.PHP
-    private $tftpLang = array();
+    private $installedLangs = array();
 
     private $hint_context = array('default' => '@ext-local'); /// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Get it from Config !!!
     private $val_null = 'NONE'; /// REPLACE to null Field
@@ -140,7 +139,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); //Initialise core settings
         $this->initializeSccpPath();  //Set required Paths
         $this->updateTimeZone();   // Get timezone from FreePBX
-        $this->initTftpLang();
+        $this->findInstLangs();
         $this->saveSccpSettings();
     }
 
@@ -173,7 +172,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     'h_show' => $show_Header,
                     'form_prefix' => $form_prefix,
                     'fvalues' => $form_values,
-                    'tftpLang' => $this->tftpLang,
+                    'installedLangs' => $this->installedLangs,
                     'chanSccpHelp' => $this->sccpHelpInfo,
                     'sccp_defaults' => $this->sccpvalues
                     )
@@ -749,34 +748,26 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     /**
      * Retrieve Active Codecs
-     * return finds Languageg pack
+     * return finds Language pack
      */
 
-    private function initTftpLang() {
+    private function findInstLangs() {
+        //locales and languages are installed in the tftp_lang_path
         $result = array();
-        if (empty($this->sccppath["tftp_path"]) || empty($this->sccppath["tftp_lang_path"])) {
-            return $result;
-        }
-        $dir = $this->sccppath["tftp_lang_path"];
+        $langDir = $this->sccppath["tftp_lang_path"];
+        $localeJar = 'be-sccp.jar';   // This jar should exist if the locale is populated
+        $langArr = $this->extconfigs->getExtConfig('sccp_lang');
+        $localeArray = array_combine(array_keys($langArr),array_column($langArr, 'locale'));
 
-        $cdir = scandir($dir);
-        foreach ($cdir as $key => $value) {
-            if (!in_array($value, array(".", ".."))) {
-                if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
-                    $filename = $dir . DIRECTORY_SEPARATOR . $value . DIRECTORY_SEPARATOR . $this->SCCP_LANG_DICTIONARY;
-                    if (file_exists($filename)) {
-                        $lang_ar = $this->extconfigs->getExtConfig('sccp_lang');
-                        foreach ($lang_ar as $lang_key => $lang_value) {
-                            if ($lang_value['locale'] == $value) {
-                                $result[$lang_key] = $value;
-                            }
-                        }
-//                        $result[] = $value;
-                    }
+        foreach (array_diff(scandir($langDir),array('.', '..')) as $subDir) {
+            if (is_dir($langDir . DIRECTORY_SEPARATOR . $subDir)) {
+                $filename = $langDir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $localeJar;
+                if (file_exists($filename)) {
+                    $result = array_merge(array_intersect($localeArray,array($subDir)),$result);
                 }
             }
         }
-        $this->tftpLang = $result;
+        $this->installedLangs = $result;
     }
 
     /*
@@ -785,11 +776,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     private function initializeTFtpLanguagePath() {
         $dir = $this->sccppath["tftp_lang_path"];
-        foreach ($this->extconfigs->getExtConfig('sccp_lang') as $lang_key => $lang_value) {
-            $filename = $dir . DIRECTORY_SEPARATOR . $lang_value['locale'];
-            if (!file_exists($filename)) {
-                if (!mkdir($filename, 0777, true)) {
-                    die('Error creating tftp language directory');
+        foreach ($this->extconfigs->getExtConfig('sccp_lang') as $langKey => $langValueArr) {
+            $localeDir = $dir . DIRECTORY_SEPARATOR . $langValueArr['locale'];
+            if (!is_dir($localeDir)) {
+                if (!mkdir($localeDir, 0755, true)) {
+                    die("Error creating $localeDir directory");
                 }
             }
         }

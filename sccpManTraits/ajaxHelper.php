@@ -397,19 +397,17 @@ trait ajaxHelper {
         $save_codec = array();
         $count_mods = 0;
         $dbSaveArray = array();
-        $integer_msg = _("%s must be a non-negative integer");
         $errors = array();
         $i = 0;
-        $action = isset($request['sccp_createlangdir']) ? $request['sccp_createlangdir'] : '';
+
+        if (isset($request["{$hdr_prefix}createlangdir"]) && ($request["{$hdr_prefix}createlangdir"] == 'yes')) {
+            $this->initializeTFtpLanguagePath();
+        }
         // if uncheck all codecs, audiocodecs key is missing so nothing changes in db.
         // Unsetting all codecs will now return to chan-sccp defaults.
         if (!isset($request['audiocodecs'])) {
             $request['audiocodecs'] = array_fill_keys(explode(',',$this->sccpvalues['allow']['systemdefault']),true);
         }
-        if ($action == 'yes') {
-            $this->initializeTFtpLanguagePath();
-        }
-
         foreach ($request as $key => $value) {
             // Originally saved all to sccpvalues. Now will save to db defaults if appropriate
             // TODO: Need to verify the tables defined in showGroup - some options maybe

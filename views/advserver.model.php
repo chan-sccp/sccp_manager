@@ -162,7 +162,8 @@
                         <div class="col-md-12">
                             <?php echo "Sccp_Manager will try to download the firmware and template files from Provision_Sccp on GitHub.<br>
                                         This site, dkgroot/provision_sccp, is unrelated to Sccp_Manager, and the files found cannot be warrantied<br>
-                                        If you accept this, please select the device type that you want to try to get files for and then Get Files From Provisioner<br><br>" ?>
+                                        If you accept this, please select the device type that you want to try to get files for and then Get Files From Provisioner<br><br>
+                                        Please be patient - this may take some time depending on your internet link<br><br>" ?>
                         </div>
                     </div>
                 </div>
