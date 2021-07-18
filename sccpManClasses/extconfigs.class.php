@@ -305,14 +305,15 @@ class extconfigs
                 if (file_exists($adv_ini)){
                     rename($adv_ini, "{$adv_ini}.old");
                 }
-                // TODO: index file is not declared
-                $indexFile = fopen($adv_ini,'w');
-                fwrite($indexFile, "[main]\n");
-                foreach ($adv_config as $advKey => $advVal) {
-                    fwrite($indexFile, "{$advKey} = {$advVal}\n");
+                if (!empty($adv_ini)) {
+                    $indexFile = fopen($adv_ini,'w');
+                    fwrite($indexFile, "[main]\n");
+                    foreach ($adv_config as $advKey => $advVal) {
+                        fwrite($indexFile, "{$advKey} = {$advVal}\n");
+                    }
+                    fclose($indexFile);
+                    $settingsFromDb['tftp_rewrite']['data'] = 'pro';
                 }
-                fclose($indexFile);
-                $settingsFromDb['tftp_rewrite']['data'] = 'pro';
                 break;
             case 'on':
             case 'internal':
