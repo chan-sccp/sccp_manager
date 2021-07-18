@@ -275,10 +275,11 @@ trait helperfunctions {
       dbug($request);
         $filesToGet = array();
         $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
-        if (!$tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
+        if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
             $this->getFileListFromProvisioner();
-            $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
         }
+        $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
+
         switch ($request['type']) {
             case 'firmware':
                 $device = $request['device'];
