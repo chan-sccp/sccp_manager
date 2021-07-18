@@ -754,8 +754,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     private function findInstLangs() {
         //locales and languages are installed in the tftp_lang_path
         $result = array();
-        // TODO: Installer comes here so need to set default / ?
-        $langDir = $this->sccppath["tftp_lang_path"];
+        $langDir = '/';        //set default for when called by installer on virgin system
+        if (!empty($this->sccppath["tftp_lang_path"])) {
+            $langDir = $this->sccppath["tftp_lang_path"];
+        }
         $localeJar = 'be-sccp.jar';   // This jar should exist if the locale is populated
         $langArr = $this->extconfigs->getExtConfig('sccp_lang');
         $localeArray = array_combine(array_keys($langArr),array_column($langArr, 'locale'));
