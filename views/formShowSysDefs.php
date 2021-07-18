@@ -77,11 +77,14 @@ foreach ($items as $child) {
         case 'SLK':
         case 'SLP':
         case 'SLS':
-        case 'SLT':
+        case 'SLTD':
         case 'SLA':
         case 'SLZ':
         case 'SL':
             \FreePbx::sccp_manager()->formcreate->addElementSL($child, $fvalues, $sccp_defaults,$npref, $installedLangs);
+            break;
+        case 'SLT':
+            \FreePbx::sccp_manager()->formcreate->addElementSLT($child, $fvalues, $sccp_defaults,$npref, $installedLangs);
             break;
         case 'SDM':
         case 'SDMS':
@@ -105,4 +108,3 @@ if ($h_show==1) {
     echo '</div>';
 }
 ?>
-installedLangs

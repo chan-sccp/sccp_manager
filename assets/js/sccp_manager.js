@@ -195,6 +195,8 @@ $(document).ready(function () {
     });
 // ---------------------------------------
 
+
+
     $('.btnMultiselect').click(function (e) {
         var kid = $(this).data('id');
         if ($(this).data('key') === 'Right') {
@@ -482,6 +484,8 @@ $(document).ready(function () {
     });
 
 
+
+
     $('.sccp_update').on('click', function (e) {
 //        console.log($(this).data('id'));
 
@@ -513,16 +517,6 @@ $(document).ready(function () {
         }
 
 // ----------------------- Server.model form ----------------
-        if ($(this).data('id') === 'get_ext_files') {
-            var dev_cmd = 'get_ext_files';
-            var dev_fld = ["device"];
-            datas = 'enabled=0' + '&' + 'type=firmware' + '&' + 'name=' + '&';
-
-            for (var i = 0; i < dev_fld.length; i++) {
-                datas = datas + dev_fld[i] + '=' + $('#ext_' + dev_fld[i]).val() + '&';
-            }
-            ;
-        }
         if ($(this).data('id') === 'model_add') {
             var dev_cmd = 'model_add';
 //            var dev_fld = ["model","vendor","dns","buttons","loadimage","loadinformationid","validate","enabled"];
@@ -631,7 +625,10 @@ $(document).ready(function () {
                 url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
                 data: datas,
                 success: function (data) {
-//                    console.log(data);
+                    //$('.progress-bar').css('width', data.progress + '%');
+                    //console.log(data.progress);
+
+                    $('#pleaseWaitDialog').modal('hide');
                     if (data.status === true) {
                         if (data.table_reload === true) {
                             $('table').bootstrapTable('refresh');
@@ -664,6 +661,81 @@ $(document).ready(function () {
         }
 
     });
+
+    $('.sccp_get_ext').on('click', function (e) {
+//        console.log($(this).data('id'));
+
+
+// ----------------------- Get external Files----------------
+        if ($(this).data('id') === 'get_ext_files') {
+            var dev_cmd = 'get_ext_files';
+            var dev_fld = ["device", "locale"];
+            datas = 'type=' + $(this).data('type') + '&' + 'name=' + '&';
+
+            for (var i = 0; i < dev_fld.length; i++) {
+                datas = datas + dev_fld[i] + '=' + $('#ext_' + dev_fld[i]).val() + '&';
+            }
+            ;
+        }
+
+        if (dev_cmd !== '') {
+            $.ajax({
+                // Need to modify xhr here to add listener
+                xhr: function() {
+                        const controller = new AbortController();
+                        var xhr = new XMLHttpRequest();
+                        xhr.addEventListener('progress', function(evt) {
+                            var result = evt.srcElement.responseText.split(',');
+                            var percentComplete = result[result.length - 2]; //last element is empty.
+                            $('#progress-bar').css('width', percentComplete + '%');
+                            if (percentComplete == 100 ) {
+                                controller.abort();
+                            }
+                        }, true, { signal: controller.signal });
+                        return xhr;
+                    },
+                type: 'POST',
+                url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
+                data: datas,
+                success: function (data) {
+
+                    $('#pleaseWaitDialog').modal('hide');
+                    data = JSON.parse(data.replace(/^(.*\{)/,"\{"));
+                    if (data.status === true) {
+                        if (data.table_reload === true) {
+                            $('table').bootstrapTable('refresh');
+                        }
+                        if (data.message) {
+                            fpbxToast(data.message,_('Operation Result'), 'success');
+                            if (data.reload === true) {
+                                //Need setTimout or reload will kill Toast
+                                setTimeout(function(){location.reload();},500);
+                            }
+                        }
+                    } else {
+                        if (Array.isArray(data.message)) {
+                            data.message.forEach(function (entry) {
+                                fpbxToast(data.message[1],_('Error Result'), 'warning');
+                            });
+                        } else {
+                            if (data.message) {
+                                fpbxToast(data.message,_('Error Result'), 'warning');
+                            } else {
+                                if (data) {
+                                    bs_alert(data,data.status);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            });
+        }
+
+    });
+
+
+
     $('#cr_sccp_phone_xml').on('click', function (e) {
 //        console.log("asasdasdasdasd");
 //        console.log($('#update-sccp-phone').find(':selected').data('val'));
@@ -1053,6 +1125,14 @@ function hex2bin(hex)
     }
 
     return String.fromCharCode.apply(String, bytes);
+}
+
+function showProgress() {
+    $('#pleaseWaitDialog').modal();
+}
+
+function closeProgress() {
+  $('#pleaseWaitDialog').modal('hide');
 }
 
 function sleep(milliseconds)

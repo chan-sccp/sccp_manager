@@ -501,8 +501,12 @@ class formcreate
                 }
                 $select_opt= $syslangs;
                 break;
-            case 'SLT':
-                $select_opt= $installedLangs;
+            case 'SLTD':
+                $select_opt = array('xx' => 'No language packs found');
+                if (!empty($installedLangs)) {
+                    $select_opt = (array)$installedLangs;
+
+                }
                 break;
             case 'SLZ':
                 $timeZoneOffsetList = array('-12' => 'GMT -12', '-11' => 'GMT -11', '-10' => 'GMT -10', '-09' => 'GMT -9',
@@ -514,7 +518,7 @@ class formcreate
                 $select_opt= $timeZoneOffsetList;
                 break;
             case 'SLA':
-            $select_opt ='';
+            $select_opt = array();
                 if (!empty($fvalues[$res_n])) {
                     if (!empty($fvalues[$res_n]['data'])) {
                         $res_value = explode(';', $fvalues[$res_n]['data']);
@@ -614,6 +618,167 @@ class formcreate
             </div>
         </div>
         <?php
+    }
+
+    function addElementSLT($child, $fvalues, $sccp_defaults,$npref, $installedLangs) {
+    //       Input element Select SLS - System Language
+        $res_n =  (string)$child ->name;
+        $res_id = $npref.$res_n;
+        $child->value ='';
+        // $select_opt is an associative array for these types.
+        if (!empty($metainfo[$res_n])) {
+            if ($child->meta_help == '1' || $child->help == 'Help!') {
+                $child->help = $metaInfo[$res_n];
+            }
+        }
+        $select_opt = array('xx' => 'No language packs found');
+        if (!empty($installedLangs)) {
+            $select_opt = $installedLangs;
+        }
+
+        if (empty($child->class)) {
+            $child->class = 'form-control';
+        }
+        if (!empty($fvalues[$res_n])) {
+            if (!empty($fvalues[$res_n]['data'])) {
+                $child->value = $fvalues[$res_n]['data'];
+            }
+        }
+        if (empty($child->value)) {
+            if (!empty($child->default)) {
+                $child->value = $child->default;
+            }
+        }
+        $langArr = \FreePBX::Sccp_manager()->extconfigs->getExtConfig('sccp_lang');
+        $localeArray = array_combine(array_keys($langArr),array_column($langArr, 'locale'));
+        $requestType = 'locale';
+        ?>
+        <div class="element-container">
+            <div class="row">
+                <div class="form-group">
+                    <!--Begin modal include-->
+                    <div class="modal fade get_ext_file" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="gridSystemModalLabel"><?php echo _('Get Files From Provisioner');?></h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="element-container">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <?php echo "Sccp_Manager will try to download {$requestType} files from Provision_Sccp on GitHub.<br>
+                                                            This site, dkgroot/provision_sccp, is unrelated to Sccp_Manager, and the files found cannot be warrantied<br>
+                                                            If you accept this, please select the {$requestType} that you want to try to get files for and then Get Files From Provisioner<br><br>
+                                                            Please be patient - this may take some time depending on your internet link<br><br>" ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="element-container">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-md-3">
+                                                  <label class="control-label" for="get_model_files"><?php echo _('Fetch Files for');?></label>
+                                                  <i class="fa fa-question-circle fpbx-help-icon" ></i>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class = "lnet form-group form-inline" data-nextid=1>
+                                                        <?php
+                                                        echo  "<select class={$child->class} id='ext_locale'>";
+                                                        foreach ($localeArray as $key => $val) {
+
+                                                            echo "<option value= '{$key}'";
+                                                            if ($key == 'en_GB') {
+                                                                echo " selected='selected'";
+                                                            }
+                                                            echo ">{$val}</option>";
+                                                        }
+                                                        ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <span id="new_model-help" class="help-block fpbx-help-block">Help.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _('Cancel');?></button>
+                                    <button type="button" class="btn btn-primary sccp_get_ext" data-id="get_ext_files" data-type="locales" onclick="showProgress();" id="get_model_files" data-dismiss="modal"><?php echo _('Get Files from Provisioner');?></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End modal include-->
+                    <!--Start progress modal include-->
+                    <div id="pleaseWaitDialog" class="modal" data-backdrop="static" data-keyboard="false">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                  <h1>Getting files .....please wait</h1>
+                                </div>
+                                <div class="modal-body">
+
+                                    <div class="progress">
+                                        <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar" style="width:0%">
+                                        </div>
+                                    </div>
+
+                                <!--
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar" style="width: 100%;">
+                                        </div>
+                                    </div>
+                                      -->
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+                    <!--End progress modal include-->
+                    <div class="col-md-3">
+                        <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
+                        <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
+                    </div>
+                    <div class="col-md-3">
+                        <div class = "lnet form-group form-inline" data-nextid=1>
+                            <?php
+                            echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
+                            foreach ($select_opt as $key => $val) {
+                                    $opt_key = $key;
+                                    $opt_val = $val;
+
+                                echo '<option value="' . $opt_key . '"';
+                                if ($opt_key == $child->value) {
+                                    echo ' selected="selected"';
+                                }
+                                echo "> {$opt_val} </option>";
+                            }
+                            ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                      <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file"><i class="fa fa-bolt"></i> <?php echo _("Get language from Provisioner"); ?>
+                      </button>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
+                </div>
+            </div>
+        </div>
+
+        <?php
+
     }
 
     function addElementSD($child, $fvalues, $sccp_defaults,$npref) {

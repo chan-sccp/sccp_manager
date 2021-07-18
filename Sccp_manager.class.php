@@ -754,6 +754,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     private function findInstLangs() {
         //locales and languages are installed in the tftp_lang_path
         $result = array();
+        // TODO: Installer comes here so need to set default / ?
         $langDir = $this->sccppath["tftp_lang_path"];
         $localeJar = 'be-sccp.jar';   // This jar should exist if the locale is populated
         $langArr = $this->extconfigs->getExtConfig('sccp_lang');
@@ -839,11 +840,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $dir = $this->sccppath["tftp_dialplan_path"] . '/dial*.xml';
         $base_len = strlen($this->sccppath["tftp_dialplan_path"]) + 1;
         $res = glob($dir);
-        $dp_list = array();
         foreach ($res as $key => $value) {
             $res[$key] = array('id' => substr($value, $base_len, -4), 'file' => substr($value, $base_len));
         }
-
         return $res;
     }
 
@@ -877,34 +876,32 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     /*
-     *      Update Butons Labels on mysql DB
+     *      Update buttons Labels on mysql DB
      */
 
     private function updateSccpButtons($hw_list = array()) {
 
         $save_buttons = array();
+        $button_list = array();
         if (!empty($hw_list)) {
-            $buton_list = array();
             foreach ($hw_list as $value) {
-                $buton_tmp = $this->dbinterface->getSccpDeviceTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial', 'id' => $value['name']));
-                if (!empty($buton_tmp)) {
-                    $buton_list = array_merge($buton_list, $buton_tmp);
-                }
+                $button_tmp = (array)$this->dbinterface->getSccpDeviceTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial', 'id' => $value['name']));
+                $button_list = array_merge($button_list, $button_tmp);
             }
         } else {
-            $buton_list = $this->dbinterface->getSccpDeviceTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial'));
+            $button_list = $this->dbinterface->getSccpDeviceTableData("get_sccpdevice_buttons", array('buttontype' => 'speeddial'));
         }
-        if (empty($buton_list)) {
+        if (empty($button_list)) {
             return array('Response' => ' 0 buttons found ', 'data' => '');
         }
         $copy_fld = array('ref', 'reftype', 'instance', 'buttontype');
-        $user_list = $user_list = $this->dbinterface->get_db_SccpTableByID("SccpExtension", array(), 'name');
-        foreach ($buton_list as $value) {
+        $extList = $extList = $this->dbinterface->get_db_SccpTableByID("SccpExtension", array(), 'name');
+        foreach ($button_list as $value) {
             $btn_opt = explode(',', $value['options']);
             $btn_id = $btn_opt[0];
-            if (!empty($user_list[$btn_id])) {
-                if ($user_list[$btn_id]['label'] != $value['name']) {
-                    $btn_data['name'] = $user_list[$btn_id]['label'];
+            if (!empty($extList[$btn_id])) {
+                if ($extList[$btn_id]['label'] != $value['name']) {
+                    $btn_data['name'] = $extList[$btn_id]['label'];
                     foreach ($copy_fld as $ckey) {
                         $btn_data[$ckey] = $value[$ckey];
                     }

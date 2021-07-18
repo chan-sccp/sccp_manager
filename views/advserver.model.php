@@ -172,7 +172,7 @@
                         <div class="form-group">
                             <div class="col-md-3">
                               <label class="control-label" for="get_model_files"><?php echo _('Fetch Files for');?></label>
-                              <i class="fa fa-question-circle fpbx-help-icon" data-for="get_model_files"></i>
+                              <i class="fa fa-question-circle fpbx-help-icon" ></i>
                             </div>
                             <div class="col-md-9">
                                 <input type="text" class="form-control" id="ext_device" name="new_model" value="79XX">
@@ -188,7 +188,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _('Cancel');?></button>
-                <button type="button" class="btn btn-primary sccp_update" data-id="get_ext_files" id="get_model_files" data-dismiss="modal"><?php echo _('Get Files from Provisioner');?></button>
+                <button type="button" class="btn btn-primary sccp_get_ext" data-id="get_ext_files" data-type="firmware" id="get_model_files" data-dismiss="modal"><?php echo _('Get Files from Provisioner');?></button>
             </div>
         </div>
     </div>

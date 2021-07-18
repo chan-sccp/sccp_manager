@@ -867,6 +867,7 @@ function checkTftpServer() {
     $possibleFtpDirs = array('/srv', '/srv/tftp','/var/lib/tftp', '/tftpboot');
 
     // write a couple of sentinels to different distro tftp locations in the filesystem
+    // TODO: Depending on distro, do we have write permissions
     foreach ($possibleFtpDirs as $dirToTest) {
         if (is_dir($dirToTest) && is_writable($dirToTest)) {
             $tempFile = "${dirToTest}/{$remoteFileName}";

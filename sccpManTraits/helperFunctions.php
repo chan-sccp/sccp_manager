@@ -271,15 +271,17 @@ trait helperfunctions {
 
     }
 
-    public function getFilesFromProvisioner($type = '',$name = '',$device = '') {
+    public function getFilesFromProvisioner($request) {
+      dbug($request);
         $filesToGet = array();
         $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
         if (!$tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
             $this->getFileListFromProvisioner();
             $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
         }
-        switch ($type) {
+        switch ($request['type']) {
             case 'firmware':
+                $device = $request['device'];
                 if (!is_dir("{$this->sccppath['tftp_firmware_path']}/{$device}")) {
                     mkdir("{$this->sccppath['tftp_firmware_path']}/{$device}", 0755);
                 }
@@ -290,13 +292,49 @@ trait helperfunctions {
                     file_put_contents("{$this->sccppath['tftp_firmware_path']}/{$device}/{$srcFile}",
                         file_get_contents($provisionerUrl . (string)$result[0]->DirectoryPath . $srcFile));
                 }
-            return "thanks for trying Diederik :-)";
-            break;
+                $msg = "Firmware for {$device} has been successfully downloaded";
+                break;
+            case 'locales':
+                $locale = $request['locale'];
+                $langArr = \FreePBX::Sccp_manager()->extconfigs->getExtConfig('sccp_lang');
+                $language = $langArr[$locale]['locale'];
 
+                if (!is_dir("{$this->sccppath['tftp_lang_path']}/{$language}")) {
+                    mkdir("{$this->sccppath['tftp_lang_path']}/{$language}", 0755);
+                }
+
+                $localeDir = $tftpBootXml->xpath("//Directory[@name='locales']");
+                $localeDir = $localeDir[0]->xpath("//Directory[@name='languages']");
+                $result = $localeDir[0]->xpath("//Directory[@name='{$language}']");
+                $filesToGet = (array)$result[0]->FileName;
+
+                $totalFiles = count($filesToGet);
+                $filesRetrieved = 0;
+
+                foreach ($filesToGet as $srcFile) {
+
+                    file_put_contents("{$this->sccppath['tftp_lang_path']}/{$language}/{$srcFile}",
+                        file_get_contents($provisionerUrl . (string)$result[0]->DirectoryPath . $srcFile));
+                    $filesRetrieved ++;
+                    $percentComplete = $filesRetrieved *100 / $totalFiles;
+
+                    //$data = array('data' => array('percentComplete' => $percentComplete));
+                    $data = "{$percentComplete},";
+                    //echo "id: $filesRetrieved" . PHP_EOL;
+                    //echo json_encode($data);
+                    echo $data;
+                    //echo PHP_EOL;
+                    ob_flush();
+                    flush();
+
+                }
+                $msg = "{$locale} Locale has been successfully downloaded";
+                break;
           default:
               return false;
               break;
         }
+        return array('status' => true, 'message' => $msg, 'reload' => true);
     }
 
     public function initVarfromXml() {
