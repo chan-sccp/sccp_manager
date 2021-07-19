@@ -625,10 +625,7 @@ $(document).ready(function () {
                 url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
                 data: datas,
                 success: function (data) {
-                    //$('.progress-bar').css('width', data.progress + '%');
-                    //console.log(data.progress);
 
-                    $('#pleaseWaitDialog').modal('hide');
                     if (data.status === true) {
                         if (data.table_reload === true) {
                             $('table').bootstrapTable('refresh');

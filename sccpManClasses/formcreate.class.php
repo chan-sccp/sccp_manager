@@ -650,97 +650,16 @@ class formcreate
             }
         }
         $langArr = \FreePBX::Sccp_manager()->extconfigs->getExtConfig('sccp_lang');
-        $localeArray = array_combine(array_keys($langArr),array_column($langArr, 'locale'));
+        $selectArray = array_combine(array_keys($langArr),array_column($langArr, 'locale'));
         $requestType = 'locale';
         ?>
         <div class="element-container">
             <div class="row">
                 <div class="form-group">
-                    <!--Begin modal include-->
-                    <div class="modal fade get_ext_file" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-                        <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title" id="gridSystemModalLabel"><?php echo _('Get Files From Provisioner');?></h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="element-container">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <?php echo "Sccp_Manager will try to download {$requestType} files from Provision_Sccp on GitHub.<br>
-                                                            This site, dkgroot/provision_sccp, is unrelated to Sccp_Manager, and the files found cannot be warrantied<br>
-                                                            If you accept this, please select the {$requestType} that you want to try to get files for and then Get Files From Provisioner<br><br>
-                                                            Please be patient - this may take some time depending on your internet link<br><br>" ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="element-container">
-                                        <div class="row">
-                                            <div class="form-group">
-                                                <div class="col-md-3">
-                                                  <label class="control-label" for="get_model_files"><?php echo _('Fetch Files for');?></label>
-                                                  <i class="fa fa-question-circle fpbx-help-icon" ></i>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class = "lnet form-group form-inline" data-nextid=1>
-                                                        <?php
-                                                        echo  "<select class={$child->class} id='ext_locale'>";
-                                                        foreach ($localeArray as $key => $val) {
+                    <?php
+                    include($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/views/getFileModal.html');
+                    ?>
 
-                                                            echo "<option value= '{$key}'";
-                                                            if ($key == 'en_GB') {
-                                                                echo " selected='selected'";
-                                                            }
-                                                            echo ">{$val}</option>";
-                                                        }
-                                                        ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <span id="new_model-help" class="help-block fpbx-help-block">Help.</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _('Cancel');?></button>
-                                    <button type="button" class="btn btn-primary sccp_get_ext" data-id="get_ext_files" data-type="locales" onclick="showProgress();" id="get_model_files" data-dismiss="modal"><?php echo _('Get Files from Provisioner');?></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--End modal include-->
-                    <!--Start progress modal include-->
-                    <div id="pleaseWaitDialog" class="modal" data-backdrop="static" data-keyboard="false">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                  <h1>Getting files .....please wait</h1>
-                                </div>
-                                <div class="modal-body">
-
-                                    <div class="progress">
-                                        <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar" style="width:0%">
-                                        </div>
-                                    </div>
-
-                                <!--
-                                    <div class="progress progress-striped active">
-                                        <div class="progress-bar" style="width: 100%;">
-                                        </div>
-                                    </div>
-                                      -->
-                                </div>
-                            </div><!-- /.modal-content -->
-                        </div><!-- /.modal-dialog -->
-                    </div><!-- /.modal -->
-                    <!--End progress modal include-->
                     <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -764,10 +683,9 @@ class formcreate
                         </div>
                     </div>
                     <div class="col-md-3">
-                      <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file"><i class="fa fa-bolt"></i> <?php echo _("Get language from Provisioner"); ?>
+                      <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file"><i class="fa fa-bolt"></i> <?php echo _("Get language from Provisioner");?>
                       </button>
                     </div>
-
                 </div>
             </div>
             <div class="row">

@@ -148,52 +148,21 @@
         </div>
     </div>
 </div>
+<?php
+$requestType = 'firmware';
+$selectArray = array();
+$tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
+$firmwareDir = $tftpBootXml->xpath("//Directory[@name='firmware']");
 
-<div class="modal fade get_ext_file" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="gridSystemModalLabel"><?php echo _('Get Files From Provisioner');?></h4>
-            </div>
-            <div class="modal-body">
-                <div class="element-container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <?php echo "Sccp_Manager will try to download the firmware and template files from Provision_Sccp on GitHub.<br>
-                                        This site, dkgroot/provision_sccp, is unrelated to Sccp_Manager, and the files found cannot be warrantied<br>
-                                        If you accept this, please select the device type that you want to try to get files for and then Get Files From Provisioner<br><br>
-                                        Please be patient - this may take some time depending on your internet link<br><br>" ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="element-container">
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="col-md-3">
-                              <label class="control-label" for="get_model_files"><?php echo _('Fetch Files for');?></label>
-                              <i class="fa fa-question-circle fpbx-help-icon" ></i>
-                            </div>
-                            <div class="col-md-9">
-                                <input type="text" class="form-control" id="ext_device" name="new_model" value="79XX">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <span id="new_model-help" class="help-block fpbx-help-block">Help.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _('Cancel');?></button>
-                <button type="button" class="btn btn-primary sccp_get_ext" data-id="get_ext_files" data-type="firmware" id="get_model_files" data-dismiss="modal"><?php echo _('Get Files from Provisioner');?></button>
-            </div>
-        </div>
-    </div>
-</div>
+foreach ($firmwareDir[0] as $child) {
+    if (!empty((string)$child['name'])) {
+        $selectArray[(string)$child['name']] = (string)$child['name'];
+    }
+};
 
+include($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/views/getFileModal.html');
+
+?>
 <div class="modal fade" id="edit_model" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
