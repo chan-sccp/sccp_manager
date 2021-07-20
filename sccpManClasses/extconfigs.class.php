@@ -281,43 +281,36 @@ class extconfigs
                         );
         $baseConfig = array();
 
-        if (!empty($settingsFromDb['tftp_rewrite_path']['data'])) {
+        if (empty($settingsFromDb['tftp_rewrite_path']['data'])) {
+            $settingsFromDb['tftp_rewrite_path']['data'] = $settingsFromDb['tftp_path']['data'];
+        } else {
             // Have a setting in sccpsettings. It should start with $tftp_path
             // If not we will replace it with $tftp_path. Avoids issues with legacy values
             if (!strpos($settingsFromDb['tftp_rewrite_path']["data"],$settingsFromDb['tftp_path']['data'])) {
-
-                $adv_ini = "{$settingsFromDb['tftp_path']['data']}/index.cnf";
                 $settingsFromDb['tftp_rewrite_path']['data'] = $settingsFromDb['tftp_path']['data'];
             }
-            $adv_ini = "{$settingsFromDb['tftp_rewrite_path']["data"]}/index.cnf";
         }
-
+        $adv_ini = "{$settingsFromDb['tftp_rewrite_path']["data"]}/index.cnf";
         $adv_tree_mode = 'def';
 
         switch ($settingsFromDb['tftp_rewrite']['data']) {
             case 'pro':
                 $adv_tree_mode = 'pro';
-                if (!empty($adv_ini)) {
-                    if (!empty($adv_ini) && file_exists($adv_ini)) {
-                        $adv_ini_array = parse_ini_file($adv_ini);
-                        $adv_config = array_merge($adv_config, $adv_ini_array);
-                    }
+                if (!empty($adv_ini) && file_exists($adv_ini)) {
+                    $adv_ini_array = parse_ini_file($adv_ini);
+                    $adv_config = array_merge($adv_config, $adv_ini_array);
                 }
                 // rewrite adv_ini to reflect the new $adv_config
-                if (!empty($adv_ini)) {
-                    if (file_exists($adv_ini)){
-                        rename($adv_ini, "{$adv_ini}.old");
-                    }
+                if (file_exists($adv_ini)){
+                    rename($adv_ini, "{$adv_ini}.old");
                 }
-                if (!empty($adv_ini)) {
-                    $indexFile = fopen($adv_ini,'w');
-                    fwrite($indexFile, "[main]\n");
-                    foreach ($adv_config as $advKey => $advVal) {
-                        fwrite($indexFile, "{$advKey} = {$advVal}\n");
-                    }
-                    fclose($indexFile);
-                    $settingsFromDb['tftp_rewrite']['data'] = 'pro';
+                $indexFile = fopen($adv_ini,'w');
+                fwrite($indexFile, "[main]\n");
+                foreach ($adv_config as $advKey => $advVal) {
+                    fwrite($indexFile, "{$advKey} = {$advVal}\n");
                 }
+                fclose($indexFile);
+                $settingsFromDb['tftp_rewrite']['data'] = 'pro';
                 break;
             case 'on':
             case 'internal':
