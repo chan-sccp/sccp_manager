@@ -304,8 +304,10 @@ class extconfigs
                     }
                 }
                 // rewrite adv_ini to reflect the new $adv_config
-                if (file_exists($adv_ini)){
-                    rename($adv_ini, "{$adv_ini}.old");
+                if (!empty($adv_ini)) {
+                    if (file_exists($adv_ini)){
+                        rename($adv_ini, "{$adv_ini}.old");
+                    }
                 }
                 if (!empty($adv_ini)) {
                     $indexFile = fopen($adv_ini,'w');
