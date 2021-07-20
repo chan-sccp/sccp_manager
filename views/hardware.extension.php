@@ -26,7 +26,7 @@ if (!empty($this->sccpvalues['system_rouminguser'])) {
 <!--                            <th data-checkbox="true"></th> -->
                             <th data-sortable="true" data-field="name"><?php echo _('Extension') ?></th>
                             <th data-sortable="true" data-field="label"><?php echo _('Display Name') ?></th>
-                            <th data-sortable="true" data-field="line_statustext"><?php echo _('Status') ?></th>
+                            <th data-sortable="true" data-field="line_status"><?php echo _('Status | Active') ?></th>
                             <th data-field="actions" data-formatter="DispayPhoneActionsKeyFormatter"><?php echo _('Actions') ?></th>
                         </tr>
                     </thead>

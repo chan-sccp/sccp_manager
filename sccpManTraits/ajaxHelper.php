@@ -290,11 +290,28 @@ trait ajaxHelper {
                 return $result;
                 break;
             case 'getExtensionGrid':
-                $result = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
-                if (empty($result)) {
+                $lineList = $this->dbinterface->getSccpDeviceTableData($request['type']);
+                if (empty($lineList)) {
                     return array();
                 }
-                return $result;
+                dbug($lineList);
+                $activeDevices = $this->aminterface->sccp_get_active_device();
+                dbug($activeDevices);
+                if (!empty($activeDevices)) {
+                    foreach ($lineList as $key => $lineArr) {
+                        if (isset($activeDevices[$lineArr['mac']])) {
+                            $tpm_info = $activeDevices[$lineArr['mac']];
+                            if (!empty($tpm_info)) {
+                                $lineList[$key]['line_status'] = $tpm_info['status'];
+                                $lineList[$key]['line_status'] .= " | {$tpm_info['act']}";
+                            } else {
+                                $lineList[$key]['line_status'] = '';
+                                $lineList[$key]['line_status'] .= '|';
+                            }
+                        }
+                    }
+                }
+                return $lineList;
                 break;
             case 'getPhoneGrid':
                 $dbDevices = array();
