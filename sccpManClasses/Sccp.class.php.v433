@@ -164,7 +164,11 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             } else {
                 if (array_key_exists($key, $this->line_defaults)) {
                     $sqlCol .= ", {$key}";
-                    $sqlVal .= ", '{$this->line_defaults[$key]}'";
+                    if (!empty($this->line_defaults[$key])) {
+                        $sqlVal .= ", '{$this->line_defaults[$key]}'";
+                    } else {
+                        $sqlVal .= NULL;
+                    }
                 }
             }
         }
