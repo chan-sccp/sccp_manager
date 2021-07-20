@@ -554,12 +554,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     }
                     break;
                 default:
-                    if (!empty($get_settings[$hdr_prefix . $key])) {
-                        $value = $get_settings[$hdr_prefix . $key];
-                    }
+                    // handle vendor prefix
                     if (!empty($get_settings[$hdr_vendPrefix . $key])) {
                         $value = $get_settings[$hdr_vendPrefix  . $key];
                     }
+                    // handle array prefix
                     if (!empty($get_settings[$hdr_arprefix . $key])) {
                         $arr_data = '';
                         $arr_clear = false;
@@ -601,6 +600,13 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         } else {
                             $value = $arr_data;
                         }
+                    }
+                    // Now only have normal prefix
+                    if (!empty($get_settings["{$hdr_prefix}{$key}"])) {
+                        $value = $get_settings["{$hdr_prefix}{$key}"];
+                    } else if (!empty($get_settings["sccp_hw{$key}"])) {
+                        //have an underscore db field
+                        $value = $get_settings["sccp_hw{$key}"];
                     }
             }
             if (!empty($value)) {

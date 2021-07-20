@@ -584,7 +584,6 @@ trait ajaxHelper {
     }
 
     public function getFilesFromProvisioner($request) {
-        dbug($request);
         $filesToGet = array();
         $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
         if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {

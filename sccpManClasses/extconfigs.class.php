@@ -297,9 +297,11 @@ class extconfigs
         switch ($settingsFromDb['tftp_rewrite']['data']) {
             case 'pro':
                 $adv_tree_mode = 'pro';
-                if (!empty($adv_ini) && file_exists($adv_ini)) {
-                    $adv_ini_array = parse_ini_file($adv_ini);
-                    $adv_config = array_merge($adv_config, $adv_ini_array);
+                if (!empty($adv_ini)) {
+                    if (!empty($adv_ini) && file_exists($adv_ini)) {
+                        $adv_ini_array = parse_ini_file($adv_ini);
+                        $adv_config = array_merge($adv_config, $adv_ini_array);
+                    }
                 }
                 // rewrite adv_ini to reflect the new $adv_config
                 if (file_exists($adv_ini)){

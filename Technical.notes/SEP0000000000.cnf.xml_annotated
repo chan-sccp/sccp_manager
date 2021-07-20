@@ -95,98 +95,98 @@
 		<phonePassword></phonePassword>
 		<backgroundImageAccess>true</backgroundImageAccess>
 		<callLogBlfEnabled>2</callLogBlfEnabled>
-	</commonProfile> 
+	</commonProfile>
 	<vendorConfig>
-		<ehookEnable>1</ehookEnable> 
-		<!-- 
-			Headset Hookswitch Control 
+		<ehookEnable>1</ehookEnable>
+		<!--
+			Headset Hookswitch Control
 			This allows the headset to take the phone off-hook (with appropriate
 			cables/connections etc)
 		-->
 
 		<disableSpeaker>false</disableSpeaker>
 		<!--
-			Disable only the speakerphone functionality. 
+			Disable only the speakerphone functionality.
 			Disabling speakerphone functionality will not affect the handset.
 			true = Disabled.
-			false = Enabled (default). 
+			false = Enabled (default).
 		-->
 
 		<disableSpeakerAndHeadset>false</disableSpeakerAndHeadset>
 		<!--
 			Enables and disables the speakerphone and headset.
 			true = Disabled.
-			false = Enabled (default). 
+			false = Enabled (default).
 		-->
 
 		<pcPort>0</pcPort>
 		<!--
-			Enables and disables the Ethernet switch port on the phone so the IP phone can 
+			Enables and disables the Ethernet switch port on the phone so the IP phone can
 			have access to an Ethernet connection for a PC connection through the phone.
 				0 = Enabled (default).
-				1 = Disabled. 
+				1 = Disabled.
 		-->
-		
+
 		<settingsAccess>1</settingsAccess>
 		<!--
 			Enables and disables the Settings button on an IP phone.
 			Indicates whether the Settings button on the phone is functional. When Settings Access is enabled, you can change the phone network configuration, ring type, and volume on the phone. When Settings Access is disabled, the Settings button is completely disabled; no options appear when you press the button. Also, you cannot adjust the ringer volume or save any volume settings. By default, Settings Access is enabled.
 				0 = Disabled.
 				1 = Enabled (default). The phone user can modify features by using the Settings menu.
-				2 = Restricted. The phone user is allowed to access User Preferences and volume settings only. 
+				2 = Restricted. The phone user is allowed to access User Preferences and volume settings only.
 		-->
-		
+
 		<garp>0</garp>
 		<!--
-			Enables and disables IP phone response to gratuitous Address Resolution 
+			Enables and disables IP phone response to gratuitous Address Resolution
 			Protocol (ARP) messages from the IP phone's Ethernet interface.
 			Indicates whether the phone will learn MAC addresses from Gratuitous ARP responses.  Disabling the phones ability to accept Gratuitous ARP will prevent applications which use this mechanism for monitoring and recording of voice streams from working.  If monitoring capability is not desired, change this setting to Disabled.
 				0 = Disabled.
 				1 = Enabled (default).
-		--> 
-		
+		-->
+
 		<voiceVlanAccess>0</voiceVlanAccess>
 		<!--
-			Enables and disables spanning, which is the IP phone's access to the voice 
+			Enables and disables spanning, which is the IP phone's access to the voice
 			VLAN of the PC to which the IP phone's Ethernet port is connected.
 				0 = Enabled (default).
-				1 = Disabled. 
+				1 = Disabled.
 		-->
-		
-		<videoCapability>1</videoCapability>  
-		<!-- 
-			a 7975G doesn't have any "real" video capability, it requires software 
+
+		<videoCapability>1</videoCapability>
+		<!--
+			a 7975G doesn't have any "real" video capability, it requires software
 			called video advantage to stream webcam/video from a pc connected to
-			the pc-port on the back of the phone.  Enabled here just as a 
+			the pc-port on the back of the phone.  Enabled here just as a
 			curiosity for now.
 
 			Make sure this is only set when video is available. Seems to cause sporadic issues if not.
 		 -->
-		 
+
 		<autoSelectLineEnable>0</autoSelectLineEnable>
 		<!--
 			Enables and disables auto line selection.
 				0 = Disabled.
-				1 = Enabled (default). 
+				1 = Enabled (default).
 		-->
-		
-		<webAccess>0</webAccess> 
+
+		<webAccess>0</webAccess>
 		<!--
 			Enables and disables web access that allows phone users to configure settings and features on User Option web pages.
-			This parameter indicates whether the phone will accept connections from a web browser or other HTTP client. 
-			Disabling the web server functionality of the phone will block access to the phones internal web pages. 
-			These pages provide statistics and configuration information. 
-			Features, such as QRT ( Quality Report Tool ), will not function properly without access to the phones web pages. 
-			This setting will also affect any serviceability application such as CiscoWorks 2000 that relies on web access. 
+			This parameter indicates whether the phone will accept connections from a web browser or other HTTP client.
+			Disabling the web server functionality of the phone will block access to the phones internal web pages.
+			These pages provide statistics and configuration information.
+			Features, such as QRT ( Quality Report Tool ), will not function properly without access to the phones web pages.
+			This setting will also affect any serviceability application such as CiscoWorks 2000 that relies on web access.
 			The following options are available.
 				  Disabled: Phone does not accept any HTTP connection. HTTP server is disabled on the phone.
 				 Read Only: Phone displays web pages but does not allow any configuration.
 				      Full: Phone displays web pages and allows configuration.
 				0 = Enabled (default).
 				1 = Disabled.
-				2 = Read Only.  
+				2 = Read Only.
 		-->
-		
+
 		<daysDisplayNotActive>1,7</daysDisplayNotActive> <!-- sunday = 1, sat = 7 -->
 		<displayOnTime>08:00</displayOnTime>
 		<displayOnDuration>12:00</displayOnDuration>
@@ -200,52 +200,52 @@
 		<!-- <headsetWidebandUIControl>1</headsetWidebandUIControl> -->
 		<!--
 			Enables or disables wideband headset option on supported IP phones.
-			If the headsetWidebandUIControl parameter is set to Enable (0), the option set 
-			in the phone UI, by the phone user, has priority over the value set for this 
+			If the headsetWidebandUIControl parameter is set to Enable (0), the option set
+			in the phone UI, by the phone user, has priority over the value set for this
 			parameter.
 				0 = Enabled (default). Enables wideband headset on phone.
-				1 = Disabled. Disables wideband headset on phone. 
+				1 = Disabled. Disables wideband headset on phone.
 		-->
-		
+
 		<!-- <handsetWidebandUIControl>1</handsetWidebandUIControl> -->
 		<!--
 			Enables or disables control of handset options by phone user.
 				0 = Enabled (default). Allows phone user to select either narrowband or wideband handset in the phone UI.
-				1 = Disabled. 
+				1 = Disabled.
 		-->
-		
+
 		<!-- <headsetWidebandEnable>1</headsetWidebandEnable> -->
 		<!--
 			Enables or disables control of headset option by phone user.
 				0 = Enabled (default). Allows phone user to select either narrowband or wideband headset
-				1 = Disabled. 
+				1 = Disabled.
 		-->
-		
+
 		<!-- <handsetWidebandEnable>1</handsetWidebandEnable> -->
 		<!--
 			Enables or disables wideband handset option on supported IP phones.
-			If the handsetWidebandUIControl parameter is set to Enable (1), the option 
-			set in the phone UI, by the phone user, has priority over the value set for 
+			If the handsetWidebandUIControl parameter is set to Enable (1), the option
+			set in the phone UI, by the phone user, has priority over the value set for
 			this parameter.
 				0 = Phone default (default), equal to disabled or enabled and set by manufacturer.
 				1 = Enabled. Enables wideband handset on phone.
-				2 = Disabled. Disables wideband headset on phone. 
+				2 = Disabled. Disables wideband headset on phone.
 		-->
-		
+
 		<spanToPCPort>1</spanToPCPort>
 		<!--
-			Enables and disables the path between the Ethernet switch port of an IP phone 
+			Enables and disables the path between the Ethernet switch port of an IP phone
 			and a connection to a PC.
 				0 = Enabled (default).
-				1 = Disabled. 
+				1 = Disabled.
 		-->
-		
+
 		<g722CodecSupport>2</g722CodecSupport>
 		<!--
 			Enables and disables the registration of the G.722 codec on the IP phone.
 				0 = Phone default (default), equal to disabled or enabled and set by manufacturer.
 				1 = Disabled. Disables G.722-64K2 codec on phone.
-				2 = Enabled. Enables G.722-64K codec on phone. 
+				2 = Enabled. Enables G.722-64K codec on phone.
 			See also advertiseG722Codec
 		-->
 
@@ -256,10 +256,10 @@
 		<enableLldpPcPort>1</enableLldpPcPort>
 		<lldpAssetId></lldpAssetId>
 		<powerPriority>1</powerPriority>
-		<!-- 
+		<!--
 			I have the above turned on just for curiosity.
 		-->
- 
+
 		<sshAccess>0</sshAccess> <!-- 0 = enabled -->
 		<sshPort>22</sshPort>
 		<!--
@@ -275,8 +275,8 @@
 		-->
 		<loadServer></loadServer>
 		<!--
-			Indicates that the phone will use an alternative server to obtain firmware loads and upgrades, rather than the defined TFTP server. 
-			This option enables you to indicate a local server to be used for firmware upgrades, which can assist in reducing install times, particularly for upgrades over a WAN.  Enter the hostname or the IP address (using standard IP addressing format) of the server. The indicated server must be running TFTP services and have the load file in the TFTP path. If the load file is not found, the load will not install. The phone will not be redirected to the TFTP server. 
+			Indicates that the phone will use an alternative server to obtain firmware loads and upgrades, rather than the defined TFTP server.
+			This option enables you to indicate a local server to be used for firmware upgrades, which can assist in reducing install times, particularly for upgrades over a WAN.  Enter the hostname or the IP address (using standard IP addressing format) of the server. The indicated server must be running TFTP services and have the load file in the TFTP path. If the load file is not found, the load will not install. The phone will not be redirected to the TFTP server.
 			If this field is left blank, the phone will use the designated TFTP server to obtain its load files and upgrades
 				string
 				length = 256
@@ -286,13 +286,13 @@
 		<!--
 			Only on 7921/7925/7926
 
-			Indicates whether WLAN Profile 1 can be modified by the user. 
-			If the profile is locked, the user can not modify it. 
+			Indicates whether WLAN Profile 1 can be modified by the user.
+			If the profile is locked, the user can not modify it.
 			To allow the user to edit only the username and password in the profile, set it to restricted.
 				0 = Unlocked
 				1 = Locked
 				2 = Restricted
-				
+
 		-->
 		<WlanProfile2>0</WlanProfile1>
 		<WlanProfile3>0</WlanProfile1>
@@ -300,11 +300,11 @@
 		<specialNumbers></specialNumbers>
 		<!--
 			Only on 7921/7925/7926
-			
-			Special numbers are telephone numbers that do not require unlocking the phone to call. 
+
+			Special numbers are telephone numbers that do not require unlocking the phone to call.
 			For example, in the United States, the 911 emergency number is a good special number candidate so that it can be dialed without unlocking the phone.
-			You may enter one or more special numbers in this field. 
-			To enter more than one special number, use a comma as separator. 
+			You may enter one or more special numbers in this field.
+			To enter more than one special number, use a comma as separator.
 			For example, if you want to enter 411, 511, and 911 as special numbers, enter 411,511,911 in the field without spaces.
 				string
 				length = 16
@@ -313,7 +313,7 @@
 		<PushToTalkURL></PushToTalkURL>
 		<!--
 			Only on 7921/7925/7926
-			
+
 			This parameter specifies the URL which the phone contacts for application services.
 		-->
 		<sendKeyAction></sendKeyAction>
@@ -331,7 +331,7 @@
 		-->
 		<appButtonTimer></appButtonTimer>
 		<!--
-			Amount of time you must hold down the Application Button to activate the application. The timer values are in seconds.  A value of 0 indicates that a simple push of the Application Button will active the application. For non-zero values, the application is activated after the specified timer value expires. 
+			Amount of time you must hold down the Application Button to activate the application. The timer values are in seconds.  A value of 0 indicates that a simple push of the Application Button will active the application. For non-zero values, the application is activated after the specified timer value expires.
 		-->
 		<appButtonPriority></appButtonPriority>
 		<!--
@@ -349,7 +349,7 @@
 		<!--
 			Only on 7921/7925/7926
 			This parameter controls when the phone performs scanning. The parameter values are as follow.
-					Auto: Phone scans when it is in a call or when the received strength signal indicator (RSSI) is low.  
+					Auto: Phone scans when it is in a call or when the received strength signal indicator (RSSI) is low.
 					Single AP: Phone never scans except when the basic service set (BSS) is lost.
 					Continuous: Phone scans continuously even when it is not in a call.
 		-->
@@ -420,10 +420,10 @@
 	</vendorConfig>
 	<versionStamp>{Jan 01 2003 00:00:00}</versionStamp>
 	<loadInformation>P00308010100</loadInformation>
-	<!-- 
+	<!--
 		The firmware version that the phone looks for at boot.
-		Can be either the actual firmware version like P00308010100 or SCCP70.8-5-4S or a reference to the termXX.default file. 
-		The later is actually much easier to maintain, just unpack the new firmware, which replaces the termXX.default.loads file. 
+		Can be either the actual firmware version like P00308010100 or SCCP70.8-5-4S or a reference to the termXX.default file.
+		The later is actually much easier to maintain, just unpack the new firmware, which replaces the termXX.default.loads file.
 		You don't have to update all your SEP... files because it just refers them to the loads file, from which they get the
 		new firmware version number.
 
@@ -457,26 +457,32 @@
 	<proxyServerURL></proxyServerURL>
 	<servicesURL>http://x.x.x.x/cisco_menu/menu.php</servicesURL>
 	<directoryURL>http://x.x.x.x/cisco_menu/directory/menu.php</directoryURL>
-	<!-- 
+	<!--
 		This is the URL for a CiscoIPPhoneMenu which gets appended to the end of the
-		Missed/Received/Placed calls.  I don't use it (I find it makes more sense to 
+		Missed/Received/Placed calls.  I don't use it (I find it makes more sense to
 		put my phone book under services)
 	-->
 	<idleURL>http://x.x.x.x/cisco_menu/idle.php</idleURL>
 	<!--
-		URL of CiscoIPPhoneImage.  
+		URL of CiscoIPPhoneImage.
 		Requires a non-zero setting in idleTimeout.
 	-->
 	<idleTimeout>3600</idleTimeout>
 
 	<deviceSecurityMode>1</deviceSecurityMode>
 	<phonePersonalization>1</phonePersonalization>
+	<!--
+	ToDo Three options. Must be numeric. actual numerics need to be confirmed
+	0 Disabled-The user cannot customize the Cisco Unified IP Phone by using Phone Designer.
+	1 Enabled-The user can use Phone Designer to customize the phone.
+	2 Default-The phone uses the configuration from the Phone Personalization enterprise parameter if you choose Default in both the Phone Configuration and Common Phone Profile Configuration windows. If you choose Default in the Common Phone Profile Configuration window but not in the Phone Configuration window, the phone uses the configuration that you specify in the Phone Configuration window.
+	-->
 	<singleButtonBarge>1</singleButtonBarge>
 	<joinAcrossLines>1</joinAcrossLines>
 	<autoCallPickupEnable>false</autoCallPickupEnable>
 	<blfAudibleAlertSettingOfIdleStation>1</blfAudibleAlertSettingOfIdleStation>
 	<blfAudibleAlertSettingOfBusyStation>1</blfAudibleAlertSettingOfBusyStation>
-	<advertiseG722Codec>1</advertiseG722Codec> 
+	<advertiseG722Codec>1</advertiseG722Codec>
 
 	<mobility>
 		<handoffdn></handoffdn>
@@ -488,7 +494,7 @@
 		<dtmfTxfCode>*84</dtmfTxfCode>
 		<dtmfCnfCode>*85</dtmfCnfCode>
 	</mobility>
-	
+
 	<dscpForSCCPPhoneConfig>104</dscpForSCCPPhoneConfig>
 	<dscpForSCCPPhoneServices>0</dscpForSCCPPhoneServices>
 	<dscpForCm2Dvce>184</dscpForCm2Dvce>
@@ -508,7 +514,7 @@
 			1 = Use ServicerURL / DirectoryURL and MessagesURL (Above)
 			2 = Use Both (Merge Both)
 		-->
-		
+
 		<!-- Below
 			type = 0 -> applicaton menu
 			type = 1 -> contacts menu

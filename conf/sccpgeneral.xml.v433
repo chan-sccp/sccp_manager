@@ -417,9 +417,9 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="11" seq="98">
             <name>phonepersonalization</name>
             <label>Allow push background from server </label>
-            <default>0</default>
-            <button value="on">Enabled</button>
-            <button value="off">Disabled</button>
+            <default></default>
+            <button value="1">Enabled</button>
+            <button value="0">Disabled</button>
             <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
         </item>
     </page_group>
@@ -1348,6 +1348,14 @@ and open the template in the editor. Base Version before all crash :-)
             <default>English_United_States</default>
             <select> </select>
             <help>The user locale allows the phone to display text (menu items, soft keys etc.) native to the phone's language. If No language packs found is shown, you need to add locales in the tftp server</help>
+        </item>
+        <item type="IS" id="11" seq="98">
+            <name>phonepersonalization</name>
+            <label>Allow push background from server </label>
+            <default></default>
+            <button value="1">Enabled</button>
+            <button value="0">Disabled</button>
+            <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
         </item>
         <item type="IE" id="6" seq="99">
             <label>Background Image</label>

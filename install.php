@@ -249,7 +249,7 @@ function Get_DB_config($sccp_compatible)
               '_sccp_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x4'", 'modify' => "VARCHAR(11)"),
               '_dev_sshPassword' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
               '_dev_sshUserId' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
-              '_phonepersonalization' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')")
+              '_phonepersonalization' => array('create' => "VARCHAR(25) NOT NULL default '0'", 'modify' => "VARCHAR(25)")
             ),
         'sccpline' => array (
               '_regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),

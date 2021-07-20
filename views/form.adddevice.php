@@ -80,6 +80,9 @@ if (!empty($_REQUEST['id'])) {
 //                    $key = $key . '_mask';
 //                    $val = after('/', $val);
 //                    break;
+                case '_phonepersonalization':
+                      $def_val['phonepersonalization'] =  array("keyword" => 'phonepersonalization', "data" => $val, "seq" => "99");
+
                 default:
                     // Overwrite existing defaults after checking that data is still valid after schema updates
                     // Do not strip underscores as these fields are new in the schema and so should be valid.

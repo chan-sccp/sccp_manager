@@ -100,6 +100,7 @@ class SCCPShowDevice_Event extends Event
     // This is a list of tables
     public function getCapabilities()
     {
+        // TODO unused method - to be deleted?
         $ret = array();
         $codecs = explode(';', substr($this->getKey('Capabilities'), 1, -1));
         foreach ($codecs as $codec) {
@@ -111,6 +112,7 @@ class SCCPShowDevice_Event extends Event
 
     public function getCodecsPreference()
     {
+        // TODO unused method - to be deleted?
         $ret = array();
         $codecs = explode(';', substr($this->getKey('CodecsPreference'), 1, -1));
         foreach ($codecs as $codec) {
