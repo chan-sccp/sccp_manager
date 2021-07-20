@@ -85,6 +85,13 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         }
         // This will produce an array where site defaults take precedence over system defaults
         $this->line_defaults = array_intersect_key($siteDefaults,$sccpDefaults);
+        // If have no site codecs, use system defaults - must have a codec!
+        if (empty($this->line_defaults['allow'])) {
+            $this->line_defaults['allow'] = $sccpDefaults['allow'];
+        }
+        if (empty($this->line_defaults['disallow'])) {
+            $this->line_defaults['disallow'] = $sccpDefaults['disallow'];
+        }
         unset($raw_settings, $siteDefaults, $sccpDefaults);
     }
 
@@ -121,7 +128,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                  $allow_codec[] = str_replace('codec_','',$key);
             }
         }
-        $settings['allow']['value'] = implode(",", $allow_codec);
+        $settings['allow']['value'] = implode(";", $allow_codec);
         // Reset to line defaults if no value selected
         if (empty($settings['allow']['value'])) {
               $settings['allow']['value'] = $this->line_defaults['allow'];
@@ -238,7 +245,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         $currentComponent->addTabTranslation('sccp',_('SCCP'));
 
         // get site and system defaults
-        $systemCodecs = array_fill_keys(explode(',',$this->line_defaults['allow']),true);
+        $systemCodecs = array_fill_keys(explode(';',$this->line_defaults['allow']),true);
         $siteAudioCodecs = array_intersect_key($systemCodecs, $this->freepbx->Codecs->getAudio());
         $siteVideoCodecs = array_intersect_key($systemCodecs, $this->freepbx->Codecs->getVideo());
 
@@ -249,7 +256,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         } else {
             // have allowed codecs for this line
-            foreach (explode(',',$deviceInfo['allow']) as $lineCodec) {
+            foreach (explode(';',$deviceInfo['allow']) as $lineCodec) {
                 $activeCodecs[] = "devinfo_codec_{$lineCodec}";
             }
         }
@@ -264,7 +271,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         }
 
         $tmparr['disallow'] = array('prompttext' => _('Disallowed Codecs'),
-                                'value' => $this->line_defaults[(string)$child->name],
+                                'value' => $this->line_defaults['disallow'],
                                 'tt' => 'Codecs that are disallowed. Default and recommended value is all',
                                 'level' => 1,
                                 'section' => $section_с,

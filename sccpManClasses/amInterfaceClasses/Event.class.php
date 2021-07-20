@@ -101,7 +101,7 @@ class SCCPShowDevice_Event extends Event
     public function getCapabilities()
     {
         $ret = array();
-        $codecs = explode(", ", substr($this->getKey('Capabilities'), 1, -1));
+        $codecs = explode(';', substr($this->getKey('Capabilities'), 1, -1));
         foreach ($codecs as $codec) {
             $codec_parts = explode(" ", $codec);
             $ret[] = array("name" => $codec_parts[0], "value" => substr($codec_parts[1], 1, -1));
@@ -112,7 +112,7 @@ class SCCPShowDevice_Event extends Event
     public function getCodecsPreference()
     {
         $ret = array();
-        $codecs = explode(", ", substr($this->getKey('CodecsPreference'), 1, -1));
+        $codecs = explode(';', substr($this->getKey('CodecsPreference'), 1, -1));
         foreach ($codecs as $codec) {
             $codec_parts = explode(" ", $codec);
             $ret[] = array("name" => $codec_parts[0], "value" => substr($codec_parts[1], 1, -1));

@@ -718,7 +718,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             // No site defaults so return chan-sccp defaults
             $val = $this->sccpvalues['allow']['systemdefault'];
         }
-        $siteCodecs = array_fill_keys(explode(',',$val), 1);
+        $siteCodecs = array_fill_keys(explode(';',$val), 1);
         switch ($type) {
             case 'audio':
                 $fpbxCodecs = $this->FreePBX->Codecs->getAudio();

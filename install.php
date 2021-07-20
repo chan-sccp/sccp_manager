@@ -165,7 +165,7 @@ function Get_DB_config($sccp_compatible)
             'transfer' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
             'vmnum' => array('def_modify' => "*97"),
             'musicclass' => array('def_modify' => "default"),
-            'disallow' => array('create' => "VARCHAR(255) NULL DEFAULT NULL"),
+            'disallow' => array('create' => "VARCHAR(255) NULL DEFAULT 'all'", 'modify' => 'VARCHAR(255)'),
             'allow' => array('create' => "VARCHAR(255) NULL DEFAULT NULL"),
             'id' => array('create' => 'MEDIUMINT(9) NOT NULL AUTO_INCREMENT, ADD UNIQUE(id);', 'modify' => "MEDIUMINT(9)", 'index' => 'id'),
             'echocancel' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
@@ -983,7 +983,10 @@ function cleanUpSccpSettings() {
         // 2 special cases deny|permit & disallow|allow where need to parse on |.
         $newKeyword = explode("|", $valueArray['Name'], 2);
         if (isset($newKeyword[1])) {
+            // chan-sccp sets sysdef as comma separated list for sccp.conf, but expects ; separated list
+            // when returned from db
             $newSysDef = explode("|", $valueArray['DefaultValue'], 2);
+            $newSysDef = str_replace(',',';', $newSysDef);
             $i = 0;
             foreach ($newKeyword as $dummy) {
                 if (array_key_exists($newKeyword[$i],$settingsFromDb)) {
@@ -1032,5 +1035,15 @@ function cleanUpSccpSettings() {
                 )";
         $results = $db->query($sql);
     }
+    // have to correct prior verion sccpline lists for allow/disallow and deny permit. Prior
+    // versions used csl, but chan-sccp expects ; separated lists when returned by db.
+
+    outn("<li>" . _("Replacing invalid values in sccpline") . "</li>");
+    $db->query("UPDATE sccpline SET allow = REPLACE(allow, ',',';') WHERE allow like '%,%'");
+    $db->query("UPDATE sccpline SET disallow = REPLACE(disallow, ',',';') WHERE disallow like '%,%'");
+
+    // Ensure that disallow is set to all if unset (and not NULL)
+    $db->query("UPDATE sccpline SET disallow = 'all' WHERE disallow like ''");
+
 }
 ?>

@@ -405,7 +405,7 @@ trait ajaxHelper {
         // if uncheck all codecs, audiocodecs key is missing so nothing changes in db.
         // Unsetting all codecs will now return to chan-sccp defaults.
         if (!isset($request['audiocodecs'])) {
-            $request['audiocodecs'] = array_fill_keys(explode(',',$this->sccpvalues['allow']['systemdefault']),true);
+            $request['audiocodecs'] = array_fill_keys(explode(';',$this->sccpvalues['allow']['systemdefault']),true);
         }
         foreach ($request as $key => $value) {
             // Originally saved all to sccpvalues. Now will save to db defaults if appropriate
@@ -506,7 +506,7 @@ trait ajaxHelper {
                         $save_codec[$i] = $keycodeс;
                         $i++;
                     };
-                    $tmpv = implode(",", $save_codec);
+                    $tmpv = implode(";", $save_codec);
                     if (!($this->sccpvalues['allow']['data'] == $tmpv)) {
                         $save_settings['allow'] = array(
                         'keyword' => 'allow',
