@@ -33,7 +33,11 @@
                                         echo  "<select class='form-control' id='ext_locale'>";
                                     }
                                     foreach ($selectArray as $key => $val) {
-                                        echo "<option value= '{$key}' >{$val}</option>";
+                                        echo "<option value= '{$key}'";
+                                        if ($key == 'en_GB') {
+                                            echo ' selected="selected"';
+                                        }
+                                        echo ">{$val}</option>";
                                     }
                                     ?>
                                     </select>

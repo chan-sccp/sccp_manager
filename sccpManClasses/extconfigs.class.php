@@ -246,7 +246,8 @@ class extconfigs
                           'dialplan' => 'dialplan',
                           'softkey' => 'softkey',
                           'ringtones' => 'ringtones',
-                          'wallpapers' => 'wallpapers'
+                          'wallpapers' => 'wallpapers',
+                          'countries' => 'countries'
                         );
         $adv_tree = array('pro' => array('templates' => 'tftproot',
                                   'firmware' => 'tftproot',
@@ -257,7 +258,8 @@ class extconfigs
                                   'dialplan' => 'tftproot',
                                   'softkey' => 'tftproot',
                                   'ringtones' => 'tftproot',
-                                  'wallpapers' => 'tftproot'
+                                  'wallpapers' => 'tftproot',
+                                  'countries' => 'locales'
                                 ),
                             'def' => array('templates' => 'tftproot',
                                   'firmware' => '',
@@ -267,7 +269,8 @@ class extconfigs
                                   'dialplan' => '',
                                   'softkey' => '',
                                   'ringtones' => '',
-                                  'wallpapers' => ''
+                                  'wallpapers' => '',
+                                  'countries' => ''
                                 )
                           );
         $base_tree = array('tftp_templates_path' => 'templates',
@@ -277,7 +280,8 @@ class extconfigs
                           'tftp_dialplan_path' => 'dialplan',
                           'tftp_softkey_path' => 'softkey',
                           'tftp_ringtones_path' => 'ringtones',
-                          'tftp_wallpapers_path' => 'wallpapers'
+                          'tftp_wallpapers_path' => 'wallpapers',
+                          'tftp_countries_path' => 'countries'
                         );
         $baseConfig = array();
 

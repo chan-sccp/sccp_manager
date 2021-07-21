@@ -295,16 +295,12 @@ trait ajaxHelper {
                     return array();
                 }
                 $activeDevices = $this->aminterface->sccp_get_active_device();
-                if (!empty($activeDevices)) {
-                    foreach ($lineList as $key => $lineArr) {
-                        if (isset($activeDevices[$lineArr['mac']])) {
-                            $actDevStat = $activeDevices[$lineArr['mac']];
-                            if (!empty($actDevStat)) {
-                                $lineList[$key]['line_status'] = "{$actDevStat['status']} | {$actDevStat['act']}";
-                            } else {
-                                $lineList[$key]['line_status'] = '|';
-                            }
-                        }
+                foreach ($lineList as $key => $lineArr) {
+                    if (array_key_exists($lineArr['mac'], $activeDevices)) {
+                        $actDevStat = $activeDevices[$lineArr['mac']];
+                        $lineList[$key]['line_status'] = "{$actDevStat['status']} | {$actDevStat['act']}";
+                    } else {
+                        $lineList[$key]['line_status'] = '|';
                     }
                 }
                 return $lineList;
@@ -629,33 +625,60 @@ trait ajaxHelper {
                 break;
             case 'locale':
                 $locale = $request['locale'];
+                $totalFiles = 0;
                 $langArr = \FreePBX::Sccp_manager()->extconfigs->getExtConfig('sccp_lang');
                 $language = $langArr[$locale]['locale'];
 
                 if (!is_dir("{$this->sccppath['tftp_lang_path']}/{$language}")) {
                     mkdir("{$this->sccppath['tftp_lang_path']}/{$language}", 0755);
                 }
-
+                // Get locales
                 $localeDir = $tftpBootXml->xpath("//Directory[@name='locales']");
                 $localeDir = $localeDir[0]->xpath("//Directory[@name='languages']");
                 $result = $localeDir[0]->xpath("//Directory[@name='{$language}']");
-                $filesToGet = (array)$result[0]->FileName;
+                $filesToGet['languages'] = (array)$result[0]->FileName;
+                $totalFiles += count($filesToGet['languages']);
+                $languagesSrcDir = (string)$result[0]->DirectoryPath;
+                $languagesDstDir = "{$this->sccppath['tftp_lang_path']}/{$language}";
 
-                $totalFiles = count($filesToGet);
+                // Get countries. Country is a substring of locale with exception of korea
+                $country = explode('_', $language);
+                array_shift($country);
+
+                $countryName = array_shift($country);
+                while (count($country)>=1) {
+                    $countryName .= '_' . array_shift($country);
+                }
+
+                if (!is_dir("{$this->sccppath['tftp_countries_path']}/{$countryName}")) {
+                    mkdir("{$this->sccppath['tftp_countries_path']}/{$countryName}", 0755);
+                }
+
+                $countryDir = $tftpBootXml->xpath("//Directory[@name='locales']");
+                $countryDir = $countryDir[0]->xpath("//Directory[@name='countries']");
+                $result = $countryDir[0]->xpath("//Directory[@name='{$countryName}']");
+                $filesToGet['countries'] = (array)$result[0]->FileName;
+                $totalFiles += count($filesToGet['countries']);
+                $countriesSrcDir = (string)$result[0]->DirectoryPath;
+                $countriesDstDir = "{$this->sccppath['tftp_countries_path']}/{$countryName}";
+
                 $filesRetrieved = 0;
 
-                foreach ($filesToGet as $srcFile) {
-                    file_put_contents("{$this->sccppath['tftp_lang_path']}/{$language}/{$srcFile}",
-                        file_get_contents($provisionerUrl . (string)$result[0]->DirectoryPath . $srcFile));
-                    $filesRetrieved ++;
-                    $percentComplete = $filesRetrieved *100 / $totalFiles;
-                    $data = "{$percentComplete},";
-                    echo $data;
-                    ob_flush();
-                    flush();
-
+                foreach (array('languages', 'countries') as $section){
+                    $srcDir = ${"{$section}SrcDir"};
+                    $dstDir = ${"{$section}DstDir"};
+                    foreach ($filesToGet[$section] as $srcFile) {
+                        file_put_contents("{$dstDir}/{$srcFile}",
+                            file_get_contents($provisionerUrl . $srcDir . $srcFile));
+                        $filesRetrieved ++;
+                        $percentComplete = $filesRetrieved *100 / $totalFiles;
+                        $data = "{$percentComplete},";
+                        echo $data;
+                        ob_flush();
+                        flush();
+                    }
                 }
-                $msg = "{$locale} Locale has been successfully downloaded";
+                $msg = "{$locale} Locale and Country tones have been successfully downloaded";
                 break;
           default:
               return false;

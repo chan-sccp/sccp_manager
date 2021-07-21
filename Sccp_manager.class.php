@@ -809,7 +809,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     'tftp_lang_path' => $this->sccpvalues['tftp_lang_path']['data'],
                     'tftp_firmware_path' => $this->sccpvalues['tftp_firmware_path']['data'],
                     'tftp_dialplan_path' => $this->sccpvalues['tftp_dialplan_path']['data'],
-                    'tftp_softkey_path' => $this->sccpvalues['tftp_softkey_path']['data']
+                    'tftp_softkey_path' => $this->sccpvalues['tftp_softkey_path']['data'],
+                    'tftp_countries_path' => $this->sccpvalues['tftp_countries_path']['data']
                   );
 
         $read_config = $this->cnf_read->getConfig('sccp.conf');
@@ -868,11 +869,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     function deleteDialPlan($get_file) {
-        if (!empty($get_file)) {
-            $file = $this->sccppath["tftp_dialplan_path"] . '/' . $get_file . '.xml';
-            if (file_exists($file)) {
-                $res = unlink($file);
-            }
+        $file = $this->sccppath["tftp_dialplan_path"] . '/' . $get_file . '.xml';
+        if (file_exists($file)) {
+            $res = unlink($file);
         }
         return $res;
     }
