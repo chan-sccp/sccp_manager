@@ -392,7 +392,7 @@ class aminterface
         $result = array();
         if ($this->_connect_state) {
             $_action = new \FreePBX\modules\Sccp_manager\aminterface\SCCPShowDevicesAction();
-            $result = $this->send($_action)->getResult();
+            $result = (array)$this->send($_action)->getResult();
         }
         return $result;
     }

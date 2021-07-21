@@ -46,7 +46,7 @@ class dbinterface
 
     public function getSccpDeviceTableData($dataid, $data = array())
     {
-        // $stmt is a single row fetch, $stmts is a fetchAll.
+        // $stmt is a single row fetch, $stmts is a fetchAll while stmtU is fetchAll UNIQUE
         $stmt = '';
         $stmts = '';
         if ($dataid == '') {
@@ -171,18 +171,19 @@ class dbinterface
         } elseif (!empty($stmts)) {
             $stmts->execute();
             $raw_settings = $stmts->fetchAll(\PDO::FETCH_ASSOC);
+        } elseif (!empty($stmtU)) {
+            //returns an assoc array indexed on first field
+          $stmtU->execute();
+          $raw_settings = $stmtU->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
         }
         return $raw_settings;
     }
 
     public function get_db_SccpSetting()
     {
-        $stmt = $this->db->prepare('SELECT keyword, seq, type, data, systemdefault FROM sccpsettings ORDER BY type, seq');
+        $stmt = $this->db->prepare('SELECT keyword, sccpsettings.* FROM sccpsettings ORDER BY type, seq');
         $stmt->execute();
-        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $key => $rowArray) {
-            $settingsFromDb[$rowArray['keyword']] = $rowArray;
-            unset($settingsFromDb[$key]);
-        }
+        $settingsFromDb = $stmt->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
         return $settingsFromDb;
     }
 

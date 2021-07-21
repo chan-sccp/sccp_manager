@@ -298,13 +298,11 @@ trait ajaxHelper {
                 if (!empty($activeDevices)) {
                     foreach ($lineList as $key => $lineArr) {
                         if (isset($activeDevices[$lineArr['mac']])) {
-                            $tpm_info = $activeDevices[$lineArr['mac']];
-                            if (!empty($tpm_info)) {
-                                $lineList[$key]['line_status'] = $tpm_info['status'];
-                                $lineList[$key]['line_status'] .= " | {$tpm_info['act']}";
+                            $actDevStat = $activeDevices[$lineArr['mac']];
+                            if (!empty($actDevStat)) {
+                                $lineList[$key]['line_status'] = "{$actDevStat['status']} | {$actDevStat['act']}";
                             } else {
-                                $lineList[$key]['line_status'] = '';
-                                $lineList[$key]['line_status'] .= '|';
+                                $lineList[$key]['line_status'] = '|';
                             }
                         }
                     }
