@@ -23,9 +23,9 @@ if (!empty($this->sccpvalues['system_rouminguser'])) {
                 <table data-cookie="true" data-cookie-id-table="sccp-extension-table" data-url="ajax.php?module=sccp_manager&command=getExtensionGrid&type=extGrid" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sip" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list-sccp" id="table-sccp-extension" data-id="name">
                     <thead>
                         <tr>
-<!--                            <th data-checkbox="true"></th> -->
                             <th data-sortable="true" data-field="name"><?php echo _('Extension') ?></th>
                             <th data-sortable="true" data-field="label"><?php echo _('Display Name') ?></th>
+                            <th data-sortable="true" data-field="mac"><?php echo _('Device') ?></th>
                             <th data-sortable="true" data-field="line_status" class="text-center"><?php echo _('Status | Active') ?></th>
                             <th data-field="actions" data-formatter="DispayPhoneActionsKeyFormatter"><?php echo _('Actions') ?></th>
                         </tr>

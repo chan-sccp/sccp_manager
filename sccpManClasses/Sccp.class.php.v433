@@ -155,25 +155,16 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         }
 
-        $sqlCol = 'name';
-        $sqlVal = "'{$id}'";
+        // only store values that have been set; if need to display a default, must show in page.
+        $sqlSet = "name='{$id}'";
         foreach($this->data_fld as $key => $val) {
-            if (isset($settings[$val]['value'])){
-                $sqlCol .= ", {$key}";
-                $sqlVal .= ", '{$settings[$val]['value']}'";
-            } else {
-                if (array_key_exists($key, $this->line_defaults)) {
-                    $sqlCol .= ", {$key}";
-                    if (!empty($this->line_defaults[$key])) {
-                        $sqlVal .= ", '{$this->line_defaults[$key]}'";
-                    } else {
-                        $sqlVal .= NULL;
-                    }
-                }
+            if (!empty($settings[$val]['value'])) {
+                $sqlSet .= ", {$key}='{$settings[$val]['value']}'";
             }
         }
-        $sql = "REPLACE INTO sccpline ( {$sqlCol} ) VALUES ( {$sqlVal} )";
-        $sth = $this->database->prepare($sql);
+
+        $stmt = "INSERT INTO sccpline SET {$sqlSet} ON DUPLICATE KEY UPDATE {$sqlSet}";
+        $sth = $this->database->prepare($stmt);
         $sth->execute();
         /*
         If called from SCCP Phone, redirect to SCCP Phone page on submit.

@@ -47,8 +47,6 @@ class dbinterface
     public function getSccpDeviceTableData($dataid, $data = array())
     {
         // $stmt is a single row fetch, $stmts is a fetchAll.
-        dbug($dataid);
-        dbug($data);
         $stmt = '';
         $stmts = '';
         if ($dataid == '') {
@@ -58,7 +56,7 @@ class dbinterface
             case 'extGrid':
                 // only called by getExtensionGrid from hardware.extension.php view
                 $stmts = $this->db->prepare('SELECT sccpline.name, sccpline.label, sccpbuttonconfig.ref as mac
-                              FROM sccpline INNER JOIN sccpbuttonconfig ON sccpline.name=sccpbuttonconfig.name');
+                              FROM sccpline LEFT JOIN sccpbuttonconfig ON sccpline.name=sccpbuttonconfig.name ORDER BY sccpline.name');
                 break;
             case 'SccpExtension':
                 if (empty($data['name'])) {

@@ -294,9 +294,7 @@ trait ajaxHelper {
                 if (empty($lineList)) {
                     return array();
                 }
-                dbug($lineList);
                 $activeDevices = $this->aminterface->sccp_get_active_device();
-                dbug($activeDevices);
                 if (!empty($activeDevices)) {
                     foreach ($lineList as $key => $lineArr) {
                         if (isset($activeDevices[$lineArr['mac']])) {
