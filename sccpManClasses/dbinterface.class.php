@@ -55,7 +55,7 @@ class dbinterface
             return false;
         }
         switch ($dataid) {
-            case 'sccp':
+            case 'extGrid':
                 // only called by getExtensionGrid from hardware.extension.php view
                 $stmts = $this->db->prepare('SELECT sccpline.name, sccpline.label, sccpbuttonconfig.ref as mac
                               FROM sccpline INNER JOIN sccpbuttonconfig ON sccpline.name=sccpbuttonconfig.name');
@@ -66,6 +66,18 @@ class dbinterface
                 } else {
                     $stmts = $this->db->prepare('SELECT * FROM sccpline WHERE name = :name');
                     $stmts->bindParam(':name', $data['name'],\PDO::PARAM_STR);
+                }
+                break;
+            case 'phoneGrid':
+                $fld = 'name, name as mac, type, button, addon, _description as description';
+                switch ($data['type']) {
+                    case "cisco-sip":
+                        $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE type LIKE '%-sip' ORDER BY name");
+                        break;
+                    case "sccp":      // Fall through to default intentionally
+                    default:
+                        $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE type not LIKE '%-sip' ORDER BY name");
+                        break;
                 }
                 break;
             case 'SccpDevice':

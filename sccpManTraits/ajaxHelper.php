@@ -315,19 +315,18 @@ trait ajaxHelper {
                 break;
             case 'getPhoneGrid':
                 $dbDevices = array();
-                $cmd_type = !empty($request['type']) ? $request['type'] : '';
 
-                // Find all devices defined in the database
-                $dbDevices = $this->dbinterface->getSccpDeviceTableData('SccpDevice', array('type' => $cmd_type));
+                // Find all devices defined in the database.
+                $dbDevices = $this->dbinterface->getSccpDeviceTableData('phoneGrid', array('type' => $request['type']));
                 // Return if only interested in SIP devices
-                if ($cmd_type == 'cisco-sip') {
+                if ($request['type'] == 'cisco-sip') {
                     return $dbDevices;     //this may be empty
                 }
                 // Find all devices currently connected
                 $activeDevices = $this->aminterface->sccp_get_active_device();
 
                 foreach ($dbDevices as &$dev_id) {
-                    $id_name = $dev_id['name'];
+                    $id_name = $dev_id['mac'];
                     if (!empty($activeDevices[$id_name])) {
                         // Device is in db and is connected
                         $dev_id['description'] = $activeDevices[$id_name]['descr'];
