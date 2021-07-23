@@ -433,7 +433,7 @@ trait ajaxHelper {
                     // Value unchanged or null so ignore and go to next key.
                     continue;
                 }
-                $dbSaveArray[] = array('table' => 'sccpdevice', 'field' => $key, 'Default' => $value);
+                $dbSaveArray[$key] = array('table' => 'sccpdevice', 'field' => $key, 'Default' => $value);
                 continue;
             }
             $key = (str_replace('sccpline_', '', $key, $count_mods));
@@ -450,24 +450,11 @@ trait ajaxHelper {
                     // Value unchanged so ignore and get next key.
                     continue;
                 }
-                $dbSaveArray[] = array('table' => 'sccpline', 'field' => $key, 'Default' => $value);
+                $dbSaveArray[$key] = array('table' => 'sccpline', 'field' => $key, 'Default' => $value);
                 unset($request[$key]);
                 continue;
             }
 
-            $key = (str_replace($hdr_prefix, '', $key, $count_mods));
-            if ($count_mods) {
-                if (!empty($this->sccpvalues[$key]) && ($this->sccpvalues[$key]['data'] != $value)) {
-                    $save_settings[$key] = array(
-                          'keyword' => $key,
-                          'data' => $value,
-                          'seq' => $this->sccpvalues[$key]['seq'],
-                          'type' => $this->sccpvalues[$key]['type'],
-                          'systemdefault' => $this->sccpvalues[$key]['systemdefault']
-                          );
-                }
-
-            }
             $key = (str_replace($hdr_arprefix, '', $key, $count_mods));
             if ($count_mods) {
                 $arr_data = '';
@@ -508,6 +495,21 @@ trait ajaxHelper {
                     }
                 }
             }
+
+            $key = (str_replace($hdr_prefix, '', $key, $count_mods));
+            if ($count_mods) {
+                if (!empty($this->sccpvalues[$key]) && ($this->sccpvalues[$key]['data'] != $value)) {
+                    $save_settings[$key] = array(
+                          'keyword' => $key,
+                          'data' => $value,
+                          'seq' => $this->sccpvalues[$key]['seq'],
+                          'type' => $this->sccpvalues[$key]['type'],
+                          'systemdefault' => $this->sccpvalues[$key]['systemdefault']
+                          );
+                }
+
+            }
+
             switch ($key) {
                 case 'audiocodecs':
                     foreach ($value as $keycodeс => $valcodeс) {
@@ -545,6 +547,7 @@ trait ajaxHelper {
                     }
                     break;
             }
+
         }
 
         $extSettings = $this->extconfigs->updateTftpStructure(array_merge($this->sccpvalues, $save_settings));
@@ -554,12 +557,12 @@ trait ajaxHelper {
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
         }
 
-        foreach ($dbSaveArray as $rowToSave) {
+        foreach ($dbSaveArray as $key => $rowToSave) {
             $this->dbinterface->updateTableDefaults($rowToSave['table'], $rowToSave['field'], $rowToSave['Default']);
         }
 
         $this->createDefaultSccpConfig(); // Rewrite Config.
-        $save_settings[] = array('status' => true);
+        $save_settings[] = array('status' => true, );
         $this->createDefaultSccpXml();
 
         return $save_settings;
@@ -624,10 +627,9 @@ trait ajaxHelper {
                 $msg = "Firmware for {$device} has been successfully downloaded";
                 break;
             case 'locale':
-                $locale = $request['locale'];
+                $language = $request['locale'];
                 $totalFiles = 0;
-                $langArr = \FreePBX::Sccp_manager()->extconfigs->getExtConfig('sccp_lang');
-                $language = $langArr[$locale]['locale'];
+
 
                 if (!is_dir("{$this->sccppath['tftp_lang_path']}/{$language}")) {
                     mkdir("{$this->sccppath['tftp_lang_path']}/{$language}", 0755);
@@ -678,14 +680,176 @@ trait ajaxHelper {
                         flush();
                     }
                 }
-                $msg = "{$locale} Locale and Country tones have been successfully downloaded";
+                $msg = "{$language} Locale and Country tones have been successfully downloaded";
                 break;
-          default:
-              return false;
-              break;
+            case 'country':
+                $countryName = $request['country'];
+                $totalFiles = 0;
+
+                if (!is_dir("{$this->sccppath['tftp_countries_path']}/{$countryName}")) {
+                    mkdir("{$this->sccppath['tftp_countries_path']}/{$countryName}", 0755);
+                }
+
+                $result = $tftpBootXml->xpath("//Directory[@name='{$countryName}']");
+                $filesToGet['countries'] = (array)$result[0]->FileName;
+                $totalFiles += count($filesToGet['countries']);
+                $countriesSrcDir = (string)$result[0]->DirectoryPath;
+                $countriesDstDir = "{$this->sccppath['tftp_countries_path']}/{$countryName}";
+
+                $filesRetrieved = 0;
+
+                foreach (array('countries') as $section){
+                    $srcDir = ${"{$section}SrcDir"};
+                    $dstDir = ${"{$section}DstDir"};
+                    foreach ($filesToGet[$section] as $srcFile) {
+                        file_put_contents("{$dstDir}/{$srcFile}",
+                            file_get_contents($provisionerUrl . $srcDir . $srcFile));
+                        $filesRetrieved ++;
+                        $percentComplete = $filesRetrieved *100 / $totalFiles;
+                        $data = "{$percentComplete},";
+                        echo $data;
+                        ob_flush();
+                        flush();
+                    }
+                }
+                $msg = "{$countryName} country tones have been successfully downloaded";
+                break;
+            default:
+                return false;
+                break;
         }
         return array('status' => true, 'message' => $msg, 'reload' => true);
     }
+
+    function saveSccpDevice($get_settings, $validateonly = false) {
+      dbug($get_settings);
+        $hdr_prefix = 'sccp_hw_';
+        $hdr_arprefix = 'sccp_hw-ar_';
+        $hdr_vendPrefix = 'sccp_hw_vendorconfig';
+
+        $save_buttons = array();
+        $save_settings = array();
+        $save_codec = array();
+        $name_dev = '';
+        $db_field = $this->dbinterface->getSccpDeviceTableData("get_columns_sccpdevice");
+        $hw_id = (empty($get_settings['sccp_deviceid'])) ? 'new' : $get_settings['sccp_deviceid'];
+        $hw_type = (empty($get_settings['sccp_device_typeid'])) ? 'sccpdevice' : $get_settings['sccp_device_typeid'];
+        $update_hw = ($hw_id == 'new') ? 'add' : 'clear'; // Possible values are delete, replace, add, clear.
+        $hw_prefix = 'SEP';
+        if (!empty($get_settings[$hdr_prefix . 'type'])) {
+            $value = $get_settings[$hdr_prefix . 'type'];
+            if (strpos($value, 'ATA') !== false) {
+                $hw_prefix = 'ATA';
+            }
+            if (strpos($value, 'VG') !== false) {
+                $hw_prefix = 'VG';
+            }
+        }
+        foreach ($db_field as $data) {
+            $key = (string) $data['Field'];
+            $value = "";
+            switch ($key) {
+                case 'name':
+                    if (!empty($get_settings[$hdr_prefix . 'mac'])) {
+                        $value = $get_settings[$hdr_prefix . 'mac'];
+                        $value = strtoupper(str_replace(array('.', '-', ':'), '', $value)); // Delete mac separators from string
+                        $value = sprintf("%012s", $value);
+                        if ($hw_prefix == 'VG') {
+                            $value = $hw_prefix . $value . '0';
+                        } else {
+                            $value = $hw_prefix . $value;
+                        }
+                        $name_dev = $value;
+                    }
+                    break;
+                case 'phonecodepage':
+                    $value = 'ISO8859-1';
+                    // TODO: May be other exceptions. Historically this is the only one handled
+                    if (!empty($get_settings["{$hdr_prefix}devlang"])) {
+                        if ($get_settings["{$hdr_prefix}devlang"] == "Russian_Russian_Federation") {
+                            $value = 'CP1251';
+                        }
+                    }
+                    break;
+                default:
+                    // handle vendor prefix
+                    if (!empty($get_settings[$hdr_vendPrefix . $key])) {
+                        $value = $get_settings[$hdr_vendPrefix  . $key];
+                    }
+                    // handle array prefix
+                    if (!empty($get_settings[$hdr_arprefix . $key])) {
+                        $arr_data = '';
+                        $arr_clear = false;
+                        foreach ($get_settings[$hdr_arprefix . $key] as $vkey => $vval) {
+                            $tmp_data = '';
+                            foreach ($vval as $vkey => $vval) {
+                                switch ($vkey) {
+                                    case 'inherit':
+                                        if ($vval == 'on') {
+                                            $arr_clear = true;
+                                            // Злобный ХАК ?!TODO!?
+                                            if ($key == 'permit') {
+                                                $save_settings['deny'] = 'NONE';
+                                            }
+                                        }
+                                        break;
+                                    case 'internal':
+                                        if ($vval == 'on') {
+                                            $tmp_data .= 'internal;';
+                                        }
+                                        break;
+                                    default:
+                                        $tmp_data .= $vval . '/';
+                                        break;
+                                }
+                            }
+                            if (strlen($tmp_data) > 2) {
+                                while (substr($tmp_data, -1) == '/') {
+                                    $tmp_data = substr($tmp_data, 0, -1);
+                                }
+                                $arr_data .= $tmp_data . ';';
+                            }
+                        }
+                        while (substr($arr_data, -1) == ';') {
+                            $arr_data = substr($arr_data, 0, -1);
+                        }
+                        if ($arr_clear) {
+                            $value = 'NONE';
+                        } else {
+                            $value = $arr_data;
+                        }
+                    }
+                    // Now only have normal prefix
+                    if (!empty($get_settings["{$hdr_prefix}{$key}"])) {
+                        $value = $get_settings["{$hdr_prefix}{$key}"];
+                    } else if (!empty($get_settings["sccp_hw{$key}"])) {
+                        //have an underscore db field
+                        $value = $get_settings["sccp_hw{$key}"];
+                    }
+            }
+            if (!empty($value)) {
+                $save_settings[$key] = $value;
+            }
+        }
+        // Save this device.
+        $this->dbinterface->write('sccpdevice', $save_settings, 'replace');
+        // Retrieve the phone buttons and write back to
+        // update sccpdeviceconfig via Trigger
+        $save_buttons = $this->getPhoneButtons($get_settings, $name_dev, $hw_type);
+        $this->dbinterface->write('sccpbuttons', $save_buttons, $update_hw, '', $name_dev);
+        // Create new XML for this device, and then reset or restart the device
+        // so that it loads the file from TFT.
+        $this->createSccpDeviceXML($name_dev);
+        if ($hw_id == 'new') {
+            $this->aminterface->sccpDeviceReset($name_dev, 'reset');
+        } else {
+            $this->aminterface->sccpDeviceReset($name_dev, 'restart');
+        }
+        $msg = "Device Saved";
+
+        return array('status' => true, 'message' => $msg, 'reload' => true);
+    }
+
 }
 
 ?>

@@ -71,7 +71,6 @@
 			<field name="backgroundThumbnail" type="string" length="255" notnull="false"/>
 			<field name="ringtone" type="string" length="255" notnull="false"/>
 			<field name="callhistory_answered_elsewhere" type="string" notnull="false"/>
-			<field name="_hwlang" type="string" length="12" notnull="false"/>
 			<field name="_loginname" type="string" length="20" notnull="false"/>
 			<field name="_profileid" type="integer" default="0"/>
 			<field name="_dialrules" type="string" length="255" notnull="false"/>

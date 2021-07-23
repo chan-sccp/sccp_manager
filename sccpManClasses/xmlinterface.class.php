@@ -122,6 +122,47 @@ class xmlinterface
         // Need to merge the two arrays so that device specific values override system values
         // Values that cannot be sent to the device by chan-sccp are prefixed by an underscore
         // so need to be sure that we apply the same convention to system wide defaults.
+        $langCodeArray = array(
+            'Arabic_Saudi_Arabia' => 'ar',
+            'Bulgarian_Bulgaria' => 'bg',
+            'Czech_Czech_Republic' => 'cz',
+            'Danish_Denmark' => 'da',
+            'German_Germany' => 'de',
+            'Greek_Greece' => 'el',
+            'AU_English_United_States' => 'en',
+            'English_United_Kingdom' => 'en',
+            'English_United_States' => 'en',
+            'Spanish_Spain' => 'es',
+            'Estonian_Estonia' => 'et',
+            'Finnish_Finland' => 'fi',
+            'French_Canada' => 'fr',
+            'French_France' => 'fr',
+            'Hebrew_Israel' => 'he',
+            'Croatian_Croatia' => 'hr',
+            'Hungarian_Hungary' => 'hu',
+            'Italian_Italy' => 'it',
+            'Japanese_Japan' => 'ja',
+            'Korean_Korea_Republic' => 'ko',
+            'Lithuanian_Lithuania' => 'lt',
+            'Latvian_Latvia' => 'lv',
+            'Dutch_Netherlands' => 'nl',
+            'Norwegian_Norway' => 'no',
+            'Polish_Poland' => 'pl',
+            'Portuguese_Brazil' => 'pt',
+            'Portuguese_Portugal' => 'pt',
+            'Romanian_Romania' => 'ro',
+            'Russian_Russian_Federation' => 'ru',
+            'Slovak_Slovakia' => 'sk',
+            'Slovenian_Slovenia' => 'sl',
+            'Serbian_Republic_of_Montenegro' => 'sr',
+            'Serbian_Republic_of_Serbia' => 'rs',
+            'Swedish_Sweden' => 'sv',
+            'Thai_Thailand' => 'th',
+            'Turkish_Turkey' => 'tr',
+            'Chinese_China' => 'cn',
+            'Chinese_Taiwan' => 'zh'
+        );
+
         $data_values = array_merge($data_values, $dev_config);
         $var_xml_general_fields = array('authenticationurl' => 'dev_authenticationURL', 'informationurl' => 'dev_informationURL', 'messagesurl' => 'dev_messagesURL',
             'servicesurl' => 'dev_servicesURL', 'directoryurl' => 'dev_directoryURL', 'idleurl' => 'dev_idleURL',
@@ -313,31 +354,39 @@ class xmlinterface
                     break;
 
                 case 'userlocale':
-                case 'networklocaleinfo':
+                    // Device language
+                    $lang = $data_values['devlang'];
+                    if (!empty($dev_config['_devlang'])) {
+                        $lang = $dev_config['_devlang'];
+                    }
+                    $xml_node->winCharSet = $dev_config['phonecodepage'];
+                    $xml_node->name = $dev_config['_devlang'];
+                    $xml_node->langCode = 'en';
+                    if (isset($langCodeArray['_devlang'])) {
+                        $xml_node->langCode = $langCodeArray['_devlang'];
+                    }
+                    $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
+                    break;
                 case 'networklocale':
-                    $hwlang = '';
-                    $lang = '';
-                    if (!empty($dev_config["_hwlang"])) {
-                        $hwlang = explode(':', $dev_config["_hwlang"]);
+                    $lang = $data_values['_netlang'];
+                    if (!empty($dev_config['_netlang'])) {
+                        $lang = $dev_config['_netlang'];
                     }
-                    if (($key_l == 'networklocaleinfo') || ($key_l == 'networklocale')) {
-                        $lang = (empty($hwlang[0])) ? $data_values['netlang'] : $hwlang[0];
+                    if (($lang != null) && (!empty($lang))) {
+                        $xml_work->$key = $lang;
+                        $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                     } else {
-                        $lang = (empty($hwlang[1])) ? $data_values['devlang'] : $hwlang[1];
+                        $xml_work->$key = '';
+                    }  
+                    break;
+                case 'networklocaleinfo':
+                    $lang = $data_values['_netlang'];
+                    if (!empty($dev_config['_netlang'])) {
+                        $lang = $dev_config['_netlang'];
                     }
-                    if (($lang != 'null') && (!empty($lang))) {
-                        if ($key_l == 'networklocale') {
-                            $xml_work->$key = $lang;
-                        } else {
-                            if (isset($lang_info[$lang])) {
-                                $xml_node->name = $lang_info[$lang]['locale'];
-                                $xml_node->langCode = $lang_info[$lang]['code'];
-                                if ($key_l == 'userlocale') {
-                                    $xml_node->winCharSet = $lang_info[$lang]['codepage'];
-                                }
-                                $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
-                            }
-                        }
+                    if (($lang != null) && (!empty($lang))) {
+                        $xml_node->name = $dev_config['_netlang'];
+                        $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                     } else {
                         $xml_work->$key = '';
                     }
@@ -714,7 +763,7 @@ class xmlinterface
                 $put_file = (string) $get_settings['idtemplate'];
             }
         } else {
-            $errors = array('Fields Dial Plan Name is requered !!');
+            $errors = array('Fields Dial Plan Name is required !!');
         }
 
         if (empty($errors)) {

@@ -666,7 +666,7 @@ $(document).ready(function () {
 // ----------------------- Get external Files----------------
         if ($(this).data('id') === 'get_ext_files') {
             var dev_cmd = 'get_ext_files';
-            var dev_fld = ["device", "locale"];
+            var dev_fld = ["device", "locale", "country"];
             datas = 'type=' + $(this).data('type') + '&' + 'name=' + '&';
 
             for (var i = 0; i < dev_fld.length; i++) {
@@ -697,7 +697,9 @@ $(document).ready(function () {
                 success: function (data) {
 
                     $('#pleaseWaitDialog').modal('hide');
+                    console.log(data);
                     data = JSON.parse(data.replace(/^(.*\{)/,"\{"));
+                    console.log(data);
                     if (data.status === true) {
                         if (data.table_reload === true) {
                             $('table').bootstrapTable('refresh');

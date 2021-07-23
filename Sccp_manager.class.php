@@ -139,7 +139,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); //Initialise core settings
         $this->initializeSccpPath();  //Set required Paths
         $this->updateTimeZone();   // Get timezone from FreePBX
-        $this->findInstLangs();
+        //$this->findInstLangs();
         $this->saveSccpSettings();
     }
 
@@ -172,7 +172,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     'h_show' => $show_Header,
                     'form_prefix' => $form_prefix,
                     'fvalues' => $form_values,
-                    'installedLangs' => $this->installedLangs,
+                    'installedLangs' => $this->findInstLangs(),
                     'chanSccpHelp' => $this->sccpHelpInfo,
                     'sccp_defaults' => $this->sccpvalues
                     )
@@ -496,141 +496,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         return $res;
     }
 
-    function saveSccpDevice($get_settings, $validateonly = false) {
-        $hdr_prefix = 'sccp_hw_';
-        $hdr_arprefix = 'sccp_hw-ar_';
-        $hdr_vendPrefix = 'sccp_hw_vendorconfig';
-
-        $save_buttons = array();
-        $save_settings = array();
-        $save_codec = array();
-        $name_dev = '';
-        $db_field = $this->dbinterface->getSccpDeviceTableData("get_columns_sccpdevice");
-        $hw_id = (empty($get_settings['sccp_deviceid'])) ? 'new' : $get_settings['sccp_deviceid'];
-        $hw_type = (empty($get_settings['sccp_device_typeid'])) ? 'sccpdevice' : $get_settings['sccp_device_typeid'];
-        $update_hw = ($hw_id == 'new') ? 'add' : 'clear'; // Possible values are delete, replace, add, clear.
-        $hw_prefix = 'SEP';
-        if (!empty($get_settings[$hdr_prefix . 'type'])) {
-            $value = $get_settings[$hdr_prefix . 'type'];
-            if (strpos($value, 'ATA') !== false) {
-                $hw_prefix = 'ATA';
-            }
-            if (strpos($value, 'VG') !== false) {
-                $hw_prefix = 'VG';
-            }
-        }
-        foreach ($db_field as $data) {
-            $key = (string) $data['Field'];
-            $value = "";
-            switch ($key) {
-                case 'name':
-                    if (!empty($get_settings[$hdr_prefix . 'mac'])) {
-                        $value = $get_settings[$hdr_prefix . 'mac'];
-                        $value = strtoupper(str_replace(array('.', '-', ':'), '', $value)); // Delete mac separators from string
-                        $value = sprintf("%012s", $value);
-                        if ($hw_prefix == 'VG') {
-                            $value = $hw_prefix . $value . '0';
-                        } else {
-                            $value = $hw_prefix . $value;
-                        }
-                        $name_dev = $value;
-                    }
-                    break;
-                case 'phonecodepage':
-                    $value = 'null';
-                    // TODO: getExtConfig(sccp_lang ....) does not accept any additional arguments and will return an array
-                    if (!empty($get_settings[$hdr_prefix . 'devlang'])) {
-                        $lang_data = $this->extconfigs->getExtConfig('sccp_lang', $get_settings[$hdr_prefix . 'devlang']);
-                        if (!empty($lang_data)) {
-                            $value = $lang_data['codepage'];
-                        }
-                    }
-                    break;
-                case '_hwlang':
-                    if (empty($get_settings[$hdr_prefix . 'netlang']) || empty($get_settings[$hdr_prefix . 'devlang'])) {
-                        $value = 'null';
-                    } else {
-                        $value = $get_settings[$hdr_prefix . 'netlang'] . ':' . $get_settings[$hdr_prefix . 'devlang'];
-                    }
-                    break;
-                default:
-                    // handle vendor prefix
-                    if (!empty($get_settings[$hdr_vendPrefix . $key])) {
-                        $value = $get_settings[$hdr_vendPrefix  . $key];
-                    }
-                    // handle array prefix
-                    if (!empty($get_settings[$hdr_arprefix . $key])) {
-                        $arr_data = '';
-                        $arr_clear = false;
-                        foreach ($get_settings[$hdr_arprefix . $key] as $vkey => $vval) {
-                            $tmp_data = '';
-                            foreach ($vval as $vkey => $vval) {
-                                switch ($vkey) {
-                                    case 'inherit':
-                                        if ($vval == 'on') {
-                                            $arr_clear = true;
-                                            // Злобный ХАК ?!TODO!?
-                                            if ($key == 'permit') {
-                                                $save_settings['deny'] = 'NONE';
-                                            }
-                                        }
-                                        break;
-                                    case 'internal':
-                                        if ($vval == 'on') {
-                                            $tmp_data .= 'internal;';
-                                        }
-                                        break;
-                                    default:
-                                        $tmp_data .= $vval . '/';
-                                        break;
-                                }
-                            }
-                            if (strlen($tmp_data) > 2) {
-                                while (substr($tmp_data, -1) == '/') {
-                                    $tmp_data = substr($tmp_data, 0, -1);
-                                }
-                                $arr_data .= $tmp_data . ';';
-                            }
-                        }
-                        while (substr($arr_data, -1) == ';') {
-                            $arr_data = substr($arr_data, 0, -1);
-                        }
-                        if ($arr_clear) {
-                            $value = 'NONE';
-                        } else {
-                            $value = $arr_data;
-                        }
-                    }
-                    // Now only have normal prefix
-                    if (!empty($get_settings["{$hdr_prefix}{$key}"])) {
-                        $value = $get_settings["{$hdr_prefix}{$key}"];
-                    } else if (!empty($get_settings["sccp_hw{$key}"])) {
-                        //have an underscore db field
-                        $value = $get_settings["sccp_hw{$key}"];
-                    }
-            }
-            if (!empty($value)) {
-                $save_settings[$key] = $value;
-            }
-        }
-        // Save this device.
-        $this->dbinterface->write('sccpdevice', $save_settings, 'replace');
-        // Retrieve the phone buttons and write back to
-        // update sccpdeviceconfig via Trigger
-        $save_buttons = $this->getPhoneButtons($get_settings, $name_dev, $hw_type);
-        $this->dbinterface->write('sccpbuttons', $save_buttons, $update_hw, '', $name_dev);
-        // Create new XML for this device, and then reset or restart the device
-        // so that it loads the file from TFT.
-        $this->createSccpDeviceXML($name_dev);
-        if ($hw_id == 'new') {
-            $this->aminterface->sccpDeviceReset($name_dev, 'reset');
-        } else {
-            $this->aminterface->sccpDeviceReset($name_dev, 'restart');
-        }
-
-        return $save_settings;
-    }
-
     function handleRoamingUsers($get_settings, $validateonly = false) {
         $hdr_prefix = 'sccp_ru_';
         $hdr_arprefix = 'sccp_ru-ar_';
@@ -649,13 +514,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             switch ($key) {
                 case 'name':
                     $value = $name_dev;
-                    break;
-                case '_hwlang':
-                    if (empty($get_settings[$hdr_prefix . 'netlang']) || empty($get_settings[$hdr_prefix . 'devlang'])) {
-                        $value = 'null';
-                    } else {
-                        $value = $get_settings[$hdr_prefix . 'netlang'] . ':' . $get_settings[$hdr_prefix . 'devlang'];
-                    }
                     break;
                 default:
                     if (!empty($get_settings[$hdr_prefix . $key])) {
@@ -758,25 +616,59 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     private function findInstLangs() {
-        //locales and languages are installed in the tftp_lang_path
-        $result = array();
-        $langDir = '/';        //set default for when called by installer on virgin system
-        if (!empty($this->sccppath["tftp_lang_path"])) {
-            $langDir = $this->sccppath["tftp_lang_path"];
-        }
-        $localeJar = 'be-sccp.jar';   // This jar should exist if the locale is populated
-        $langArr = $this->extconfigs->getExtConfig('sccp_lang');
-        $localeArray = array_combine(array_keys($langArr),array_column($langArr, 'locale'));
+        //locales and country tones are installed in the tftp_lang_path
+        //Available packs from provisioner are in masterFilesStructure.xml in tftpRoot Path
+        // TODO: Need to include this file as part of module in case download not allowed/available
 
-        foreach (array_diff(scandir($langDir),array('.', '..')) as $subDir) {
-            if (is_dir($langDir . DIRECTORY_SEPARATOR . $subDir)) {
-                $filename = $langDir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $localeJar;
-                if (file_exists($filename)) {
-                    $result = array_merge(array_intersect($localeArray,array($subDir)),$result);
+        $searchDir = '/';        //set default for when called by installer on virgin system
+        $result = array();
+
+        if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
+            $this->getFileListFromProvisioner();
+        }
+        $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
+
+        foreach (array('languages', 'countries') as $pack) {
+            switch ($pack) {
+                case 'languages':
+                    if (!empty($this->sccppath['tftp_lang_path'])) {
+                        $searchDir = $this->sccppath['tftp_lang_path'];
+                    }
+                    $simpleXmlArr = $tftpBootXml->xpath("//Directory[@name='languages']//DirectoryPath[contains(.,'languages/')]");
+                    array_shift($simpleXmlArr); // First element is the parent directory
+                    foreach ($simpleXmlArr as $rowIn) {
+                        $tmpArr = explode('/',(string)$rowIn);
+                        array_pop($tmpArr);   //last element is empty
+                        $result[$pack]['available'][] = array_pop($tmpArr);
+                    }
+                    $fileToFind = 'be-sccp.jar';  // This file should exist if the locale is populated
+                    break;
+                case 'countries':
+                    if (!empty($this->sccppath["tftp_countries_path"])) {
+                        $searchDir = $this->sccppath['tftp_countries_path'];
+                    }
+                    $simpleXmlArr = $tftpBootXml->xpath("//Directory[@name='countries']//DirectoryPath[contains(.,'countries/')]");
+                    array_shift($simpleXmlArr); // First element is the parent directory
+                    foreach ($simpleXmlArr as $rowIn) {
+                        $tmpArr = explode('/',(string)$rowIn);
+                        array_pop($tmpArr);   //last element is empty
+                        $result[$pack]['available'][] = array_pop($tmpArr);
+                    }
+                    $fileToFind = 'g3-tones.xml';  // This file should exist if the locale is populated
+                    break;
+            }
+
+            foreach (array_diff(scandir($searchDir),array('.', '..')) as $subDir) {
+                if (is_dir($searchDir . DIRECTORY_SEPARATOR . $subDir)) {
+                    $filename = $searchDir . DIRECTORY_SEPARATOR . $subDir . DIRECTORY_SEPARATOR . $fileToFind;
+                    if (file_exists($filename)) {
+                        $result[$pack]['have'][] = $subDir;
+                    }
                 }
             }
         }
         $this->installedLangs = $result;
+        return $result;
     }
 
     /*
@@ -1131,14 +1023,14 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         $this->sccp_conf_init['general'][$key] = explode(';', $content);
                         break;
                     case "devlang":
-
+                        /*
                         $lang_data = $this->extconfigs->getExtConfig('sccp_lang', $value['data']);
                         if (!empty($lang_data)) {
-                            // TODO: getExtConfig(sccp_lang ....) does not accept any additional arguments and will return an array
                             // TODO:  will always get here, but lang_data['codepage'] will be empty as not a valid key
                             $this->sccp_conf_init['general']['phonecodepage'] = $lang_data['codepage'];
                         }
                         break;
+                        */
                     case "netlang": // Remove Key
                     case "tftp_path":
                     case "sccp_compatible":    // This is equal to SccpDBmodel

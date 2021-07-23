@@ -242,21 +242,22 @@ and open the template in the editor. Base Version before all crash :-)
             <select></select>
             <help>SCCP Language: This is the language for your hints and other features of the phone. If you don't have any languages installed or are using a single language, you can leave this blank.</help>
         </item>
-        <item type="SLT" id="2">
-            <label>SCCP Network Device Language</label>
-            <name>netlang</name>
-            <default>English_United_States</default>
-            <select></select>
-            <help>The Network locales allows the phone to play tones (ringing, busy etc.) native to the phone's country. If No language packs found is shown, you need to add locales in the tftp server</help>
-        </item>
-        <item type="SLTD" id="3">
-            <label>SCCP Phone Device Language</label>
+        <item type="SLDA" id="3">
+            <label>Default Device Language</label>
             <name>devlang</name>
             <default>English_United_States</default>
             <select> </select>
             <help>The user locale allows the phone to display text (menu items, soft keys etc.) native to the phone's language. If No language packs found is shown, you need to add locales in the tftp server</help>
         </item>
+        <item type="SLNA" id="2">
+            <label>Network Country</label>
+            <name>netlang</name>
+            <default>United_States</default>
+            <select></select>
+            <help>The Network locales allows the phone to play tones (ringing, busy etc.) native to the phone's country. If No language packs found is shown, you need to add locales in the tftp server</help>
+        </item>
     </page_group>
+
 
     <page_group name="sccp_dev_config">
         <label>SCCP Device general config</label>
@@ -1335,19 +1336,19 @@ and open the template in the editor. Base Version before all crash :-)
             <select></select>
             <help>Time Zone offset</help>
         </item>
-        <item type="SLTD" id="4" seq="98">
-            <label>SCCP Network Device Language</label>
-            <name>netlang</name>
-            <default>English_United_States</default>
-            <select></select>
-            <help>The Network locales allows the phone to play tones (ringing, busy etc.) native to the phone's country. If No language packs found is shown, you need to add locales in the tftp server</help>
-        </item>
         <item type="SLTD" id="5" seq="98">
             <label>SCCP Phone Device Language</label>
             <name>devlang</name>
             <default>English_United_States</default>
             <select> </select>
             <help>The user locale allows the phone to display text (menu items, soft keys etc.) native to the phone's language. If No language packs found is shown, you need to add locales in the tftp server</help>
+        </item>
+        <item type="SLTN" id="4" seq="98">
+            <label>SCCP Network Device Language</label>
+            <name>netlang</name>
+            <default>English_United_States</default>
+            <select></select>
+            <help>The Network locales allows the phone to play tones (ringing, busy etc.) native to the phone's country. If No language packs found is shown, you need to add locales in the tftp server</help>
         </item>
         <item type="IS" id="11" seq="98">
             <name>phonepersonalization</name>

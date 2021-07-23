@@ -249,7 +249,10 @@ function Get_DB_config($sccp_compatible)
               '_sccp_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x4'", 'modify' => "VARCHAR(11)"),
               '_dev_sshPassword' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
               '_dev_sshUserId' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
-              '_phonepersonalization' => array('create' => "VARCHAR(25) NOT NULL default '0'", 'modify' => "VARCHAR(25)")
+              '_phonepersonalization' => array('create' => "VARCHAR(25) NOT NULL default '0'", 'modify' => "VARCHAR(25)"),
+              '_hwlang' => array ('drop' => 'yes'),
+              '_devlang' => array('create' => "VARCHAR(25) NULL default NULL", 'modify' => "VARCHAR(25)"),
+              '_netlang' => array('create' => "VARCHAR(25) NULL default NULL", 'modify' => "VARCHAR(25)")
             ),
         'sccpline' => array (
               '_regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
@@ -927,13 +930,10 @@ function cleanUpSccpSettings() {
     global $sccp_compatible;
 
     // Get current default settings from db
-    $stmt = $db->prepare("SELECT * FROM sccpsettings");
+    $stmt = $db->prepare("SELECT keyword, sccpsettings.* FROM sccpsettings");
     $stmt->execute();
-    $settingsFromDb = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    foreach ($settingsFromDb as $key => $rowArray) {
-        $settingsFromDb[$rowArray['keyword']] = $rowArray;
-        unset($settingsFromDb[$key]);
-    }
+    $settingsFromDb = $stmt->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
+
     // See if a previous version was installed
     outn("<li>" . _("Checking for previous version of Sccp_manager.") . "</li>");
     if (!isset($settingsFromDb['sccp_compatible']['data'])) {
@@ -970,7 +970,7 @@ function cleanUpSccpSettings() {
     }
     $settingsFromDb = array_merge($settingsFromDb, array_diff_key($thisInstaller->sccpvalues, $settingsFromDb));
     unset($thisInstaller->sccpvalues);
-
+    
     // get chan-sccp defaults
 
     $sysConfiguration = $aminterface->getSCCPConfigMetaData('general');
@@ -1019,7 +1019,6 @@ function cleanUpSccpSettings() {
         unset($sysConfiguration[$key]);
     }
     unset($sysConfiguration['Options']);
-
     // Write settings back to db
     $sql = "TRUNCATE sccpsettings";
     $results = $db->query($sql);

@@ -502,10 +502,17 @@ class formcreate
                 $select_opt= $syslangs;
                 break;
             case 'SLTD':
+                // Device Language
                 $select_opt = array('xx' => 'No language packs found');
-                if (!empty($installedLangs)) {
-                    $select_opt = (array)$installedLangs;
-
+                if (!empty($installedLangs['languages']['have'])) {
+                    $select_opt = (array)$installedLangs['languages']['have'];
+                }
+                break;
+            case 'SLTN':
+                // Network Language
+                $select_opt = array('xx' => 'No country packs found');
+                if (!empty($installedLangs['countries']['have'])) {
+                    $select_opt = (array)$installedLangs['countries']['have'];
                 }
                 break;
             case 'SLZ':
@@ -620,21 +627,39 @@ class formcreate
         <?php
     }
 
-    function addElementSLT($child, $fvalues, $sccp_defaults,$npref, $installedLangs) {
-    //       Input element Select SLS - System Language
+    function addElementSLNA($child, $fvalues, $sccp_defaults,$npref, $installedLangs) {
+    //       Input element Select SLS - System Language with add from external
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
         $child->value ='';
+        $selectArray = array();
         // $select_opt is an associative array for these types.
         if (!empty($metainfo[$res_n])) {
             if ($child->meta_help == '1' || $child->help == 'Help!') {
                 $child->help = $metaInfo[$res_n];
             }
         }
-        $select_opt = array('xx' => 'No language packs found');
-        if (!empty($installedLangs)) {
-            $select_opt = $installedLangs;
+
+        switch ($child['type']) {
+            case 'SLDA':
+                $select_opt = array('xx' => 'No language packs found');
+                if (!empty($installedLangs['languages']['have'])) {
+                    $select_opt = $installedLangs['languages']['have'];
+                }
+                $selectArray = $installedLangs['languages']['available'];
+                $requestType = 'locale';
+                break;
+
+            case 'SLNA':
+                $select_opt = array('xx' => 'No country packs found');
+                if (!empty($installedLangs['countries']['have'])) {
+                    $select_opt = $installedLangs['countries']['have'];
+                }
+                $selectArray = $installedLangs['countries']['available'];
+                $requestType = 'country';
+              break;
         }
+
 
         if (empty($child->class)) {
             $child->class = 'form-control';
@@ -649,9 +674,7 @@ class formcreate
                 $child->value = $child->default;
             }
         }
-        $langArr = \FreePBX::Sccp_manager()->extconfigs->getExtConfig('sccp_lang');
-        $selectArray = array_combine(array_keys($langArr),array_column($langArr, 'locale'));
-        $requestType = 'locale';
+
         ?>
         <div class="element-container">
             <div class="row">
@@ -671,9 +694,8 @@ class formcreate
                             foreach ($select_opt as $key => $val) {
                                     $opt_key = $key;
                                     $opt_val = $val;
-
-                                echo '<option value="' . $opt_key . '"';
-                                if ($opt_key == $child->value) {
+                                echo '<option value="' . $opt_val . '"';
+                                if ($opt_val == $child->value) {
                                     echo ' selected="selected"';
                                 }
                                 echo "> {$opt_val} </option>";
@@ -683,7 +705,7 @@ class formcreate
                         </div>
                     </div>
                     <div class="col-md-3">
-                      <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file"><i class="fa fa-bolt"></i> <?php echo _("Get language from Provisioner");?>
+                      <button type="button" class="btn btn-primary btn-lg" id="<?php echo $requestType;?>" data-toggle="modal" data-target=".get_ext_file_<?php echo $requestType;?>"><i class="fa fa-bolt"></i> <?php echo _("Get $requestType from Provisioner");?>
                       </button>
                     </div>
                 </div>
