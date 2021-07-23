@@ -189,7 +189,7 @@ ri ^(.+)\/(.+-sccp.jar)$ locales/languages/\1/\2
 ri ^(.+)\/(.+-sip.jar)$ locales/languages/\1/\2
 ri ^(.+)\/(.+-dictionary.xml)$ locales/languages/\1/\2
 ri ^(.+)\/(.+-dictionary-ext.xml)$ locales/languages/\1/\2
-ri ^(.+)\/(.+-tones.xml)$ locales/languages/\1/\2
+#ri ^(.+)\/(.+-tones.xml)$ locales/languages/\1/\2
 ri ^(.+)\/(.+-font.xml)$ locales/languages/\1/\2
 ri ^(.+)\/(.+-kate.xml)$ locales/languages/\1/\2
 ri ^(.+)\/(gk.+)(\.cfg)$ locales/languages/\1/\2\3
