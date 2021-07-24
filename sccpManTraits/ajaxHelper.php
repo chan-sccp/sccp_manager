@@ -732,11 +732,15 @@ trait ajaxHelper {
                     }
                     break;
                 case 'phonecodepage':
-                    $value = 'ISO8859-1';
-                    // TODO: May be other exceptions. Historically this is the only one handled
+                    // TODO: May be other exceptions so use switch. Historically this is the only one handled
                     if (!empty($get_settings["{$hdr_prefix}devlang"])) {
-                        if ($get_settings["{$hdr_prefix}devlang"] == "Russian_Russian_Federation") {
-                            $value = 'CP1251';
+                        switch ($get_settings["{$hdr_prefix}devlang"]) {
+                            case 'Russian_Russian_Federation':
+                                $value = 'CP1251';
+                                break;
+                            default:
+                                $value = 'ISO8859-1';
+                                break;
                         }
                     }
                     break;
