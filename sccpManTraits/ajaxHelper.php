@@ -596,128 +596,97 @@ trait ajaxHelper {
 
     public function getFilesFromProvisioner($request) {
         $filesToGet = array();
+        $totalFiles = 0;
         $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
         if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
-            $this->getFileListFromProvisioner();
+            if (!$this->getFileListFromProvisioner()) {
+                return array('status' => false,
+                    'message' => "{$provisionerUrl}tools/tftpbootFiles.xml cannot be found. Check your internet connection, and that this path exists",
+                    'reload' => false);
+            }
         }
         $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
 
         switch ($request['type']) {
             case 'firmware':
                 $device = $request['device'];
-                if (!is_dir("{$this->sccppath['tftp_firmware_path']}/{$device}")) {
-                    mkdir("{$this->sccppath['tftp_firmware_path']}/{$device}", 0755);
-                }
+
                 $firmwareDir = $tftpBootXml->xpath("//Directory[@name='firmware']");
                 $result = $firmwareDir[0]->xpath("//Directory[@name={$device}]");
-                $filesToGet = (array)$result[0]->FileName;
-                $totalFiles = count($filesToGet);
-                $filesRetrieved = 0;
+                $filesToGet['firmware'] = (array)$result[0]->FileName;
+                $totalFiles += count($filesToGet['firmware']);
+                $srcDir['firmware'] = $provisionerUrl . (string)$result[0]->DirectoryPath;
+                $dstDir['firmware'] = "{$this->sccppath['tftp_firmware_path']}/{$device}";
 
-                foreach ($filesToGet as $srcFile) {
-                    file_put_contents("{$this->sccppath['tftp_firmware_path']}/{$device}/{$srcFile}",
-                        file_get_contents($provisionerUrl . (string)$result[0]->DirectoryPath . $srcFile));
-                    $filesRetrieved ++;
-                    $percentComplete = $filesRetrieved *100 / $totalFiles;
-                    $data = "{$percentComplete},";
-                    echo $data;
-                    ob_flush();
-                    flush();
-                }
                 $msg = "Firmware for {$device} has been successfully downloaded";
                 break;
             case 'locale':
                 $language = $request['locale'];
-                $totalFiles = 0;
-
-
-                if (!is_dir("{$this->sccppath['tftp_lang_path']}/{$language}")) {
-                    mkdir("{$this->sccppath['tftp_lang_path']}/{$language}", 0755);
-                }
                 // Get locales
-                $localeDir = $tftpBootXml->xpath("//Directory[@name='locales']");
-                $localeDir = $localeDir[0]->xpath("//Directory[@name='languages']");
+                $localeDir = $tftpBootXml->xpath("//Directory[@name='languages']");
                 $result = $localeDir[0]->xpath("//Directory[@name='{$language}']");
-                $filesToGet['languages'] = (array)$result[0]->FileName;
-                $totalFiles += count($filesToGet['languages']);
-                $languagesSrcDir = (string)$result[0]->DirectoryPath;
-                $languagesDstDir = "{$this->sccppath['tftp_lang_path']}/{$language}";
+                $filesToGet['language'] = (array)$result[0]->FileName;
+                $totalFiles += count($filesToGet['language']);
+                $srcDir['language'] = $provisionerUrl . (string)$result[0]->DirectoryPath;
+                $dstDir['language'] = "{$this->sccppath['tftp_lang_path']}/{$language}";
 
                 // Get countries. Country is a substring of locale with exception of korea
                 $country = explode('_', $language);
                 array_shift($country);
-
                 $countryName = array_shift($country);
                 while (count($country)>=1) {
                     $countryName .= '_' . array_shift($country);
                 }
-
-                if (!is_dir("{$this->sccppath['tftp_countries_path']}/{$countryName}")) {
-                    mkdir("{$this->sccppath['tftp_countries_path']}/{$countryName}", 0755);
-                }
-
-                $countryDir = $tftpBootXml->xpath("//Directory[@name='locales']");
-                $countryDir = $countryDir[0]->xpath("//Directory[@name='countries']");
-                $result = $countryDir[0]->xpath("//Directory[@name='{$countryName}']");
-                $filesToGet['countries'] = (array)$result[0]->FileName;
-                $totalFiles += count($filesToGet['countries']);
-                $countriesSrcDir = (string)$result[0]->DirectoryPath;
-                $countriesDstDir = "{$this->sccppath['tftp_countries_path']}/{$countryName}";
-
-                $filesRetrieved = 0;
-
-                foreach (array('languages', 'countries') as $section){
-                    $srcDir = ${"{$section}SrcDir"};
-                    $dstDir = ${"{$section}DstDir"};
-                    foreach ($filesToGet[$section] as $srcFile) {
-                        file_put_contents("{$dstDir}/{$srcFile}",
-                            file_get_contents($provisionerUrl . $srcDir . $srcFile));
-                        $filesRetrieved ++;
-                        $percentComplete = $filesRetrieved *100 / $totalFiles;
-                        $data = "{$percentComplete},";
-                        echo $data;
-                        ob_flush();
-                        flush();
-                    }
-                }
                 $msg = "{$language} Locale and Country tones have been successfully downloaded";
-                break;
-            case 'country':
-                $countryName = $request['country'];
-                $totalFiles = 0;
+                //fall through intentionally to also get country files
 
-                if (!is_dir("{$this->sccppath['tftp_countries_path']}/{$countryName}")) {
-                    mkdir("{$this->sccppath['tftp_countries_path']}/{$countryName}", 0755);
+            case 'country':
+                if ($totalFiles == 0) {
+                    //Request is for countries; if >0, have fallen through from locale
+                    $countryName = $request['country'];
+                    $msg = "{$countryName} country tones have been successfully downloaded";
                 }
 
                 $result = $tftpBootXml->xpath("//Directory[@name='{$countryName}']");
-                $filesToGet['countries'] = (array)$result[0]->FileName;
-                $totalFiles += count($filesToGet['countries']);
-                $countriesSrcDir = (string)$result[0]->DirectoryPath;
-                $countriesDstDir = "{$this->sccppath['tftp_countries_path']}/{$countryName}";
-
-                $filesRetrieved = 0;
-
-                foreach (array('countries') as $section){
-                    $srcDir = ${"{$section}SrcDir"};
-                    $dstDir = ${"{$section}DstDir"};
-                    foreach ($filesToGet[$section] as $srcFile) {
-                        file_put_contents("{$dstDir}/{$srcFile}",
-                            file_get_contents($provisionerUrl . $srcDir . $srcFile));
-                        $filesRetrieved ++;
-                        $percentComplete = $filesRetrieved *100 / $totalFiles;
-                        $data = "{$percentComplete},";
-                        echo $data;
-                        ob_flush();
-                        flush();
-                    }
-                }
-                $msg = "{$countryName} country tones have been successfully downloaded";
+                $filesToGet['country'] = (array)$result[0]->FileName;
+                $totalFiles += count($filesToGet['country']);
+                $srcDir['country'] = $provisionerUrl . (string)$result[0]->DirectoryPath;
+                $dstDir['country'] = "{$this->sccppath['tftp_countries_path']}/{$countryName}";
                 break;
             default:
-                return false;
+                return array('status' => false, 'message' => 'Invalid request', 'reload' => false);
                 break;
         }
+        // Now get the files
+        $filesRetrieved = 0;
+        foreach (array('language','country', 'firmware') as $section){
+            if (!isset($dstDir[$section])) {
+                // No request for this section
+                continue;
+            }
+            $srcDir = $srcDir[$section];
+            $dstDir = $dstDir[$section];
+            if (!is_dir($dstDir)) {
+                mkdir($dstDir, 0755);
+            }
+            foreach ($filesToGet[$section] as $srcFile) {
+                try {
+                  file_put_contents("{$dstDir}/{$srcFile}",
+                      file_get_contents($srcDir. $srcFile));
+                } catch (\Exception $e) {
+                    return array('status' => false,
+                        'message' => "{$countriesSrcDir}{$srcFile} cannot be found. Check your internet connection, and that this path exists",
+                        'reload' => false);
+                }
+                $filesRetrieved ++;
+                $percentComplete = $filesRetrieved *100 / $totalFiles;
+                $data = "{$percentComplete},";
+                echo $data;
+                ob_flush();
+                flush();
+            }
+        }
+
         return array('status' => true, 'message' => $msg, 'reload' => true);
     }
 

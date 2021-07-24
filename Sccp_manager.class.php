@@ -624,7 +624,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $result = array();
 
         if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
-            $this->getFileListFromProvisioner();
+            if (!$this->getFileListFromProvisioner()) {
+                // File does not exist and cannot get from internet.
+                return $result;
+            };
         }
         $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
 

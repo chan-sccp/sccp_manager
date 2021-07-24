@@ -4,7 +4,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+$requestType = 'firmware';
 ?>
 
 <div class="fpbx-container container-fluid">
@@ -32,7 +32,7 @@
                             <li><a class="dropitem" data-id="all" tabindex="-1" href="#"><span><?php echo _('Show All') ?></span></a></li>
                         </ul>
                     </div>
-                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file"><i class="fa fa-bolt"></i> <?php echo _("Update Files from Provisioner"); ?>
+                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file_<?php echo $requestType; ?>"><i class="fa fa-bolt"></i> <?php echo _("Update Files from Provisioner"); ?>
                     </button>
                 </div>
                 <table data-cookie="true" data-row-style="SetRowColor" data-cookie-id-table="sccp_model-all" data-url="ajax.php?module=sccp_manager&command=getDeviceModel&type=enabled" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-model" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-condensed" id="table-models" data-id="model" data-unique-id="model">
@@ -149,7 +149,7 @@
     </div>
 </div>
 <?php
-$requestType = 'firmware';
+
 $selectArray = array();
 $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
 $firmwareDir = $tftpBootXml->xpath("//Directory[@name='firmware']");

@@ -262,15 +262,14 @@ trait helperfunctions {
     public function getFileListFromProvisioner() {
 
         $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
-
         // Get master tftpboot directory structure
-
-        file_put_contents("{$this->sccppath['tftp_path']}/masterFilesStructure.xml",file_get_contents("{$provisionerUrl}tools/tftpbootFiles.xml"));
-        //$xmlData = simplexml_load_file("{$provisionerUrl}tools/tftpbootFiles.xml");
+        try {
+            file_put_contents("{$this->sccppath['tftp_path']}/masterFilesStructure.xml",file_get_contents("{$provisionerUrl}tools/tftpbootFiles.xml"));
+        } catch (\Exception $e) {
+            return false;
+        }
         return true;
-
     }
-
 
     public function initVarfromXml() {
         if ((array) $this->xml_data) {
