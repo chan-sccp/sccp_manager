@@ -20,12 +20,18 @@ $feature_list=  array('parkinglot'=>'Park Slots','monitor'=> "Record Calls",'dev
  */
 
 $lines_list = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
-//$hint_list  = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
 $hint_list  = $this->getHintInformation(true, array('context'=>'park-hints')) ;
+
+
+/* REQUEST for new device
+[display] => sccp_phone
+[tech_hardware] => cisco
+[extdisplay] =>
+*/
 
 // print_r($hint_list);
 $line_id =0;
-$max_buttons =56;
+$max_buttons =56;     //Don't know hardware type so et a maximum. On save, this is set to actual max buttons
 $show_buttons =1;
 //print_r($hint_list);
 if (!empty($_REQUEST['id'])) {
@@ -61,7 +67,7 @@ if (!empty($_REQUEST['ru_id'])) {
 <form autocomplete="off" name="frm_editbuttons" id="frm_editbuttons" class="fpbx-submit" action="" method="post" data-id="hw_edit">
     <input type="hidden" name="category" value="frm_editbuttons">
     <input type="hidden" name="Submit" value="Submit">
-    <input type="hidden" name="buttonscount" value="<?php echo $max_buttons?>">
+    <input type="hidden" name="buttonscount" id="buttonscount" value="<?php echo $max_buttons?>">
     <div class="section-title" data-for="<?php echo $forminfo[0]['name'];?>">
         <h3><i class="fa fa-minus"></i><?php echo _($forminfo[0]['label']) ?></h3>
     </div>
@@ -90,7 +96,7 @@ if (!empty($_REQUEST['ru_id'])) {
 
     </div></div>
     <?php
-    for ($line_id = 0; $line_id <=$max_buttons; $line_id ++) {
+    for ($line_id = 0; $line_id <$max_buttons; $line_id ++) {
         $show_form_mode = '';
         $defaul_tv = (empty($db_buttons[$line_id])) ?  "empty": $db_buttons[$line_id]['buttontype'];
         $defaul_btn = (empty($db_buttons[$line_id])) ?  "": $db_buttons[$line_id]['name'];
@@ -154,7 +160,7 @@ if (!empty($_REQUEST['ru_id'])) {
                     <div class="col-sm-5">
                         <div class="col-xs-3">
 <!--  Line Type Select                        -->
-                        <select class="form-control buttontype" data-id="<?php echo $line_id;?>" name="<?php echo $forminfo[1]['name'].$line_id.'_type';?>" >
+                        <select class="form-control buttontype" data-id="<?php echo $line_id;?>" name="<?php echo $forminfo[1]['name'].$line_id.'_type';?>">
                     <?php
                     if ($line_id == 0) {
                         echo '<option value="line" selected >DEF LINE</option>';
@@ -178,7 +184,7 @@ if (!empty($_REQUEST['ru_id'])) {
                         ?>
                         </select>
 <!--  if Line Type = line Show SCCP Num -->
-                        <select data-type='line' class ="form-control lineid_<?php echo $line_id.(($show_form_mode=='line' || $show_form_mode=='adv.line')?'':' hidden');?>" name="<?php echo $forminfo[1]['name'].$line_id.'_line';?>" >
+                        <select data-type='line' class ="form-control lineid_<?php echo $line_id.(($show_form_mode=='line' || $show_form_mode=='adv.line')?'':' hidden');?>" name="<?php echo $forminfo[1]['name'].$line_id.'_line';?>">
                         <?php
                         foreach ($lines_list as $data) {
                             $select = (($data['name']==$defaul_btn)?"selected":"");

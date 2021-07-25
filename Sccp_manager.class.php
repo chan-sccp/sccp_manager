@@ -383,6 +383,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     function getPhoneButtons($get_settings, $ref_id = '', $ref_type = 'sccpdevice') {
         // get Model Buttons info
+        dbug($get_settings);
         $res = array();
         $def_feature = array('parkinglot' => array('name' => 'P.slot', 'value' => 'default'),
             'devstate' => array('name' => 'Coffee', 'value' => 'coffee'),
@@ -489,10 +490,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         break;
                 }
                 if (!empty($btn_t)) {
-                    $res[] = array('ref' => $ref_id, 'reftype' => $ref_type, 'instance' => (string) ($it + 1), 'type' => $btn_t, 'name' => $btn_n, 'options' => $btn_opt);
+                    $res[] = array('ref' => $ref_id, 'reftype' => $ref_type, 'instance' => (string) ($it + 1), 'buttontype' => $btn_t, 'name' => $btn_n, 'options' => $btn_opt);
                 }
             }
         }
+        dbug($res);
         return $res;
     }
 
@@ -796,7 +798,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if (empty($button_list)) {
             return array('Response' => ' 0 buttons found ', 'data' => '');
         }
-        $copy_fld = array('ref', 'reftype', 'instance', 'buttontype');
+        $copy_fld = array('ref', 'reftype', 'instance', 'buttontype', 'options');
         $extList = $extList = $this->dbinterface->get_db_SccpTableByID("SccpExtension", array(), 'name');
         foreach ($button_list as $value) {
             $btn_opt = explode(',', $value['options']);
@@ -1068,9 +1070,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     function getSccpModelInformation($get = "all", $validate = false, $format_list = "all", $filter = array()) {
-        // $file_ext = array('.loads', '.LOADS', '.sbn', '.SBN', '.bin', '.BIN','.zup','.ZUP');
         $file_ext = array('.loads', '.sbn', '.bin', '.zup');
-        // $dir = $this->sccppath["tftp_path"];
         $dir = $this->sccppath['tftp_firmware_path'];
         $dir_tepl = $this->sccppath['tftp_templates_path'];
 

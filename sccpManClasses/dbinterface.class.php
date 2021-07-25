@@ -49,6 +49,7 @@ class dbinterface
         // $stmt is a single row fetch, $stmts is a fetchAll while stmtU is fetchAll UNIQUE
         $stmt = '';
         $stmts = '';
+        $stmtU = '';
         if ($dataid == '') {
             return false;
         }
@@ -60,7 +61,7 @@ class dbinterface
                 break;
             case 'SccpExtension':
                 if (empty($data['name'])) {
-                    $stmts = $this->db->prepare('SELECT * FROM sccpline ORDER BY name');
+                    $stmtU = $this->db->prepare('SELECT name, sccpline.* FROM sccpline ORDER BY name');
                 } else {
                     $stmts = $this->db->prepare('SELECT * FROM sccpline WHERE name = :name');
                     $stmts->bindParam(':name', $data['name'],\PDO::PARAM_STR);
@@ -111,15 +112,6 @@ class dbinterface
                     $stmts = $this->db->prepare("SELECT  {$fld}  FROM sccpdeviceconfig ORDER BY name");
                 }
                 break;
-            case 'HWSipDevice':
-                $raw_settings = $this->getDb_model_info($get = "sipphones", $format_list = "model");
-                break;
-            case 'HWDevice':
-                $raw_settings = $this->getDb_model_info($get = "ciscophones", $format_list = "model");
-                break;
-            case 'HWextension':
-                $raw_settings = $this->getDb_model_info($get = "extension", $format_list = "model");
-                break;
             case 'get_columns_sccpdevice':
                 $stmts = $this->db->prepare('DESCRIBE sccpdevice');
                 break;
@@ -139,6 +131,13 @@ class dbinterface
             case 'get_sccpuser':
                 $stmt = $this->db->prepare('SELECT * FROM sccpuser WHERE name = :name');
                 $stmt->bindParam(':name', $data['id'],\PDO::PARAM_STR);
+                break;
+            case 'getAssignedExtensions':
+                // all extensions that are designed as default lines
+                $stmtU = $this->db->prepare("SELECT DISTINCT name, name FROM sccpbuttonconfig WHERE buttontype = 'line' AND instance =1");
+                break;
+            case 'getDefaultLine':
+                $stmt = $this->db->prepare("SELECT name FROM sccpbuttonconfig WHERE ref = '{$data['id']}' and instance =1 and buttontype = 'line'");
                 break;
             case 'get_sccpdevice_buttons':
                 $sql = '';
@@ -162,7 +161,7 @@ class dbinterface
                     $raw_settings = array();
                 }
                 break;
-                // No default case so will give exception of $raw_settings undefined if there
+                // No default case so will give exception of $raw_settings undefined if the
                 // dataid is not in the switch.
         }
         if (!empty($stmt)) {
@@ -323,29 +322,51 @@ class dbinterface
                         break;
                     case 'replace':
                         foreach ($save_value as $button_array) {
-                            $stmt = $this->db->prepare('UPDATE sccpbuttonconfig SET name =:name WHERE  ref = :ref AND reftype =:reftype AND instance = :instance  AND buttontype = :buttontype');
+                            $stmt = $this->db->prepare('UPDATE sccpbuttonconfig SET name =:name WHERE  ref = :ref AND reftype =:reftype AND instance = :instance  AND buttontype = :buttontype AND options = :options');
                             $stmt->bindParam(':ref', $button_array['ref'],\PDO::PARAM_STR);
                             $stmt->bindParam(':reftype', $button_array['reftype'],\PDO::PARAM_STR);
                             $stmt->bindParam(':instance', $button_array['instance'],\PDO::PARAM_INT);
-                            $stmt->bindParam(':buttontype', $button_array['type'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':buttontype', $button_array['buttontype'],\PDO::PARAM_STR);
                             $stmt->bindParam(':name', $button_array['name'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':options', $button_array['options'],\PDO::PARAM_STR);
                             $result= $stmt->execute();
                         }
                         break;
+                    case 'add':
+                        foreach ($save_value as $button_array) {
+                            $stmt = $this->db->prepare("INSERT INTO sccpbuttonconfig SET ref = :ref, reftype = :reftype, instance = :instance, buttontype = :buttontype, name = :name, options = :options
+                                          ON DUPLICATE KEY UPDATE ref = :refU, reftype = :reftypeU, instance = :instanceU, buttontype = :buttontypeU, name = :nameU, options = :optionsU");
+                            $stmt->bindParam(':ref', $button_array['ref'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':reftype', $button_array['reftype'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':instance', $button_array['instance'],\PDO::PARAM_INT);
+                            $stmt->bindParam(':buttontype', $button_array['buttontype'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':name', $button_array['name'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':options', $button_array['options'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':refU', $button_array['ref'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':reftypeU', $button_array['reftype'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':instanceU', $button_array['instance'],\PDO::PARAM_INT);
+                            $stmt->bindParam(':buttontypeU', $button_array['buttontype'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':nameU', $button_array['name'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':optionsU', $button_array['options'],\PDO::PARAM_STR);
+                            $result = $stmt->execute();
+                        }
+                        break;
+                    /*
                     case 'add':
                         foreach ($save_value as $button_array) {
                             $stmt = $this->db->prepare('INSERT INTO sccpbuttonconfig (ref, reftype, instance, buttontype, name, options) VALUES (:ref, :reftype, :instance, :buttontype, :name, :options)');
                             $stmt->bindParam(':ref', $button_array['ref'],\PDO::PARAM_STR);
                             $stmt->bindParam(':reftype', $button_array['reftype'],\PDO::PARAM_STR);
                             $stmt->bindParam(':instance', $button_array['instance'],\PDO::PARAM_INT);
-                            $stmt->bindParam(':buttontype', $button_array['type'],\PDO::PARAM_STR);
+                            $stmt->bindParam(':buttontype', $button_array['buttontype'],\PDO::PARAM_STR);
                             $stmt->bindParam(':name', $button_array['name'],\PDO::PARAM_STR);
                             $stmt->bindParam(':options', $button_array['options'],\PDO::PARAM_STR);
                             $result = $stmt->execute();
                         }
                         break;
+                    */
                     case 'clear';
-                        // Clear is equivalent of delete + insert.
+                        // Clear is equivalent of delete + insert. Mode is used in order to activate trigger.
                         $this->write('sccpbuttons', '', $mode = 'delete','', $hwid);
                         $this->write('sccpbuttons', $save_value, $mode = 'add','', $hwid);
                         break;

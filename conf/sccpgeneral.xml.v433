@@ -1263,7 +1263,7 @@ and open the template in the editor. Base Version before all crash :-)
             <name>type</name>
             <default>7911</default>
             <select name="model" dataid="dns" dataval="buttons">model</select>
-            <class>hw_select sccp-custom</class>
+            <class>hw_select form-control</class>
             <help>The type of phone: 7911, 7940, 7960, etc. Important note: the 'G' models are handled as the base model (e.g., 7962G is handled as 7962). In the Display mode, this field is read-only because the MAC address and the model number are a pair.</help>
         </item>
         <item type="SDE" id="3" seq="99">
@@ -1271,7 +1271,7 @@ and open the template in the editor. Base Version before all crash :-)
             <name>addon</name>
             <default>NONE</default>
             <select name="model" dataval="buttons">description</select>
-            <class>hw_select sccp-custom</class>
+            <class>hw_select form-control</class>
             <help>Addon: Addons are model specific and only work with certain base phones. This phone model is identified as being a phone that does not accept sidecars. Update devmodel if this is not correct.</help>
         </item>
     </page_group>
@@ -1321,6 +1321,14 @@ and open the template in the editor. Base Version before all crash :-)
                 <options pattern="[0-9a-zA-Z]+"/>
             </input>
             <help>The information in the upper right corner of the device screen. Only English letters and digits !</help>
+        </item>
+        <item type="SDML" id="1" seq="100">
+            <label>Default Line</label>
+            <name>defaultLine</name>
+            <default></default>
+            <select name="name" addlabel='label' dataid="name" dataval="label">model</select>
+            <class>lineSelect form-control</class>
+            <help>Select the default line for this device</help>
         </item>
         <item type="SLK" id="2" seq="99">
             <label>Soft Keyset</label>
@@ -1894,7 +1902,7 @@ and open the template in the editor. Base Version before all crash :-)
             <name>type</name>
             <default>7911</default>
             <select name="model" dataid="dns" dataval="buttons">model</select>
-            <class>hw_select sccp-custom</class>
+            <class>form-control hw_select</class>
             <help>The type of phone: 7911, 7940, 7960, etc. Important note: the 'G' models are handled as the base model (e.g., 7962G is handled as 7962). In the Display mode, this field is read-only because the MAC address and the model number are a pair.</help>
         </item>
         <item type="SDE" id="3" seq="99">
@@ -1902,7 +1910,7 @@ and open the template in the editor. Base Version before all crash :-)
             <name>addon</name>
             <default>NONE</default>
             <select name="model" dataval="buttons">model</select>
-            <class>hw_select sccp-custom</class>
+            <class>hw_select form-control</class>
             <help>Addon: Addons are model specific and only work with certain base phones. This phone model is identified as being a phone that does not accept sidecars. Update devmodel if this is not correct.</help>
         </item>
     </page_group>

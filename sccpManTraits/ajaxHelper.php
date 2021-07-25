@@ -703,7 +703,7 @@ trait ajaxHelper {
         $db_field = $this->dbinterface->getSccpDeviceTableData("get_columns_sccpdevice");
         $hw_id = (empty($get_settings['sccp_deviceid'])) ? 'new' : $get_settings['sccp_deviceid'];
         $hw_type = (empty($get_settings['sccp_device_typeid'])) ? 'sccpdevice' : $get_settings['sccp_device_typeid'];
-        $update_hw = ($hw_id == 'new') ? 'add' : 'clear'; // Possible values are delete, replace, add, clear.
+        $update_hw = ($hw_id == 'new') ? 'add' : 'clear'; // Clear is delete + add
         $hw_prefix = 'SEP';
         if (!empty($get_settings[$hdr_prefix . 'type'])) {
             $value = $get_settings[$hdr_prefix . 'type'];
@@ -806,7 +806,7 @@ trait ajaxHelper {
         }
         // Save this device.
         $this->dbinterface->write('sccpdevice', $save_settings, 'replace');
-        // Retrieve the phone buttons and write back to
+        // Retrieve the phone buttons from $_REQUEST ($get_settings) and write back to
         // update sccpdeviceconfig via Trigger
         $save_buttons = $this->getPhoneButtons($get_settings, $name_dev, $hw_type);
         $this->dbinterface->write('sccpbuttons', $save_buttons, $update_hw, '', $name_dev);

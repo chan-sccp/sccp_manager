@@ -296,6 +296,7 @@ $(document).ready(function () {
         }
 
         var btn_add = $('#sccp_hw_addon').find(':selected').data('val');
+        $('#buttonscount').attr('value',btn_dev + btn_add);
         $('.line_button').each(function () {
             if ($(this).data('id') < btn_dev + btn_add) {
                 $(this).removeClass('hidden');
@@ -305,6 +306,12 @@ $(document).ready(function () {
             }
         });
 
+    });
+
+    $('.lineSelect').change(function (e) {
+        var type_id = $('#sccp_hw_defaultLine').find(':selected').data('id');
+        $("select.lineid_0 option:selected").prop("selected",false);
+        $("select.lineid_0 option[value=" + type_id + "]").prop("selected",true);
     });
 
     $('.sccp_button_hide').each(function () {

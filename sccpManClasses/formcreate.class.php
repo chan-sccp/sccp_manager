@@ -537,6 +537,7 @@ class formcreate
                         $select_opt[$key]= $key;
                     }
                 }
+
             case 'SLM':
                 if (function_exists('music_list')) {
                     $moh_list = music_list();
@@ -741,15 +742,23 @@ class formcreate
         }
         switch ($child['type']) {
             case 'SDM':
-                $model_list = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData("HWDevice");
+                $model_list = \FreePBX::Sccp_manager()->dbinterface->getDb_model_info('ciscophones', 'model');
                 $select_opt= $model_list;
                 break;
             case 'SDMS':
-                $model_list = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData("HWSipDevice");
+                $model_list = \FreePBX::Sccp_manager()->dbinterface->getDb_model_info('sipphones', 'model');
                 $select_opt= $model_list;
                 break;
+            case 'SDML':
+                $assignedExts = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData('getAssignedExtensions');
+                $select_opt = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData('SccpExtension');
+                foreach ($assignedExts as $name => $nameArr ) {
+                      $select_opt[$name]['label'] .= " -  in use";
+                }
+                $child->default = $fvalues['defaultLine'];
+                break;
             case 'SDE':
-                $extension_list = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData("HWextension");
+                $extension_list = \FreePBX::Sccp_manager()->dbinterface->getDb_model_info('extension', 'model');
                 $extension_list[]=array( 'model' => 'NONE', 'vendor' => 'CISCO', 'dns' => '0');
                 foreach ($extension_list as &$data) {
                     $d_name = explode(';', $data['model']);
@@ -771,7 +780,6 @@ class formcreate
         ?>
         <div class="element-container">
            <div class="row"> <div class="form-group">
-
                    <div class="col-md-3">
                         <label class="control-label" for="<?php echo $res_id; ?>"><?php echo _($child->label);?></label>
                         <i class="fa fa-question-circle fpbx-help-icon" data-for="<?php echo $res_id; ?>"></i>
@@ -786,7 +794,7 @@ class formcreate
                             echo  '>';
 
                             $fld  = (string)$child->select['name'];
-                            $flv  = (string)$child->select;
+                            $flv  = (string)$child->select['name'];
                             $flv2 = (string)$child->select['addlabel'];
                             $flk  = (string)$child->select['dataid'];
                             $flkv = (string)$child->select['dataval'];
@@ -797,7 +805,6 @@ class formcreate
                             $key = $fvalues[$res_n]['data'];
                         }
                     }
-
                     foreach ($select_opt as $data) {
                         echo '<option value="' . $data[$fld] . '"';
                         if ($key == $data[$fld]) {

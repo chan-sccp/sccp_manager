@@ -90,6 +90,7 @@ foreach ($items as $child) {
             break;
         case 'SDM':
         case 'SDMS':
+        case 'SDML':
         case 'SDE':
         case 'SDD':
             \FreePbx::sccp_manager()->formcreate->addElementSD($child, $fvalues, $sccp_defaults,$npref);

@@ -98,6 +98,8 @@ if (!empty($_REQUEST['id'])) {
                         continue;
                     }
                     $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
+                    // Need to assign defaultLine as not set in the db.
+                    $def_val['defaultLine'] = $this->dbinterface->getSccpDeviceTableData('getDefaultLine', array('id' => $dev_id))['name'];
                     break;
             }
         }
