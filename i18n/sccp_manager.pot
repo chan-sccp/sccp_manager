@@ -679,7 +679,7 @@ msgid "General Device configuration"
 msgstr ""
 
 #: views/sccpgeneral.xml:
-msgid "Device SEP ID.[XXXXXXXXXXXX]=MAC"
+msgid "Device ID.[XXXXXXXXXXXX]=MAC"
 msgstr ""
 
 #: views/sccpgeneral.xml:
@@ -707,7 +707,7 @@ msgid "Device Label"
 msgstr ""
 
 #: views/sccpgeneral.xml:
-msgid "Device SEP ID"
+msgid "Device ID"
 msgstr ""
 
 #: views/sccpgeneral.xml:
@@ -743,7 +743,7 @@ msgid "Buttons Configuration"
 msgstr ""
 
 #: views/sccpgeneral.xml:
-msgid "Device MAC SEP."
+msgid "Device MAC."
 msgstr ""
 
 #: views/sccpgeneral.xml:
