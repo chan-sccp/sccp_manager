@@ -309,9 +309,15 @@ $(document).ready(function () {
     });
 
     $('.lineSelect').change(function (e) {
-        var type_id = $('#sccp_hw_defaultLine').find(':selected').data('id');
+        var line_id = $('#sccp_hw_defaultLine option:selected').val();
         $("select.lineid_0 option:selected").prop("selected",false);
-        $("select.lineid_0 option[value=" + type_id + "]").prop("selected",true);
+        $("select.lineid_0 option[value=" + line_id + "]").prop("selected",true);
+    });
+
+    $('#button0_line').change(function (e) {
+        var line_id = $('#button0_line option:selected').val();
+        $("#sccp_hw_defaultLine option:selected").prop("selected",false);
+        $("#sccp_hw_defaultLine option[value=" + line_id + "]").prop("selected",true);
     });
 
     $('.sccp_button_hide').each(function () {

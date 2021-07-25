@@ -184,10 +184,10 @@ if (!empty($_REQUEST['ru_id'])) {
                         ?>
                         </select>
 <!--  if Line Type = line Show SCCP Num -->
-                        <select data-type='line' class ="form-control lineid_<?php echo $line_id.(($show_form_mode=='line' || $show_form_mode=='adv.line')?'':' hidden');?>" name="<?php echo $forminfo[1]['name'].$line_id.'_line';?>">
+                        <select data-type='line' class ="form-control lineid_<?php echo $line_id.(($show_form_mode=='line' || $show_form_mode=='adv.line')?'':' hidden');?>" name="<?php echo $forminfo[1]['name'].$line_id.'_line';?>" id="<?php echo $forminfo[1]['name'].$line_id.'_line';?>">
                         <?php
                         foreach ($lines_list as $data) {
-                            $select = (($data['name']==$defaul_btn)?"selected":"");
+                            $select = (($data['name']==$defaul_btn)?'selected="selected"':"");
                             echo '<option value="'.$data['name'].'" '.$select.' >'.$data['name'].' / '.$data['label'].'</option>';
                         }
                         ?>
