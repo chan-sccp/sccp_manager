@@ -307,7 +307,6 @@ trait ajaxHelper {
                 break;
             case 'getPhoneGrid':
                 $dbDevices = array();
-
                 // Find all devices defined in the database.
                 $dbDevices = $this->dbinterface->getSccpDeviceTableData('phoneGrid', array('type' => $request['type']));
                 // Return if only interested in SIP devices

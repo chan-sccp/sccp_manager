@@ -68,7 +68,7 @@ class dbinterface
                 }
                 break;
             case 'phoneGrid':
-                $fld = 'name, name as mac, type, button, addon, _description as description';
+                $fld = 'name, name as mac, type, button, addon, description';
                 switch ($data['type']) {
                     case "cisco-sip":
                         $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE type LIKE '%-sip' ORDER BY name");
@@ -81,7 +81,7 @@ class dbinterface
                 break;
             case 'SccpDevice':
                 if (empty($data['fields'])) {
-                    $fld = 'name, name as mac, type, button, addon, _description as description';
+                    $fld = 'name, name as mac, type, button, addon, description';
                 } else {
                     switch ($data['fields']) {
                         case "all":

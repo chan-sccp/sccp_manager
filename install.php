@@ -64,6 +64,7 @@ cleanUpSccpSettings();
 
 InstallDB_createButtonConfigTrigger();
 InstallDB_CreateSccpDeviceConfigView($sccp_compatible);
+createViewSccplineconfig();
 InstallDB_updateDBVer($sccp_compatible);
 if ($chanSCCPWarning) {
     outn("<br>");
@@ -99,7 +100,6 @@ function Get_DB_config($sccp_compatible)
             'disallow' => array('drop' => "yes"),
             'callhistory_answered_elsewhere' => array('create' => "enum('Ignore','Missed Calls','Received Calls', 'Placed Calls') NOT NULL default 'Ignore'",
                                                       'modify' => "enum('Ignore','Missed Calls','Received Calls','Placed Calls')"),
-            'description' => array('rename' => "_description"),
             'hwlang' => array('rename' => "_hwlang"),
             '_hwlang' => array('create' => 'VARCHAR(12) NULL DEFAULT NULL'),
             '_loginname' => array('create' => 'VARCHAR(20) NULL DEFAULT NULL AFTER `_hwlang`'),
@@ -214,53 +214,98 @@ function Get_DB_config($sccp_compatible)
         )
     );
     // Below fields allow configuration of these settings on a per device basis
-    // whereas previously they were all global.
-    // By prefixing with an underscore, these fields are ignored by chan-sccp
-    // which is not an issue as they are not "runtime"
+    // whereas previously they were all global.Some of these are not supported by chan-sccp;
+    // The supported fields are listed in the view sccpdeviceconfig.
     $db_config_v5 = array(
         'sccpdevice' => array(
-              '_logserver' => array('create' => "VARCHAR(100) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_daysdisplaynotactive' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_displayontime' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_displayonduration' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_displayidletimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_settingsaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_videocapability' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_webaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_webadmin' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_pcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
-              '_spantopcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
-              '_voicevlanaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablecdpswport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablecdppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablelldpswport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_enablelldppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_firstdigittimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_digittimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_cfwdnoanswer_timeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_autoanswer_ring_time' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_autoanswer_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_remotehangup_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_transfer_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_callwaiting_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
-              '_callanswerorder' => array('create' => "enum('oldestfirst','latestfirst') NOT NULL default 'latestfirst'",
+              'logserver' => array('create' => "VARCHAR(100) NULL default null", 'modify' => "VARCHAR(20)"),
+              'daysdisplaynotactive' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'displayontime' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'displayonduration' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'displayidletimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'settingsaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'videocapability' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'webaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'webadmin' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'pcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+              'spantopcport' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
+              'voicevlanaccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'enablecdpswport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'enablecdppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'enablelldpswport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'enablelldppcport' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'firstdigittimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'digittimeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'cfwdnoanswer_timeout' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'autoanswer_ring_time' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'autoanswer_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'remotehangup_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'transfer_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'callwaiting_tone' => array('create' => "VARCHAR(20) NULL default null", 'modify' => "VARCHAR(20)"),
+              'callanswerorder' => array('create' => "enum('oldestfirst','latestfirst') NOT NULL default 'latestfirst'",
                                     'modify' => "enum('oldestfirst','latestfirst')"),
-              '_sccp_tos' => array('create' => "VARCHAR(11) NOT NULL default '0x68'", 'modify' => "VARCHAR(11)"),
-              '_sccp_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x4'", 'modify' => "VARCHAR(11)"),
-              '_dev_sshPassword' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
-              '_dev_sshUserId' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
-              '_phonepersonalization' => array('create' => "VARCHAR(25) NOT NULL default '0'", 'modify' => "VARCHAR(25)"),
+              'sccp_tos' => array('create' => "VARCHAR(11) NOT NULL default '0x68'", 'modify' => "VARCHAR(11)"),
+              'sccp_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x4'", 'modify' => "VARCHAR(11)"),
+              'dev_sshPassword' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
+              'dev_sshUserId' => array('create' => "VARCHAR(25) NOT NULL default 'cisco'"),
+              'phonepersonalization' => array('create' => "VARCHAR(25) NOT NULL default '0'", 'modify' => "VARCHAR(25)"),
+              'loginname' => array('create' => 'VARCHAR(20) NULL DEFAULT NULL'),
+              'profileid' => array('create' => "INT(11) NOT NULL DEFAULT '0'"),
+              'dialrules' => array('create' => "VARCHAR(255) NULL DEFAULT NULL"),
+              'description' => array('create' => "VARCHAR(45) NULL DEFAULT NULL"),
               '_hwlang' => array ('drop' => 'yes'),
-              '_devlang' => array('create' => "VARCHAR(25) NULL default NULL", 'modify' => "VARCHAR(25)"),
-              '_netlang' => array('create' => "VARCHAR(25) NULL default NULL", 'modify' => "VARCHAR(25)")
+              'devlang' => array('create' => "VARCHAR(25) NULL default NULL", 'modify' => "VARCHAR(25)"),
+              'netlang' => array('create' => "VARCHAR(25) NULL default NULL", 'modify' => "VARCHAR(25)"),
+              '_devlang' => array('rename' => "devlang"),
+              '_netlang' => array('rename' => "netlang"),
+              '_logserver' => array('rename' => 'logserver'),
+              '_daysdisplaynotactive' => array('rename' =>  'daysdisplaynotactive'),
+              '_displayontime' => array('rename' =>  'displayontime'),
+              '_displayonduration' => array('rename' => 'displayonduration'),
+              '_displayidletimeout' => array('rename' => 'displayidletimeout'),
+              '_settingsaccess' => array('rename' => 'settingsaccess'),
+              '_videocapability' => array('rename' =>  'videocapability'),
+              '_webaccess' => array('rename' =>  'webaccess'),
+              '_webadmin' => array('rename' =>  'webadmin'),
+              '_pcport' => array('rename' =>  'pcport'),
+              '_spantopcport' => array('rename' => 'spantopcport'),
+              '_voicevlanaccess' => array('rename' => 'voicevlanaccess'),
+              '_enablecdpswport' => array('rename' => 'enablecdpswport'),
+              '_enablecdppcport' => array('rename' => 'enablecdppcport'),
+              '_enablelldpswport' => array('rename' => 'enablelldpswport'),
+              '_enablelldppcport' => array('rename' =>  'enablelldppcport'),
+              '_firstdigittimeout' => array('rename' => 'firstdigittimeout'),
+              '_digittimeout' => array('rename' =>  'digittimeout'),
+              '_cfwdnoanswer_timeout' => array('rename' => 'cfwdnoanswer_timeout'),
+              '_autoanswer_ring_time' => array('rename' => 'autoanswer_ring_time'),
+              '_autoanswer_tone' => array('rename' => 'autoanswer_tone'),
+              '_remotehangup_tone' => array('rename' => 'remotehangup_tone'),
+              '_transfer_tone' => array('rename' => 'transfer_tone'),
+              '_callwaiting_tone' => array('rename' => 'callwaiting_tone'),
+              '_callanswerorder' => array('rename' => 'callanswerorder'),
+              '_sccp_tos' => array('rename' => 'sccp_tos'),
+              '_sccp_cos' => array('rename' => 'sccp_cos'),
+              '_dev_sshPassword' => array('rename' => 'dev_sshPassword'),
+              '_dev_sshUserId' => array('rename' => 'dev_sshUserId'),
+              '_phonepersonalization' => array('rename' => '_phonepersonalization'),
+              '_loginname' => array('rename' => 'loginname'),
+              '_profileid' => array('rename' => 'profileid'),
+              '_dialrules' => array('rename' => 'dialrules'),
+              '_description' => array('rename' => 'description')
             ),
         'sccpline' => array (
-              '_regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
-              '_transfer_on_hangup' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_autoselectline_enabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_autocall_select' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_backgroundImageAccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-              '_callLogBlfEnabled' => array('create' => "enum('3','2') NOT NULL default '2'", 'modify' => "enum('3','2')")
+              'regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
+              'transfer_on_hangup' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'autoselectline_enabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'autocall_select' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'backgroundImageAccess' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
+              'callLogBlfEnabled' => array('create' => "enum('3','2') NOT NULL default '2'", 'modify' => "enum('3','2')"),
+              '_regcontext' => array('rename' => 'regcontext'),
+              '_transfer_on_hangup' => array('rename' => 'transfer_on_hangup'),
+              '_autoselectline_enabled' => array('rename' => 'autoselectline_enabled'),
+              '_autocall_select' => array('rename' => 'autocall_select'),
+              '_backgroundImageAccess' => array('rename' => 'backgroundImageAccess'),
+              '_callLogBlfEnabled' => array('rename' => 'callLogBlfEnabled')
             ),
         'sccpsettings' => array (
               'systemdefault' => array('create' => "VARCHAR(255) NULL default ''")
@@ -338,111 +383,121 @@ function InstallDB_updateSchema($db_config)
     }
     $count_modify = 0;
     outn("<li>" . _("Modify Database schema") . "</li>");
-    foreach ($db_config as $tabl_name => &$tab_modif) {
-        // 0 - name 1-type  4- default
-        $sql = "DESCRIBE {$tabl_name};";
-        $stmt = $db->prepare("DESCRIBE {$tabl_name}");
-        $stmt->execute();
-        $db_result = $stmt->fetchAll();
-        if (DB::IsError($db_result)) {
-            die_freepbx("Can not get information from " . $tabl_name . " table\n");
-        }
-        foreach ($db_result as $tabl_data) {
-            $fld_id = $tabl_data[0];
-            $db_config[$tabl_name][$fld_id]['fieldExists'] = FALSE;
-            // Filter commands to avoid applying unnecessary
-            if (!empty($tab_modif[$fld_id])) {
-                // Potentially have something to modify in schema
-                $db_config[$tabl_name][$fld_id]['fieldExists'] = TRUE;
-                if (!empty($tab_modif[$fld_id]['modify'])) {
-                    if (strtoupper($tab_modif[$fld_id]['modify']) == strtoupper($tabl_data[1])) {
-                        unset($db_config[$tabl_name][$fld_id]['modify']);
-                    }
-                    // Modifying field so do not then need to modify defaults as this should do that
-                    if (!empty($tab_modif[$fld_id]['def_modify'])) {
-                            unset($db_config[$tabl_name][$fld_id]['def_modify']);
-                    }
-                }
-                if (!empty($tab_modif[$fld_id]['def_modify'])) {
-                    if (strtoupper($tab_modif[$fld_id]['def_modify']) == strtoupper($tabl_data[4])) {
-                        unset($db_config[$tabl_name][$fld_id]['def_modify']);
-                    }
-                }
-                if (!empty($tab_modif[$fld_id]['rename'])) {
-                    $fld_id_source = $tab_modif[$fld_id]['rename'];
-                    $db_config[$tabl_name][$fld_id_source]['fieldExists'] = TRUE;
-                    if (!empty($db_config[$tabl_name][$fld_id_source]['create'])) {
-                        $db_config[$tabl_name][$fld_id]['create'] = $db_config[$tabl_name][$fld_id_source]['create'];
-                    } else {
-                        $db_config[$tabl_name][$fld_id]['create'] = strtoupper($tabl_data[1]).(($tabl_data[2] == 'NO') ?' NOT NULL': ' NULL');
-                        $db_config[$tabl_name][$fld_id]['create'] .= ' DEFAULT '. ((empty($tabl_data[4]))?'NULL': "'". $tabl_data[4]."'" );
-                    }
-                }
-            }
-        }
+    foreach ($db_config as $tabl_name => $tab_modif) {
         $sql_create = '';
         $sql_modify = '';
-        $sql_update = '';
+        $sql_rename = '';
 
-        foreach ($tab_modif as $row_fld => $row_data) {
-            if (!$row_data['fieldExists']) {
-                if (!empty($row_data['create'])) {
-                    $sql_create .= "ADD COLUMN {$row_fld} {$row_data['create']}, ";
-                    $count_modify ++;
-                }
-            } else {
-                if (!empty($row_data['rename'])) {
-                    $sql_modify .= "RENAME COLUMN  {$row_fld} TO {$row_data['rename']}, ";
-                    $count_modify ++;
-                }
-                $row_data['fieldModified'] = FALSE;
-                if (!empty($row_data['modify'])) {
-                    if (!empty($row_data['create'])) {
-                        // Use values in create to set defaults
-                        $sql_modify .= "MODIFY COLUMN {$row_fld}  {$row_data['create']}, ";
-                    } else {
-                        $sql_modify .= "MODIFY COLUMN {$row_fld} {$row_data['modify']} DEFAULT {$row_data['def_modify']}, ";
-                    }
-                    if (strpos($row_data['modify'], 'enum') !== false) {
-                        $sql_update .= "UPDATE " . $tabl_name . " set `" . $row_fld . "`=case when lower(`" . $row_fld . "`) in ('yes','true','1') then 'on' when lower(`" . $row_fld . "`) in ('no', 'false', '0') then 'off' else `" . $row_fld . "` end; ";
-                    }
-                    $count_modify ++;
-                }
-                if (!empty($row_data['def_modify'])) {
-                    $sql_modify .= "ALTER COLUMN {$row_fld} SET DEFAULT '{$row_data['def_modify']}', ";
-                    $count_modify ++;
-                }
-                if (!empty($row_data['drop'])) {
+        $stmt = $db->prepare("DESCRIBE {$tabl_name}");
+        $stmt->execute();
+        $db_result = $stmt->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
+        if (DB::IsError($db_result)) {
+            die_freepbx("Can not get information for " . $tabl_name . " table\n");
+        }
+
+        // filter modifications based on field existance and prepare sql
+        foreach ($db_result as $fld_id => $tabl_data) {
+            if (!empty($tab_modif[$fld_id])) {
+                // have column in table so potentially something to update
+                // if dropping column, prepare sql and continue
+                if (!empty($tab_modif[$fld_id]['drop'])) {
                     $sql_create .= "DROP COLUMN {$row_fld}, ";
+                    unset($tab_modif[$fld_id]['drop']);
+                    continue;
+                }
+
+                if (!empty($tab_modif[$fld_id]['modify'])) {
+                    // Check if modify type is same as current type
+                    if (strtoupper($tab_modif[$fld_id]['modify']) == strtoupper($tabl_data['Type'])) {
+                        // Type has not changed so unset
+                        unset($tab_modif[$fld_id]['modify']);
+                    } else {
+                        if (!empty($tab_modif[$fld_id]['def_modify'])) {
+                            // if a default has been modified, use it here and unset
+                            $sql_modify .= "MODIFY COLUMN {$fld_id} {$tab_modif[$fld_id]['modify']} DEFAULT {$tab_modif[$fld_id]['def_modify']}, ";
+                            // def_modify has been used so unset
+                            unset($tab_modif[$fld_id]['def_modify']);
+                        } else if (!empty($tab_modif[$fld_id]['create'])) {
+                            // use create attributes
+                            $sql_modify .= "MODIFY COLUMN {$fld_id} {$tab_modif[$fld_id]['create']}, ";
+                        } else {
+                            // No default to modify so leave unchanged
+                            $sql_modify .= "MODIFY COLUMN {$fld_id}  {$tab_modif[$fld_id]['modify']}, ";
+                        }
+                        $count_modify ++;
+                    }
+                }
+
+                if (!empty($tab_modif[$fld_id]['def_modify'])) {
+                    // Check if def_modify value is same as current value
+                    if (strtoupper($tab_modif[$fld_id]['def_modify']) == strtoupper($tabl_data['Default'])) {
+                        // Defaults have not changed so unset
+                        unset($tab_modif[$fld_id]['def_modify']);
+                    } else {
+                        $sql_modify .= "ALTER COLUMN {$row_fld} SET DEFAULT '{$tab_modif[$fld_id]['def_modify']}', ";
+                        $count_modify ++;
+                    }
+                }
+
+                if (!empty($tab_modif[$fld_id]['rename'])) {
+                    // Field currently exists so need to rename (and keep data)
+                    // for backward compatibility use CHANGE - REPLACE is only available in MariaDb > 10.5.
+                    $fld_id_newName = $tab_modif[$fld_id]['rename'];
+                    // Does a create exist for newName
+                    if (!empty($tab_modif[$fld_id_newName]['create'])) {
+                        //carry the attributes from the new create to the rename
+                        $sql_rename .= "CHANGE COLUMN IF EXISTS {$fld_id} {$fld_id_newName} {$tab_modif[$fld_id_newName]['create']}, ";
+                        // do not create newName as modifying existing
+                        unset($tab_modif[$fld_id_newName]['create']);
+                    } else {
+                        // add current attributes to the new name.
+                        $existingAttrs = strtoupper($tabl_data['Type']).(($tabl_data['Null'] == 'NO') ?' NOT NULL': ' NULL') .
+                                        ((empty($tabl_data['Default']))?'': ' DEFAULT ' . "'" . $tabl_data['Default']."'");
+                        $sql_rename .= "CHANGE COLUMN IF EXISTS {$fld_id} {$fld_id_newName} {$existingAttrs}, ";
+                    }
+                    unset($tab_modif[$fld_id]['rename']);
                     $count_modify ++;
+                }
+                // is there a create for this field
+                if (!empty($tab_modif[$fld_id]['create'])) {
+                    // unset as cannot create existing field
+                    unset($tab_modif[$fld_id]['create']);
                 }
             }
         }
-        if (!empty($sql_update)) {
-            outn("<li>" . _("Updating table rows :") . $affected_rows . "</li>");
-            $sql_update = 'BEGIN; ' . $sql_update . ' COMMIT;';
-            sql($sql_update);
-            $affected_rows = $db->affectedRows();
-            outn("<li>" . _("Updated table rows :") . $affected_rows . "</li>");
+        // only case left to handle is create as all others handled above
+        foreach ($tab_modif as $row_fld => $row_data) {
+            if (!empty($row_data['create'])) {
+                $sql_create .= "ADD COLUMN {$row_fld} {$row_data['create']}, ";
+                $count_modify ++;
+            }
         }
-
+        //Now execute sql statements
         if (!empty($sql_create)) {
-            outn("<li>" . _("Adding new columns ...") . "</li>");
+            outn("<li>" . _("Adding/dropping columns ...") . "</li>");
             $sql_create = "ALTER TABLE {$tabl_name} " .substr($sql_create, 0, -2);
             try {
             $check = $db->query($sql_create);
             } catch (\Exception $e) {
-                die_freepbx("Can't add column to {$tabl_name}. SQL:  {$sql_create} \n");
+                die_freepbx("Can't add/drop column in {$tabl_name}. SQL:  {$sql_create} \n");
             }
         }
         if (!empty($sql_modify)) {
             outn("<li>" . _("Modifying table columns ") . $tabl_name ."</li>");
-
             $sql_modify = "ALTER TABLE {$tabl_name} " . substr($sql_modify, 0, -2);
             try {
                 $check = $db->query($sql_modify);
             } catch (\Exception $e) {
-                  die_freepbx("Can not modify {$tabl_name}. SQL:  {$sql_create} \n");
+                  die_freepbx("Can not modify {$tabl_name}. SQL:  {$sql_modify} \n");
+            }
+        }
+        if (!empty($sql_rename)) {
+            outn("<li>" . _("Renaming table columns ") . $tabl_name ."</li>");
+            $sql_rename = "ALTER TABLE {$tabl_name} " . substr($sql_rename, 0, -2);
+            try {
+                $check = $db->query($sql_rename);
+            } catch (\Exception $e) {
+                  die_freepbx("Can not modify {$tabl_name}. SQL:  {$sql_rename} \n");
             }
         }
     }
@@ -642,9 +697,9 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
 {
     global $db;
     outn("<li>" . _("(Re)Create sccpdeviceconfig view") . "</li>");
-    $sql = "";
     $sql = "DROP VIEW IF EXISTS sccpdeviceconfig;
-            DROP VIEW IF EXISTS sccpuserconfig;";
+            DROP VIEW IF EXISTS sccpuserconfig;
+            ";
     ///    global $hw_mobil;
     // From logserver to end only applies to db ver > 433
 
@@ -668,16 +723,23 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
         $sql .= "CREATE OR REPLACE
             ALGORITHM = MERGE
             VIEW sccpdeviceconfig AS
-            SELECT  case sccpdevice._profileid
-                when 0 then
-        		(select GROUP_CONCAT(CONCAT_WS( ',', defbutton.buttontype, defbutton.name, defbutton.options ) SEPARATOR ';') from sccpbuttonconfig as defbutton where defbutton.ref = sccpdevice.name ORDER BY defbutton.instance )
-                when 1 then
-        		(select GROUP_CONCAT(CONCAT_WS( ',', userbutton.buttontype, userbutton.name, userbutton.options ) SEPARATOR ';') from sccpbuttonconfig as userbutton where userbutton.ref = sccpdevice._loginname ORDER BY userbutton.instance )
-                when 2 then
-	         (select GROUP_CONCAT(CONCAT_WS( ',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';') from sccpbuttonconfig as homebutton where homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
-                end as button,  if(sccpdevice._profileid = 0, sccpdevice._description, sccpuser.description) as description, sccpdevice.*
+            SELECT CASE sccpdevice.profileid
+                WHEN 0 THEN
+            (SELECT GROUP_CONCAT(CONCAT_WS(',', defbutton.buttontype, defbutton.name, defbutton.options ) SEPARATOR ';') FROM sccpbuttonconfig AS defbutton WHERE defbutton.ref = sccpdevice.name ORDER BY defbutton.instance )
+                WHEN 1 THEN
+            (SELECT GROUP_CONCAT(CONCAT_WS(',', userbutton.buttontype, userbutton.name, userbutton.options ) SEPARATOR ';') FROM sccpbuttonconfig AS userbutton WHERE userbutton.ref = sccpdevice.loginname ORDER BY userbutton.instance )
+                WHEN 2 THEN
+            (SELECT GROUP_CONCAT(CONCAT_WS(',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';') FROM sccpbuttonconfig AS homebutton WHERE homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
+                END
+                AS button, if(sccpdevice.profileid = 0, sccpdevice.description, sccpuser.description) AS description, sccpdevice.name, sccpdevice.type,
+                sccpdevice.addon, sccpdevice.tzoffset, sccpdevice.imageversion, sccpdevice.deny, sccpdevice.permit, sccpdevice.earlyrtp, sccpdevice.mwilamp, sccpdevice.mwioncall,
+                sccpdevice.dndFeature, sccpdevice.transfer, sccpdevice.cfwdall, sccpdevice.cfwdbusy, sccpdevice.private, sccpdevice.privacy, sccpdevice.nat, sccpdevice.directrtp,
+                sccpdevice.softkeyset, sccpdevice.audio_tos, sccpdevice.audio_cos, sccpdevice.video_tos, sccpdevice.video_cos, sccpdevice.conf_allow,
+                sccpdevice.conf_play_general_announce, sccpdevice.conf_play_part_announce, sccpdevice.conf_mute_on_entry, sccpdevice.conf_music_on_hold_class,
+                sccpdevice.conf_show_conflist, sccpdevice.force_dtmfmode, sccpdevice.setvar, sccpdevice.backgroundImage, sccpdevice.backgroundThumbnail,
+                sccpdevice.ringtone, sccpdevice.callhistory_answered_elsewhere, sccpdevice.useRedialMenu, sccpdevice.cfwdnoanswer, sccpdevice.park, sccpdevice.monitor
             FROM sccpdevice
-            LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice._loginname )
+            LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice.loginname )
             GROUP BY sccpdevice.name;";
     }
 
@@ -687,6 +749,29 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
     }
     return true;
 }
+
+function createViewSccplineconfig() {
+    global $db;
+    outn("<li>" . _("(Re)Create sccplineconfig view") . "</li>");
+
+    $sql = "DROP VIEW IF EXISTS sccplineconfig;
+            ";
+    $sql .= "CREATE OR REPLACE
+            VIEW sccplineconfig AS
+            SELECT sccpline.id, sccpline.pin ,sccpline.label, sccpline.description, sccpline.context, sccpline.incominglimit, sccpline.transfer, sccpline.mailbox,
+                sccpline.vmnum, sccpline.cid_name, sccpline.cid_num, sccpline.disallow, sccpline.allow, sccpline.trnsfvm, sccpline.secondary_dialtone_digits,
+                sccpline.secondary_dialtone_tone, sccpline.musicclass, sccpline.language, sccpline.accountcode, sccpline.echocancel, sccpline.silencesuppression,
+                sccpline.callgroup, sccpline.pickupgroup, sccpline.adhocNumber, sccpline.meetme, sccpline.meetmenum, sccpline.meetmeopts, sccpline.regexten,
+                sccpline.directed_pickup, sccpline.directed_pickup_context, sccpline.pickup_modeanswer, sccpline.amaflags, sccpline.dnd, sccpline.videomode,
+                sccpline.setvar, sccpline.namedcallgroup, sccpline.namedpickupgroup, sccpline.phonecodepage
+                FROM sccpline";
+    $results = $db->query($sql);
+    if (DB::IsError($results)) {
+        die_freepbx(sprintf(_("Error updating sccplineconfig view. Command was: %s; error was: %s "), $sql, $results->getMessage()));
+    }
+    return true;
+}
+
 function createBackUpConfig()
 {
     global $amp_conf;
@@ -767,7 +852,7 @@ function Setup_RealTime()
         }
     }
     $def_bd_section = $amp_conf['AMPDBNAME'];
-    $def_ext_config = array('sccpdevice' => "mysql,{$def_bd_section},sccpdeviceconfig",'sccpline' => "mysql,{$def_bd_section},sccpline");
+    $def_ext_config = array('sccpdevice' => "mysql,{$def_bd_section},sccpdeviceconfig",'sccpline' => "mysql,{$def_bd_section},sccplineconfig");
 
     // Check extconfig file for correct connector values
     $ext_conf = '';
@@ -970,7 +1055,7 @@ function cleanUpSccpSettings() {
     }
     $settingsFromDb = array_merge($settingsFromDb, array_diff_key($thisInstaller->sccpvalues, $settingsFromDb));
     unset($thisInstaller->sccpvalues);
-    
+
     // get chan-sccp defaults
 
     $sysConfiguration = $aminterface->getSCCPConfigMetaData('general');
