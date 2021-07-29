@@ -281,7 +281,8 @@ $(document).ready(function () {
     });
 // Form.adddevice
     $('.hw_select').change(function (e) {
-//        console.log('HwSelect');
+        // data-val contains the number of buttons for this type
+        // data-id contains the max number of addons (1 = 0, 3 = 2)
         var type_id = $('#sccp_hw_type').find(':selected').data('id');
         var btn_dev = $('#sccp_hw_type').find(':selected').data('val');
         if (type_id === 1) {
@@ -290,17 +291,26 @@ $(document).ready(function () {
             }
             $('#sccp_hw_addon').attr("disabled", "disabled");
         } else {
-            $('#sccp_hw_addon').removeAttr('disabled');
+            $('#sccp_hw_addon').prop('disabled',false);
         }
-
+        // when edit, btn_dev is undefined as no select, so send btn_dev with page
+        if (btn_dev == null) {
+            var btn_dev = $('#devButtonCnt').val();
+        }
         var btn_add = $('#sccp_hw_addon').find(':selected').data('val');
-        $('#buttonscount').attr('value',btn_dev + btn_add);
+        // btn_add is empty if none selected
+        if ((btn_add == null) || (btn_add == '')) {
+            var btn_add = 0;
+        }
+        var totButtons = parseInt(btn_dev, 10) + parseInt(btn_add, 10);
+        $('#buttonscount').attr('value', totButtons);
         $('.line_button').each(function () {
-            if ($(this).data('id') < btn_dev + btn_add) {
+            if ($(this).data('id') < totButtons) {
                 $(this).removeClass('hidden');
-                $(this).removeAttr('hidden')
+                $(this).removeAttr('hidden');
             } else {
                 $(this).addClass('hidden');
+                $(this).attr('hidden', true);
             }
         });
     });

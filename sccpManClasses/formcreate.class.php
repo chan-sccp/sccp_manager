@@ -759,7 +759,7 @@ class formcreate
                 break;
             case 'SDE':
                 $extension_list = \FreePBX::Sccp_manager()->dbinterface->getDb_model_info('extension', 'model');
-                $extension_list[]=array( 'model' => 'NONE', 'vendor' => 'CISCO', 'dns' => '0');
+                $extension_list[] = array( 'model' => 'NONE', 'vendor' => 'CISCO', 'dns' => '0');
                 foreach ($extension_list as &$data) {
                     $d_name = explode(';', $data['model']);
                     if (is_array($d_name) && (count($d_name) > 1)) {

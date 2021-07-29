@@ -1298,13 +1298,12 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>The type of phone: 7911, 7940, 7960, etc. Important note: the 'G' models are handled as the base model (e.g., 7962G is handled as 7962). In the Display mode, this field is read-only because the MAC address and the model number are a pair.</help>
         </item>
-        <item type="IE" id="3" seq="99">
+        <item type="SDE" id="3" seq="99">
             <label>Addon</label>
-            <input>
-                <name>addon</name>
-                <default>NONE</default>
-                <class>sccp-custom</class>
-            </input>
+            <name>addon</name>
+            <default>NONE</default>
+            <select name="model" dataval="buttons">description</select>
+            <class>hw_select form-control</class>
             <help>Addon: Addons are model specific and only work with certain base phones. This phone model is identified as being a phone that does not accept sidecars. Update devmodel if this is not correct.</help>
         </item>
     </page_group>

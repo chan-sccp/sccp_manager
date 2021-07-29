@@ -31,30 +31,30 @@ $hint_list  = $this->getHintInformation(true, array('context'=>'park-hints')) ;
 
 // print_r($hint_list);
 $line_id =0;
-$max_buttons =56;     //Don't know hardware type so et a maximum. On save, this is set to actual max buttons
+$max_buttons =56;     //Don't know hardware type so set a maximum. On save, this is set to actual max buttons
 $show_buttons =1;
 //print_r($hint_list);
 if (!empty($_REQUEST['id'])) {
     $dev_id = $_REQUEST['id'];
     $db_buttons = $this->dbinterface->getSccpDeviceTableData('get_sccpdevice_buttons', array("id" => $dev_id));
     $db_device = $this->dbinterface->getSccpDeviceTableData('get_sccpdevice_byid', array("id" => $dev_id));
-    $max_buttons = $db_device['buttons'];
+    $show_buttons = $db_device['buttons'];
     if (!empty($db_device['addon_buttons'])) {
-        $max_buttons += $db_device['addon_buttons'];
+        $show_buttons += $db_device['addon_buttons'];
     }
-    $show_buttons = $max_buttons;
+    //$show_buttons = $max_buttons;
 }
 if (!empty($_REQUEST['new_id'])) {
     $val = $_REQUEST['type'];
     $dev_schema =  $this-> getSccpModelInformation('byid', false, "all", array('model' =>$val));
 //   $db_device = $this->dbinterface->getSccpDeviceTableData('get_sccpdevice_byid', array("id" => $val));
-    $max_buttons = $dev_schema[0]['buttons'];
+    $show_buttons = $dev_schema[0]['buttons'];
     if (!empty($_REQUEST['addon'])) {
         $val = $_REQUEST['addon'];
         $dev_schema =  $this-> getSccpModelInformation('byid', false, "all", array('model' =>$val));
-        $max_buttons += $dev_schema[0]['buttons'];
+        $show_buttons += $dev_schema[0]['buttons'];
     }
-    $show_buttons = $max_buttons;
+    //$show_buttons = $max_buttons;
 }
 if (!empty($_REQUEST['ru_id'])) {
     $dev_id = $_REQUEST['ru_id'];
@@ -67,7 +67,8 @@ if (!empty($_REQUEST['ru_id'])) {
 <form autocomplete="off" name="frm_editbuttons" id="frm_editbuttons" class="fpbx-submit" action="" method="post" data-id="hw_edit">
     <input type="hidden" name="category" value="frm_editbuttons">
     <input type="hidden" name="Submit" value="Submit">
-    <input type="hidden" name="buttonscount" id="buttonscount" value="<?php echo $max_buttons?>">
+    <input type="hidden" name="buttonscount" id="buttonscount" value="<?php echo $show_buttons;?>">
+    <input type="hidden" name="devButtonCnt" id="devButtonCnt" value="<?php echo (!empty($db_device['buttons']))?$db_device['buttons']:0;?>">
     <div class="section-title" data-for="<?php echo $forminfo[0]['name'];?>">
         <h3><i class="fa fa-minus"></i><?php echo _($forminfo[0]['label']) ?></h3>
     </div>
