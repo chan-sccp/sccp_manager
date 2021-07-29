@@ -120,8 +120,6 @@ class xmlinterface
     {
         // TODO: $data_values are system wide defaults, $dev_config are specific defice values.
         // Need to merge the two arrays so that device specific values override system values
-        // Values that cannot be sent to the device by chan-sccp are prefixed by an underscore
-        // so need to be sure that we apply the same convention to system wide defaults.
         $langCodeArray = array(
             'Arabic_Saudi_Arabia' => 'ar',
             'Bulgarian_Bulgaria' => 'bg',
@@ -372,7 +370,7 @@ class xmlinterface
                     if (!empty($dev_config['netlang'])) {
                         $lang = $dev_config['netlang'];
                     }
-                    if (($lang != null) && (!empty($lang))) {
+                    if (isset($lang)) {
                         $xml_work->$key = $lang;
                         $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                     } else {
@@ -384,8 +382,8 @@ class xmlinterface
                     if (!empty($dev_config['netlang'])) {
                         $lang = $dev_config['netlang'];
                     }
-                    if (($lang != null) && (!empty($lang))) {
-                        $xml_node->name = $dev_config['netlang'];
+                    if (isset($lang)) {
+                        $xml_node->name = $lang;
                         $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                     } else {
                         $xml_work->$key = '';
@@ -680,33 +678,40 @@ class xmlinterface
                         $xml_node->backgroundImageAccess = (($data_values['backgroundImageAccess'] == 'on') || ($data_values['backgroundImageAccess'] == 'true') ) ? 'true' : 'false';
                         $xml_node->callLogBlfEnabled = $data_values['callLogBlfEnabled'];
                         break;
-
-                    case 'userLocale':
-                    case 'networkLocaleInfo':
-                    case 'networkLocale':
-                        $hwlang = '';
-                        $lang = '';
-                        if (!empty($dev_config["_hwlang"])) {
-                            $hwlang = explode(':', $dev_config["_hwlang"]);
+                    case 'userlocale':
+                        // Device language
+                        $lang = $data_values['devlang'];
+                        if (!empty($dev_config['devlang'])) {
+                            $lang = $dev_config['devlang'];
                         }
-                        if (($key == 'networkLocaleInfo') || ($key == 'networkLocale')) {
-                            $lang = (empty($hwlang[0])) ? $data_values['netlang'] : $hwlang[0];
+                        $xml_node->winCharSet = $dev_config['phonecodepage'];
+                        $xml_node->name = $dev_config['devlang'];
+                        $xml_node->langCode = 'en';
+                        if (isset($langCodeArray['devlang'])) {
+                            $xml_node->langCode = $langCodeArray['devlang'];
+                        }
+                        $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
+                        break;
+                    case 'networklocale':
+                        $lang = $data_values['netlang'];
+                        if (!empty($dev_config['netlang'])) {
+                            $lang = $dev_config['netlang'];
+                        }
+                        if (isset($lang)) {
+                            $xml_work->$key = $lang;
+                            $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                         } else {
-                            $lang = (empty($hwlang[1])) ? $data_values['devlang'] : $hwlang[1];
+                            $xml_work->$key = '';
                         }
-                        if (($lang != 'null') && (!empty($lang))) {
-                            if ($key == 'networkLocale') {
-                                $xml_work->$key = $lang;
-                            } else {
-                                if (isset($lang_info[$lang])) {
-                                    $xml_node->name = $lang_info[$lang]['locale'];
-                                    $xml_node->langCode = $lang_info[$lang]['code'];
-                                    if ($key == 'userLocale') {
-                                        $xml_node->winCharSet = $lang_info[$lang]['codepage'];
-                                    }
-                                    $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
-                                }
-                            }
+                        break;
+                    case 'networklocaleinfo':
+                        $lang = $data_values['netlang'];
+                        if (!empty($dev_config['netlang'])) {
+                            $lang = $dev_config['netlang'];
+                        }
+                        if (isset($lang)) {
+                            $xml_node->name = $lang;
+                            $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                         } else {
                             $xml_work->$key = '';
                         }
