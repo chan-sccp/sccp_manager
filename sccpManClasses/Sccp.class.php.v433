@@ -44,8 +44,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                            "musicclass" => 'musicclass', "allow" => 'allow',"disallow" => 'disallow',
                            "videomode" => 'videomode', 'pickup_modeanswer' => 'pickup_modeanswer',
                            "dnd" => 'dnd', "silencesuppression" => 'silencesuppression',
-                           "secondary_dialtone_digits" => 'secondary_dialtone_digits', "secondary_dialtone_tone" => 'secondary_dialtone_tone',
-                           'namedcallgroup'=>'namedcallgroup', 'namedpickupgroup' => 'namedpickupgroup'
+                           "secondary_dialtone_digits" => 'secondary_dialtone_digits',
+                           "secondary_dialtone_tone" => 'secondary_dialtone_tone',
+                           'namedcallgroup'=>'namedcallgroup', 'namedpickupgroup' => 'namedpickupgroup',
+                           'directed_pickup' => 'directed_pickup'
                       );
     // These are gui defaults used by freePBX for the elements in the SCCP tab in add/edit phone.
     private $guiDefaults =array(
@@ -109,6 +111,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
     public function addDevice($id, $settings) {
         // This is actually save line and is used by add and edit.
+        dbug($settings);
         $add_fld = array ("name"=>'label',"outboundcid"=>'cid_num',"langcode"=>'language',"extdisplay"=>'description','devinfo_mailbox'=>'mailbox');
         $settings['cid_num']['value'] = '';
         $settings['cid_name']['value'] = '';
