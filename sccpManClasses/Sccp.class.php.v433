@@ -187,8 +187,12 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     public function delDevice($id) {
         //Required by FreePBX.
         // Delete associated default line buttons or will leave orphans
-        $sth = $this->database->prepare("DELETE FROM sccpbuttonconfig WHERE ref = ? AND instance = 1 AND buttontype = 'line'");
-        $sth->execute(array($id));
+        foreach (array($id) as $openId) {
+            $sth = $this->database->prepare("DELETE FROM sccpbuttonconfig WHERE name LIKE :openID AND buttontype = 'line'");
+            $openId = "{$openId}%";
+            $sth->bindParam(':openID', $openId);
+            $sth->execute();
+        }
 
         $sth = $this->database->prepare("DELETE FROM sccpline WHERE name = ?");
         $sth->execute(array($id));

@@ -213,7 +213,7 @@ $(document).ready(function () {
         }
         e.preventDefault();
     });
-
+    // Set focus on the mac entry field. It will not stay but ensures that focusout brings it back
     $('#sccp_hw_mac').focus();
 
     $('#sccp_hw_mac').focusout(function() {
