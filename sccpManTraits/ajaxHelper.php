@@ -317,6 +317,7 @@ trait ajaxHelper {
                     }
                 }
                 unset($lineList);
+                // Html wants an anonymous array rather than a keyed array, so remove keys.
                 foreach ($outLineList as $valueArray) {
                     $lineList[] = $valueArray;
                 }
