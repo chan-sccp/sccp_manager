@@ -296,12 +296,29 @@ trait ajaxHelper {
                 }
                 $activeDevices = $this->aminterface->sccp_get_active_device();
                 foreach ($lineList as $key => $lineArr) {
-                    if (array_key_exists($lineArr['mac'], $activeDevices)) {
-                        $actDevStat = $activeDevices[$lineArr['mac']];
-                        $lineList[$key]['line_status'] = "{$actDevStat['status']} | {$actDevStat['act']}";
+                    if (!empty($outLineList[$lineList[$key]['name']])) {
+                        $outLineList[$lineList[$key]['name']]['mac'] .= "<br>".$lineList[$key]['mac'];
+                        if (array_key_exists($lineArr['mac'], $activeDevices)) {
+                            $actDevStat = $activeDevices[$lineArr['mac']];
+                            $outLineList[$lineList[$key]['name']]['line_status'] .= "<br>" . "{$actDevStat['status']} | {$actDevStat['act']}";
+                        } else {
+                            $outLineList[$lineList[$key]['name']]['line_status'] .= "<br>" . '|';
+                        }
                     } else {
-                        $lineList[$key]['line_status'] = '|';
+                        $outLineList[$lineList[$key]['name']] = $lineList[$key];
+                            if (array_key_exists($lineArr['mac'], $activeDevices)) {
+                                $actDevStat = $activeDevices[$lineArr['mac']];
+                                $outLineList[$lineList[$key]['name']]['line_status'] = "{$actDevStat['status']} | {$actDevStat['act']}";
+                            } else {
+                                // create a new output list
+                                $outLineList[$lineList[$key]['name']] = $lineList[$key];
+                                $outLineList[$lineList[$key]['name']]['line_status'] = '|';
+                            }
                     }
+                }
+                unset($lineList);
+                foreach ($outLineList as $valueArray) {
+                    $lineList[] = $valueArray;
                 }
                 return $lineList;
                 break;
