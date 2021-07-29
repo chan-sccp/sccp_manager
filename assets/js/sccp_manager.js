@@ -214,12 +214,19 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    $('#sccp_hw_mac').change(function() {
+    $('#sccp_hw_mac').focus();
+
+    $('#sccp_hw_mac').focusout(function() {
         var value = $(this).val();
         const regex = new RegExp('^([0-9A-Fa-f]{2}[:.-]?){5}([0-9A-Fa-f]{2})$');
         if ( regex.test(value) === false ) {
+            $('#ajaxsubmit2').attr('disabled', 'disabled');
+            $('#ajaxsubmit').attr('disabled', 'disabled');
             fpbxToast(_('Invalid Mac Address'),_('Invalid Mac Address'), 'warning');
-            setTimeout(function(){document.getElementById("sccp_hw_mac").focus();},2000);
+            setTimeout(function(){ $('#sccp_hw_mac').focus();},2000);
+        } else {
+            $('#ajaxsubmit2').removeAttr('disabled');
+            $('#ajaxsubmit').removeAttr('disabled');
         };
       });
 

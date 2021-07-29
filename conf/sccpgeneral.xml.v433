@@ -1253,8 +1253,9 @@ and open the template in the editor. Base Version before all crash :-)
             <label>Device SEP ID.[XXXXXXXXXXXX]=MAC</label>
             <input>
                 <name>mac</name>
-                <default>000000000</default>
+                <default></default>
                 <class>sccp-custom</class>
+                <options></options>
             </input>
             <help>The MAC address of the phone. You must specify 12 characters in the format XXXX.XXXX.XXXX or XX-XX-XX-XX-XX-XX or XXXXXXXXXXXX</help>
         </item>
@@ -1282,7 +1283,7 @@ and open the template in the editor. Base Version before all crash :-)
             <label>Device SEP ID</label>
             <input>
                 <name>mac</name>
-                <default>000000000</default>
+                <default></default>
                 <class>sccp-custom</class>
                 <options readonly="readonly"></options>
             </input>
