@@ -284,8 +284,6 @@ $(document).ready(function () {
 //        console.log('HwSelect');
         var type_id = $('#sccp_hw_type').find(':selected').data('id');
         var btn_dev = $('#sccp_hw_type').find(':selected').data('val');
-//        var btn_add=$('#sccp_hw_addon').find(':selected').data('val');
-
         if (type_id === 1) {
             if ($('#sccp_hw_addon').val() !== 'NONE') {
                 $('#sccp_hw_addon').val('NONE').change();
@@ -305,7 +303,6 @@ $(document).ready(function () {
                 $(this).addClass('hidden');
             }
         });
-
     });
 
     $('.lineSelect').change(function (e) {

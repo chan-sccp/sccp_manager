@@ -69,20 +69,14 @@ if (!empty($_REQUEST['id'])) {
                     $val = implode('.', sscanf($val, '%4s%4s%4s')); // Convert to Cisco display Format
                     $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
                     break;
-                case '_hwlang':
-                    $tmpar =  explode(":", $val);
-                    $def_val['netlang'] =  array("keyword" => 'netlang', "data" => $tmpar[0], "seq" => "99");
-                    $def_val['devlang'] =  array("keyword" => 'devlang', "data" => $tmpar[1], "seq" => "99");
-                    break;
 //                case 'permit':
 //                case 'deny':
 //                    $def_val[$key . '_net'] = array("keyword" => $key, "data" => before('/', $val), "seq" => "99");
 //                    $key = $key . '_mask';
 //                    $val = after('/', $val);
 //                    break;
-                case '_phonepersonalization':
+                case 'phonepersonalization':
                       $def_val['phonepersonalization'] =  array("keyword" => 'phonepersonalization', "data" => $val, "seq" => "99");
-
                 default:
                     // Overwrite existing defaults after checking that data is still valid after schema updates
                     // Do not strip underscores as these fields are new in the schema and so should be valid.
@@ -104,7 +98,6 @@ if (!empty($_REQUEST['id'])) {
             }
         }
     }
-
 }
 
 if (!empty($device_warning)) {
