@@ -758,7 +758,7 @@ function createViewSccplineconfig() {
             ";
     $sql .= "CREATE OR REPLACE
             VIEW sccplineconfig AS
-            SELECT sccpline.id, sccpline.pin ,sccpline.label, sccpline.description, sccpline.context, sccpline.incominglimit, sccpline.transfer, sccpline.mailbox,
+            SELECT sccpline.name, sccpline.id, sccpline.pin ,sccpline.label, sccpline.description, sccpline.context, sccpline.incominglimit, sccpline.transfer, sccpline.mailbox,
                 sccpline.vmnum, sccpline.cid_name, sccpline.cid_num, sccpline.disallow, sccpline.allow, sccpline.trnsfvm, sccpline.secondary_dialtone_digits,
                 sccpline.secondary_dialtone_tone, sccpline.musicclass, sccpline.language, sccpline.accountcode, sccpline.echocancel, sccpline.silencesuppression,
                 sccpline.callgroup, sccpline.pickupgroup, sccpline.adhocNumber, sccpline.meetme, sccpline.meetmenum, sccpline.meetmeopts, sccpline.regexten,
