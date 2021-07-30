@@ -56,8 +56,9 @@ class dbinterface
         switch ($dataid) {
             case 'extGrid':
                 // only called by getExtensionGrid from hardware.extension.php view
-                $stmts = $this->db->prepare('SELECT sccpline.name, sccpline.label, sccpbuttonconfig.ref as mac
-                              FROM sccpline LEFT JOIN sccpbuttonconfig ON sccpline.name=sccpbuttonconfig.name ORDER BY sccpline.name');
+                $stmts = $this->db->prepare("SELECT sccpline.name, sccpline.label, sccpbuttonconfig.ref as mac
+                              FROM sccpline LEFT JOIN sccpbuttonconfig
+                              ON sccpline.name = TRIM(TRAILING '!silent' FROM sccpbuttonconfig.name) ORDER BY sccpline.name");
                 break;
             case 'SccpExtension':
                 if (empty($data['name'])) {
