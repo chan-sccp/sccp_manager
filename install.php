@@ -791,7 +791,7 @@ function createBackUpConfig()
         outn("<font color='red'>PHPx.x-zip not installed where x.x is the installed PHP version. Install it before continuing !</font>");
         die_freepbx();
     }
-    $filename = $dir . "/sccp_install_backup" . date("Ymd"). ".zip";
+    $filename = $dir . "/sccp_install_backup" . date("Ymdhis"). ".zip";
     if ($zip->open($filename, \ZIPARCHIVE::CREATE)) {
         foreach ($backup_files as $file) {
             foreach ($backup_ext as $b_ext) {
