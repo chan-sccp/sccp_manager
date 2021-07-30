@@ -477,9 +477,8 @@ trait ajaxHelper {
             if ($count_mods) {
                 $arr_data = '';
                 if (!empty($this->sccpvalues[$key])) {
-                    foreach ($value as $vkey => $vval) {
-                        //$tmp_data = '';
-                        foreach ($vval as $vkey => $vval) {
+                    foreach ($value as $valArr) {
+                        foreach ($valArr as $vkey => $vval) {
                             switch ($vkey) {
                                 case 'inherit':
                                 case 'internal':
@@ -498,7 +497,6 @@ trait ajaxHelper {
                                     break;
                             }
                         }
-                        //$arr_data .= $tmp_data;
                     }
                     if (!($this->sccpvalues[$key]['data'] == $arr_data)) {
                         $save_settings[$key] = array(
