@@ -69,6 +69,7 @@ if (!empty($_REQUEST['ru_id'])) {
     <input type="hidden" name="Submit" value="Submit">
     <input type="hidden" name="buttonscount" id="buttonscount" value="<?php echo $show_buttons;?>">
     <input type="hidden" name="devButtonCnt" id="devButtonCnt" value="<?php echo (!empty($db_device['buttons']))?$db_device['buttons']:0;?>">
+    <input type="hidden" name="addonCnt" id="addonCnt" value="<?php echo (!empty($db_device['dns']))?$db_device['dns']:0;?>">
     <div class="section-title" data-for="<?php echo $forminfo[0]['name'];?>">
         <h3><i class="fa fa-minus"></i><?php echo _($forminfo[0]['label']) ?></h3>
     </div>
