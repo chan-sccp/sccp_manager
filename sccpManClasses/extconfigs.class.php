@@ -379,7 +379,7 @@ class extconfigs
         $cnf_read = \FreePBX::LoadConfig();
 
         // We are running inside FreePBX so must use the same database
-        $def_config = array('sccpdevice' => 'mysql,' . $amp_conf['AMPDBNAME'] . ',sccpdeviceconfig', 'sccpline' => 'mysql,' . $amp_conf['AMPDBNAME'] . ',sccpline');
+        $def_config = array('sccpdevice' => 'mysql,' . $amp_conf['AMPDBNAME'] . ',sccpdeviceconfig', 'sccpline' => 'mysql,' . $amp_conf['AMPDBNAME'] . ',sccplineconfig');
         $backup_ext = array('_custom.conf', '.conf', '_additional.conf');
         $def_bd_config = array('dbhost' => $amp_conf['AMPDBHOST'], 'dbname' => $amp_conf['AMPDBNAME'],
                               'dbuser' => $amp_conf['AMPDBUSER'], 'dbpass' => $amp_conf['AMPDBPASS'],
