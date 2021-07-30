@@ -737,7 +737,7 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
                 sccpdevice.softkeyset, sccpdevice.audio_tos, sccpdevice.audio_cos, sccpdevice.video_tos, sccpdevice.video_cos, sccpdevice.conf_allow,
                 sccpdevice.conf_play_general_announce, sccpdevice.conf_play_part_announce, sccpdevice.conf_mute_on_entry, sccpdevice.conf_music_on_hold_class,
                 sccpdevice.conf_show_conflist, sccpdevice.force_dtmfmode, sccpdevice.setvar, sccpdevice.backgroundImage, sccpdevice.backgroundThumbnail,
-                sccpdevice.ringtone, sccpdevice.callhistory_answered_elsewhere, sccpdevice.useRedialMenu, sccpdevice.cfwdnoanswer, sccpdevice.park, sccpdevice.monitor
+                sccpdevice.ringtone, sccpdevice.callhistory_answered_elsewhere, sccpdevice.useRedialMenu, sccpdevice.cfwdnoanswer, sccpdevice.park, sccpdevice.monitor, sccpdevice.phonecodepage
             FROM sccpdevice
             LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice.loginname )
             GROUP BY sccpdevice.name;";
