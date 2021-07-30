@@ -737,7 +737,7 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
                 sccpdevice.mwioncall, sccpdevice.dndFeature, sccpdevice.transfer, sccpdevice.cfwdall, sccpdevice.cfwdbusy, sccpdevice.private, sccpdevice.privacy,
                 sccpdevice.nat, sccpdevice.directrtp, sccpdevice.softkeyset, sccpdevice.audio_tos, sccpdevice.audio_cos, sccpdevice.video_tos, sccpdevice.video_cos,
                 sccpdevice.conf_allow, sccpdevice.conf_play_general_announce, sccpdevice.conf_play_part_announce, sccpdevice.conf_mute_on_entry,
-                sccpdevice.conf_music_on_hold_class, sccpdevice.conf_show_conflist, sccpdevice.force_dtmfmode, sccpdevice.setvar, sccpdevice.backgroundImage, 
+                sccpdevice.conf_music_on_hold_class, sccpdevice.conf_show_conflist, sccpdevice.force_dtmfmode, sccpdevice.setvar, sccpdevice.backgroundImage,
                 sccpdevice.backgroundThumbnail, sccpdevice.ringtone, sccpdevice.callhistory_answered_elsewhere, sccpdevice.useRedialMenu, sccpdevice.cfwdnoanswer,
                 sccpdevice.park, sccpdevice.monitor, sccpdevice.phonecodepage, sccpdevice.keepalive
             FROM sccpdevice
@@ -923,7 +923,7 @@ function Setup_RealTime()
 
 function addDriver($sccp_compatible) {
     outn("<li>" . _("Adding driver ...") . "</li>");
-    $file = "{$_SERVER['DOCUMENT_ROOT']}/admin/modules/core/functions.inc/drivers/Sccp.class.php";
+    $file = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/core/functions.inc/drivers/Sccp.class.php';
     $contents = "<?php include '/var/www/html/admin/modules/sccp_manager/sccpManClasses/Sccp.class.php.v{$sccp_compatible}'; ?>";
     file_put_contents($file, $contents);
 
@@ -931,7 +931,7 @@ function addDriver($sccp_compatible) {
     $dir = $cnf_int->get('ASTETCDIR');
     if (!file_exists("{$dir}/sccp.conf")) { // System re Config
         outn("<li>" . _("Adding default configuration file ...") . "</li>");
-        $sccpfile = file_get_contents("{$_SERVER['DOCUMENT_ROOT']}/admin/modules/sccp_manager/conf/sccp.conf");
+        $sccpfile = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
         file_put_contents("{$dir}/sccp.conf", $sccpfile);
     }
 }
@@ -1044,7 +1044,7 @@ function cleanUpSccpSettings() {
     */
 
     // Clean up sccpsettings to remove legacy values.
-    $xml_vars = "{$_SERVER['DOCUMENT_ROOT']}/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}";
+    $xml_vars = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}';
     $thisInstaller->xml_data = simplexml_load_file($xml_vars);
     $thisInstaller->initVarfromXml();
     foreach ( array_diff_key($settingsFromDb,$thisInstaller->sccpvalues) as $key => $valueArray) {

@@ -352,7 +352,7 @@ class extconfigs
         }
         // TODO: Need to add index.cnf, after setting defaults correctly
         if (!file_exists("{$baseConfig['tftp_templates_path']}/XMLDefault.cnf.xml_template")) {
-            $src_path = "{$_SERVER['DOCUMENT_ROOT']}/admin/modules/sccp_manager/conf/";
+            $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
             $dst_path = "{$baseConfig["tftp_templates_path"]}/";
             foreach (glob("{$src_path}*.*_template") as $filename) {
                 copy($filename, $dst_path . basename($filename));
