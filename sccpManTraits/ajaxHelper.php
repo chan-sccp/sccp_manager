@@ -415,6 +415,7 @@ trait ajaxHelper {
     }
 
     function handleSubmit($request, $validateonly = false) {
+      dbug($request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -477,29 +478,27 @@ trait ajaxHelper {
                 $arr_data = '';
                 if (!empty($this->sccpvalues[$key])) {
                     foreach ($value as $vkey => $vval) {
-                        $tmp_data = '';
+                        //$tmp_data = '';
                         foreach ($vval as $vkey => $vval) {
                             switch ($vkey) {
                                 case 'inherit':
                                 case 'internal':
                                     if ($vval == 'on') {
-                                        $tmp_data .= 'internal;';
+                                        $arr_data .= 'internal;';
                                     }
                                     break;
+                                case 'port':
+                                    $arr_data .= ":{$vval}";
+                                    break;
+                                case 'mask':
+                                    $arr_data .= "/{$vval}";
+                                    break;
                                 default:
-                                    $tmp_data .= $vval . '/';
+                                    $arr_data .= $vval;
                                     break;
                             }
                         }
-                        if (strlen($tmp_data) > 2) {
-                            while (substr($tmp_data, -1) == '/') {
-                                $tmp_data = substr($tmp_data, 0, -1);
-                            }
-                            $arr_data .= $tmp_data . ';';
-                        }
-                    }
-                    while (substr($arr_data, -1) == ';') {
-                        $arr_data = substr($arr_data, 0, -1);
+                        //$arr_data .= $tmp_data;
                     }
                     if (!($this->sccpvalues[$key]['data'] == $arr_data)) {
                         $save_settings[$key] = array(

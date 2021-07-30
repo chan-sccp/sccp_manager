@@ -213,7 +213,6 @@ class formcreate
         }
         if (empty($res_value)) {
             $res_value = array((string) $child->default);
-    //            $res_value = explode('/', (string) $child->default);
         }
         ?>
     <div class="element-container">
@@ -280,17 +279,19 @@ class formcreate
                                 ?>
                                 <div class = "<?php echo $res_id;?> form-group form-inline" data-nextid=<?php echo $i+1;?> >
                                 <?php
-                                $res_vf = explode('/', $dat_v);
+                                //$res_vf = explode('/', $dat_v);
                                 $i2 = 0;
                                 foreach ($child->xpath('input') as $value) {
                                     $res_n = $res_id.'['.$i.']['.$value['field'].']';
                                     $fields_id = (string)$value['field'];
-                                    $opt_at[$fields_id]['nameseparator']=(string)$value['nameseparator'];
+                                    //$opt_at[$fields_id]['nameseparator']=(string)$value['nameseparator'];
                                     if (!empty($value->class)) {
                                         $opt_at[$fields_id]['class']='form-control ' .(string)$value->class;
                                     }
-                                    $opt_at[$fields_id]['nameseparator']=(string)$value['nameseparator'];
-
+                                    //$opt_at[$fields_id]['nameseparator']=(string)$value['nameseparator'];
+                                    if (!empty((string)$value['nameseparator'])) {
+                                        $res_vf = explode((string)$value['nameseparator'], $dat_v);
+                                    }
                                     echo '<input type="text" name="'. $res_n.'" class="'.$opt_at[$fields_id]['class'].'" value="'.$res_vf[$i2].'"';
                                     if (isset($value->options)) {
                                         foreach ($value->options ->attributes() as $optkey => $optval) {

@@ -218,7 +218,7 @@ and open the template in the editor. Base Version before all crash :-)
             <label>Device Connect Address / Name </label>
             <name>ccm_address</name>
             <cbutton field="internal" value="internal">Internal</cbutton>
-            <default>0.0.0.0/2000</default>
+            <default>0.0.0.0:2000</default>
             <input value="NONE" field="ip" nameseparator=":">
                 <options placeholder="0.0.0.0 / pbx.org"/>
                 <class></class>
