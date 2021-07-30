@@ -291,7 +291,8 @@ function Get_DB_config($sccp_compatible)
               '_loginname' => array('rename' => 'loginname'),
               '_profileid' => array('rename' => 'profileid'),
               '_dialrules' => array('rename' => 'dialrules'),
-              '_description' => array('rename' => 'description')
+              '_description' => array('rename' => 'description'),
+              'keepalive' => array('create' => "INT(11) DEFAULT '60'", 'modify' => 'INT(11)', 'def_modify' => "60")
             ),
         'sccpline' => array (
               'regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
@@ -732,12 +733,13 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
             (SELECT GROUP_CONCAT(CONCAT_WS(',', homebutton.buttontype, homebutton.name, homebutton.options ) SEPARATOR ';') FROM sccpbuttonconfig AS homebutton WHERE homebutton.ref = sccpuser.homedevice  ORDER BY homebutton.instance )
                 END
                 AS button, if(sccpdevice.profileid = 0, sccpdevice.description, sccpuser.description) AS description, sccpdevice.name, sccpdevice.type,
-                sccpdevice.addon, sccpdevice.tzoffset, sccpdevice.imageversion, sccpdevice.deny, sccpdevice.permit, sccpdevice.earlyrtp, sccpdevice.mwilamp, sccpdevice.mwioncall,
-                sccpdevice.dndFeature, sccpdevice.transfer, sccpdevice.cfwdall, sccpdevice.cfwdbusy, sccpdevice.private, sccpdevice.privacy, sccpdevice.nat, sccpdevice.directrtp,
-                sccpdevice.softkeyset, sccpdevice.audio_tos, sccpdevice.audio_cos, sccpdevice.video_tos, sccpdevice.video_cos, sccpdevice.conf_allow,
-                sccpdevice.conf_play_general_announce, sccpdevice.conf_play_part_announce, sccpdevice.conf_mute_on_entry, sccpdevice.conf_music_on_hold_class,
-                sccpdevice.conf_show_conflist, sccpdevice.force_dtmfmode, sccpdevice.setvar, sccpdevice.backgroundImage, sccpdevice.backgroundThumbnail,
-                sccpdevice.ringtone, sccpdevice.callhistory_answered_elsewhere, sccpdevice.useRedialMenu, sccpdevice.cfwdnoanswer, sccpdevice.park, sccpdevice.monitor, sccpdevice.phonecodepage
+                sccpdevice.addon, sccpdevice.tzoffset, sccpdevice.imageversion, sccpdevice.deny, sccpdevice.permit, sccpdevice.earlyrtp, sccpdevice.mwilamp,
+                sccpdevice.mwioncall, sccpdevice.dndFeature, sccpdevice.transfer, sccpdevice.cfwdall, sccpdevice.cfwdbusy, sccpdevice.private, sccpdevice.privacy,
+                sccpdevice.nat, sccpdevice.directrtp, sccpdevice.softkeyset, sccpdevice.audio_tos, sccpdevice.audio_cos, sccpdevice.video_tos, sccpdevice.video_cos,
+                sccpdevice.conf_allow, sccpdevice.conf_play_general_announce, sccpdevice.conf_play_part_announce, sccpdevice.conf_mute_on_entry,
+                sccpdevice.conf_music_on_hold_class, sccpdevice.conf_show_conflist, sccpdevice.force_dtmfmode, sccpdevice.setvar, sccpdevice.backgroundImage, 
+                sccpdevice.backgroundThumbnail, sccpdevice.ringtone, sccpdevice.callhistory_answered_elsewhere, sccpdevice.useRedialMenu, sccpdevice.cfwdnoanswer,
+                sccpdevice.park, sccpdevice.monitor, sccpdevice.phonecodepage, sccpdevice.keepalive
             FROM sccpdevice
             LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice.loginname )
             GROUP BY sccpdevice.name;";
