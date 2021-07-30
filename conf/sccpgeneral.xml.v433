@@ -1250,14 +1250,14 @@ and open the template in the editor. Base Version before all crash :-)
     <page_group name="sccp_hw_dev">
         <label>General Device configuration</label>
         <item type="IE" id="1" seq="99">
-            <label>Device SEP ID.[XXXXXXXXXXXX]=MAC</label>
+            <label>Device ID.[XXXXXXXXXXXX]=MAC</label>
             <input>
                 <name>mac</name>
                 <default></default>
                 <class>sccp-custom</class>
                 <options></options>
             </input>
-            <help>The MAC address of the phone. You must specify 12 characters in the format XXXX.XXXX.XXXX or XX-XX-XX-XX-XX-XX or XXXXXXXXXXXX</help>
+            <help>The MAC address of the phone. You must specify 12 characters in the format XXXX.XXXX.XXXX, XX:XX:XX:XX:XX:XX, XX-XX-XX-XX-XX-XX or XXXXXXXXXXXX</help>
         </item>
         <item type="SDM" id="2" seq="99">
             <label>Type</label>
@@ -1280,7 +1280,7 @@ and open the template in the editor. Base Version before all crash :-)
     <page_group name="sccp_hw_dev_edit">
         <label>General Device configuration</label>
         <item type="IE" id="1" seq="99">
-            <label>Device SEP ID</label>
+            <label>Device ID</label>
             <input>
                 <name>mac</name>
                 <default></default>
@@ -1388,7 +1388,7 @@ and open the template in the editor. Base Version before all crash :-)
     <page_group name="sccp_hw_dev_button">
         <label>Buttons Configuration</label>
         <item type="IE" id="1" seq="99">
-            <label>Device MAC SEP.</label>
+            <label>Device MAC.</label>
             <input>
                 <name>mac</name>
                 <default>000000000</default>
@@ -1888,13 +1888,13 @@ and open the template in the editor. Base Version before all crash :-)
     <page_group name="sccp_hw_sip_dev">
         <label>General Device configuration</label>
         <item type="IE" id="1" seq="99">
-            <label>Device SEP ID.[XXXXXXXXXXXX]=MAC</label>
+            <label>Device ID.[XXXXXXXXXXXX]=MAC</label>
             <input>
                 <name>mac</name>
                 <default>000000000</default>
                 <class>sccp-custom</class>
             </input>
-            <help>The MAC address of the phone. You must specify 12 characters in the format XXXX.XXXX.XXXX or XX-XX-XX-XX-XX-XX or XXXXXXXXXXXX</help>
+            <help>The MAC address of the phone. You must specify 12 characters in the format XXXX.XXXX.XXXX, XX:XX:XX:XX:XX:XX, XX-XX-XX-XX-XX-XX or XXXXXXXXXXXX</help>
         </item>
         <item type="SDMS" id="2" seq="99">
             <label>Type</label>

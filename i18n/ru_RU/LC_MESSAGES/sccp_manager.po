@@ -910,8 +910,8 @@ msgid "General Device configuration"
 msgstr "Абонентского устройство"
 
 #: views/sccpgeneral.xml:
-msgid "Device SEP ID.[XXXXXXXXXXXX]=MAC"
-msgstr "Устройство SEP ID : [XXXXXXXXXXXX]=MAC"
+msgid "Device ID.[XXXXXXXXXXXX]=MAC"
+msgstr "Устройство ID : [XXXXXXXXXXXX]=MAC"
 
 #: views/sccpgeneral.xml:
 msgid ""
@@ -955,8 +955,8 @@ msgid "Device Label"
 msgstr "Название Устройства"
 
 #: views/sccpgeneral.xml:
-msgid "Device SEP ID"
-msgstr "Идентификатор устройства SEP ID"
+msgid "Device ID"
+msgstr "Идентификатор устройства ID"
 
 #: views/sccpgeneral.xml:
 msgid "The information in the upper right corner of the device screen"
@@ -1005,7 +1005,7 @@ msgid "Buttons Configuration"
 msgstr "Настройка Кнопок"
 
 #: views/sccpgeneral.xml:
-msgid "Device MAC SEP."
+msgid "Device MAC."
 msgstr "Прямое подключение."
 
 #: views/sccpgeneral.xml:

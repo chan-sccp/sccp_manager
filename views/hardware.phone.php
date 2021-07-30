@@ -35,7 +35,7 @@
                     <thead>
                         <tr>
                             <th data-checkbox="true"></th>
-                            <th data-sortable="true" data-field="mac"><?php echo _('Device SEP ID') ?></th>
+                            <th data-sortable="true" data-field="mac"><?php echo _('Device ID') ?></th>
                             <th data-sortable="true" data-field="description"><?php echo _('Device  Description') ?></th>
                             <th data-sortable="true" data-formatter="DispayTypeFormatter" data-field="type"><?php echo _('Device type') ?></th>
                             <th data-sortable="true" data-field="button" data-formatter="LineFormatter"><?php echo _('Line') ?></th>
