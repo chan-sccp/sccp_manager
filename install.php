@@ -762,8 +762,8 @@ function createViewSccplineconfig() {
                 sccpline.vmnum, sccpline.cid_name, sccpline.cid_num, sccpline.disallow, sccpline.allow, sccpline.trnsfvm, sccpline.secondary_dialtone_digits,
                 sccpline.secondary_dialtone_tone, sccpline.musicclass, sccpline.language, sccpline.accountcode, sccpline.echocancel, sccpline.silencesuppression,
                 sccpline.callgroup, sccpline.pickupgroup, sccpline.adhocNumber, sccpline.meetme, sccpline.meetmenum, sccpline.meetmeopts, sccpline.regexten,
-                sccpline.directed_pickup, sccpline.directed_pickup_context, sccpline.pickup_modeanswer, sccpline.amaflags, sccpline.dnd, sccpline.videomode,
-                sccpline.setvar, sccpline.namedcallgroup, sccpline.namedpickupgroup, sccpline.phonecodepage
+                sccpline.directed_pickup, sccpline.directed_pickup_context, sccpline.pickup_modeanswer, sccpline.amaflags, sccpline.dnd, sccpline.setvar,
+                sccpline.namedcallgroup, sccpline.namedpickupgroup, sccpline.phonecodepage
                 FROM sccpline";
     $results = $db->query($sql);
     if (DB::IsError($results)) {
