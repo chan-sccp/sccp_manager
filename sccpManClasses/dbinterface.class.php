@@ -400,7 +400,6 @@ class dbinterface
     {
         $result = 0;
         $check_fields = [
-                        '430' => ['_hwlang' => "varchar(12)"],
                         '431' => ['private'=> "enum('on','off')"],
                         '433' => ['directed_pickup'=>'']
                         ];

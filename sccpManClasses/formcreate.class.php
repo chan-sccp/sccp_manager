@@ -384,8 +384,7 @@ class formcreate
                     }
 
                     // Output current value
-                    // TODO: This is debug code and needs to be set to only echo res_v
-                    echo $res_v . $res_n . $sccp_defaults[$res_n]['systemdefault'] . $usingSysDefaults;
+                    echo $res_v;
                     ?>
                     </div>
                     <div class="col-md-4">

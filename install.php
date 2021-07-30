@@ -990,7 +990,7 @@ function checkTftpServer() {
 
     // Get TFTP mapping Status
     $settingsFromDb['tftp_rewrite'] = array('keyword' => 'tftp_rewrite', 'seq' => 20, 'type' => 0, 'data' => 'off', 'systemdefault' => '');
-    if (\FreePbx::Sccp_manager()->checkTftpMapping()) {
+    if ($thisInstaller->checkTftpMapping()) {
         $settingsFromDb['tftp_rewrite']['data'] = 'pro';
     }
 
@@ -1100,6 +1100,7 @@ function cleanUpSccpSettings() {
         }
         // Override certain chan-sccp defaults as they are based on a non-FreePbx system
         $settingsFromDb['context']['systemdefault'] = 'from-internal';
+        $settingsFromDb['directed_pickup']['systemdefault'] = 'no';
 
         unset($sysConfiguration[$key]);
     }
