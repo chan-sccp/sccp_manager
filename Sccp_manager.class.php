@@ -1070,31 +1070,24 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     function getSccpModelInformation($get = "all", $validate = false, $format_list = "all", $filter = array()) {
-        $file_ext = array('.loads', '.sbn', '.bin', '.zup');
+        $file_ext = array('.loads', '.sbn', '.bin', '.zup', '.sbin');
         $dir = $this->sccppath['tftp_firmware_path'];
-        $dir_tepl = $this->sccppath['tftp_templates_path'];
 
-        $search_mode = '';
-        if (!empty($this->sccpvalues['tftp_rewrite'])) {
-            $search_mode = $this->sccpvalues['tftp_rewrite']['data'];
-            switch ($search_mode) {
-                case 'pro':
-                case 'on':
-                case 'internal':
-                    $dir_list = $this->findAllFiles($dir, $file_ext, 'fileonly');
-                    break;
-                case 'off':
-                default: // Place in root TFTP dir
-                    $dir_list = $this->findAllFiles($dir, $file_ext);
-                    break;
-            }
-        } else {
-            $dir_list = $this->findAllFiles($dir, $file_ext, 'fileonly');
+        $search_mode = $this->sccpvalues['tftp_rewrite']['data'];
+        switch ($search_mode) {
+            case 'pro':
+            case 'on':
+            case 'internal':
+                $dir_list = $this->findAllFiles($dir, $file_ext, 'fileonly');
+                break;
+            case 'off':
+            default: // Place in root TFTP dir
+                $dir_list = $this->findAllFiles($dir, $file_ext);
+                break;
         }
         $raw_settings = $this->dbinterface->getDb_model_info($get, $format_list, $filter);
         if ($validate) {
             for ($i = 0; $i < count($raw_settings); $i++) {
-                $raw_settings[$i]['validate'] = '-;-';
                 if (!empty($raw_settings[$i]['loadimage'])) {
                     $raw_settings[$i]['validate'] = 'no;';
                     if (((strtolower($raw_settings[$i]['vendor']) == 'cisco') || (strtolower($raw_settings[$i]['vendor']) == 'cisco-sip')) && !empty($dir_list)) {
@@ -1122,7 +1115,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     $raw_settings[$i]['validate'] = '-;';
                 }
                 if (!empty($raw_settings[$i]['nametemplate'])) {
-                    $file = $dir_tepl . '/' . $raw_settings[$i]['nametemplate'];
+                    $file = $this->sccppath['tftp_templates_path'] . '/' . $raw_settings[$i]['nametemplate'];
                     if (file_exists($file)) {
                         $raw_settings[$i]['validate'] .= 'yes';
                     } else {

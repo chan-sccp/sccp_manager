@@ -1044,7 +1044,7 @@ function cleanUpSccpSettings() {
     */
 
     // Clean up sccpsettings to remove legacy values.
-    $xml_vars = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}';
+    $xml_vars = $_SERVER['DOCUMENT_ROOT'] . "/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}";
     $thisInstaller->xml_data = simplexml_load_file($xml_vars);
     $thisInstaller->initVarfromXml();
     foreach ( array_diff_key($settingsFromDb,$thisInstaller->sccpvalues) as $key => $valueArray) {

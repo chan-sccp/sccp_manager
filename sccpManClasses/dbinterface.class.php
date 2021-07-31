@@ -202,7 +202,7 @@ class dbinterface
     {
         $sel_inf = '*, 0 as validate';
         if ($format_list === 'model') {
-            $sel_inf = 'model, vendor, dns, buttons, 0 as validate';
+            $sel_inf = "model, vendor, dns, buttons, '-;-' as validate";
         }
         switch ($get) {
             case 'byciscoid':

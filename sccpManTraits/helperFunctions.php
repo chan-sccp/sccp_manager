@@ -113,51 +113,37 @@ trait helperfunctions {
         return $enumFields;
     }
 
-    private function findAllFiles($dir, $file_mask = null, $mode = 'full') {
-        $result = null;
-        if (empty($dir) || (!file_exists($dir))) {
+    private function findAllFiles($searchDir, $file_mask = array(), $mode = 'full') {
+        $result = array();
+        if (!is_dir($searchDir)) {
             return $result;
         }
-
-        $root = scandir($dir);
-        foreach ($root as $value) {
-            if ($value === '.' || $value === '..') {
-                continue;
-            }
-            if (is_file("$dir/$value")) {
-                $filter = false;
+        foreach (array_diff(scandir($searchDir),array('.', '..')) as $value) {
+            if (is_file("$searchDir/$value")) {
+                $foundFile = true;
                 if (!empty($file_mask)) {
-                    if (is_array($file_mask)) {
-                        foreach ($file_mask as $k) {
-                            if (strpos(strtolower($value), strtolower($k)) !== false) {
-                                $filter = true;
-                            }
-                        }
-                    } else {
-                        if (strpos(strtolower($value), strtolower($file_mask)) !== false) {
-                            $filter = true;
+                    $foundFile = false;
+                    foreach ($file_mask as $k) {
+                        if (strpos($value, $k)) {
+                            $foundFile = true;
+                            break;
                         }
                     }
-                } else {
-                    $filter = true;
                 }
-                if ($filter) {
+                if ($foundFile) {
                     if ($mode == 'fileonly') {
-                        $result[] = "$value";
+                        $result[] = $value;
                     } else {
-                        $result[] = "$dir/$value";
+                        $result[] = "$searchDir/$value";
                     }
-                } else {
-                    $result[] = null;
                 }
                 continue;
             }
-            $sub_fiend = $this->findAllFiles("$dir/$value", $file_mask, $mode);
-            if (!empty($sub_fiend)) {
-                foreach ($sub_fiend as $sub_value) {
-                    if (!empty($sub_value)) {
-                        $result[] = $sub_value;
-                    }
+            // Now iterate over sub directories
+            $sub_find = $this->findAllFiles("$searchDir/$value", $file_mask, $mode);
+            if (!empty($sub_find)) {
+                foreach ($sub_find as $sub_value) {
+                    $result[] = $sub_value;
                 }
             }
         }
