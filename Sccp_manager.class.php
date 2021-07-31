@@ -1090,25 +1090,23 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             for ($i = 0; $i < count($raw_settings); $i++) {
                 if (!empty($raw_settings[$i]['loadimage'])) {
                     $raw_settings[$i]['validate'] = 'no;';
-                    if (((strtolower($raw_settings[$i]['vendor']) == 'cisco') || (strtolower($raw_settings[$i]['vendor']) == 'cisco-sip')) && !empty($dir_list)) {
-                        foreach ($dir_list as $filek) {
-                            switch ($search_mode) {
-                                case 'pro':
-                                case 'on':
-                                case 'internal':
-                                    if (strpos(strtolower($filek), strtolower($raw_settings[$i]['loadimage'])) !== false) {
-                                        $raw_settings[$i]['validate'] = 'yes;';
-                                    }
-                                    break;
-                                case 'internal2':
-                                    break;
-                                case 'off':
-                                default: // Place in root TFTP dir
-                                    if (strpos(strtolower($filek), strtolower($dir . '/' . $raw_settings[$i]['loadimage'])) !== false) {
-                                        $raw_settings[$i]['validate'] = 'yes;';
-                                    }
-                                    break;
-                            }
+                    foreach ($dir_list as $filek) {
+                        switch ($search_mode) {
+                            case 'pro':
+                            case 'on':
+                            case 'internal':
+                                if (strpos($filek, $raw_settings[$i]['loadimage']) !== false) {
+                                    $raw_settings[$i]['validate'] = 'yes;';
+                                }
+                                break;
+                            case 'internal2':
+                                break;
+                            case 'off':
+                            default: // Place in root TFTP dir
+                                if (strpos($filek, strtolower($dir . '/' . $raw_settings[$i]['loadimage'])) !== false) {
+                                    $raw_settings[$i]['validate'] = 'yes;';
+                                }
+                                break;
                         }
                     }
                 } else {

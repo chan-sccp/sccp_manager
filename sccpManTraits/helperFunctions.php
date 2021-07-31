@@ -124,7 +124,7 @@ trait helperfunctions {
                 if (!empty($file_mask)) {
                     $foundFile = false;
                     foreach ($file_mask as $k) {
-                        if (strpos($value, $k)) {
+                        if (strpos($value, $k) !== false) {
                             $foundFile = true;
                             break;
                         }
