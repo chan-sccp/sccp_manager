@@ -5,6 +5,7 @@
  * and open the template in the editor.
  */
 $requestType = 'firmware';
+global $amp_conf;
 ?>
 
 <div class="fpbx-container container-fluid">
@@ -160,7 +161,7 @@ foreach ($firmwareDir[0] as $child) {
     }
 };
 
-include($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/views/getFileModal.html');
+include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModal.html');
 
 ?>
 <div class="modal fade" id="edit_model" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">

@@ -228,9 +228,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function getDeviceDisplay($display, $deviceInfo, $currentComponent, $primarySection) {
+        global $amp_conf;
         $activeCodecs = array();
         // load xml data to get help from same source as rest of module
-        $xml_vars = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccpgeneral.xml.v433';
+        $xml_vars = $amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/conf/sccpgeneral.xml.v433';
             $this->xml_data = simplexml_load_file($xml_vars);
         // load metainfo from chan-sccp - help information if not in xml. Only load first time as static data.
         if (empty($this->sccpHelpInfo)) {

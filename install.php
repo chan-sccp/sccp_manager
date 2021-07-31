@@ -341,9 +341,10 @@ function CheckSCCPManagerDBVersion()
 
 function CheckPermissions()
 {
+    global $amp_conf;
     outn("<li>" . _("Checking Filesystem Permissions") . "</li>");
-    $dst = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/views';
-    if (fileowner($_SERVER['DOCUMENT_ROOT']) != fileowner($dst)) {
+    $dst = $amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views';
+    if (fileowner($amp_conf['AMPWEBROOT']) != fileowner($dst)) {
         die_freepbx('Please (re-)check permissions by running "amportal chown. Installation Failed"');
     }
 }
@@ -922,16 +923,17 @@ function Setup_RealTime()
 }
 
 function addDriver($sccp_compatible) {
+    global $amp_conf;
+    global $cnf_int;
     outn("<li>" . _("Adding driver ...") . "</li>");
-    $file = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/core/functions.inc/drivers/Sccp.class.php';
+    $file = $amp_conf['AMPWEBROOT'] . '/admin/modules/core/functions.inc/drivers/Sccp.class.php';
     $contents = "<?php include '/var/www/html/admin/modules/sccp_manager/sccpManClasses/Sccp.class.php.v{$sccp_compatible}'; ?>";
     file_put_contents($file, $contents);
 
-    global $cnf_int;
     $dir = $cnf_int->get('ASTETCDIR');
     if (!file_exists("{$dir}/sccp.conf")) { // System re Config
         outn("<li>" . _("Adding default configuration file ...") . "</li>");
-        $sccpfile = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
+        $sccpfile = file_get_contents($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
         file_put_contents("{$dir}/sccp.conf", $sccpfile);
     }
 }
@@ -942,14 +944,15 @@ function checkTftpServer() {
     global $settingsFromDb;
     global $extconfigs;
     global $thisInstaller;
+    global $amp_conf;
     $confDir = $cnf_int->get('ASTETCDIR');
     $tftpRootPath = "";
     // put the rewrite rules into the required location
     if (file_exists("{$confDir}/sccpManagerRewrite.rules")) {
         rename("{$confDir}/sccpManagerRewrite.rules", "{$confDir}/sccpManagerRewrite.rules.bu");
     }
-    copy($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/mappingRulesHeader',"{$confDir}/sccpManagerRewrite.rules");
-    file_put_contents("{$confDir}/sccpManagerRewrite.rules", file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/contrib/rewrite.rules'), FILE_APPEND);
+    copy($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/conf/mappingRulesHeader',"{$confDir}/sccpManagerRewrite.rules");
+    file_put_contents("{$confDir}/sccpManagerRewrite.rules", file_get_contents($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/contrib/rewrite.rules'), FILE_APPEND);
     file_put_contents("{$confDir}/sccpManagerRewrite.rules", "\n# Do not disable this rule - this is required by sccp_manager\nri ^(.+\.tlzz)?$ settings/\\1", FILE_APPEND);
     // TODO: add option to use external server
     $remoteFileName = ".sccp_manager_installer_probe_sentinel_temp".mt_rand(0, 9999999);
@@ -1015,6 +1018,7 @@ function cleanUpSccpSettings() {
     global $db;
     global $aminterface;
     global $sccp_compatible;
+    global $amp_conf;
 
     // Get current default settings from db
     $stmt = $db->prepare("SELECT keyword, sccpsettings.* FROM sccpsettings");
@@ -1042,9 +1046,12 @@ function cleanUpSccpSettings() {
         }
     }
     */
-
+    // TODO: It seems that DOCUMENT ROOT is not always set so maybe should switch to AMPWEBROOT.
+    // need to declare amp_conf global each time.
+    //global $amp_conf;
+    //dbug($amp_conf['AMPWEBROOT']);
     // Clean up sccpsettings to remove legacy values.
-    $xml_vars = $_SERVER['DOCUMENT_ROOT'] . "/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}";
+    $xml_vars = $amp_conf['AMPWEBROOT'] . "/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}";
     $thisInstaller->xml_data = simplexml_load_file($xml_vars);
     $thisInstaller->initVarfromXml();
     foreach ( array_diff_key($settingsFromDb,$thisInstaller->sccpvalues) as $key => $valueArray) {

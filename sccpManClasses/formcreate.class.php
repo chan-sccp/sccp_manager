@@ -630,6 +630,7 @@ class formcreate
 
     function addElementSLNA($child, $fvalues, $sccp_defaults,$npref, $installedLangs) {
     //       Input element Select SLS - System Language with add from external
+        global $amp_conf;
         $res_n =  (string)$child ->name;
         $res_id = $npref.$res_n;
         $child->value ='';
@@ -681,7 +682,7 @@ class formcreate
             <div class="row">
                 <div class="form-group">
                     <?php
-                    include($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/views/getFileModal.html');
+                    include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModal.html');
                     ?>
 
                     <div class="col-md-3">

@@ -138,8 +138,9 @@ trait bmoFunctions {
     }
 
     public function getRightNav($request) {
+        global $amp_conf;
         if (isset($request['tech_hardware']) && ($request['tech_hardware'] == 'cisco')) {
-            return load_view($_SERVER['DOCUMENT_ROOT'] .'/admin/modules/sccp_manager/views/hardware.rnav.php', array('request' => $request));
+            return load_view($amp_conf['AMPWEBROOT'] .'/admin/modules/sccp_manager/views/hardware.rnav.php', array('request' => $request));
         }
     }
 
