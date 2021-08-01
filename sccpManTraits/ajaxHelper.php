@@ -295,33 +295,21 @@ trait ajaxHelper {
                     return array();
                 }
                 $activeDevices = $this->aminterface->sccp_get_active_device();
-                foreach ($lineList as $key => $lineArr) {
-                    if (!empty($outLineList[$lineList[$key]['name']])) {
-                        $outLineList[$lineList[$key]['name']]['mac'] .= "<br>".$lineList[$key]['mac'];
-                        if (array_key_exists($lineArr['mac'], $activeDevices)) {
-                            $actDevStat = $activeDevices[$lineArr['mac']];
-                            $outLineList[$lineList[$key]['name']]['line_status'] .= "<br>" . "{$actDevStat['status']} | {$actDevStat['act']}";
-                        } else {
-                            $outLineList[$lineList[$key]['name']]['line_status'] .= "<br>" . '|';
-                        }
-                    } else {
-                        $outLineList[$lineList[$key]['name']] = $lineList[$key];
-                            if (array_key_exists($lineArr['mac'], $activeDevices)) {
-                                $actDevStat = $activeDevices[$lineArr['mac']];
-                                $outLineList[$lineList[$key]['name']]['line_status'] = "{$actDevStat['status']} | {$actDevStat['act']}";
-                            } else {
-                                // create a new output list
-                                $outLineList[$lineList[$key]['name']] = $lineList[$key];
-                                $outLineList[$lineList[$key]['name']]['line_status'] = '|';
-                            }
+                $uniqueLineList = array();
+                foreach ($lineList as $key => &$lineArr) {
+                    if (array_key_exists($lineArr['mac'], $activeDevices)) {
+                        $lineArr['line_status'] = "{$activeDevices[$lineArr['mac']]['status']} | {$activeDevices[$lineArr['mac']]['act']}";
                     }
+                    if (array_key_exists($lineArr['name'], $uniqueLineList)) {
+                        $lineList[$uniqueLineList[$lineArr['name']]]['mac'] .= '<br>' . $lineArr['mac'];
+                        $lineList[$uniqueLineList[$lineArr['name']]]['line_status'] .= '<br>' . $lineArr['line_status'];
+                        unset($lineList[$key]);  // Drop this array as no longer used
+                        continue;
+                    }
+                    $uniqueLineList[$lineArr['name']] = $key;
                 }
-                unset($lineList);
-                // Html wants an anonymous array rather than a keyed array, so remove keys.
-                foreach ($outLineList as $valueArray) {
-                    $lineList[] = $valueArray;
-                }
-                return $lineList;
+                unset($lineArr, $uniqueLineList); // unset reference and temp vars.
+                return array_values($lineList);   // Reindex array and return
                 break;
             case 'getPhoneGrid':
                 $dbDevices = array();
@@ -350,6 +338,7 @@ trait ajaxHelper {
                         $dev_id['address'] = '- -';
                     }
                 }
+                unset($dev_id); // unset reference.
 
                 if (!empty($activeDevices)) {
                     // Have a device that is connected but is not currently in the database
