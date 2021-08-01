@@ -1085,44 +1085,45 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $dir_list = $this->findAllFiles($dir, $file_ext, 'dirFileBaseName');
                 break;
         }
-        $raw_settings = $this->dbinterface->getDb_model_info($get, $format_list, $filter);
+        $modelList = $this->dbinterface->getDb_model_info($get, $format_list, $filter);
         if ($validate) {
-            for ($i = 0; $i < count($raw_settings); $i++) {
-                if (!empty($raw_settings[$i]['loadimage'])) {
-                    $raw_settings[$i]['validate'] = 'no;';
+            foreach ($modelList as &$raw_settings) {
+                if (!empty($raw_settings['loadimage'])) {
+                    $raw_settings['validate'] = 'no;';
                     switch ($search_mode) {
                         case 'pro':
                         case 'on':
                         case 'internal':
-                            if (in_array($raw_settings[$i]['loadimage'], $dir_list, true)) {
-                                $raw_settings[$i]['validate'] = 'yes;';
+                            if (in_array($raw_settings['loadimage'], $dir_list, true)) {
+                                $raw_settings['validate'] = 'yes;';
                             }
                             break;
                         case 'internal2':
                             break;
                         case 'off':
                         default: // Place in root TFTP dir
-                            if (in_array("{$dir}/{$raw_settings[$i]['loadimage']}", $dir_list, true)) {
-                                $raw_settings[$i]['validate'] = 'yes;';
+                            if (in_array("{$dir}/{$raw_settings['loadimage']}", $dir_list, true)) {
+                                $raw_settings['validate'] = 'yes;';
                             }
                             break;
                     }
                 } else {
-                    $raw_settings[$i]['validate'] = '-;';
+                    $raw_settings['validate'] = '-;';
                 }
-                if (!empty($raw_settings[$i]['nametemplate'])) {
-                    $file = $this->sccppath['tftp_templates_path'] . '/' . $raw_settings[$i]['nametemplate'];
+                if (!empty($raw_settings['nametemplate'])) {
+                    $file = $this->sccppath['tftp_templates_path'] . '/' . $raw_settings['nametemplate'];
                     if (file_exists($file)) {
-                        $raw_settings[$i]['validate'] .= 'yes';
+                        $raw_settings['validate'] .= 'yes';
                     } else {
-                        $raw_settings[$i]['validate'] .= 'no';
+                        $raw_settings['validate'] .= 'no';
                     }
                 } else {
-                    $raw_settings[$i]['validate'] .= '-';
+                    $raw_settings['validate'] .= '-';
                 }
             }
         }
-        return $raw_settings;
+        unset($raw_settings);
+        return $modelList;
     }
 
     function getHintInformation($sort = true, $filter = array()) {
