@@ -69,14 +69,15 @@ class dbinterface
                 }
                 break;
             case 'phoneGrid':
-                $fld = 'name, name as mac, type, button, addon, description';
                 switch ($data['type']) {
                     case "cisco-sip":
-                        $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE type LIKE '%-sip' ORDER BY name");
+                        $stmts = $this->db->prepare("SELECT name, type, button, addon, description, 'not connected' AS status, '- -' AS address
+                            FROM sccpdeviceconfig WHERE type LIKE '%-sip' ORDER BY name");
                         break;
                     case "sccp":      // Fall through to default intentionally
                     default:
-                        $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE type not LIKE '%-sip' ORDER BY name");
+                        $stmts = $this->db->prepare("SELECT name, type, button, addon, description, 'not connected' AS status, '- -' AS address
+                            FROM sccpdeviceconfig WHERE type not LIKE '%-sip' ORDER BY name");
                         break;
                 }
                 break;

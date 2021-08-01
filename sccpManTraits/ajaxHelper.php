@@ -315,6 +315,7 @@ trait ajaxHelper {
                 $dbDevices = array();
                 // Find all devices defined in the database.
                 $dbDevices = $this->dbinterface->getSccpDeviceTableData('phoneGrid', array('type' => $request['type']));
+                
                 // Return if only interested in SIP devices
                 if ($request['type'] == 'cisco-sip') {
                     return $dbDevices;     //this may be empty
@@ -323,19 +324,14 @@ trait ajaxHelper {
                 $activeDevices = $this->aminterface->sccp_get_active_device();
 
                 foreach ($dbDevices as &$dev_id) {
-                    $id_name = $dev_id['mac'];
-                    if (!empty($activeDevices[$id_name])) {
+                    if (!empty($activeDevices[$dev_id['name']])) {
                         // Device is in db and is connected
-                        $dev_id['description'] = $activeDevices[$id_name]['descr'];
-                        $dev_id['status'] = $activeDevices[$id_name]['status'];
-                        $dev_id['address'] = $activeDevices[$id_name]['address'];
+                        $dev_id['description'] = $activeDevices[$dev_id['name']]['descr'];
+                        $dev_id['status'] = $activeDevices[$dev_id['name']]['status'];
+                        $dev_id['address'] = $activeDevices[$dev_id['name']]['address'];
                         $dev_id['new_hw'] = 'N';
                         // No further action required on this active device
-                        unset($activeDevices[$id_name]);
-                    } else {
-                        // Device is in db but not connected
-                        $dev_id['status'] = 'not connected';
-                        $dev_id['address'] = '- -';
+                        unset($activeDevices[$dev_id['name']]);
                     }
                 }
                 unset($dev_id); // unset reference.
