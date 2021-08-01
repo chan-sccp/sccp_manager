@@ -1122,7 +1122,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 }
             }
         }
-        unset($raw_settings);
+        unset($raw_settings);   // passed as reference so must unset.
         return $modelList;
     }
 
