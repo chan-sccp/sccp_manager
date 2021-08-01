@@ -120,21 +120,32 @@ trait helperfunctions {
         }
         foreach (array_diff(scandir($searchDir),array('.', '..')) as $value) {
             if (is_file("$searchDir/$value")) {
+                $extFound = '';
                 $foundFile = true;
                 if (!empty($file_mask)) {
                     $foundFile = false;
                     foreach ($file_mask as $k) {
                         if (strpos($value, $k) !== false) {
                             $foundFile = true;
+                            $extFound = $k;
                             break;
                         }
                     }
                 }
                 if ($foundFile) {
-                    if ($mode == 'fileonly') {
-                        $result[] = $value;
-                    } else {
-                        $result[] = "$searchDir/$value";
+                    switch ($mode) {
+                        case 'fileonly':
+                            $result[] = $value;
+                            break;
+                        case 'fileBaseName':
+                            $result[] = basename("/$value", $extFound);
+                            break;
+                        case 'dirFileBaseName':
+                            $result[] = $searchDir . "/" . basename("/$value", $extFound);
+                            break;
+                        default:
+                            $result[] = "$searchDir/$value";
+                            break;
                     }
                 }
                 continue;

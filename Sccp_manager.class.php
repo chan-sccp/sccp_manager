@@ -1078,11 +1078,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             case 'pro':
             case 'on':
             case 'internal':
-                $dir_list = $this->findAllFiles($dir, $file_ext, 'fileonly');
+                $dir_list = $this->findAllFiles($dir, $file_ext, 'fileBaseName');
                 break;
             case 'off':
             default: // Place in root TFTP dir
-                $dir_list = $this->findAllFiles($dir, $file_ext);
+                $dir_list = $this->findAllFiles($dir, $file_ext, 'dirFileBaseName');
                 break;
         }
         $raw_settings = $this->dbinterface->getDb_model_info($get, $format_list, $filter);
@@ -1090,24 +1090,22 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             for ($i = 0; $i < count($raw_settings); $i++) {
                 if (!empty($raw_settings[$i]['loadimage'])) {
                     $raw_settings[$i]['validate'] = 'no;';
-                    foreach ($dir_list as $filek) {
-                        switch ($search_mode) {
-                            case 'pro':
-                            case 'on':
-                            case 'internal':
-                                if (strpos($filek, $raw_settings[$i]['loadimage']) !== false) {
-                                    $raw_settings[$i]['validate'] = 'yes;';
-                                }
-                                break;
-                            case 'internal2':
-                                break;
-                            case 'off':
-                            default: // Place in root TFTP dir
-                                if (strpos($filek, strtolower($dir . '/' . $raw_settings[$i]['loadimage'])) !== false) {
-                                    $raw_settings[$i]['validate'] = 'yes;';
-                                }
-                                break;
-                        }
+                    switch ($search_mode) {
+                        case 'pro':
+                        case 'on':
+                        case 'internal':
+                            if (in_array($raw_settings[$i]['loadimage'], $dir_list, true)) {
+                                $raw_settings[$i]['validate'] = 'yes;';
+                            }
+                            break;
+                        case 'internal2':
+                            break;
+                        case 'off':
+                        default: // Place in root TFTP dir
+                            if (in_array("{$dir}/{$raw_settings[$i]['loadimage']}", $dir_list, true)) {
+                                $raw_settings[$i]['validate'] = 'yes;';
+                            }
+                            break;
                     }
                 } else {
                     $raw_settings[$i]['validate'] = '-;';
