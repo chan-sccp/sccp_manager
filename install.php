@@ -723,7 +723,6 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
             GROUP BY sccpuser.name; ";
     } else {
         $sql .= "CREATE OR REPLACE
-            ALGORITHM = MERGE
             VIEW sccpdeviceconfig AS
             SELECT CASE sccpdevice.profileid
                 WHEN 0 THEN
