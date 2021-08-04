@@ -899,7 +899,7 @@ function Setup_RealTime()
     }
 
     // Check database settings
-    $res_conf = '';
+    $res_conf = array();
     if (file_exists($dir . '/res_mysql.conf')) {
         $res_conf = $cnf_read->getConfig('res_mysql.conf');
         if (empty($res_conf[$def_bd_section])) {
