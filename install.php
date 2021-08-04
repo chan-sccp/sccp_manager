@@ -323,6 +323,7 @@ function Get_DB_config($sccp_compatible)
             $db_config_v4['sccpdevice'] = array_merge($db_config_v4['sccpdevice'],$db_config_v5['sccpdevice']);
             $db_config_v4['sccpline'] = array_merge($db_config_v4['sccpline'],$db_config_v5['sccpline']);
             $db_config_v4['sccpsettings'] = $db_config_v5['sccpsettings'];
+            dbug($db_config_v4['sccpdevice']);
         }
         return $db_config_v4;
     }
@@ -448,14 +449,14 @@ function InstallDB_updateSchema($db_config)
                     // Does a create exist for newName
                     if (!empty($tab_modif[$fld_id_newName]['create'])) {
                         //carry the attributes from the new create to the rename
-                        $sql_rename .= "CHANGE COLUMN IF EXISTS {$fld_id} {$fld_id_newName} {$tab_modif[$fld_id_newName]['create']}, ";
+                        $sql_rename .= "CHANGE COLUMN {$fld_id} {$fld_id_newName} {$tab_modif[$fld_id_newName]['create']}, ";
                         // do not create newName as modifying existing
                         unset($tab_modif[$fld_id_newName]['create']);
                     } else {
                         // add current attributes to the new name.
                         $existingAttrs = strtoupper($tabl_data['Type']).(($tabl_data['Null'] == 'NO') ?' NOT NULL': ' NULL') .
                                         ((empty($tabl_data['Default']))?'': ' DEFAULT ' . "'" . $tabl_data['Default']."'");
-                        $sql_rename .= "CHANGE COLUMN IF EXISTS {$fld_id} {$fld_id_newName} {$existingAttrs}, ";
+                        $sql_rename .= "CHANGE COLUMN {$fld_id} {$fld_id_newName} {$existingAttrs}, ";
                     }
                     unset($tab_modif[$fld_id]['rename']);
                     $count_modify ++;
@@ -496,6 +497,7 @@ function InstallDB_updateSchema($db_config)
         if (!empty($sql_rename)) {
             outn("<li>" . _("Renaming table columns ") . $tabl_name ."</li>");
             $sql_rename = "ALTER TABLE {$tabl_name} " . substr($sql_rename, 0, -2);
+            dbug($sql_rename);
             try {
                 $check = $db->query($sql_rename);
             } catch (\Exception $e) {
