@@ -71,12 +71,12 @@ class dbinterface
             case 'phoneGrid':
                 switch ($data['type']) {
                     case "cisco-sip":
-                        $stmts = $this->db->prepare("SELECT name, type, button, addon, description, 'not connected' AS status, '- -' AS address
+                        $stmts = $this->db->prepare("SELECT name, type, button, addon, description, 'not connected' AS status, '- -' AS address, 'N' AS new_hw
                             FROM sccpdeviceconfig WHERE type LIKE '%-sip' ORDER BY name");
                         break;
                     case "sccp":      // Fall through to default intentionally
                     default:
-                        $stmts = $this->db->prepare("SELECT name, type, button, addon, description, 'not connected' AS status, '- -' AS address
+                        $stmts = $this->db->prepare("SELECT name, type, button, addon, description, 'not connected' AS status, '- -' AS address, 'N' AS new_hw
                             FROM sccpdeviceconfig WHERE type not LIKE '%-sip' ORDER BY name");
                         break;
                 }
