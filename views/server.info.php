@@ -37,6 +37,7 @@ $info['XML'] = $this->xmlinterface->info();
 $info['sccp_class'] = $driver['sccp'];
 $info['Core_sccp'] = array('Version' => $core['Version'],
                             'about' => "Sccp ver: {$core['Version']}   r{$core['vCode']}   Revision: {$core['RevisionNum']}   Hash: {$core['RevisionHash']}");
+$info['chan-sccp build info'] = array('Version' => $core['Version'], 'about' => "{$core['buildInfo']}");
 
 $info['Asterisk'] = array('Version' => FreePBX::Config()->get('ASTVERSION'), 'about' => 'Asterisk.');
 

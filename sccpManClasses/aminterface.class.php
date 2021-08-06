@@ -442,7 +442,7 @@ class aminterface
     function getSCCPVersion()
     {
         //Initialise result array
-        $result = array( 'RevisionHash' => '', 'vCode' => 0, 'RevisionNum' => 0, 'futures' => '', 'Version' => 0);
+        $result = array( 'RevisionHash' => '', 'vCode' => 0, 'RevisionNum' => 0, 'buildInfo' => '', 'Version' => 0);
         $metadata = $this->getSCCPConfigMetaData();
 
         if (isset($metadata['Version'])) {
@@ -477,7 +477,7 @@ class aminterface
                 $result['RevisionNum'] = $metadata["RevisionNum"];
             }
             if (isset($metadata['ConfigureEnabled'])) {
-                $result['futures'] = implode(';', $metadata['ConfigureEnabled']);
+                $result['buildInfo'] = implode(';', $metadata['ConfigureEnabled']);
             }
         }
         return $result;
