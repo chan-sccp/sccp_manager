@@ -477,7 +477,7 @@ class aminterface
                 $result['RevisionNum'] = $metadata["RevisionNum"];
             }
             if (isset($metadata['ConfigureEnabled'])) {
-                $result['buildInfo'] = implode(';', $metadata['ConfigureEnabled']);
+                $result['buildInfo'] = $metadata['ConfigureEnabled'];
             }
         }
         return $result;

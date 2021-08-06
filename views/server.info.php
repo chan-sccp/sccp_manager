@@ -37,8 +37,10 @@ $info['XML'] = $this->xmlinterface->info();
 $info['sccp_class'] = $driver['sccp'];
 $info['Core_sccp'] = array('Version' => $core['Version'],
                             'about' => "Sccp ver: {$core['Version']}   r{$core['vCode']}   Revision: {$core['RevisionNum']}   Hash: {$core['RevisionHash']}");
-$info['chan-sccp build info'] = array('Version' => $core['Version'], 'about' => "{$core['buildInfo']}");
+$capabilityArray = array( "park", "pickup", "realtime", "video", "conference", "dirtrfr", "feature_monitor", "functions", "manager_events",
+                          "devicestate", "devstate_feature", "dynamic_speeddial", "dynamic_speeddial_cid", "experimental", "debug");
 
+$info['chan-sccp build info'] = array('Version' => $core['Version'], 'about' => 'Following options NOT built:  ' . implode('; ',array_diff($capabilityArray, $core['buildInfo'])));
 $info['Asterisk'] = array('Version' => FreePBX::Config()->get('ASTVERSION'), 'about' => 'Asterisk.');
 
 if (!empty($this->sccpvalues['SccpDBmodel'])) {
