@@ -115,7 +115,7 @@ class dbinterface
                 }
                 break;
             case 'get_columns_sccpdevice':
-                $stmts = $this->db->prepare('DESCRIBE sccpdevice');
+                $stmtU = $this->db->prepare('DESCRIBE sccpdevice');
                 break;
             case 'get_columns_sccpuser':
                 $stmts = $this->db->prepare('DESCRIBE sccpuser');

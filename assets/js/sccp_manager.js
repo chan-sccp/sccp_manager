@@ -7,7 +7,7 @@ $(document).ready(function () {
         },
     });
     $('#ajaxcancel').on('click', function (e) {
-//        console.log('Calncel');
+      console.log('Cancel');
         if ($(this).data('hash') != null) {
             location.hash = $(this).data('hash');
         }
@@ -24,7 +24,6 @@ $(document).ready(function () {
             location.reload();
         }
     });
-
     // ajaxsubmit2 is "Save and continue" - saves form data and stays on form
     $('#ajaxsubmit2').on('click', function (e) {
         var vdata = '';
