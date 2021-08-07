@@ -455,6 +455,13 @@ class Sccp extends \FreePBX\modules\Core\Driver {
             }
         }
 
+        $select[] = array('value' => 'off', 'text' => 'Off');
+        $select[] = array('value' => 'user', 'text' => 'User');
+        $select[] = array('value' => 'auto', 'text' => 'Auto');
+        $tt = _("Automatic or Manual video mode. Valid values are 'auto', 'user' or 'off'. When set to 'auto', video will automatically start if both parties have a compatible code enabled. In 'user' mode the user needs to press the vidmode softkey before video will be tried. Default:'auto'");
+        $tmparr['videomode'] = array('prompttext' => _('Video Mode '), 'value' => 'auto', 'tt' => $tt, 'select' => $select, 'level' => 1, 'type' => 'radio', 'section' => $section_с, 'category' => $gn_category);
+        unset($select);
+
         return $tmparr;
     }
 
