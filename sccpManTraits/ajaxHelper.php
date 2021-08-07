@@ -315,7 +315,7 @@ trait ajaxHelper {
                 $dbDevices = array();
                 // Find all devices defined in the database.
                 $dbDevices = $this->dbinterface->getSccpDeviceTableData('phoneGrid', array('type' => $request['type']));
-                
+
                 // Return if only interested in SIP devices
                 if ($request['type'] == 'cisco-sip') {
                     return $dbDevices;     //this may be empty
@@ -338,7 +338,7 @@ trait ajaxHelper {
 
                 if (!empty($activeDevices)) {
                     // Have a device that is connected but is not currently in the database
-                    // This device must have been configured by sccp.conf
+                    // This device must have connected via hotline or config in sccp.conf.
                     // Pass parameters to addDevice so that can be added to db.
                     foreach ($activeDevices as $dev_ids) {
                         $id_name = $dev_ids['name'];
@@ -699,7 +699,7 @@ trait ajaxHelper {
         $save_settings = array();
         $save_codec = array();
         $name_dev = '';
-        $db_field = $this->dbinterface->getSccpDeviceTableData("get_columns_sccpdevice");
+        $db_field = array_keys($this->dbinterface->getSccpDeviceTableData("get_columns_sccpdevice"));
         $hw_id = (empty($get_settings['sccp_deviceid'])) ? 'new' : $get_settings['sccp_deviceid'];
         $hw_type = (empty($get_settings['sccp_device_typeid'])) ? 'sccpdevice' : $get_settings['sccp_device_typeid'];
         $update_hw = ($hw_id == 'new') ? 'add' : 'clear'; // Clear is delete + add
