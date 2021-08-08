@@ -63,8 +63,8 @@ InstallDB_updateSchema($db_config);
 cleanUpSccpSettings();
 
 InstallDB_createButtonConfigTrigger();
-InstallDB_CreateSccpDeviceConfigView($sccp_compatible);
-createViewSccplineconfig();
+InstallDbCreateViews($sccp_compatible);
+installDbPopulateSccpline();
 InstallDB_updateDBVer($sccp_compatible);
 if ($chanSCCPWarning) {
     outn("<br>");
@@ -323,7 +323,6 @@ function Get_DB_config($sccp_compatible)
             $db_config_v4['sccpdevice'] = array_merge($db_config_v4['sccpdevice'],$db_config_v5['sccpdevice']);
             $db_config_v4['sccpline'] = array_merge($db_config_v4['sccpline'],$db_config_v5['sccpline']);
             $db_config_v4['sccpsettings'] = $db_config_v5['sccpsettings'];
-            dbug($db_config_v4['sccpdevice']);
         }
         return $db_config_v4;
     }
@@ -497,7 +496,6 @@ function InstallDB_updateSchema($db_config)
         if (!empty($sql_rename)) {
             outn("<li>" . _("Renaming table columns ") . $tabl_name ."</li>");
             $sql_rename = "ALTER TABLE {$tabl_name} " . substr($sql_rename, 0, -2);
-            dbug($sql_rename);
             try {
                 $check = $db->query($sql_rename);
             } catch (\Exception $e) {
@@ -697,7 +695,7 @@ function InstallDB_updateDBVer($sccp_compatible)
     return true;
 }
 
-function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
+function InstallDbCreateViews($sccp_compatible)
 {
     global $db;
     outn("<li>" . _("(Re)Create sccpdeviceconfig view") . "</li>");
@@ -746,16 +744,12 @@ function InstallDB_CreateSccpDeviceConfigView($sccp_compatible)
             LEFT JOIN sccpuser sccpuser ON ( sccpuser.name = sccpdevice.loginname )
             GROUP BY sccpdevice.name;";
     }
-
-    $results = $db->query($sql);
-    if (DB::IsError($results)) {
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    if (DB::IsError($stmt)) {
         die_freepbx(sprintf(_("Error updating sccpdeviceconfig view. Command was: %s; error was: %s "), $sql, $results->getMessage()));
     }
-    return true;
-}
 
-function createViewSccplineconfig() {
-    global $db;
     outn("<li>" . _("(Re)Create sccplineconfig view") . "</li>");
 
     $sql = "DROP VIEW IF EXISTS sccplineconfig;
@@ -769,11 +763,42 @@ function createViewSccplineconfig() {
                 sccpline.directed_pickup, sccpline.directed_pickup_context, sccpline.pickup_modeanswer, sccpline.amaflags, sccpline.dnd, sccpline.setvar,
                 sccpline.namedcallgroup, sccpline.namedpickupgroup, sccpline.phonecodepage, sccpline.videomode
                 FROM sccpline";
-    $results = $db->query($sql);
-    if (DB::IsError($results)) {
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    if (DB::IsError($stmt)) {
         die_freepbx(sprintf(_("Error updating sccplineconfig view. Command was: %s; error was: %s "), $sql, $results->getMessage()));
     }
     return true;
+}
+
+function installDbPopulateSccpline() {
+    // Lines in Sccp_manager are devices in FreePbx. Need to ensure that these two tables are synchronised on install
+    global $db;
+    $freePbxExts = array ();
+    $sccpExts =array();
+    $sql = "SELECT id AS name, user AS accountcode, description AS label FROM devices WHERE tech='sccp'";
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $freePbxExts = $stmt->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
+
+    $sql = "SELECT name, accountcode, label FROM sccpline";
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $sccpExts = $stmt->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
+    $linesToCreate = array_diff_assoc($freePbxExts, $sccpExts);
+
+    foreach ($linesToCreate as $key => $valArr) {
+        $stmt = $db->prepare("INSERT into sccpline (name, accountcode, description, label) VALUES (:name, :accountcode, :description, :label)");
+        $stmt->bindParam(':name',$key,\PDO::PARAM_STR);
+        $description = "{$valArr['label']} <{$key}>";
+        $stmt->bindParam(':accountcode',$valArr['accountcode'],\PDO::PARAM_STR);
+        $stmt->bindParam(':description',$description,\PDO::PARAM_STR);
+        $stmt->bindParam(':label',$valArr['label'],\PDO::PARAM_STR);
+        $stmt->execute();
+        if (DB::IsError($stmt)) {
+            die_freepbx(sprintf(_("Error inserting into sccpline. Command was: %s; error was: %s "), $stmt, $stmt->getMessage()));
+        }
+    }
 }
 
 function createBackUpConfig()
@@ -1047,10 +1072,6 @@ function cleanUpSccpSettings() {
         }
     }
     */
-    // TODO: It seems that DOCUMENT ROOT is not always set so maybe should switch to AMPWEBROOT.
-    // need to declare amp_conf global each time.
-    //global $amp_conf;
-    //dbug($amp_conf['AMPWEBROOT']);
     // Clean up sccpsettings to remove legacy values.
     $xml_vars = $amp_conf['AMPWEBROOT'] . "/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}";
     $thisInstaller->xml_data = simplexml_load_file($xml_vars);

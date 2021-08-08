@@ -111,7 +111,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
     public function addDevice($id, $settings) {
         // This is actually save line and is used by add and edit.
-        dbug($settings);
         $add_fld = array ("name"=>'label',"outboundcid"=>'cid_num',"langcode"=>'language',"extdisplay"=>'description','devinfo_mailbox'=>'mailbox');
         $settings['cid_num']['value'] = '';
         $settings['cid_name']['value'] = '';
