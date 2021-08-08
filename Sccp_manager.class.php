@@ -569,8 +569,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $this->dbinterface->write('sccpuser', $save_settings, 'replace', 'name');
         $this->dbinterface->write('sccpbuttons', $save_buttons, 'delete', '', $name_dev); //standardise to delete
         return $save_buttons;
-        // Why is there a second return here???????
-        return $save_settings;
     }
 
     public function getCodecs($type, $showDefaults = false) {

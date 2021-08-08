@@ -1148,18 +1148,18 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="8">
             <name>echocancel</name>
             <label>Echo Cancel</label>
-            <default>off</default>
+            <default>yes</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
-            <help>Echo Cancel: Echo Cancellation (On or Off).</help>
+            <help>Echo Cancel: Echo Cancellation (Yes or No).</help>
         </item>
         <item type="IS" id="9">
             <name>silencesuppression</name>
             <label>Silence Suppression</label>
-            <default>off</default>
+            <default>no</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
-            <help>Silence Suppression: Slience Suppression on the phone.</help>
+            <help>Silence Suppression: Silence Suppression on the phone.</help>
         </item>
         <item type="SLM" id="6">
             <label>Music On Hold Class</label>
@@ -2060,15 +2060,15 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="8">
             <name>echocancel</name>
             <label>Echo Cancel</label>
-            <default>off</default>
+            <default>yes</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
-            <help>Echo Cancel: Echo Cancellation (On or Off).</help>
+            <help>Echo Cancel: Echo Cancellation (Yes or No).</help>
         </item>
         <item type="IS" id="5" seq="0">
             <name>dnd</name>
             <label>DND</label>
-            <default>Reject</default>
+            <default>reject</default>
             <button value="off">Off</button>
             <button value="reject">Reject</button>
             <button value="silent">Silent</button>
@@ -2081,7 +2081,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="9">
             <name>silencesuppression</name>
             <label>Silence Suppression</label>
-            <default>off</default>
+            <default>no</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
             <help>Silence Suppression: Silence Suppression on the phone.</help>

@@ -113,14 +113,14 @@ function Get_DB_config($sccp_compatible)
             'permit' => array('create' => 'VARCHAR(100) NULL DEFAULT NULL', 'modify' => "VARCHAR(100)"),
             'backgroundImage' => array('create' => 'VARCHAR(255) NULL DEFAULT NULL', 'modify' => "VARCHAR(255)"),
             'ringtone' => array('create' => 'VARCHAR(255) NULL DEFAULT NULL', 'modify' => "VARCHAR(255)"),
-            'transfer' => array('create' => "enum('yes','no') NOT NULL default 'no'", 'modify' => "enum('yes','no')"),
+            'transfer' => array('create' => "enum('no','yes') NOT NULL default 'no'", 'modify' => "enum('no','yes')"),
             'cfwdall' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
             'cfwdbusy' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
             'cfwdnoanswer' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
             'park' => array('create' => "enum('on','off') NOT NULL default 'on'", 'modify' => "enum('on','off')"),
             'directrtp' => array('create' => "enum('no','yes') NOT NULL default 'no'", 'modify' => "enum('no','yes')"),
-            'dndFeature' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
-            'earlyrtp' => array('create' => "ENUM('yes','no') NOT NULL default 'no'", 'modify' => "ENUM('yes','no')"),
+            'dndFeature' => array('create' => "enum('off','on') NOT NULL default 'off'", 'modify' => "enum('off','on')"),
+            'earlyrtp' => array('create' => "ENUM('yes','no') NOT NULL default 'yes'", 'modify' => "ENUM('yes','no')"),
             'monitor' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
             'audio_tos' => array('create' => "VARCHAR(11) NOT NULL default '0xB8'",'modify' => "0xB8"),
             'audio_cos' => array('create' => "VARCHAR(11) NOT NULL default '0x6'",'modify' => "0x6"),
@@ -160,7 +160,7 @@ function Get_DB_config($sccp_compatible)
             'audio_cos' => array('drop' => "yes"),
             'video_tos' => array('drop' => "yes"),
             'video_cos' => array('drop' => "yes"),
-            'videomode' => array('create' => "enum('user','auto','off') NOT NULL default 'auto'", 'modify' => "enum('user','auto','off')"),
+            'videomode' => array('create' => "enum('auto','user','off') NOT NULL default 'auto'", 'modify' => "enum('auto','user','off')"),
             'incominglimit' => array('create' => "INT(11) DEFAULT '6'", 'modify' => 'INT(11)', 'def_modify' => "6"),
             'transfer' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
             'vmnum' => array('def_modify' => "*97"),
@@ -169,15 +169,15 @@ function Get_DB_config($sccp_compatible)
             'allow' => array('create' => "VARCHAR(255) NULL DEFAULT NULL"),
             'id' => array('create' => 'MEDIUMINT(9) NOT NULL AUTO_INCREMENT, ADD UNIQUE(id);', 'modify' => "MEDIUMINT(9)", 'index' => 'id'),
             'echocancel' => array('create' => "enum('yes','no') NOT NULL default 'yes'", 'modify' => "enum('yes','no')"),
-            'silencesuppression' => array('create' => "enum('yes','no') NOT NULL default 'no'", 'modify' => "enum('yes','no')"),
-            'dnd' => array('create' => "enum('off','reject','silent','user') NOT NULL default 'reject'", 'modify' => "enum('off','reject','silent','user')", 'def_modify' => "reject")
+            'silencesuppression' => array('create' => "enum('no','yes') NOT NULL default 'no'", 'modify' => "enum('no','yes')"),
+            'dnd' => array('create' => "enum('reject','off','silent','user') NOT NULL default 'reject'", 'modify' => "enum('reject','off','silent','user')", 'def_modify' => "reject")
         ),
         'sccpuser' => array(
             'name' => array('create' => "VARCHAR(20) NOT NULL", 'modify' => "VARCHAR(20)" ),
             'pin' => array('create' => "VARCHAR(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
             'password' => array('create' => "VARCHAR(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
             'description' => array('create' => "VARCHAR(45) NOT NULL", 'modify' => "VARCHAR(45)" ),
-            'roaminglogin' => array('create' => "ENUM('on','off','multi') NOT NULL DEFAULT 'off'", 'modify' => "ENUM('on','off','multi')" ),
+            'roaminglogin' => array('create' => "ENUM('off','on','multi') NOT NULL DEFAULT 'off'", 'modify' => "ENUM('on','off','multi')" ),
             'auto_logout' => array('create' => "ENUM('on','off') NOT NULL DEFAULT 'off'", 'modify' => "ENUM('on','off')" ),
             'homedevice' => array('create' => "VARCHAR(20) NOT NULL", 'modify' => "VARCHAR(20)" ),
             'devicegroup' => array('create' => "VARCHAR(7) NOT NULL", 'modify' => "VARCHAR(7)" ),
@@ -326,10 +326,6 @@ function Get_DB_config($sccp_compatible)
         }
         return $db_config_v4;
     }
-
-    // New values to add (these are currently unused)
-
-
 }
 
 function CheckSCCPManagerDBVersion()
@@ -416,7 +412,7 @@ function InstallDB_updateSchema($db_config)
                     } else {
                         if (!empty($tab_modif[$fld_id]['def_modify'])) {
                             // if a default has been modified, use it here and unset
-                            $sql_modify .= "MODIFY COLUMN {$fld_id} {$tab_modif[$fld_id]['modify']} DEFAULT {$tab_modif[$fld_id]['def_modify']}, ";
+                            $sql_modify .= "MODIFY COLUMN {$fld_id} {$tab_modif[$fld_id]['modify']} DEFAULT '{$tab_modif[$fld_id]['def_modify']}', ";
                             // def_modify has been used so unset
                             unset($tab_modif[$fld_id]['def_modify']);
                         } else if (!empty($tab_modif[$fld_id]['create'])) {
@@ -436,7 +432,7 @@ function InstallDB_updateSchema($db_config)
                         // Defaults have not changed so unset
                         unset($tab_modif[$fld_id]['def_modify']);
                     } else {
-                        $sql_modify .= "ALTER COLUMN {$row_fld} SET DEFAULT '{$tab_modif[$fld_id]['def_modify']}', ";
+                        $sql_modify .= "ALTER COLUMN {$fld_id} SET DEFAULT '{$tab_modif[$fld_id]['def_modify']}', ";
                         $count_modify ++;
                     }
                 }
@@ -1136,6 +1132,48 @@ function cleanUpSccpSettings() {
         unset($sysConfiguration[$key]);
     }
     unset($sysConfiguration['Options']);
+
+    // Update enums in sccpsettings - values have changed over versions so need to update values in db that are not compliant
+    outn("<li>" . _("Updating invalid enums in sccpsettings") . "</li>");
+    $rowsToTest = array();
+    $tablesToDescribe = array('sccpline', 'sccpdevice');
+    foreach ($tablesToDescribe as $theTable) {
+        $stmt = $db->prepare("DESCRIBE {$theTable}");
+        $stmt->execute();
+        $tableDesc = $stmt->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
+        foreach ($tableDesc as $key => $valArr) {
+            if (strpos($valArr['Type'], 'enum') !== 0) {
+                continue;
+            }
+            $rowsToTest[$key] = explode(',',rtrim(str_replace('enum(', '',$valArr['Type']), ')'));
+        }
+    }
+    $count = 0;
+    foreach ($rowsToTest as $key => $valArr) {
+        if (empty($settingsFromDb[$key]['data'])) {
+            continue;
+        }
+        if (in_array("'{$settingsFromDb[$key]['data']}'", $valArr, true)) {
+            continue;
+        }
+        // clear site setting so that will return to system defaults.
+        // Try to convert based on change from on/off to yes/no.
+        if (in_array($settingsFromDb[$key]['data'], array('on','off'), true)) {
+            if (in_array("'yes'", $valArr, true)) {
+                $settingsFromDb[$key]['data'] = ($settingsFromDb[$key]['data'] = 'on') ? 'yes' : 'no';
+                continue;
+            }
+        }
+        // Test for case
+        if (in_array("'" . strtolower($settingsFromDb[$key]['data']) . "'", $valArr, true)) {
+            $settingsFromDb[$key]['data'] = strtolower($settingsFromDb[$key]['data']);
+            continue;
+        }
+        // No easy choices so reset to system default
+        $settingsFromDb[$key]['data'] = '';
+        $count++;
+    }
+
     // Write settings back to db
     $sql = "TRUNCATE sccpsettings";
     $results = $db->query($sql);
