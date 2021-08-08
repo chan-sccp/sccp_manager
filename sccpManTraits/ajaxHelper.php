@@ -691,7 +691,7 @@ trait ajaxHelper {
     function saveSccpDevice($get_settings, $validateonly = false) {
         $hdr_prefix = 'sccp_hw_';
         $hdr_arprefix = 'sccp_hw-ar_';
-        $hdr_vendPrefix = 'sccp_hw_vendorconfig';
+        $hdr_vendPrefix = 'vendorconfig_';
 
         $save_buttons = array();
         $save_settings = array();
@@ -711,8 +711,9 @@ trait ajaxHelper {
                 $hw_prefix = 'VG';
             }
         }
-        foreach ($db_field as $data) {
-            $key = (string) $data['Field'];
+        dbug($get_settings);
+        dbug($db_field);
+        foreach ($db_field as $key) {
             $value = "";
             switch ($key) {
                 case 'name':
@@ -792,15 +793,13 @@ trait ajaxHelper {
                     // Now only have normal prefix
                     if (!empty($get_settings["{$hdr_prefix}{$key}"])) {
                         $value = $get_settings["{$hdr_prefix}{$key}"];
-                    } else if (!empty($get_settings["sccp_hw{$key}"])) {
-                        //have an underscore db field
-                        $value = $get_settings["sccp_hw{$key}"];
                     }
             }
             if (!empty($value)) {
                 $save_settings[$key] = $value;
             }
         }
+        dbug($save_settings);
         // Save this device.
         $this->dbinterface->write('sccpdevice', $save_settings, 'replace');
         // Retrieve the phone buttons from $_REQUEST ($get_settings) and write back to
