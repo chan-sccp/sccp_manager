@@ -121,7 +121,7 @@ class dbinterface
                 $stmts = $this->db->prepare('DESCRIBE sccpuser');
                 break;
             case 'get_columns_sccpline':
-                $stmts = $this->db->prepare('DESCRIBE sccpline');
+                $stmtU = $this->db->prepare('DESCRIBE sccpline');
                 break;
             case 'get_sccpdevice_byid':
                 $stmt = $this->db->prepare('SELECT t1.*, types.dns,  types.buttons, types.loadimage, types.nametemplate as nametemplate,

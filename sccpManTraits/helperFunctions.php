@@ -77,8 +77,7 @@ trait helperfunctions {
             return $this->sccpvalues;
         }
         $sccpTableDesc = $this->dbinterface->getSccpDeviceTableData("get_columns_{$table}");
-        foreach ($sccpTableDesc as $data) {
-            $key = (string) $data['Field'];
+        foreach ($sccpTableDesc as $key => $data) {
             // function has 2 roles: return actual table keys (trim_underscore = false)
             // return sanitised keys to add defaults (trim_underscore = true)
             if ($trim_underscore) {
