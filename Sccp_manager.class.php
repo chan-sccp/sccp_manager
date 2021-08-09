@@ -1066,7 +1066,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     function getSccpModelInformation($get = "all", $validate = false, $format_list = "all", $filter = array()) {
-        $file_ext = array('.loads', '.sbn', '.bin', '.zup', '.sbin');
+        $file_ext = array('.loads', '.sbn', '.bin', '.zup', '.sbin', '.SBN', '.LOADS');
         $dir = $this->sccppath['tftp_firmware_path'];
 
         $search_mode = $this->sccpvalues['tftp_rewrite']['data'];
