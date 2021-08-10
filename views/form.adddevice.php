@@ -46,7 +46,7 @@ if (!empty($_REQUEST['id'])) {
                             $def_val[$key] = array('keyword' => $key, 'data' => $val, 'seq' => 99);
                         }
                         // Do not store value and let defaults apply
-                        continue;
+                        break;
                     }
                     $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
                     // Need to assign defaultLine as not set in the db.
