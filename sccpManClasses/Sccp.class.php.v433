@@ -217,6 +217,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
     public function getDefaultDeviceSettings($id, $displayname, &$flag) {
         // FreePBX required method
+        $settings = array();
         $settingsFields = array('mailbox', 'incominglimit', 'context', 'directed_pickup_context', 'callgroup', 'pickupgroup', 'namedcallgroup',
                             'namedpickupgroup', 'adhocNumber', 'secondary_dialtone_digits', 'secondary_dialtone_tone', 'directed_pickup', 'pickup_modeanswer',
                             'transfer', 'echocancel', 'dnd', 'silencesuppression', 'musicclass', 'pin', 'allow', 'disallow');
