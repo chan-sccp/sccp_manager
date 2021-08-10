@@ -217,12 +217,11 @@ class Sccp extends \FreePBX\modules\Core\Driver {
 
     public function getDefaultDeviceSettings($id, $displayname, &$flag) {
         // FreePBX required method
-        $settings = array();
         $settingsFields = array('mailbox', 'incominglimit', 'context', 'directed_pickup_context', 'callgroup', 'pickupgroup', 'namedcallgroup',
                             'namedpickupgroup', 'adhocNumber', 'secondary_dialtone_digits', 'secondary_dialtone_tone', 'directed_pickup', 'pickup_modeanswer',
                             'transfer', 'echocancel', 'dnd', 'silencesuppression', 'musicclass', 'pin', 'allow', 'disallow');
         foreach ($settingsFields as $key) {
-            $settings[$key] = array('value' => $this->line_defaults['$key'], 'flag' => $flag++);
+            $settings[$key] = array('value' => $this->line_defaults[$key], 'flag' => $flag++);
         }
       	return array('dial' => 'SCCP', 'settings' => $settings);
     }
