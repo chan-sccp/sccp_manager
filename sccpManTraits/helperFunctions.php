@@ -93,7 +93,7 @@ trait helperfunctions {
     private function getTableEnums($table, $trim_underscore = true) {
         $enumFields = array();
         $sccpTableDesc = $this->dbinterface->getSccpDeviceTableData("get_columns_{$table}");
-        foreach ($sccpTableDesc as $key = $data) {
+        foreach ($sccpTableDesc as $key => $data) {
             // function has 2 roles: return actual table keys (trim_underscore = false)
             // return sanitised keys to add defaults (trim_underscore = true)
             if ($trim_underscore) {
