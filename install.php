@@ -1101,7 +1101,7 @@ function cleanUpSccpSettings() {
     foreach ($sysConfiguration as $key => $valueArray) {
 
         // 2 special cases deny|permit & disallow|allow where need to parse on |.
-        $newKeyword = explode("|", $valueArray['Name'], 2);
+        $newKeyword = explode("|", $key, 2);
         if (isset($newKeyword[1])) {
             // chan-sccp sets sysdef as comma separated list for sccp.conf, but expects ; separated list
             // when returned from db
@@ -1124,10 +1124,8 @@ function cleanUpSccpSettings() {
         } else {
             ($sysConfiguration[$key]['DefaultValue'] == '(null)') ? '' : $sysConfiguration[$key]['DefaultValue'];
             if (array_key_exists($key,$settingsFromDb)) {
-                if (!empty($sysConfiguration[$key2]['DefaultValue'])) {
-                    // Preserve sequence and type
-                    $settingsFromDb[$key]['systemdefault'] = $sysConfiguration[$key]['DefaultValue'];
-                }
+                // Preserve sequence and type
+                $settingsFromDb[$key]['systemdefault'] = $sysConfiguration[$key]['DefaultValue'];
             } else {
                 $settingsFromDb[$key] = array('keyword' => $key, 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$key]['DefaultValue']);
             }
