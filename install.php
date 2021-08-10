@@ -1085,12 +1085,20 @@ function cleanUpSccpSettings() {
 
     // get chan-sccp defaults
 
-    $sysConfiguration = $aminterface->getSCCPConfigMetaData('general');
-
-    foreach ($sysConfiguration['Options'] as $key => $valueArray) {
-        if ($valueArray['Flags'][0] == 'Obsolete' || $valueArray['Flags'][0] == 'Deprecated') {
-            continue;
+    foreach (array('general','line', 'device') as $section) {
+        $sysConfig = $aminterface->getSCCPConfigMetaData($section);
+        foreach ($sysConfig['Options'] as $valueArray) {
+            if ($valueArray['Flags'][0] == 'Obsolete' || $valueArray['Flags'][0] == 'Deprecated') {
+                continue;
+            }
+            if (isset($sysConfiguration[$valueArray['Name']])) {
+                continue;
+            }
+            $sysConfiguration[$valueArray['Name']] = $valueArray;
         }
+    }
+    unset($sysConfig);
+    foreach ($sysConfiguration as $key => $valueArray) {
 
         // 2 special cases deny|permit & disallow|allow where need to parse on |.
         $newKeyword = explode("|", $valueArray['Name'], 2);
@@ -1110,19 +1118,18 @@ function cleanUpSccpSettings() {
                 }
                 $i++;
             }
-            if (array_key_exists($valueArray['Name'],$settingsFromDb)){
-                unset($settingsFromDb[$valueArray['Name']]);
+            if (array_key_exists($key, $settingsFromDb)){
+                unset($settingsFromDb[$key]);
             }
         } else {
-            ($sysConfiguration[$valueArray['Name']]['DefaultValue'] == '(null)') ? '' : $sysConfiguration[$valueArray['Name']]['DefaultValue'];
-            $sysConfiguration[$valueArray['Name']] = $valueArray;
-            if (array_key_exists($valueArray['Name'],$settingsFromDb)) {
-                if (!empty($sysConfiguration[$valueArray['Name']]['DefaultValue'])) {
+            ($sysConfiguration[$key]['DefaultValue'] == '(null)') ? '' : $sysConfiguration[$key]['DefaultValue'];
+            if (array_key_exists($key,$settingsFromDb)) {
+                if (!empty($sysConfiguration[$key2]['DefaultValue'])) {
                     // Preserve sequence and type
-                    $settingsFromDb[$valueArray['Name']]['systemdefault'] = $sysConfiguration[$valueArray['Name']]['DefaultValue'];
+                    $settingsFromDb[$key]['systemdefault'] = $sysConfiguration[$key]['DefaultValue'];
                 }
             } else {
-                $settingsFromDb[$valueArray['Name']] = array('keyword' => $valueArray['Name'], 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$valueArray['Name']]['DefaultValue']);
+                $settingsFromDb[$key] = array('keyword' => $key, 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$key]['DefaultValue']);
             }
         }
         // Override certain chan-sccp defaults as they are based on a non-FreePbx system
@@ -1131,7 +1138,7 @@ function cleanUpSccpSettings() {
 
         unset($sysConfiguration[$key]);
     }
-    unset($sysConfiguration['Options']);
+    unset($sysConfiguration);
 
     // Update enums in sccpsettings - values have changed over versions so need to update values in db that are not compliant
     outn("<li>" . _("Updating invalid enums in sccpsettings") . "</li>");

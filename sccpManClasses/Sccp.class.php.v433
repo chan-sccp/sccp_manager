@@ -78,7 +78,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         $this->freepbx = $parent_class;
         $this->database = $parent_class->Database();
         // Get system defaults [systemdefault] and sitedefaults [data] from sccpsettings.
-        $stmt = $this->database->prepare("SELECT * FROM sccpsettings WHERE systemdefault !=''");
+        $stmt = $this->database->prepare("SELECT * FROM sccpsettings");
         $stmt->execute();
         $raw_settings = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($raw_settings as $key => $valueArray) {
@@ -218,6 +218,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     public function getDefaultDeviceSettings($id, $displayname, &$flag) {
         // FreePBX required method
         $settings = array();
+        dbug($this->line_defaults);
         $settingsFields = array('mailbox', 'incominglimit', 'context', 'directed_pickup_context', 'callgroup', 'pickupgroup', 'namedcallgroup',
                             'namedpickupgroup', 'adhocNumber', 'secondary_dialtone_digits', 'secondary_dialtone_tone', 'directed_pickup', 'pickup_modeanswer',
                             'transfer', 'echocancel', 'dnd', 'silencesuppression', 'musicclass', 'pin', 'allow', 'disallow');
