@@ -1122,7 +1122,8 @@ function cleanUpSccpSettings() {
                 unset($settingsFromDb[$key]);
             }
         } else {
-            ($sysConfiguration[$key]['DefaultValue'] == '(null)') ? '' : $sysConfiguration[$key]['DefaultValue'];
+            dbug($sysConfiguration);
+            $sysConfiguration[$key]['DefaultValue'] = ($sysConfiguration[$key]['DefaultValue'] == '(null)') ? '' : $sysConfiguration[$key]['DefaultValue'];
             if (array_key_exists($key,$settingsFromDb)) {
                 // Preserve sequence and type
                 $settingsFromDb[$key]['systemdefault'] = $sysConfiguration[$key]['DefaultValue'];
@@ -1130,6 +1131,7 @@ function cleanUpSccpSettings() {
                 $settingsFromDb[$key] = array('keyword' => $key, 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$key]['DefaultValue']);
             }
         }
+        dbug($settingsFromDb);
         // Override certain chan-sccp defaults as they are based on a non-FreePbx system
         $settingsFromDb['context']['systemdefault'] = 'from-internal';
         $settingsFromDb['directed_pickup']['systemdefault'] = 'no';
