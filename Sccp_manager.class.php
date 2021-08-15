@@ -390,7 +390,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         );
 
         // $lines_list = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
-        $max_btn = ((!empty($get_settings['buttonscount']) ? $get_settings['buttonscount'] : 100));
+        $max_btn = (!empty($get_settings['buttonscount']) ? $get_settings['buttonscount'] : 60);
         $last_btn = $max_btn;
         for ($it = $max_btn; $it >= 0; $it--) {
             if (!empty($get_settings['button' . $it . '_type'])) {

@@ -407,56 +407,45 @@ trait ajaxHelper {
         $count_mods = 0;
         $dbSaveArray = array();
         $errors = array();
-        $i = 0;
 
         if (isset($request["{$hdr_prefix}createlangdir"]) && ($request["{$hdr_prefix}createlangdir"] == 'yes')) {
             $this->initializeTFtpLanguagePath();
         }
         // if uncheck all codecs, audiocodecs key is missing so nothing changes in db.
         // Unsetting all codecs will now return to chan-sccp defaults.
+        // all codecs are currently treated as audiocodecs. To treat videocodecs separately name in video codec section of
+        // server.codec needs to be changed from audiocodecs to videocodecs.
         if (!isset($request['audiocodecs'])) {
-            $request['audiocodecs'] = array_fill_keys(explode(';',$this->sccpvalues['allow']['systemdefault']),true);
+            $save_settings['allow'] = $this->sccpvalues['allow'];
+            $save_settings['allow']['data'] = $this->sccpvalues['allow']['systemdefault'];
+        } else {
+            foreach ($request['audiocodecs'] as $keycodeс => $dumVal) {
+                $save_codec[] = $keycodeс;
+            }
+            $save_settings['allow'] = $this->sccpvalues['allow'];
+            $save_settings['allow']['data'] = implode(";", $save_codec);
         }
-        foreach ($request as $key => $value) {
-            // Originally saved all to sccpvalues. Now will save to db defaults if appropriate
-            // TODO: Need to verify the tables defined in showGroup - some options maybe
-            // device options, but if set by freePbx extensions, be in sccpline.
-            $key = (str_replace('sccpdevice_', '', $key, $count_mods));
-            if ($count_mods) {
-                // There will be some exceptions to be handled where there should be no underscore
-                // Handle at db write
-                // Have default to be saved to db sccpdevice
-                $dev_def = $this->getTableDefaults('sccpdevice', false);
-                if (!array_key_exists($key, $dev_def)) {
-                    // This key needs to be prefixed with underscore
-                    $key = "_{$key}";
-                }
-                if ((array_key_exists($key, $dev_def)) && (($dev_def[$key]['data'] == $value) || empty($dev_def[$key]['data']))) {
-                    // Value unchanged or null so ignore and go to next key.
-                    continue;
-                }
-                $dbSaveArray[$key] = array('table' => 'sccpdevice', 'field' => $key, 'Default' => $value);
-                continue;
-            }
-            $key = (str_replace('sccpline_', '', $key, $count_mods));
-            if ($count_mods) {
-                // There will be some exceptions to be handled where there should be no underscore
-                // Handle at db write
-                // Have default to be saved to db sccpdevice
-                $dev_def = $this->getTableDefaults('sccpline', false);
-                if (!array_key_exists($key, $dev_def)) {
-                    // This key needs to be prefixed with underscore
-                    $key = "_{$key}";
-                }
-                if ((array_key_exists($key, $dev_def)) && ($dev_def[$key]['data'] == $value)) {
-                    // Value unchanged so ignore and get next key.
-                    continue;
-                }
-                $dbSaveArray[$key] = array('table' => 'sccpline', 'field' => $key, 'Default' => $value);
-                unset($request[$key]);
-                continue;
-            }
+        unset($request['audiocodecs']);
 
+        if (isset($request[$hdr_prefix . 'ntp_timezone'])) {
+            $TZdata = $this->extconfigs->getExtConfig('sccp_timezone', $request[$hdr_prefix . 'ntp_timezone']);
+            if (!empty($TZdata)) {
+                $save_settings['tzoffset'] = array(
+                                            'keyword' => 'tzoffset',
+                                            'data' => $TZdata['offset']/60,
+                                            'seq' => '98',
+                                            'type' => '2',
+                                            'systemdefault' => ''
+                                            );
+            }
+            unset($request[$hdr_prefix . 'ntp_timezone']);
+        }
+        // Now handle remaining data. First get table defaults
+        $sccpdevice_def = (array)$this->getTableDefaults('sccpdevice', false);
+        $sccpline_def = (array)$this->getTableDefaults('sccpline', false);
+
+        foreach ($request as $key => $value) {
+            // First handle any arrays as their prefix is part common with normal data
             $key = (str_replace($hdr_arprefix, '', $key, $count_mods));
             if ($count_mods) {
                 $arr_data = '';
@@ -483,69 +472,38 @@ trait ajaxHelper {
                         }
                     }
                     if (!($this->sccpvalues[$key]['data'] == $arr_data)) {
-                        $save_settings[$key] = array(
-                            'keyword' => $key,
-                            'data' => $arr_data,
-                            'seq' => $this->sccpvalues[$key]['seq'],
-                            'type' => $this->sccpvalues[$key]['type'],
-                            'systemdefault' => $this->sccpvalues[$key]['systemdefault']
-                            );
+                        $save_settings[$key] = $this->sccpvalues[$key];
+                        $save_settings[$key]['data'] = $array_data;
                     }
                 }
+                continue;
             }
-
-            $key = (str_replace($hdr_prefix, '', $key, $count_mods));
-            if ($count_mods) {
-                if (!empty($this->sccpvalues[$key]) && ($this->sccpvalues[$key]['data'] != $value)) {
-                    $save_settings[$key] = array(
-                          'keyword' => $key,
-                          'data' => $value,
-                          'seq' => $this->sccpvalues[$key]['seq'],
-                          'type' => $this->sccpvalues[$key]['type'],
-                          'systemdefault' => $this->sccpvalues[$key]['systemdefault']
-                          );
+            // Now handle any normal data - arrays will not match as already handled.
+            if (strpos($key, $hdr_prefix) === 0) {
+                $key = (str_replace($hdr_prefix, '', $key, $count_mods));
+                if (($count_mods) && (!empty($this->sccpvalues[$key])) && ($this->sccpvalues[$key]['data'] != $value)) {
+                        $save_settings[$key] = $this->sccpvalues[$key];
+                        $save_settings[$key]['data'] = $value;
                 }
-
+                continue;
             }
-
-            switch ($key) {
-                case 'audiocodecs':
-                    foreach ($value as $keycodeс => $valcodeс) {
-                        $save_codec[$i] = $keycodeс;
-                        $i++;
-                    };
-                    $tmpv = implode(";", $save_codec);
-                    if (!($this->sccpvalues['allow']['data'] == $tmpv)) {
-                        $save_settings['allow'] = array(
-                        'keyword' => 'allow',
-                        'data' => $tmpv,
-                        'seq' => $this->sccpvalues['allow']['seq'],
-                        'type' => $this->sccpvalues['allow']['type'],
-                        'systemdefault' => $this->sccpvalues['allow']['systemdefault']
-                        );
+            // Finally treat values to be saved to sccpdevice and sccpline defaults.
+            // TODO: Need to verify the tables defined in showGroup - some options maybe
+            // device options, but if set by freePbx extensions, be in sccpline.
+            foreach (array('sccpdevice', 'sccpline') as $tableName) {
+                $key = (str_replace("{$tableName}_", '', $key, $count_mods));
+                if ($count_mods) {
+                    // Have default to be saved to db table default
+                    $tableName_def = "{$tableName}_def";
+                    if ((array_key_exists($key, ${$tableName_def})) && (${$tableName_def}[$key]['data'] == $value)) {
+                        // Value unchanged so ignore
+                    } else {
+                        $dbSaveArray[$key] = array('table' => $tableName, 'field' => $key, 'Default' => $value);
                     }
-                    break;
-                case 'videocodecs':
-                    // currently not used. To reach this case, name in video codec section of
-                    // server.codec needs to be changed from audiocodecs to videocodecs.
-                    break;
-
-                case 'ntp_timezone':
-                    $tz_id = $value;
-                    $TZdata = $this->extconfigs->getExtConfig('sccp_timezone', $tz_id);
-                    if (!empty($TZdata)) {
-                        $value = $TZdata['offset']/60;
-                        $save_settings['tzoffset'] = array(
-                            'keyword' => 'tzoffset',
-                            'data' => $value,
-                            'seq' => '98',
-                            'type' => '2',
-                            'systemdefault' => ''
-                            );
-                    }
-                    break;
+                    // If have matched on device, cannot match on line
+                    continue 2;
+                }
             }
-
         }
 
         $extSettings = $this->extconfigs->updateTftpStructure(array_merge($this->sccpvalues, $save_settings));

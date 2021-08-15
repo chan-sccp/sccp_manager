@@ -9,6 +9,6 @@
     <input type="hidden" name="category" value=" deviceurlform">
     <input type="hidden" name="Submit" value="Submit">
 <?php
-        echo $this->showGroup('sccp_dev_url', 1);
-?>  
+        echo $this->showGroup('sccp_dev_url', 1,);
+?>
 </form>
