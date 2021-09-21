@@ -473,7 +473,7 @@ trait ajaxHelper {
                     }
                     if (!($this->sccpvalues[$key]['data'] == $arr_data)) {
                         $save_settings[$key] = $this->sccpvalues[$key];
-                        $save_settings[$key]['data'] = $array_data;
+                        $save_settings[$key]['data'] = $arr_data;
                     }
                 }
                 continue;
