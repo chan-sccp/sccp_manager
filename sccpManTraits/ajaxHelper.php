@@ -566,9 +566,8 @@ trait ajaxHelper {
         switch ($request['type']) {
             case 'firmware':
                 $device = $request['device'];
-
                 $firmwareDir = $tftpBootXml->xpath("//Directory[@name='firmware']");
-                $result = $firmwareDir[0]->xpath("//Directory[@name={$device}]");
+                $result = $firmwareDir[0]->xpath("//Directory[@name='{$device}']");
                 $filesToGet['firmware'] = (array)$result[0]->FileName;
                 $totalFiles += count($filesToGet['firmware']);
                 $srcDir['firmware'] = $provisionerUrl . (string)$result[0]->DirectoryPath;
