@@ -75,11 +75,19 @@ Stable
 https://github.com/chan-sccp/sccp_manager/archive/refs/heads/Legacy.zip
 ```
 Develop.
+
 This version can be updated through module admin as modifications are made (pending fix by FreePbx)
 _This is development software and so may have issues_
 ```
 https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
 ```
+Version 14.3.
+
+This is the latest version of sccp_manager and has many bug fixes. It is targetted for FreePbx 16 and as such requires PHP > 7.3. It works fine with FreePbx 15 as long as you can upgrade PHP (this cannot be done if you use commercial modules). There are changes to the database structure, and so this cannot be easily reverted to prior versions without using a backup, which the installer will create. If you are using a VM,  it is recommended to take a snapshot before upgrading.
+```
+https://github.com/chan-sccp/sccp_manager/archive/refs/heads/v14.2.zip
+```
+
 5. Click Download From Web.
 6. Click Manage Local Modules.
 7. Find and click SCCP Manager. Check Install. Click Process button.

@@ -30,7 +30,7 @@
 		<version>13.0.0.2M</version>
 	</supported>
 	<info>https://github.com/chan-sccp/sccp_manager</info>
-	<updateurl>https://raw.githubusercontent.com/chan-sccp/sccp_manager/develop/sccpManagerUpdater.json</updateurl>
+	<!--<updateurl>https://raw.githubusercontent.com/chan-sccp/sccp_manager/develop/sccpManagerUpdater.json</updateurl> -->
 	<license>GPL</license>
 	<md5sum></md5sum>
 	<database>
