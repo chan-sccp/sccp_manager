@@ -70,6 +70,13 @@ How to install sccp_manager
 3. Click Upload Modules.
 4. Enter one of the following urls:
 
+Stable - Version 14.3.
+
+This is the latest version of sccp_manager and has many bug fixes. It is targetted for FreePbx 16 and as such requires PHP > 7.3. It works fine with FreePbx 15 as long as you can upgrade PHP (this cannot be done if you use commercial modules). There are changes to the database structure, and so this cannot be easily reverted to prior versions without using a backup, which the installer will create. If you are using a VM,  it is recommended to take a snapshot before upgrading.
+```
+https://github.com/chan-sccp/sccp_manager/archive/refs/tags/14.3.0.13.zip
+```
+
 Stable (For PHP < 7 only)
 ```
 https://github.com/chan-sccp/sccp_manager/archive/refs/tags/v14.2.0.11.zip
@@ -81,12 +88,7 @@ _This is development software and so may have issues_
 ```
 https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
 ```
-Stable - Version 14.3.
 
-This is the latest version of sccp_manager and has many bug fixes. It is targetted for FreePbx 16 and as such requires PHP > 7.3. It works fine with FreePbx 15 as long as you can upgrade PHP (this cannot be done if you use commercial modules). There are changes to the database structure, and so this cannot be easily reverted to prior versions without using a backup, which the installer will create. If you are using a VM,  it is recommended to take a snapshot before upgrading.
-```
-https://github.com/chan-sccp/sccp_manager/archive/refs/tags/14.3.0.13.zip
-```
 
 5. Click Download From Web.
 6. Click Manage Local Modules.
