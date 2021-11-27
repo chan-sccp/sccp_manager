@@ -36,29 +36,50 @@ $info['aminterface'] = $this->aminterface->info();
 $info['XML'] = $this->xmlinterface->info();
 $info['sccp_class'] = $driver['sccp'];
 $info['Core_sccp'] = array('Version' => $core['Version'],
-                    'about' => 'Sccp ver.' . $core['Version'] .
-                            ' r' . $core['vCode'] . ' Revision :' .
-                            $core['RevisionNum'] . ' Hash :' .
-                            $core['RevisionHash']);
-/*
-if (!$this->srvinterface->useAmiInterface) {
-    $info['aminterface']['about'] .= ' -- Disabled';
-    $info['Core_sccp'] = array('Version' => $core['Version'], 'about' => 'Sccp ver.' . $core['Version'] . ' r' . $core['vCode'] . ' Revision :' . $core['RevisionNum'] . ' Hash :' . $core['RevisionHash'] . ' ----Warning: Upgrade chan_sccp to use full ami functionality');
-}
-*/
-$info['Asterisk'] = array('Version' => FreePBX::Config()->get('ASTVERSION'), 'about' => 'Asterisk.');
+                            'about' => "Sccp ver: {$core['Version']}   r{$core['vCode']}   Revision: {$core['RevisionNum']}   Hash: {$core['RevisionHash']}");
+$capabilityArray = array( "park", "pickup", "realtime", "video", "conference", "dirtrfr", "feature_monitor", "functions", "manager_events",
+                          "devicestate", "devstate_feature", "dynamic_speeddial", "dynamic_speeddial_cid", "experimental", "debug");
 
+$info['chan-sccp build info'] = array('Version' => $core['Version'], 'about' => 'Following options NOT built:  ' . implode('; ',array_diff($capabilityArray, $core['buildInfo'])));
+$info['Asterisk'] = array('Version' => FreePBX::Config()->get('ASTVERSION'), 'about' => 'Asterisk.');
 
 if (!empty($this->sccpvalues['SccpDBmodel'])) {
     $info['DB Model'] = array('Version' => $this->sccpvalues['SccpDBmodel']['data'], 'about' => 'SCCP DB Configure');
 }
-if (!empty($this->sccpvalues['tftp_rewrite'])) {
-    if ($this->sccpvalues['tftp_rewrite']['data'] == 'pro') {
-        $info['Provision_SCCP'] = array('Version' => 'base', 'about' => 'Provision Sccp enabled');
-    } else {
-        $info['TFTP_Rewrite'] = array('Version' => 'base', 'about' => 'Rewrite Supported');
+
+exec('in.tftpd -V', $tftpInfo);
+$info['TFTP Server'] = array('Version' => 'Not Found', 'about' => 'Mapping not available');
+
+if (isset($tftpInfo[0])) {
+    $tftpInfo = explode(',',$tftpInfo[0]);
+    $info['TFTP Server'] = array('Version' => $tftpInfo[0], 'about' => 'Mapping not available');
+    $tftpInfo[1] = trim($tftpInfo[1]);
+    if ($tftpInfo[1] == 'with remap') {
+        $info['TFTP Server'] = array('Version' => $tftpInfo[0], 'about' => $tftpInfo[1]);
     }
 }
+
+if (!empty($this->sccpvalues['tftp_rewrite']['data'])) {
+    switch ($this->sccpvalues['tftp_rewrite']['data']) {
+      case 'custom':
+      case 'pro':
+          $info['Provision_SCCP'] = array('Version' => 'base', 'about' => 'Provision Sccp enabled');
+          break;
+      default:
+          if ($tftpInfo[1] == 'with remap') {
+              $info['TFTP_Mapping'] = array('Version' => 'off', 'about' => "TFTP mapping is available but the mapping file is not included in tftpd-hpa default settings.<br>
+                                            To enable Provision mode, add option <br>
+                                            -m /etc/asterisk/sccpManagerRewrite.rules <br>
+                                            to the tftpd defaults, (location dependant on the system), and restart the tftpd server");
+
+          } else {
+              $info['TFTP_Mapping'] = array('Version' => 'off', 'about' => "Mapping capability is not built into the TFTP server. To enable Provision, upgrade the TFTP server.");
+          }
+          break;
+    }
+}
+
+// Finished testing tftp server options
 $info['Сompatible'] = array('Version' => $compatible, 'about' => 'Ok');
 if (!empty($this->sccpvalues['SccpDBmodel'])) {
     if ($compatible > $this->sccpvalues['SccpDBmodel']['data']) {
@@ -95,6 +116,8 @@ if (empty($ast_realtime)) {
 }
 // There are potential issues with string Type Declarations in PHP 5.
 $info['PHP'] = array('Version' => phpversion(), 'about' => version_compare(phpversion(), '7.0.0', '>' ) ? 'OK' : 'PHP 7 Preferred - Please upgrade if possible');
+$mariaDbInfo = exec('mysql -V');
+$info['MariaDb'] = array('Version' => explode(" ",$mariaDbInfo)[3], 'about' => $mariaDbInfo);
 
 if (empty($conf_realtime)) {
     $info['ConfigsRealTime'] = array('Version' => 'Error', 'about' => '<div class="alert signature alert-danger"> Realtime configuration was not found</div>');
@@ -119,7 +142,7 @@ if ($mysql_info['Value'] <= '2000') {
 
 // Check Time Zone compatibility
 $conf_tz = $this->sccpvalues['ntp_timezone']['data'];
-$cisco_tz = $this->extconfigs->getextConfig('sccp_timezone', $conf_tz);
+$cisco_tz = $this->extconfigs->getExtConfig('sccp_timezone', $conf_tz);
 if ($cisco_tz['offset'] == 0) {
     if (!empty($conf_tz)) {
         $tmp_dt = new DateTime(null, new DateTimeZone($conf_tz));

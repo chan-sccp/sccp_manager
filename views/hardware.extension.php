@@ -20,13 +20,13 @@ if (!empty($this->sccpvalues['system_rouminguser'])) {
                 <div id="toolbar-sccp-extension">
                     <a class="btn btn-default" href="config.php?display=extensions&tech_hardware=sccp_custom"><i class="fa fa-plus">&nbsp;</i><?php echo _("Add Extension") ?></a>
                 </div>
-                <table data-cookie="true" data-cookie-id-table="sccp-extension-table" data-url="ajax.php?module=sccp_manager&command=getExtensionGrid&type=sccp" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sip" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list-sccp" id="table-sccp-extension" data-id="name">
+                <table data-cookie="true" data-cookie-id-table="sccp-extension-table" data-url="ajax.php?module=sccp_manager&command=getExtensionGrid&type=extGrid" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sip" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list-sccp" id="table-sccp-extension" data-id="name">
                     <thead>
                         <tr>
-<!--                            <th data-checkbox="true"></th> -->
                             <th data-sortable="true" data-field="name"><?php echo _('Extension') ?></th>
                             <th data-sortable="true" data-field="label"><?php echo _('Display Name') ?></th>
-                            <th data-sortable="true" data-field="line_statustext"><?php echo _('Status') ?></th>
+                            <th data-sortable="true" data-field="mac"><?php echo _('Device') ?></th>
+                            <th data-sortable="true" data-field="line_status" class="text-center"><?php echo _('Status | Active') ?></th>
                             <th data-field="actions" data-formatter="DispayPhoneActionsKeyFormatter"><?php echo _('Actions') ?></th>
                         </tr>
                     </thead>

@@ -5,11 +5,12 @@ namespace FreePBX\modules\Sccp_manager\sccpManTraits;
 trait bmoFunctions {
 
     //Need to reload freePBX for modifications below to work
-
+/*
     //want to catch extensions
     public static function myConfigPageInits() {
         return array("extensions");
     }
+*/
 
     public function doConfigPageInit($page) {
         if ($page == "extensions") {
@@ -18,25 +19,27 @@ trait bmoFunctions {
     }
 
     // Try to change extensions which is part of core
+/*
     public static function myGuiHooks() {
         return array('core');
     }
-
+*/
+/*
     public function doGuiHook(&$cc) {
         if ($_REQUEST['display'] == "extensions" ) {
       			if ($_REQUEST['tech_hardware'] == 'sccp_custom')  {
-                /*
+
                 this is the add extensions form
                 On submit returns to extensions page. Users prefer that it returns
                 To Sccp Phone.
                 Below adds redirect URL, but it is not followed
                 $cc->setRedirectURL("config.php?display=sccp_phone");
                 so force redirect at end of addDevice in SccpClass
-                */  
+
             }
         }
     }
-
+*/
     /* unused but FPBX API requires it */
 
     public function install() {
@@ -115,6 +118,7 @@ trait bmoFunctions {
                 );
                 break;
             case 'sccpsettings':
+                // TODO: Need to change to have save and save and continue
                 $buttons = array(
                     'submit' => array(
                         'name' => 'ajaxsubmit',
@@ -134,8 +138,9 @@ trait bmoFunctions {
     }
 
     public function getRightNav($request) {
+        global $amp_conf;
         if (isset($request['tech_hardware']) && ($request['tech_hardware'] == 'cisco')) {
-            return load_view($_SERVER['DOCUMENT_ROOT'] .'/admin/modules/sccp_manager/views/hardware.rnav.php', array('request' => $request));
+            return load_view($amp_conf['AMPWEBROOT'] .'/admin/modules/sccp_manager/views/hardware.rnav.php', array('request' => $request));
         }
     }
 

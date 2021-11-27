@@ -1,32 +1,32 @@
 <?php
 
-/**
- *
- */
-
 namespace FreePBX\modules\Sccp_manager;
 
 class extconfigs
 {
-
     public function __construct($parent_class = null)
     {
         $this->paren_class = $parent_class;
     }
 
     public function info() {
-        $Ver = '13.1.1';
+        $Ver = '13.2.0';
         return array('Version' => $Ver,
-            'about' => 'Default Setings and Enums ver: ' . $Ver);
+            'about' => 'Default Settings and Enums ver: ' . $Ver);
     }
 
-    public function getextConfig($id = '', $index = '') {
+    public function getExtConfig($id = '', $index = '') {
+        $result = array();
         switch ($id) {
             case 'keyset':
                 $result = $this->keysetdefault;
                 break;
             case 'sccp_lang':
-                $result = $this->cisco_language;
+                if (empty($index)) {
+                    return $this->cisco_language;  // return language array
+                } elseif (!empty($this->cisco_language[$index])) {
+                    return $this->cisco_language[$index]; // return the matched value
+                }
                 break;
             case 'sccpDefaults':
                 $result = $this->sccpDefaults;
@@ -96,20 +96,40 @@ class extconfigs
     }
 
     private $sccpDefaults = array(
-        "servername" => 'VPBXSCCP',
-        "bindaddr" => '0.0.0.0', "port" => '2000', # chan_sccp also supports ipv6
-        "deny" => '0.0.0.0/0.0.0.0',
-        "permit" => '0.0.0.0/0.0.0.0', # !TODO!: please change this to 'internal' which would mean:
-        # permit:127.0.0.0/255.0.0.0,permit:10.0.0.0/255.0.0.0,permit:172.0.0.0/255.224.0.0,permit:192.168.0.0/255.255.0.0"
-        "dateformat" => 'D.M.Y',
-        "disallow" => 'all', "allow" => 'alaw;ulaw',
-        "hotline_enabled" => 'off',
-        "hotline_context" => 'default', # !TODO!: Should this not be from-internal on FreePBX ?
-        "hotline_extension" => '*60', # !TODO!: Is this a good default extension to dial for hotline ?
-        "hotline_label" => 'hotline',
-        "devicetable" => 'sccpdevice',
-        "linetable" => 'sccpline',
-        "tftp_path" => '/tftpboot'
+        'servername' => 'VPBXSCCP',
+        'bindaddr' => '0.0.0.0', "port" => '2000', # chan_sccp also supports ipv6
+        'deny' => '0.0.0.0/0.0.0.0',
+        'permit' => '0.0.0.0/0.0.0.0', # !TODO!: please change this to 'internal' which would mean:
+        'dateformat' => 'D.M.Y',
+        'disallow' => 'all', "allow" => 'alaw;ulaw',
+        'hotline_enabled' => 'off',
+        'hotline_context' => 'default', # !TODO!: Should this not be from-internal on FreePBX ?
+        'hotline_extension' => '*60', # !TODO!: Is this a good default extension to dial for hotline ?
+        'hotline_label' => 'hotline',
+        'devicetable' => 'sccpdevice',
+        'linetable' => 'sccpline',
+        'displayconfig' => 'sccpgeneral',
+        '_dev_sshPassword' => 'cisco',
+        '_dev_sshUserId' => 'cisco',
+        'dev_deviceProtocol' => 'SCCP',
+        'dev_idleTimeout' => '60',
+        'ntp_config_enabled' => 'off',
+        'ntp_server' => 'pool.ntp.org',
+        'ntp_server_mode' => 'unicast',
+        'devlang' => 'English_United_States',
+        'dev_authenticationURL' => '',
+        'dev_informationURL' => '',
+        'dev_messagesURL' => '',
+        'dev_servicesURL' => '',
+        'dev_directoryURL' => '',
+        'dev_idleURL' => '',
+        'dev_secureauthenticationURL' => '',
+        'dev_secureinformationURL' => '',
+        'dev_securemessagesURL' => '',
+        'dev_secureservicesURL' => '',
+        'dev_securedirectoryURL' => '',
+        'dev_secureidleURL' => '',
+        'dev_proxyServerURL' => ''
     );
     private $keysetdefault = array('onhook' => 'redial,newcall,cfwdall,cfwdbusy,cfwdnoanswer,pickup,gpickup,dnd,private',
         'connected' => 'hold,endcall,park,vidmode,select,cfwdall,cfwdbusy,idivert,monitor',
@@ -216,85 +236,95 @@ class extconfigs
         'New Zealand' => array('offset' => '720', 'daylight' => true)
     );
 
-    public function validate_init_path($confDir = '', $db_vars, $sccp_driver_replace = '')
-    {
-//        global $db;
-//        global $amp_conf;
-// *** Setings for Provision Sccp
-        $adv_config = array('tftproot' => '', 'firmware' => 'firmware', 'settings' => 'settings',
-            'locales' => 'locales', 'languages' => 'languages', 'templates' => 'templates', 'dialplan' => 'dialplan', 'softkey' => 'softkey');
-// 'pro' /tftpboot - root dir
-//       /tftpboot/locales/locales/%Languge_name%
-//       /tftpboot/settings/XMLdefault.cnf.xml
-//       /tftpboot/settings/SEP[MAC].cnf.xml
-//       /tftpboot/firmware/79xx/SCCPxxxx.loads
-        $adv_tree['pro'] = array('templates' => 'tftproot', 'settings' => 'tftproot', 'locales' => 'tftproot', 'firmware' => 'tftproot', 'languages' => 'locales', 'dialplan' => 'tftproot', 'softkey' => 'tftproot');
+    public function updateTftpStructure($settingsFromDb) {
+        global $amp_conf;
+        $adv_config = array('tftproot' => $settingsFromDb['tftp_path']['data'],
+                          'firmware' => 'firmware',
+                          'settings' => 'settings',
+                          'locales' => 'locales',
+                          'languages' => 'languages',
+                          'templates' => 'templates',
+                          'dialplan' => 'dialplan',
+                          'softkey' => 'softkey',
+                          'ringtones' => 'ringtones',
+                          'wallpapers' => 'wallpapers',
+                          'countries' => 'countries'
+                        );
+        $adv_tree = array('pro' => array('templates' => 'tftproot',
+                                  'firmware' => 'tftproot',
+                                  'settings' => 'tftproot',
+                                  'locales' => 'tftproot',
+                                  'languages' => 'locales',
+                                  'templates' => 'tftproot',
+                                  'dialplan' => 'tftproot',
+                                  'softkey' => 'tftproot',
+                                  'ringtones' => 'tftproot',
+                                  'wallpapers' => 'tftproot',
+                                  'countries' => 'locales'
+                                ),
+                            'def' => array('templates' => 'tftproot',
+                                  'firmware' => '',
+                                  'settings' => '',
+                                  'locales' => '',
+                                  'languages' => 'tftproot',
+                                  'dialplan' => '',
+                                  'softkey' => '',
+                                  'ringtones' => '',
+                                  'wallpapers' => '',
+                                  'countries' => ''
+                                )
+                          );
+        $base_tree = array('tftp_templates_path' => 'templates',
+                          'tftp_firmware_path' => 'firmware',
+                          'tftp_store_path' => 'settings',
+                          'tftp_lang_path' => 'languages',
+                          'tftp_dialplan_path' => 'dialplan',
+                          'tftp_softkey_path' => 'softkey',
+                          'tftp_ringtones_path' => 'ringtones',
+                          'tftp_wallpapers_path' => 'wallpapers',
+                          'tftp_countries_path' => 'countries'
+                        );
+        $baseConfig = array();
 
-// 'def' /tftpboot - root dir
-//       /tftpboot/languages/%Languge_name%
-//       /tftpboot/XMLdefault.cnf.xml
-//       /tftpboot/SEP[MAC].cnf.xml
-//       /tftpboot/SCCPxxxx.loads
-        $adv_tree['def'] = array('templates' => 'tftproot', 'settings' => '', 'locales' => '', 'firmware' => '', 'languages' => 'tftproot', 'dialplan' => '', 'softkey' => '');
-//        $adv_tree['def']   = Array('templates' => 'tftproot', 'settings' => '', 'locales' => 'tftproot',  'firmware' => 'tftproot', 'languages' => '');
-//        $adv_tree['def'] = Array('templates' => 'tftproot', 'settings' => '', 'locales' => 'tftproot', 'firmware' => 'tftproot', 'languages' => 'tftproot');
-//* **************------ ****
-        $base_tree = array('tftp_templates' => 'templates', 'tftp_path_store' => 'settings', 'tftp_lang_path' => 'languages', 'tftp_firmware_path' => 'firmware', 'tftp_dialplan' => 'dialplan', 'tftp_softkey' => 'softkey');
-
-        if (empty($confDir)) {
-            return array('error' => 'empty СonfDir');
-        }
-
-        $base_config = array('asterisk' => $confDir, 'sccp_conf' => $confDir . '/sccp.conf', 'tftp_path' => '');
-
-//      Test Base dir (/tftproot)
-        if (!empty($db_vars["tftp_path"])) {
-            if (file_exists($db_vars["tftp_path"]["data"])) {
-                $base_config["tftp_path"] = $db_vars["tftp_path"]["data"];
+        if (empty($settingsFromDb['tftp_rewrite_path']['data'])) {
+            $settingsFromDb['tftp_rewrite_path']['data'] = $settingsFromDb['tftp_path']['data'];
+        } else {
+            // Have a setting in sccpsettings. It should start with $tftp_path
+            // If not we will replace it with $tftp_path. Avoids issues with legacy values
+            if (!strpos($settingsFromDb['tftp_rewrite_path']["data"],$settingsFromDb['tftp_path']['data'])) {
+                $settingsFromDb['tftp_rewrite_path']['data'] = $settingsFromDb['tftp_path']['data'];
             }
         }
-        if (empty($base_config["tftp_path"])) {
-            if (file_exists($this->getextConfig('sccpDefaults', "tftp_path"))) {
-                $base_config["tftp_path"] = $this->getextConfig('sccpDefaults', "tftp_path");
-            }
-        }
-        if (empty($base_config["tftp_path"])) {
-            if (!empty($this->paren_class)) {
-                $this->paren_class->class_error['tftp_path'] = 'Tftp path not exist or not defined';
-            }
-            return array('error' => 'empty tftp_path');
-        }
-        if (!is_writeable($base_config["tftp_path"])) {
-            if (!empty($this->paren_class)) {
-                $this->paren_class->class_error['tftp_path'] = 'No write permission on tftp DIR';
-            }
-            return array('error' => 'No write permission on tftp DIR');
-        }
-//      END Test Base dir (/tftproot)
-
-        if (!empty($db_vars['tftp_rewrite_path'])) {
-            $adv_ini = $db_vars['tftp_rewrite_path']["data"];
-        }
-
+        $adv_ini = "{$settingsFromDb['tftp_rewrite_path']["data"]}/index.cnf";
         $adv_tree_mode = 'def';
-        if (empty($db_vars["tftp_rewrite"])) {
-            $db_vars["tftp_rewrite"]["data"] = "off";
-        }
 
-        $adv_config['tftproot'] = $base_config["tftp_path"];
-        if ($db_vars["tftp_rewrite"]["data"] == 'pro') {
-            $adv_tree_mode = 'pro';
-            if (!empty($adv_ini)) { // something found in external conflicts
-                $adv_ini .= '/index.cnf';
-                if (file_exists($adv_ini)) {
+        switch ($settingsFromDb['tftp_rewrite']['data']) {
+            case 'pro':
+                $adv_tree_mode = 'pro';
+                if (!empty($adv_ini) && file_exists($adv_ini)) {
                     $adv_ini_array = parse_ini_file($adv_ini);
                     $adv_config = array_merge($adv_config, $adv_ini_array);
                 }
-            }
+                // rewrite adv_ini to reflect the new $adv_config
+                if (file_exists($adv_ini)){
+                    rename($adv_ini, "{$adv_ini}.old");
+                }
+                $indexFile = fopen($adv_ini,'w');
+                fwrite($indexFile, "[main]\n");
+                foreach ($adv_config as $advKey => $advVal) {
+                    fwrite($indexFile, "{$advKey} = {$advVal}\n");
+                }
+                fclose($indexFile);
+                $settingsFromDb['tftp_rewrite']['data'] = 'pro';
+                break;
+            case 'on':
+            case 'internal':
+            case 'off':
+            default:
+                // not defined so set here to off
+                $settingsFromDb['tftp_rewrite']['data'] = 'off';
         }
-        if ($db_vars["tftp_rewrite"]["data"] == 'on') {
-            $adv_tree_mode = 'def';
-        }
+
         foreach ($adv_tree[$adv_tree_mode] as $key => $value) {
             if (!empty($adv_config[$key])) {
                 if (!empty($value)) {
@@ -306,66 +336,35 @@ class extconfigs
                 }
             }
         }
+
         foreach ($base_tree as $key => $value) {
-            $base_config[$key] = $adv_config[$value];
-            if (!file_exists($base_config[$key])) {
-                if (!mkdir($base_config[$key], 0777, true)) {
-                    die('Error creating dir : ' . $base_config[$key]);
+            $baseConfig[$key] = $adv_config[$value];
+            if (!is_dir($baseConfig[$key])) {
+                if (!mkdir($baseConfig[$key], 0755, true)) {
+                    die_freepbx(_("Error creating dir: $baseConfig[$key]"));
                 }
             }
         }
-        print_r($base_config, 1);
-//        die(print_r($base_config,1));
-//        $base_config['External_ini'] = $adv_config;
-//        $base_config['External_mode'] =  $adv_tree_mode;
-
-        /*
-          if (!empty($this->sccppath["tftp_path"])) {
-          $this->sccppath["tftp_DP"] = $this->sccppath["tftp_path"] . '/Dialplan';
-          if (!file_exists($this->sccppath["tftp_DP"])) {
-          if (!mkdir($this->sccppath["tftp_DP"], 0777, true)) {
-          die('Error creating DialPlan template dir');
-          }
-          }
-          }
-         */
-        //    TFTP -REWrite        double model
-        if (empty($_SERVER['DOCUMENT_ROOT'])) {
-            if (!empty($this->paren_class)) {
-                $this->paren_class->class_error['DOCUMENT_ROOT'] = 'Empty DOCUMENT_ROOT';
+        // Set up tftproot/settings so that can test if mapping is Enabled and configured.
+        if (!is_dir("{$settingsFromDb['tftp_path']['data']}/settings")) {
+            if (!mkdir("{$settingsFromDb['tftp_path']['data']}/settings", 0755, true)) {
+                die_freepbx(_("Error creating dir: {$settingsFromDb['tftp_path']['data']}/settings"));
             }
-            $base_config['error'] = 'Empty DOCUMENT_ROOT';
-            return $base_config;
         }
-
-        if (!file_exists($base_config["tftp_templates"] . '/XMLDefault.cnf.xml_template')) {
-            $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/';
-            $dst_path = $base_config["tftp_templates"] . '/';
-            foreach (glob($src_path . '*.*_template') as $filename) {
+        // TODO: Need to add index.cnf, after setting defaults correctly
+        if (!file_exists("{$baseConfig['tftp_templates_path']}/XMLDefault.cnf.xml_template")) {
+            $src_path = $amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/conf/';
+            $dst_path = "{$baseConfig["tftp_templates_path"]}/";
+            foreach (glob("{$src_path}*.*_template") as $filename) {
                 copy($filename, $dst_path . basename($filename));
             }
         }
-
-        $dst = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/core/functions.inc/drivers/Sccp.class.php';
-        if (!file_exists($dst) || $sccp_driver_replace == 'yes') {
-            $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/' . basename($dst) . '.v' . $db_vars['sccp_compatible']['data'];
-            if (file_exists($src_path)) {
-                copy($src_path, $dst);
-            } else {
-                // Set new default
-                $src_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/' . basename($dst) . '.v433';
-                copy($src_path, $dst);
-            }
+        foreach ($baseConfig as $baseKey => $baseValue) {
+            $settingsFromDb[$baseKey] = array('keyword' => $baseKey, 'seq' => 20, 'type' => 0, 'data' => $baseValue, 'systemdefault' => '');
         }
-
-        if (!file_exists($base_config["sccp_conf"])) { // System re Config
-            $sccpfile = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
-            file_put_contents($base_config["sccp_conf"], $sccpfile);
-        }
-
-        return $base_config;
+        return $settingsFromDb;
     }
-    // Type declaration in below function is incompatible with PHP 5
+
     public function validate_RealTime( $connector )
     {
         // This method only checks that asterisk is correctly configured for Realtime
@@ -381,7 +380,7 @@ class extconfigs
         $cnf_read = \FreePBX::LoadConfig();
 
         // We are running inside FreePBX so must use the same database
-        $def_config = array('sccpdevice' => 'mysql,' . $amp_conf['AMPDBNAME'] . ',sccpdeviceconfig', 'sccpline' => 'mysql,' . $amp_conf['AMPDBNAME'] . ',sccpline');
+        $def_config = array('sccpdevice' => 'mysql,' . $amp_conf['AMPDBNAME'] . ',sccpdeviceconfig', 'sccpline' => 'mysql,' . $amp_conf['AMPDBNAME'] . ',sccplineconfig');
         $backup_ext = array('_custom.conf', '.conf', '_additional.conf');
         $def_bd_config = array('dbhost' => $amp_conf['AMPDBHOST'], 'dbname' => $amp_conf['AMPDBNAME'],
                               'dbuser' => $amp_conf['AMPDBUSER'], 'dbpass' => $amp_conf['AMPDBPASS'],

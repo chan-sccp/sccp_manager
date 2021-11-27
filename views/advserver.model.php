@@ -4,7 +4,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+$requestType = 'firmware';
+global $amp_conf;
 ?>
 
 <div class="fpbx-container container-fluid">
@@ -32,6 +33,8 @@
                             <li><a class="dropitem" data-id="all" tabindex="-1" href="#"><span><?php echo _('Show All') ?></span></a></li>
                         </ul>
                     </div>
+                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file_<?php echo $requestType; ?>"><i class="fa fa-bolt"></i> <?php echo _("Update Files from Provisioner"); ?>
+                    </button>
                 </div>
                 <table data-cookie="true" data-row-style="SetRowColor" data-cookie-id-table="sccp_model-all" data-url="ajax.php?module=sccp_manager&command=getDeviceModel&type=enabled" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-model" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-condensed" id="table-models" data-id="model" data-unique-id="model">
                    <thead>
@@ -42,9 +45,9 @@
                             <th data-sortable="true" data-field="vendor"><?php echo _('Vendor');?></th>
                             <th data-sortable="false" data-formatter="DisplayDnsFormatter" data-field="dns"><?php echo _('Expansion Module');?></th>
                             <th data-sortable="false" data-field="buttons"><?php echo _('Buttons');?></th>
-                            <th data-sortable="false" data-formatter="SetColColorFirm" data-field="loadimage"><?php echo _('Loadimage');?></th>
+                            <th data-sortable="false" data-formatter="SetColFirmNf" data-field="loadimage"><?php echo _('Loadimage');?></th>
                             <th data-sortable="false" data-field="loadinformationid"><?php echo _('Loadinformation ID');?></th>
-                            <th data-sortable="false" data-formatter="SetColColorTempl" data-field="nametemplate"><?php echo _('Model template');?></th>
+                            <th data-sortable="false" data-formatter="SetColTemplNf" data-field="nametemplate"><?php echo _('Model template');?></th>
                             <th data-field="actions" data-formatter="DispayActionsModelFormatter"><?php echo _('Actions');?></th>
                         </tr>
                     </thead>
@@ -61,7 +64,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="gridSystemModalLabel"><?php echo _('Modal title');?></h4>
+                <h4 class="modal-title" id="gridSystemModalLabel"><?php echo _('Add new model');?></h4>
             </div>
             <div class="modal-body">
                 <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
@@ -141,12 +144,26 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _('Close');?></button>
-                <button type="button" class="btn btn-primary sccp_update" data-id="model_add" id="add_new_model" data-dismiss="modal"><?php echo _('Add New model without Enabled');?></button>
+                <button type="button" class="btn btn-primary sccp_update" data-id="model_add" id="add_new_model" data-dismiss="modal"><?php echo _('Add New model - Disabled');?></button>
             </div>
         </div>
     </div>
 </div>
+<?php
 
+$selectArray = array();
+$tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
+$firmwareDir = $tftpBootXml->xpath("//Directory[@name='firmware']");
+
+foreach ($firmwareDir[0] as $child) {
+    if (!empty((string)$child['name'])) {
+        $selectArray[(string)$child['name']] = (string)$child['name'];
+    }
+};
+
+include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModal.html');
+
+?>
 <div class="modal fade" id="edit_model" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -261,18 +278,17 @@
         return  exp_model;
     }
 
-    function SetColColorFirm(value, row, index) {
+    function SetColFirmNf(value, row, index) {
         if (row['validate'].split(';')[0] === 'no') {
             return  "File not found<br />" + value;
         }
         return value;
     }
-    function SetColColorTempl(value, row, index) {
+    function SetColTemplNf(value, row, index) {
         if (row['validate'].split(';')[1] === 'no') {
             return  "File not found<br /> " + value ;
         }
         return value;
-
     }
 
     function SetRowColor(row, index) {

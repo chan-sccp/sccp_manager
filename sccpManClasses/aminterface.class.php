@@ -392,7 +392,7 @@ class aminterface
         $result = array();
         if ($this->_connect_state) {
             $_action = new \FreePBX\modules\Sccp_manager\aminterface\SCCPShowDevicesAction();
-            $result = $this->send($_action)->getResult();
+            $result = (array)$this->send($_action)->getResult();
         }
         return $result;
     }
@@ -431,14 +431,19 @@ class aminterface
         }
         return $result;
     }
+    function getSCCPConfigMetaData($segment = '') {
+        if ($this->_connect_state) {
+            $_action = new \FreePBX\modules\Sccp_manager\aminterface\SCCPConfigMetaDataAction($segment);
+            $metadata = $this->send($_action)->getResult();
+        }
+        return $metadata;
+    }
+
     function getSCCPVersion()
     {
         //Initialise result array
-        $result = array( 'RevisionHash' => '', 'vCode' => 0, 'RevisionNum' => 0, 'futures' => '', 'Version' => 0);
-        if ($this->_connect_state) {
-            $_action = new \FreePBX\modules\Sccp_manager\aminterface\SCCPConfigMetaDataAction();
-            $metadata = $this->send($_action)->getResult();
-        }
+        $result = array( 'RevisionHash' => '', 'vCode' => 0, 'RevisionNum' => 0, 'buildInfo' => '', 'Version' => 0);
+        $metadata = $this->getSCCPConfigMetaData();
 
         if (isset($metadata['Version'])) {
             $result['Version'] = $metadata['Version'];
@@ -472,7 +477,7 @@ class aminterface
                 $result['RevisionNum'] = $metadata["RevisionNum"];
             }
             if (isset($metadata['ConfigureEnabled'])) {
-                $result['futures'] = implode(';', $metadata['ConfigureEnabled']);
+                $result['buildInfo'] = $metadata['ConfigureEnabled'];
             }
         }
         return $result;

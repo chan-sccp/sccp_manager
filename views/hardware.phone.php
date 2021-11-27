@@ -31,12 +31,15 @@
                         <i class="glyphicon glyphicon-ok"></i> <span><?php echo _('Reset Token Device') ?></span>
                     </button>
                 </div>
-                <table data-cookie="true" data-cookie-id-table="sccp-phone" data-url="ajax.php?module=sccp_manager&command=getPhoneGrid&type=sccp" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sccp" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list" id="table-sccp" data-id="mac">
+                <table data-cookie="true" data-cookie-id-table="sccp-phone" data-url="ajax.php?module=sccp_manager&command=getPhoneGrid&type=sccp"
+                            data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sccp" data-maintain-selected="true"
+                            data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true"
+                            data-search="true" class="table table-striped ext-list" id="table-sccp" data-id="name">
                     <thead>
                         <tr>
                             <th data-checkbox="true"></th>
-                            <th data-sortable="true" data-field="mac"><?php echo _('Device SEP ID') ?></th>
-                            <th data-sortable="true" data-field="description"><?php echo _('Device  Descriptions') ?></th>
+                            <th data-sortable="true" data-field="name"><?php echo _('Device ID') ?></th>
+                            <th data-sortable="true" data-field="description"><?php echo _('Device  Description') ?></th>
                             <th data-sortable="true" data-formatter="DispayTypeFormatter" data-field="type"><?php echo _('Device type') ?></th>
                             <th data-sortable="true" data-field="button" data-formatter="LineFormatter"><?php echo _('Line') ?></th>
                             <th data-sortable="true" data-field="status"><?php echo _('Status') ?></th>

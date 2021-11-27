@@ -12,9 +12,12 @@
 
 <?php
 
+        // originally, this was populated by sccpgeneral.xml but that should be static
+        // now will populate from the db defaults.
+        $defaultVals = $this->getTableDefaults('sccpdevice', true);
+
         echo $this->showGroup('sccp_srst', 1);
-        echo $this->showGroup('sccp_dev_vendor_conf', 1);
-//        echo $this->showGroup('sccp_dev_time',1);
+        echo $this->showGroup('sccp_dev_vendor_conf', 1, 'sccpdevice', $defaultVals);
 
 ?>
 </form>

@@ -17,7 +17,7 @@ $def_val['directed_pickup_context'] =  array("keyword" => 'directed_pickup_conte
 if (!empty($_REQUEST['new_id'])) {
     $dev_id = $_REQUEST['new_id'];
     $val = str_replace(array('SEP','ATA','VG'), '', $dev_id);
-    $val = implode('.', sscanf($val, '%4s%4s%4s')); // Convert to Cisco display Format
+    $val = implode(':', sscanf($val, '%2s%2s%2s%2s%2s%2s')); // Convert to Cisco display Format
     $def_val['mac'] = array("keyword" => 'mac', "data" => $val, "seq" => "99");
     $val = $_REQUEST['type'];
     $def_val['type'] = array("keyword" => 'type', "data" => $val, "seq" => "99");
@@ -29,7 +29,7 @@ if (!empty($_REQUEST['new_id'])) {
 if (!empty($_REQUEST['id'])) {
     $dev_id = $_REQUEST['id'];
     $dev_new = $dev_id;
-    $db_res = $this->dbinterface->HWextension_db_SccpTableData('get_sccpdevice_byid', array("id" => $dev_id));
+    $db_res = $this->dbinterface->getSccpDeviceTableData('get_sccpdevice_byid', array("id" => $dev_id));
     foreach ($db_res as $key => $val) {
         if (!empty($val)) {
             switch ($key) {
@@ -51,7 +51,8 @@ if (!empty($_REQUEST['id'])) {
                 case 'name':
                     $key = 'mac';
                     $val = str_replace(array('SEP','ATA','VG'), '', $val);
-                    $val = implode('.', sscanf($val, '%4s%4s%4s')); // Convert to Cisco display Format
+                    $val = implode(':', sscanf($val, '%2s%2s%2s%2s%2s%2s')); // Convert to Cisco display Format
+                    $def_val[$key] = array("keyword" => $key, "data" => $val, "seq" => "99");
                     break;
                 case '_hwlang':
                     $tmpar =  explode(":", $val);
@@ -70,14 +71,14 @@ if (!empty($_REQUEST['id'])) {
     }
 }
 //print_r($db_res);
- 
+
 if (!empty($device_warning)) {
-    ?>    
+    ?>
     <div class="fpbx-container container-fluid">
         <div class="row">
             <div class="container">
                 <h2 style="border:2px solid Tomato;color:Tomato;" >Warning in the SCCP Device</h2>
-                <div class="table-responsive">          
+                <div class="table-responsive">
                         <?php
                         foreach ($device_warning as $key => $value) {
                             echo '<h3>'.$key.'</h3>';
@@ -101,7 +102,7 @@ if (!empty($device_warning)) {
     <input type="hidden" name="category" value="adddevice_form">
     <input type="hidden" name="Submit" value="Submit">
     <input type="hidden" name="sccp_device_typeid" value="sipdevice">
-    
+
 
     <?php
     if (empty($dev_new)) {
@@ -121,5 +122,5 @@ if (!empty($device_warning)) {
 //    echo $this->showGroup('sccp_hw_dev_pickup', 1, 'sccp_hw', $def_val);
 //    echo $this->showGroup('sccp_hw_dev_conference', 1, 'sccp_hw', $def_val);
 //    echo $this->showGroup('sccp_hw_dev_network', 1, 'sccp_hw', $def_val);
-    ?>    
+    ?>
 </form>

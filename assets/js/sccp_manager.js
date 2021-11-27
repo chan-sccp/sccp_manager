@@ -7,7 +7,7 @@ $(document).ready(function () {
         },
     });
     $('#ajaxcancel').on('click', function (e) {
-//        console.log('Calncel');
+      console.log('Cancel');
         if ($(this).data('hash') != null) {
             location.hash = $(this).data('hash');
         }
@@ -24,7 +24,6 @@ $(document).ready(function () {
             location.reload();
         }
     });
-
     // ajaxsubmit2 is "Save and continue" - saves form data and stays on form
     $('#ajaxsubmit2').on('click', function (e) {
         var vdata = '';
@@ -195,6 +194,8 @@ $(document).ready(function () {
     });
 // ---------------------------------------
 
+
+
     $('.btnMultiselect').click(function (e) {
         var kid = $(this).data('id');
         if ($(this).data('key') === 'Right') {
@@ -211,6 +212,22 @@ $(document).ready(function () {
         }
         e.preventDefault();
     });
+    // Set focus on the mac entry field. It will not stay but ensures that focusout brings it back
+    $('#sccp_hw_mac').focus();
+
+    $('#sccp_hw_mac').focusout(function() {
+        var value = $(this).val();
+        const regex = new RegExp('^([0-9A-Fa-f]{2}[:.-]?){5}([0-9A-Fa-f]{2})$');
+        if ( regex.test(value) === false ) {
+            $('#ajaxsubmit2').attr('disabled', 'disabled');
+            $('#ajaxsubmit').attr('disabled', 'disabled');
+            fpbxToast(_('Invalid Mac Address'),_('Invalid Mac Address'), 'warning');
+            setTimeout(function(){ $('#sccp_hw_mac').focus();},2000);
+        } else {
+            $('#ajaxsubmit2').removeAttr('disabled');
+            $('#ajaxsubmit').removeAttr('disabled');
+        };
+      });
 
 // Form.buttons - Form.adddevice
     $('.futuretype').change(function (e) {
@@ -269,31 +286,67 @@ $(document).ready(function () {
         });
     });
 // Form.adddevice
-    $('.hw_select').change(function (e) {
-//        console.log('HwSelect');
+    $('.hw_select').mouseover(function (e) {
         var type_id = $('#sccp_hw_type').find(':selected').data('id');
-        var btn_dev = $('#sccp_hw_type').find(':selected').data('val');
-//        var btn_add=$('#sccp_hw_addon').find(':selected').data('val');
-
-        if (type_id === 1) {
+        if (type_id == null) {
+            var type_id = $('#addonCnt').val();
+        }
+        if (type_id == 1) {
             if ($('#sccp_hw_addon').val() !== 'NONE') {
                 $('#sccp_hw_addon').val('NONE').change();
             }
             $('#sccp_hw_addon').attr("disabled", "disabled");
         } else {
-            $('#sccp_hw_addon').removeAttr('disabled');
+            $('#sccp_hw_addon').prop('disabled',false);
         }
+    });
 
+    $('.hw_select').change(function (e) {
+        // data-val contains the number of buttons for this type
+        // data-id contains the max number of addons (1 = 0, 3 = 2)
+        var type_id = $('#sccp_hw_type').find(':selected').data('id');
+        var btn_dev = $('#sccp_hw_type').find(':selected').data('val');
+        // when edit, btn_dev is undefined as no select, so send btn_dev and type_id with page
+        if (btn_dev == null) {
+            var btn_dev = $('#devButtonCnt').val();
+            var type_id = $('#addonCnt').val();
+        }
+        if (type_id == 1) {
+            if ($('#sccp_hw_addon').val() !== 'NONE') {
+                $('#sccp_hw_addon').val('NONE').change();
+            }
+            $('#sccp_hw_addon').attr("disabled", "disabled");
+        } else {
+            $('#sccp_hw_addon').prop('disabled',false);
+        }
         var btn_add = $('#sccp_hw_addon').find(':selected').data('val');
+        // btn_add is empty if none selected
+        if ((btn_add == null) || (btn_add == '')) {
+            var btn_add = 0;
+        }
+        var totButtons = parseInt(btn_dev, 10) + parseInt(btn_add, 10);
+        $('#buttonscount').attr('value', totButtons);
         $('.line_button').each(function () {
-            if ($(this).data('id') < btn_dev + btn_add) {
+            if ($(this).data('id') < totButtons) {
                 $(this).removeClass('hidden');
-                $(this).removeAttr('hidden')
+                $(this).removeAttr('hidden');
             } else {
                 $(this).addClass('hidden');
+                $(this).attr('hidden', true);
             }
         });
+    });
 
+    $('.lineSelect').change(function (e) {
+        var line_id = $('#sccp_hw_defaultLine option:selected').val();
+        $("select.lineid_0 option:selected").prop("selected",false);
+        $("select.lineid_0 option[value=" + line_id + "]").prop("selected",true);
+    });
+
+    $('#button0_line').change(function (e) {
+        var line_id = $('#button0_line option:selected').val();
+        $("#sccp_hw_defaultLine option:selected").prop("selected",false);
+        $("#sccp_hw_defaultLine option[value=" + line_id + "]").prop("selected",true);
     });
 
     $('.sccp_button_hide').each(function () {
@@ -473,6 +526,8 @@ $(document).ready(function () {
     });
 
 
+
+
     $('.sccp_update').on('click', function (e) {
 //        console.log($(this).data('id'));
 
@@ -504,7 +559,6 @@ $(document).ready(function () {
         }
 
 // ----------------------- Server.model form ----------------
-
         if ($(this).data('id') === 'model_add') {
             var dev_cmd = 'model_add';
 //            var dev_fld = ["model","vendor","dns","buttons","loadimage","loadinformationid","validate","enabled"];
@@ -613,7 +667,7 @@ $(document).ready(function () {
                 url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
                 data: datas,
                 success: function (data) {
-//                    console.log(data);
+
                     if (data.status === true) {
                         if (data.table_reload === true) {
                             $('table').bootstrapTable('refresh');
@@ -646,6 +700,83 @@ $(document).ready(function () {
         }
 
     });
+
+    $('.sccp_get_ext').on('click', function (e) {
+//        console.log($(this).data('id'));
+
+
+// ----------------------- Get external Files----------------
+        if ($(this).data('id') === 'get_ext_files') {
+            var dev_cmd = 'get_ext_files';
+            var dev_fld = ["device", "locale", "country"];
+            datas = 'type=' + $(this).data('type') + '&' + 'name=' + '&';
+
+            for (var i = 0; i < dev_fld.length; i++) {
+                datas = datas + dev_fld[i] + '=' + $('#ext_' + dev_fld[i]).val() + '&';
+            }
+            ;
+        }
+
+        if (dev_cmd !== '') {
+            $.ajax({
+                // Need to modify xhr here to add listener
+                xhr: function() {
+                        const controller = new AbortController();
+                        var xhr = new XMLHttpRequest();
+                        xhr.addEventListener('progress', function(evt) {
+                            var result = evt.srcElement.responseText.split(',');
+                            var percentComplete = result[result.length - 2]; //last element is empty.
+                            $('#progress-bar').css('width', percentComplete + '%');
+                            if (percentComplete == 100 ) {
+                                controller.abort();
+                            }
+                        }, true, { signal: controller.signal });
+                        return xhr;
+                    },
+                type: 'POST',
+                url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
+                data: datas,
+                success: function (data) {
+
+                    $('#pleaseWaitDialog').modal('hide');
+                    console.log(data);
+                    data = JSON.parse(data.replace(/^(.*\{)/,"\{"));
+                    console.log(data);
+                    if (data.status === true) {
+                        if (data.table_reload === true) {
+                            $('table').bootstrapTable('refresh');
+                        }
+                        if (data.message) {
+                            fpbxToast(data.message,_('Operation Result'), 'success');
+                            if (data.reload === true) {
+                                //Need setTimout or reload will kill Toast
+                                setTimeout(function(){location.reload();},500);
+                            }
+                        }
+                    } else {
+                        if (Array.isArray(data.message)) {
+                            data.message.forEach(function (entry) {
+                                fpbxToast(data.message[1],_('Error Result'), 'warning');
+                            });
+                        } else {
+                            if (data.message) {
+                                fpbxToast(data.message,_('Error Result'), 'warning');
+                            } else {
+                                if (data) {
+                                    bs_alert(data,data.status);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            });
+        }
+
+    });
+
+
+
     $('#cr_sccp_phone_xml').on('click', function (e) {
 //        console.log("asasdasdasdasd");
 //        console.log($('#update-sccp-phone').find(':selected').data('val'));
@@ -1037,6 +1168,14 @@ function hex2bin(hex)
     return String.fromCharCode.apply(String, bytes);
 }
 
+function showProgress() {
+    $('#pleaseWaitDialog').modal();
+}
+
+function closeProgress() {
+  $('#pleaseWaitDialog').modal('hide');
+}
+
 function sleep(milliseconds)
 {
     var start = new Date().getTime();
@@ -1046,3 +1185,83 @@ function sleep(milliseconds)
         }
     }
 }
+
+$(".sccp-restore").click(function() {
+  //input is sent by data-for where for is an attribute
+	var id = $(this).data("for"), input = $("#" + id);
+  var edit_style = document.getElementById("edit_" + id).style;
+  if ($(this).data("type") === 'radio') {
+      input = document.getElementsByName(id);
+  }
+	if (input.length === 0) {
+		return;
+	}
+	if ($(this).is(":checked")) {
+    console.log('restore/checked');
+    edit_style.display = 'block';
+    if ($(this).data("type") === 'radio') {
+        // simulate read only for checkboxes
+       input.forEach(
+          function(radioElement) {
+              radioElement.setAttribute('disabled', true);
+              if (radioElement.hasAttribute('checked')) {
+                  radioElement.removeAttribute('disabled');
+              }
+          }
+       );
+    return;
+    }
+		input.prop("readonly", true);
+	} else {
+    console.log('restore/unchecked');
+    edit_style.display = 'none';
+    if ($(this).data("type") === 'radio') {
+        // simulate read only for checkboxes
+       input.forEach(
+          function(radioElement) {
+              radioElement.removeAttribute('disabled');
+          }
+       );
+    return;
+    }
+		input.data("custom", input.val());
+		input.prop("readonly", true);
+		input.val(input.data("default"));
+	}
+});
+
+$(".sccp-edit").click(function() {
+  //input is sent by data-xxx where xxx is an attribute
+  var id = $(this).data("for"), input = $("#" + id);
+  var edit_style = document.getElementById("edit_" + id).style;
+  if ($(this).data("type") === 'radio') {
+      input = document.getElementsByName(id);
+  }
+	if (input.length === 0) {
+		return;
+	}
+	if ($(this).is(":checked")) {
+    console.log('edit/checked');
+    edit_style.display = 'block';
+    if ($(this).data("type") === 'radio') {
+        // Security - attribute should not exist.
+       input.forEach(
+          function(radioElement) {
+              radioElement.removeAttribute('disabled');
+          }
+       );
+    return;
+    }
+		input.prop("readonly", false);
+    input.focus();
+	} else {
+    console.log('edit/unchecked');
+    edit_style.display = 'none';
+    if ($(this).data("type") === 'radio') {
+        return;
+    }
+		input.data("custom", input.val());
+		input.prop("readonly", true);
+		input.val(input.data("default"));
+	}
+});
