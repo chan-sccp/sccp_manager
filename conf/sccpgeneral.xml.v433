@@ -545,7 +545,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Log server Address: x.x.x.x:9001 </help>
         </item>
         <item type="IE" id="3" seq="98">
-            <label>Display Not Active</label>
+            <label>Days Display Not Active</label>
             <input>
                 <name>daysdisplaynotactive</name>
                 <default></default>
@@ -555,7 +555,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Comma separated list of days that the phone's display is not active and will be automatically turned off after the time specified by "displayIdleTimeout" has elapsed (1 - Sunday, 7 - Saturday)</help>
         </item>
         <item type="IE" id="3" seq="98">
-            <label>Display Not Active</label>
+            <label>Display On Start Time</label>
             <input>
                 <name>displayontime</name>
                 <default></default>
