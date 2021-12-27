@@ -1035,7 +1035,27 @@ function checkTftpServer() {
             die_freepbx(_("Error updating sccpsettings. $sql"));
         }
     }
+    getMasterFileList($tftpRootPath);
     return;
+}
+
+function getMasterFileList(string $tftpRootPath) {
+    global $thisInstaller;
+    global $amp_conf;
+    outn("<li>" . _("Checking TFTP server path and availability ...") . "</li>");
+    if (file_exists("{$tftpRootPath}/masterFilesStructure.xml")) {
+        outn("<li>" . _("Backing up existing masterFilesList ...") . "</li>");
+        rename("{$tftpRootPath}/masterFilesStructure.xml","{$tftpRootPath}/masterFilesStructure.xml.old");
+    }
+    outn("<li>" . _("Getting latest master file list from provisioner ...") . "</li>");
+    if (!$thisInstaller->getFileListFromProvisioner($tftpRootPath)) {
+        outn("<li>" . _("Unable to fetch master file list from provisioner, installing local copy ...") . "</li>");
+        // Cannot get file from internet, so use copy with this dist which may be older.
+        if (!copy($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/contrib/masterFilesStructure.xml',"{$tftpRootPath}/masterFilesStructure.xml")) {
+            return false;
+        };
+        return true;
+    };
 }
 
 function cleanUpSccpSettings() {

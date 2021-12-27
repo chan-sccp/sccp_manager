@@ -616,13 +616,12 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     private function findInstLangs() {
         //locales and country tones are installed in the tftp_lang_path
         //Available packs from provisioner are in masterFilesStructure.xml in tftpRoot Path
-        // TODO: Need to include this file as part of module in case download not allowed/available
 
         $searchDir = '/';        //set default for when called by installer on virgin system
         $result = array();
 
         if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
-            if (!$this->getFileListFromProvisioner()) {
+            if (!$this->getFileListFromProvisioner($this->sccppath['tftp_path'])) {
                 // File does not exist and cannot get from internet.
                 return $result;
             };

@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.3.0.14a</version>
+	<version>14.3.0.15</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -24,6 +24,7 @@
 		 * Version 14.2.0.9 * - Bug Fix - incorrect response class for Reset Token Device
 		 * Version 14.2.0.10 * - Bug Fix - line not assigned on device creation
 		 * Version 14.3.0.0 * - New Minor Version - Change DB and add new settings
+		 * Version 14.3.0.15 * - Get masterFilesList from provisoner via installer Fix Issue 39
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>

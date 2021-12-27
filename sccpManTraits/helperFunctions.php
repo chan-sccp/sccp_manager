@@ -253,12 +253,12 @@ trait helperfunctions {
        $dom->save($filename);
     }
 
-    public function getFileListFromProvisioner() {
+    public function getFileListFromProvisioner(string $tftpRootPath) {
 
         $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
         // Get master tftpboot directory structure
         try {
-            file_put_contents("{$this->sccppath['tftp_path']}/masterFilesStructure.xml",file_get_contents("{$provisionerUrl}tools/tftpbootFiles.xml"));
+            file_put_contents("{$tftpRootPath}/masterFilesStructure.xml",file_get_contents("{$provisionerUrl}tools/tftpbootFiles.xml"));
         } catch (\Exception $e) {
             return false;
         }

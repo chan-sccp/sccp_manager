@@ -152,6 +152,14 @@ global $amp_conf;
 <?php
 
 $selectArray = array();
+//below probably unnecessary as installer should ensure that a copy always exists
+// TODO: Maybe should always check here to ensure that have latest
+if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
+    if (!$this->getFileListFromProvisioner($this->sccppath['tftp_path'])) {
+        // File does not exist and cannot get from internet.
+        return $result;
+    };
+}
 $tftpBootXml = simplexml_load_file("{$this->sccppath['tftp_path']}/masterFilesStructure.xml");
 $firmwareDir = $tftpBootXml->xpath("//Directory[@name='firmware']");
 
