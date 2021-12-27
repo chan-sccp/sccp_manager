@@ -554,8 +554,9 @@ trait ajaxHelper {
         $filesToGet = array();
         $totalFiles = 0;
         $provisionerUrl = "https://github.com/dkgroot/provision_sccp/raw/master/";
+        // TODO: Maybe should always fetch to ensure have latest, backing up old version
         if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
-            if (!$this->getFileListFromProvisioner()) {
+            if (!$this->getFileListFromProvisioner($this->sccppath['tftp_path'])) {
                 return array('status' => false,
                     'message' => "{$provisionerUrl}tools/tftpbootFiles.xml cannot be found. Check your internet connection, and that this path exists",
                     'reload' => false);
