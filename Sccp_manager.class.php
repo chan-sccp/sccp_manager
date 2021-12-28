@@ -86,7 +86,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     /* Field Values for type  seq */
     private $pagedata = null;
     private $sccp_driver_ver = '11.4';             // Ver fore SCCP.CLASS.PHP
-    public $sccp_manager_ver = '14.1.0.0';
     public $sccp_branch = 'm';                       // Ver fore SCCP.CLASS.PHP
     private $installedLangs = array();
 

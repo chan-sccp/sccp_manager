@@ -7,6 +7,7 @@
 
 $test_ami = 0;
 $test_any = 0;
+global $amp_conf;
 
 $driver = $this->FreePBX->Core->getAllDriversInfo();
 $core = $this->aminterface->getSCCPVersion();
@@ -30,6 +31,7 @@ $compatible = $this->aminterface->get_compatible_sccp();
 $info = array();
 
 //$info['srvinterface'] = $this->srvinterface->info();
+$moduleXml = simplexml_load_file("{$amp_conf['AMPWEBROOT']}/admin/modules/sccp_manager/module.xml");
 $info['extconfigs'] = $this->extconfigs->info();
 $info['dbinterface'] = $this->dbinterface->info();
 $info['aminterface'] = $this->aminterface->info();
@@ -203,7 +205,7 @@ if (!empty($this->class_error)) {
 <div class="fpbx-container container-fluid">
     <div class="row">
         <div class="container">
-            <h2>Sccp Manager V.<?php print_r($this->sccp_manager_ver); ?> Info </h2>
+            <h2>Sccp Manager v<?php print_r((string) $moduleXml->version); ?> Info </h2>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
