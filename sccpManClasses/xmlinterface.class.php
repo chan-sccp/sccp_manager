@@ -25,7 +25,7 @@ class xmlinterface
 
     public function info()
     {
-        $Ver = '13.0.5';
+        $Ver = '13.0.6';
         return array('Version' => $Ver,
             'about' => 'Create XML data interface ver: ' . $Ver);
     }
@@ -118,7 +118,7 @@ class xmlinterface
 
     function create_SEP_XML($store_path, $data_values, $dev_config, $dev_id, $lang_info = array())
     {
-        // TODO: $data_values are system wide defaults, $dev_config are specific defice values.
+        // TODO: $data_values are system wide defaults, $dev_config are specific device values.
         // Need to merge the two arrays so that device specific values override system values
         $langCodeArray = array(
             'Arabic_Saudi_Arabia' => 'ar',
@@ -309,9 +309,7 @@ class xmlinterface
                 case 'vendorconfig':
                     $xml_node = $xml_work->$key;
                     foreach ($xml_work->$key->children() as $dkey => $ddata) {
-                        $dkey_l = strtolower($dkey);
-                        $vtmp_key = $key_l.'_'.$dkey_l;
-                        if (isset($data_values[$vtmp_key])) {
+                        if (isset($data_values[strtolower($dkey)])) {
                             $vtmp_data = $data_values[$vtmp_key];
                             if ((!empty($vtmp_data)) || ($vtmp_data == "0")) {
                                 $xml_node->$dkey = $vtmp_data;
