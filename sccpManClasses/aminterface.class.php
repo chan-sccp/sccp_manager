@@ -488,7 +488,7 @@ class aminterface
         // Initialise array with default values to eliminate testing later
         $result = array();
         $cmd_res = array();
-        $cmd_res = ['sccp' => ['message' => 'default value', 'realm' => '', 'status' => 'ERROR']];
+        $cmd_res = ['sccp' => ['message' => 'legacy value', 'realm' => '', 'status' => 'ERROR']];
         if ($this->_connect_state) {
             $_action = new \FreePBX\modules\Sccp_manager\aminterface\CommandAction('realtime mysql status');
             $result = $this->send($_action)->getResult();
