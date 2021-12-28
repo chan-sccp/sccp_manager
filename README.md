@@ -73,6 +73,9 @@ How to install sccp_manager
 Stable - Version 14.3.
 
 This is the latest version of sccp_manager and has many bug fixes. It is targetted for FreePbx 16 and as such requires PHP > 7.3. It works fine with FreePbx 15 as long as you can upgrade PHP (this cannot be done if you use commercial modules). There are changes to the database structure, and so this cannot be easily reverted to prior versions without using a backup, which the installer will create. If you are using a VM,  it is recommended to take a snapshot before upgrading.
+Upgrades via FreePbx module admin are enabled in this release, but do not work because of a FreePbx issue (a patch has been posted). To workaround this, if you see that an upgrade is available, you can download it via the commad line console which is not affected by this issue
+
+fwconsole ma upgrade sccp_manager
 ```
 https://github.com/chan-sccp/sccp_manager/archive/refs/tags/14.3.0.13.zip
 ```
