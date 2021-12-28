@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.3.0.17</version>
+	<version>14.3.0.18</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -26,6 +26,8 @@
 		 * Version 14.3.0.0 * - New Minor Version - Change DB and add new settings
 		 * Version 14.3.0.15 * - Get masterFilesList from provisoner via installer Fix Issue 39
 		 * Version 14.3.0.16 * - Test version for freepbx upgrader.
+		 * Version 14.3.0.17 * - Test version for freepbx upgrader.
+		 * Version 14.3.0.18 * - Fix Issue 42
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>
