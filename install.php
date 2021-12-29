@@ -1109,11 +1109,13 @@ function cleanUpSccpSettings() {
 
     // get chan-sccp defaults
 
-    foreach (array('general','line', 'device') as $section) {
+    foreach (array('general','device','line') as $section) {
         $sysConfig = $aminterface->getSCCPConfigMetaData($section);
         foreach ($sysConfig['Options'] as $valueArray) {
-            if ($valueArray['Flags'][0] == 'Obsolete' || $valueArray['Flags'][0] == 'Deprecated') {
-                continue;
+            if (isset($valueArray['Flags'])) {
+                if ($valueArray['Flags'][0] == 'Obsolete' || $valueArray['Flags'][0] == 'Deprecated') {
+                    continue;
+                }
             }
             if (isset($sysConfiguration[$valueArray['Name']])) {
                 continue;

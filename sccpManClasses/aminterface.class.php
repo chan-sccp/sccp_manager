@@ -444,10 +444,9 @@ class aminterface
         //Initialise result array
         $result = array( 'RevisionHash' => '', 'vCode' => 0, 'RevisionNum' => 0, 'buildInfo' => '', 'Version' => 0);
         $metadata = $this->getSCCPConfigMetaData();
-
         if (isset($metadata['Version'])) {
             $result['Version'] = $metadata['Version'];
-            $version_parts = explode('.', $metadata['Version']);
+            $version_parts = array_map('intval',explode('.', $metadata['Version']));
             if ($version_parts[0] === 4) {
                 switch ($version_parts[1]) {
                     case 1:
@@ -456,9 +455,9 @@ class aminterface
                     case 2:
                         $result['vCode'] = 420;
                         break;
-                    case 3. . .5:
+                    case 3:
                         $result['vCode'] = 430;
-                        if($version_parts[2] == 3){
+                        if($version_parts[2] >= 3){
                             $result['vCode'] = 433;
                         }
                         break;
