@@ -310,7 +310,7 @@ class xmlinterface
                     $xml_node = $xml_work->$key;
                     foreach ($xml_work->$key->children() as $dkey => $ddata) {
                         if (isset($data_values[strtolower($dkey)])) {
-                            $vtmp_data = $data_values[$vtmp_key];
+                            $vtmp_data = $data_values[strtolower($dkey)];
                             if ((!empty($vtmp_data)) || ($vtmp_data == "0")) {
                                 $xml_node->$dkey = $vtmp_data;
                             }
