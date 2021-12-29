@@ -265,6 +265,15 @@ trait helperfunctions {
         return true;
     }
 
+    public function getChanSccpSettings() {
+        // This is a utility function for debug only, and is not used by core code
+        foreach (array('general','line', 'device') as $section) {
+            $sysConfig = $this->aminterface->getSCCPConfigMetaData($section);
+            dbug($sysConfig);
+        }
+        unset($sysConfig);
+    }
+
     public function initVarfromXml() {
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group') as $item) {

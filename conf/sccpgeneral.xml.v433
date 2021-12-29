@@ -1452,7 +1452,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Activate the callforward NOANSWER stuff and softkeys. Default is On</help>
         </item>
         <item type="IS" id="5" seq="99">
-            <name>dnd</name>
+            <name>dndFeature</name>
             <label>DND Button on Device</label>
             <default>off</default>
             <button value="on">On</button>
