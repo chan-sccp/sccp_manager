@@ -45,11 +45,10 @@ class formcreate
                     </div>
         <?php
                     if (!empty($sccp_defaults[$shortId]['systemdefault'])) {
-                    // There is a system default, so add button to customise or reset
-                    // the closing } is after the code to include the button at line ~498
-
-                    //-- Start include of defaults button --
-                    echo "<div class=col-md-3>";
+                        // There is a system default, so add button to customise or reset
+                        //-- Start include of defaults button --
+                        echo "<div class=col-md-3>";
+                    }
 
         // Can have multiple inputs for a field which are displayed with a separator
         foreach ($child->xpath('input') as $value) {
@@ -57,16 +56,11 @@ class formcreate
             $res_name = $npref . $res_n;
             //if (!empty($fvalues[$res_n])) {
             $value->value = $fvalues[$res_n]['data'];
-                if (!empty($fvalues[$res_n]['data'])) {
-                    if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $fvalues[$res_n]['data'])) {
-                        $usingSysDefaults = false;
-                    }
+            if (!empty($fvalues[$res_n]['data'])) {
+                if ($sccp_defaults[$res_n]['systemdefault'] != $fvalues[$res_n]['data']) {
+                    $usingSysDefaults = false;
                 }
-            //}
-            // Default to chan-sccp defaults, not xml defaults.
-            //if (empty($value->value)) {
-                //$value->value = $sccp_defaults[$res_n]['systemdefault'];
-            //}
+            }
             if (empty($value->type)) {
                 $value->type = 'text';
             }
@@ -83,6 +77,8 @@ class formcreate
             echo $value->value;
             $i ++;
         }
+        if (!empty($sccp_defaults[$shortId]['systemdefault'])) {
+
         ?>
                     </div>
                     <div class="col-md-4">
@@ -123,8 +119,8 @@ class formcreate
 
                     <!-- Finish include of defaults button -->
                     <?php
-                    // Close the conditional include of the defaults button opened at line ~425
-                    }
+                    // Close the conditional include of the defaults button opened at line ~47
+                  }
                     ?>
 
                     <div class="col-md-9">
@@ -146,7 +142,8 @@ class formcreate
                             if (empty($value->value)) {
                                 $value->value = $sccp_defaults[$res_n]['systemdefault'];
                             }
-                            if (!$usingSysDefaults) {
+                            if ($usingSysDefaults) {
+                                // using system defaults
                                 $value->value = $sccp_defaults[$res_n]['systemdefault'];
                             }
                             if (empty($value->type)) {
@@ -373,17 +370,15 @@ class formcreate
                             $res_v = (string)$fvalues[$res_n]['data'];
                         }
                     }
+                    if ($sccp_defaults[$res_n]['systemdefault'] != $res_v) {
+                        $usingSysDefaults = false;
+                    }
                     if (!empty($sccp_defaults[$res_n]['systemdefault'])) {
                     // There is a system default, so add button to customise or reset
-                    // the closing } is after the code to include the button at line ~498
+                    // the closing } is after the code to include the button at line ~438
 
                     //-- Start include of defaults button --
                     echo "<div class='col-md-3'>";
-
-                    if (!empty($sccp_defaults[$res_n]['systemdefault']) && ($sccp_defaults[$res_n]['systemdefault'] != $res_v)) {
-                        $usingSysDefaults = false;
-                    }
-
                     // Output current value
                     echo $res_v;
                     ?>
@@ -427,7 +422,7 @@ class formcreate
                     </div>
                     <!-- Finish include of defaults button -->
                     <?php
-                    // Close the conditional include of the defaults button opened at line ~425
+                    // Close the conditional include of the defaults button opened at line ~385
                     }
                     ?>
 
@@ -437,7 +432,7 @@ class formcreate
                         $i = 0;
                         $opt_hide = '';
 
-                        if (!$usingSysDefaults) {
+                        if ($usingSysDefaults) {
                             $res_v = $sccp_defaults[$res_n]['systemdefault'];
                         }
                         if (!empty($child->option_hide)) {
@@ -449,8 +444,6 @@ class formcreate
                             }
                             $opt_hide .= ' data-vshow="'.$child->option_show.'" data-clshow="'.$child->option_show['class'].'" ';
                         }
-
-
                         foreach ($child->xpath('button') as $value) {
                             $opt_disabled = '';
                             if (in_array($value, $disabledButtons )) {
@@ -458,11 +451,11 @@ class formcreate
                             }
                             $val_check = strtolower((string)$value[@value]);
                             if ($val_check == strtolower($res_v)) {
-                                $val_check = " checked";
+                                $val_check = "checked";
                             } else {
                                 if ($val_check == '' || $val_check == 'none' ) {
                                    if (strtolower($res_v) == 'none' || $res_v == '' )  {
-                                      $val_check = " checked";
+                                      $val_check = "checked";
                                    } else {$val_check = "";}
                                 } else {$val_check = "";}
                             }

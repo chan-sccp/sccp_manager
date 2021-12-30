@@ -48,7 +48,6 @@ if ($h_show==1) {
 
 <?php
 }
-
 foreach ($items as $child) {
     $disabledButtons = array();
     if (empty($child->help)) {
