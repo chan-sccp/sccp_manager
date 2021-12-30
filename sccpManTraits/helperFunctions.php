@@ -274,6 +274,87 @@ trait helperfunctions {
         unset($sysConfig);
     }
 
+    public function createDefaultSccpConfig(array $sccpvalues, string $asteriskPath) {
+        global $cnf_wr;
+        // Make sccp.conf data
+        // [general] section
+        // TODO: Need to review sccpsettings seq numbering, as will speed this up, and remove the need for $permittedSettings.
+        $cnf_wr = \FreePBX::WriteConfig();
+        //clear old settings, and initiate with allow/disallow and permit/deny keys in correct order
+        $this->sccp_conf_init = array();
+        $this->sccp_conf_init['general']['disallow'] = 'all';
+        $this->sccp_conf_init['general']['allow'] = '';
+        $this->sccp_conf_init['general']['deny'] = '0.0.0.0/0.0.0.0';
+        $this->sccp_conf_init['general']['permit'] = '0.0.0.0/0.0.0.0';
+        // permitted chan-sccp settings array
+        $permittedSettings = array(
+                          'debug', 'servername', 'keepalive', 'context', 'dateformat', 'bindaddr', 'port', 'secbindaddr', 'secport', 'disallow', 'allow', 'deny', 'permit',
+                          'localnet', 'externip', 'externrefresh', 'firstdigittimeout', 'digittimeout', 'digittimeoutchar', 'recorddigittimeoutchar', 'simulate_enbloc',
+                          'ringtype', 'autoanswer_ring_time', 'autoanswer_tone', 'remotehangup_tone', 'transfer', 'transfer_tone', 'transfer_on_hangup', 'dnd_tone',
+                          'callwaiting_tone', 'callwaiting_interval', 'musicclass', 'language', 'callevents', 'accountcode', 'sccp_tos', 'sccp_cos', 'audio_tos',
+                          'audio_cos', 'video_tos', 'video_cos', 'echocancel', 'silencesuppression', 'earlyrtp', 'dndFeature', 'private', 'mwilamp', 'mwioncall',
+                          'cfwdall', 'cfwdbusy', 'cfwdnoanswer', 'cfwdnoanswer_timeout', 'nat', 'directrtp', 'allowoverlap', 'pickup_modeanswer',
+                          'callhistory_answered_elsewhere', 'amaflags', 'callanswerorder', 'devicetable', 'linetable', 'meetmeopts', 'jbenable', 'jbforce',
+                          'jblog', 'jbmaxsize', 'jbresyncthreshold', 'jbimpl', 'hotline_enabled', 'hotline_extension', 'hotline_context', 'hotline_label', 'fallback',
+                          'backoff_time', 'server_priority');
+
+        foreach ($sccpvalues as $key => $value) {
+            if (!in_array($key, $permittedSettings, true)) {
+                continue;
+            }
+            if ($value['seq'] == 0) {
+                switch ($key) {
+                    case "allow":
+                    case "disallow":
+                    case "deny":
+                        $this->sccp_conf_init['general'][$key] = explode(';', $value['data']);
+                        break;
+                    case "localnet":
+                    case "permit":
+                        $content = $value['data'];
+                        if (strpos($content, 'internal') !== false) {
+                            $content = str_replace(';0.0.0.0/0.0.0.0', '', $value['data']);
+                        }
+                        $this->sccp_conf_init['general'][$key] = explode(';', $content);
+                        break;
+                    case "devlang":
+                        /*
+                        $lang_data = $this->extconfigs->getExtConfig('sccp_lang', $value['data']);
+                        if (!empty($lang_data)) {
+                            // TODO:  will always get here, but lang_data['codepage'] will be empty as not a valid key
+                            $this->sccp_conf_init['general']['phonecodepage'] = $lang_data['codepage'];
+                        }
+                        break;
+                        */
+                    case "netlang": // Remove Key
+                    case "tftp_path":
+                    case "sccp_compatible":    // This is equal to SccpDBmodel
+                        break;
+                    default:
+                        if (!empty($value['data'])) {
+                            $this->sccp_conf_init['general'][$key] = $value['data'];
+                        }
+                }
+            }
+        }
+        //
+        // ----- It is a very bad idea to add an external configuration file "sccp_custom.conf" !!!!
+        // This will complicate solving problems caused by unexpected solutions from users.
+        //
+        if (file_exists($asteriskPath . "/sccp_custom.conf")) {
+            $this->sccp_conf_init['HEADER'] = array(
+                ";                                                                                ;",
+                ";  It is a very bad idea to add an external configuration file !!!!              ;",
+                ";  This will complicate solving problems caused by unexpected solutions          ;",
+                ";  from users.                                                                   ;",
+                ";--------------------------------------------------------------------------------;",
+                "#include sccp_custom.conf"
+            );
+        }
+        $cnf_wr->WriteConfig('sccp.conf', $this->sccp_conf_init);
+        //$this->$cnf_wr->writeConfig('sccp.conf', $this->sccp_conf_init);
+    }
+
     public function initVarfromXml() {
         if ((array) $this->xml_data) {
             foreach ($this->xml_data->xpath('//page_group') as $item) {

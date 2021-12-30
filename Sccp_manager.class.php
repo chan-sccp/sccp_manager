@@ -1002,67 +1002,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         return $filename;
     }
 
-    function createDefaultSccpConfig() {
-        // Make sccp.conf data
-        // [general]
-        foreach ($this->sccpvalues as $key => $value) {
-            if ($value['seq'] == 0) {
-                switch ($key) {
-                    case "allow":
-                    case "disallow":
-                    case "deny":
-                        $this->sccp_conf_init['general'][$key] = explode(';', $value['data']);
-                        break;
-                    case "localnet":
-                    case "permit":
-                        $content = $value['data'];
-                        if (strpos($content, 'internal') !== false) {
-                            $content = str_replace(';0.0.0.0/0.0.0.0', '', $value['data']);
-                        }
-                        $this->sccp_conf_init['general'][$key] = explode(';', $content);
-                        break;
-                    case "devlang":
-                        /*
-                        $lang_data = $this->extconfigs->getExtConfig('sccp_lang', $value['data']);
-                        if (!empty($lang_data)) {
-                            // TODO:  will always get here, but lang_data['codepage'] will be empty as not a valid key
-                            $this->sccp_conf_init['general']['phonecodepage'] = $lang_data['codepage'];
-                        }
-                        break;
-                        */
-                    case "netlang": // Remove Key
-                    case "tftp_path":
-                    case "sccp_compatible":    // This is equal to SccpDBmodel
-                        break;
-                    default:
-                        if (!empty($value['data'])) {
-                            $this->sccp_conf_init['general'][$key] = $value['data'];
-                        }
-                }
-            }
-        }
-        // [Namesoftkeyset]
-        // type=softkeyset
-        //
-        // ----- It is a very bad idea to add an external configuration file "sccp_custom.conf" !!!!
-        // This will add problems when solving problems caused by unexpected solutions from users.
-        //
-        if (file_exists($this->sccppath["asterisk"] . "/sccp_custom.conf")) {
-            $this->sccp_conf_init['HEADER'] = array(
-                ";                                                                                ;",
-                ";  It is a very bad idea to add an external configuration file !!!!              ;",
-                ";  This will add problems when solving problems caused by unexpected solutions   ;",
-                ";  from users.                                                                   ;",
-                ";--------------------------------------------------------------------------------;",
-                "#include sccp_custom.conf"
-            );
-        }
-        // ----- It is a very bad idea to add an external configuration file "sccp_custom.conf" !!!!
-        // TODO: Should only rewrite the general section - if users have extensions, this may overwrite
-        // Should read first and then rewrite all existing sections.
-        $this->cnf_wr->writeConfig('sccp.conf', $this->sccp_conf_init);
-    }
-
     function getSccpModelInformation($get = "all", $validate = false, $format_list = "all", $filter = array()) {
         $file_ext = array('.loads', '.sbn', '.bin', '.zup', '.sbin', '.SBN', '.LOADS');
         $dir = $this->sccppath['tftp_firmware_path'];
