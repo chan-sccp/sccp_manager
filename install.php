@@ -15,6 +15,8 @@ global $settingsFromDb;
 global $thisInstaller;
 global $cnf_int;
 global $sccp_compatible;
+global $cnf_wr;
+
 $mobile_hw = '0';
 $autoincrement = (($amp_conf["AMPDBENGINE"] == "sqlite") || ($amp_conf["AMPDBENGINE"] == "sqlite3")) ? "AUTOINCREMENT" : "AUTO_INCREMENT";
 $table_req = array('sccpdevice', 'sccpline', 'sccpsettings');
@@ -1065,6 +1067,7 @@ function cleanUpSccpSettings() {
     global $aminterface;
     global $sccp_compatible;
     global $amp_conf;
+    global $cnf_int;
 
     // Get current default settings from db
     $stmt = $db->prepare("SELECT keyword, sccpsettings.* FROM sccpsettings");
@@ -1148,7 +1151,6 @@ function cleanUpSccpSettings() {
                 unset($settingsFromDb[$key]);
             }
         } else {
-            dbug($sysConfiguration);
             $sysConfiguration[$key]['DefaultValue'] = ($sysConfiguration[$key]['DefaultValue'] == '(null)') ? '' : $sysConfiguration[$key]['DefaultValue'];
             if (array_key_exists($key,$settingsFromDb)) {
                 // Preserve sequence and type
@@ -1157,7 +1159,6 @@ function cleanUpSccpSettings() {
                 $settingsFromDb[$key] = array('keyword' => $key, 'seq' => 0, 'type' => 0, 'data' => '', 'systemdefault' => $sysConfiguration[$key]['DefaultValue']);
             }
         }
-        dbug($settingsFromDb);
         // Override certain chan-sccp defaults as they are based on a non-FreePbx system
         $settingsFromDb['context']['systemdefault'] = 'from-internal';
         $settingsFromDb['directed_pickup']['systemdefault'] = 'no';
@@ -1222,6 +1223,10 @@ function cleanUpSccpSettings() {
                 )";
         $results = $db->query($sql);
     }
+
+    // Now correct sccp.conf to replace any illegal settings
+    $thisInstaller->createDefaultSccpConfig($settingsFromDb, $cnf_int->get('ASTETCDIR'));
+
     // have to correct prior verion sccpline lists for allow/disallow and deny permit. Prior
     // versions used csl, but chan-sccp expects ; separated lists when returned by db.
 
