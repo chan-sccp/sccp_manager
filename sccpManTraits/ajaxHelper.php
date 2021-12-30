@@ -505,7 +505,6 @@ trait ajaxHelper {
                 }
             }
         }
-
         $extSettings = $this->extconfigs->updateTftpStructure(array_merge($this->sccpvalues, $save_settings));
         $save_settings = array_merge($save_settings, $extSettings);
         if (!empty($save_settings)) {

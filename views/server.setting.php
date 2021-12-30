@@ -25,7 +25,6 @@
         $def_val_device = $this->getTableDefaults('sccpdevice');
 
         echo $this->showGroup('sccp_general', 1);
-        echo $this->showGroup('sccp_dev_time_s', 1);
         echo $this->showGroup('sccp_net', 1);
         echo $this->showGroup('sccp_lang', 1);
         echo $this->showGroup('sccp_extpath_config', 1);
