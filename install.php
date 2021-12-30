@@ -15,6 +15,8 @@ global $settingsFromDb;
 global $thisInstaller;
 global $cnf_int;
 global $sccp_compatible;
+global $cnf_wr;
+
 $mobile_hw = '0';
 $autoincrement = (($amp_conf["AMPDBENGINE"] == "sqlite") || ($amp_conf["AMPDBENGINE"] == "sqlite3")) ? "AUTOINCREMENT" : "AUTO_INCREMENT";
 $table_req = array('sccpdevice', 'sccpline', 'sccpsettings');
@@ -1065,6 +1067,7 @@ function cleanUpSccpSettings() {
     global $aminterface;
     global $sccp_compatible;
     global $amp_conf;
+    global $cnf_int;
 
     // Get current default settings from db
     $stmt = $db->prepare("SELECT keyword, sccpsettings.* FROM sccpsettings");
@@ -1220,6 +1223,10 @@ function cleanUpSccpSettings() {
                 )";
         $results = $db->query($sql);
     }
+
+    // Now correct sccp.conf to replace any illegal settings
+    $thisInstaller->createDefaultSccpConfig($settingsFromDb, $cnf_int->get('ASTETCDIR'));
+
     // have to correct prior verion sccpline lists for allow/disallow and deny permit. Prior
     // versions used csl, but chan-sccp expects ; separated lists when returned by db.
 

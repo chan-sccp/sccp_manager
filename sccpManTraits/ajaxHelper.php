@@ -247,7 +247,7 @@ trait ajaxHelper {
                 if (!empty($request['softkey'])) {
                     $id_name = $request['softkey'];
                     unset($this->sccp_conf_init[$id_name]);
-                    $this->createDefaultSccpConfig();
+                    $this->createDefaultSccpConfig($this->sccpvalues, $this->sccppath["asterisk"]);
                     $msg = print_r($this->aminterface->core_sccp_reload(), 1);
                     return array('status' => true, 'table_reload' => true);
                 }
@@ -261,7 +261,7 @@ trait ajaxHelper {
                             $this->sccp_conf_init[$id_name][$keyl] = $request[$keyl];
                         }
                     }
-                    $this->createDefaultSccpConfig();
+                    $this->createDefaultSccpConfig($this->sccpvalues, $this->sccppath["asterisk"]);
 
                     // !TODO!: -TODO-:  Check SIP Support Enabled
                     $this->createSccpXmlSoftkey();
@@ -515,8 +515,8 @@ trait ajaxHelper {
         foreach ($dbSaveArray as $key => $rowToSave) {
             $this->dbinterface->updateTableDefaults($rowToSave['table'], $rowToSave['field'], $rowToSave['Default']);
         }
-
-        $this->createDefaultSccpConfig(); // Rewrite Config.
+        // rewrite sccp.conf
+        $this->createDefaultSccpConfig($this->sccpvalues, $this->sccppath["asterisk"]);
         $save_settings[] = array('status' => true, );
         $this->createDefaultSccpXml();
 
