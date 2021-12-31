@@ -1197,17 +1197,22 @@ $(".sccp-restore").click(function() {
 		return;
 	}
 	if ($(this).is(":checked")) {
-    console.log('restore/checked');
     edit_style.display = 'block';
+    var defaultVal = $(this).data("default");
     if ($(this).data("type") === 'radio') {
         // simulate read only for checkboxes
-       input.forEach(
-          function(radioElement) {
-              radioElement.setAttribute('disabled', true);
-              if (radioElement.hasAttribute('checked')) {
-                  radioElement.removeAttribute('disabled');
-              }
-          }
+        console.log(input);
+        input.forEach(
+            function(radioElement) {
+                radioElement.setAttribute('disabled', true);
+                if (radioElement.value === defaultVal){
+                    radioElement.removeAttribute('disabled');
+                    radioElement.setAttribute('checked', true);
+                } else {
+                    radioElement.setAttribute('disabled', true);
+                    radioElement.removeAttribute('checked');
+                }
+            }
        );
     return;
     }
