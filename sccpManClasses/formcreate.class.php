@@ -94,8 +94,10 @@ class formcreate
                             } else {
                                 // reverting to chan-sccp default values
                                 echo " data-for={$res_id}";
+                                echo " data-type=text";
                                 echo " class=sccp-restore";
                                 echo " id=usedefault_{$res_id}";
+                                echo " data-default={$sccp_defaults[$res_n]['systemdefault']}";
                                 echo " ";
                             }
                             ?>
@@ -398,6 +400,7 @@ class formcreate
                                 // reverting to chan-sccp default values
                                 echo " data-for={$res_id}";
                                 echo " data-type=radio";
+                                echo " data-default={$sccp_defaults[$res_n]['systemdefault']}";
                                 echo " class=sccp-restore";
                                 echo " id=usedefault_{$res_id}";
                                 echo " ";

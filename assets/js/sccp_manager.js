@@ -1187,47 +1187,51 @@ function sleep(milliseconds)
 }
 
 $(".sccp-restore").click(function() {
-  //input is sent by data-for where for is an attribute
-	var id = $(this).data("for"), input = $("#" + id);
-  var edit_style = document.getElementById("edit_" + id).style;
-  if ($(this).data("type") === 'radio') {
-      input = document.getElementsByName(id);
-  }
-	if (input.length === 0) {
-		return;
-	}
-	if ($(this).is(":checked")) {
-    console.log('restore/checked');
-    edit_style.display = 'block';
-    if ($(this).data("type") === 'radio') {
-        // simulate read only for checkboxes
-       input.forEach(
-          function(radioElement) {
-              radioElement.setAttribute('disabled', true);
-              if (radioElement.hasAttribute('checked')) {
+    //input is sent by data-for where for is an attribute
+  	var id = $(this).data("for"), input = $("#" + id);
+    var edit_style = document.getElementById("edit_" + id).style;
+    input = document.getElementsByName(id);
+  	if (input.length === 0) {
+  		 return;
+  	}
+  	if ($(this).is(":checked")) {
+        // Restoring defaults
+        edit_style.display = 'block';
+        var defaultVal = $(this).data("default");
+        if ($(this).data("type") === 'radio') {
+            // simulate read only for checkboxes except default
+            input.forEach(
+                function(radioElement) {
+                    radioElement.setAttribute('disabled', true);
+                    if (radioElement.value === defaultVal){
+                        radioElement.removeAttribute('disabled');
+                        radioElement.setAttribute('checked', true);
+                    } else {
+                        radioElement.removeAttribute('checked');
+                    }
+                }
+            );
+            return;
+        } else if ($(this).data("type") === 'text') {
+            if ((input[0].id === "sccp_bindaddr") || (input[0].id === "sccp_externip")) {
+                // TODO: This is a dirty hack as default value is wrong - need to improve
+                input[0].value = '0.0.0.0';
+            } else {
+            input[0].value = defaultVal;
+            input[0].readOnly = true;
+            }
+        }
+  	} else {
+        // editing for custom value
+        edit_style.display = 'none';
+        if ($(this).data("type") === 'radio') {
+           input.forEach(
+              function(radioElement) {
                   radioElement.removeAttribute('disabled');
               }
-          }
-       );
-    return;
-    }
-		input.prop("readonly", true);
-	} else {
-    console.log('restore/unchecked');
-    edit_style.display = 'none';
-    if ($(this).data("type") === 'radio') {
-        // simulate read only for checkboxes
-       input.forEach(
-          function(radioElement) {
-              radioElement.removeAttribute('disabled');
-          }
-       );
-    return;
-    }
-		input.data("custom", input.val());
-		input.prop("readonly", true);
-		input.val(input.data("default"));
-	}
+           );
+        }
+  	}
 });
 
 $(".sccp-edit").click(function() {
