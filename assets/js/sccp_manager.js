@@ -1190,16 +1190,12 @@ $(".sccp-restore").click(function() {
     //input is sent by data-for where for is an attribute
   	var id = $(this).data("for"), input = $("#" + id);
     var edit_style = document.getElementById("edit_" + id).style;
-    if ($(this).data("type") === 'radio') {
-        input = document.getElementsByName(id);
-    } else if ($(this).data("type") === 'text') {
-        input = document.getElementsByName(id);
-    }
+    input = document.getElementsByName(id);
   	if (input.length === 0) {
-  		return;
+  		 return;
   	}
   	if ($(this).is(":checked")) {
-        console.log("Restore checked");
+        // Restoring defaults
         edit_style.display = 'block';
         var defaultVal = $(this).data("default");
         if ($(this).data("type") === 'radio') {
@@ -1217,10 +1213,16 @@ $(".sccp-restore").click(function() {
             );
             return;
         } else if ($(this).data("type") === 'text') {
+            if ((input[0].id === "sccp_bindaddr") || (input[0].id === "sccp_externip")) {
+                // TODO: This is a dirty hack as default value is wrong - need to improve
+                input[0].value = '0.0.0.0';
+            } else {
             input[0].value = defaultVal;
             input[0].readOnly = true;
+            }
         }
   	} else {
+        // editing for custom value
         edit_style.display = 'none';
         if ($(this).data("type") === 'radio') {
            input.forEach(
@@ -1228,11 +1230,7 @@ $(".sccp-restore").click(function() {
                   radioElement.removeAttribute('disabled');
               }
            );
-        return;
         }
-    		input.data("custom", input.val());
-    		input.prop("readonly", true);
-    		input.val(input.data("default"));
   	}
 });
 
