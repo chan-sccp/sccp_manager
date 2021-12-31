@@ -1187,52 +1187,53 @@ function sleep(milliseconds)
 }
 
 $(".sccp-restore").click(function() {
-  //input is sent by data-for where for is an attribute
-	var id = $(this).data("for"), input = $("#" + id);
-  var edit_style = document.getElementById("edit_" + id).style;
-  if ($(this).data("type") === 'radio') {
-      input = document.getElementsByName(id);
-  }
-	if (input.length === 0) {
-		return;
-	}
-	if ($(this).is(":checked")) {
-    edit_style.display = 'block';
-    var defaultVal = $(this).data("default");
+    //input is sent by data-for where for is an attribute
+  	var id = $(this).data("for"), input = $("#" + id);
+    var edit_style = document.getElementById("edit_" + id).style;
     if ($(this).data("type") === 'radio') {
-        // simulate read only for checkboxes
-        console.log(input);
-        input.forEach(
-            function(radioElement) {
-                radioElement.setAttribute('disabled', true);
-                if (radioElement.value === defaultVal){
-                    radioElement.removeAttribute('disabled');
-                    radioElement.setAttribute('checked', true);
-                } else {
+        input = document.getElementsByName(id);
+    } else if ($(this).data("type") === 'text') {
+        input = document.getElementsByName(id);
+    }
+  	if (input.length === 0) {
+  		return;
+  	}
+  	if ($(this).is(":checked")) {
+        console.log("Restore checked");
+        edit_style.display = 'block';
+        var defaultVal = $(this).data("default");
+        if ($(this).data("type") === 'radio') {
+            // simulate read only for checkboxes except default
+            input.forEach(
+                function(radioElement) {
                     radioElement.setAttribute('disabled', true);
-                    radioElement.removeAttribute('checked');
+                    if (radioElement.value === defaultVal){
+                        radioElement.removeAttribute('disabled');
+                        radioElement.setAttribute('checked', true);
+                    } else {
+                        radioElement.removeAttribute('checked');
+                    }
                 }
-            }
-       );
-    return;
-    }
-		input.prop("readonly", true);
-	} else {
-    console.log('restore/unchecked');
-    edit_style.display = 'none';
-    if ($(this).data("type") === 'radio') {
-        // simulate read only for checkboxes
-       input.forEach(
-          function(radioElement) {
-              radioElement.removeAttribute('disabled');
-          }
-       );
-    return;
-    }
-		input.data("custom", input.val());
-		input.prop("readonly", true);
-		input.val(input.data("default"));
-	}
+            );
+            return;
+        } else if ($(this).data("type") === 'text') {
+            input[0].value = defaultVal;
+            input[0].readOnly = true;
+        }
+  	} else {
+        edit_style.display = 'none';
+        if ($(this).data("type") === 'radio') {
+           input.forEach(
+              function(radioElement) {
+                  radioElement.removeAttribute('disabled');
+              }
+           );
+        return;
+        }
+    		input.data("custom", input.val());
+    		input.prop("readonly", true);
+    		input.val(input.data("default"));
+  	}
 });
 
 $(".sccp-edit").click(function() {
