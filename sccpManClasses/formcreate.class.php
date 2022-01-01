@@ -129,17 +129,11 @@ class formcreate
                             if (empty($res_id)) {
                                 $res_id = $res_name;
                             }
-                            if (!empty($fvalues[$res_n])) {
-                                if (!empty($fvalues[$res_n]['data'])) {
-                                    $value->value = $fvalues[$res_n]['data'];
-                                }
+                            if (!empty($fvalues[$res_n]['data'])) {
+                                $value->value = $fvalues[$res_n]['data'];
                             }
-                            // Default to chan-sccp defaults, not xml defaults.
-                            if (empty($value->value)) {
-                                $value->value = $sccp_defaults[$res_n]['systemdefault'];
-                            }
-                            if ($usingSysDefaults) {
-                                // using system defaults
+                            // Default to chan-sccp defaults, not xml defaults if reverting to defaults or empty
+                            if ((empty($value->value)) || ($usingSysDefaults)) {
                                 $value->value = $sccp_defaults[$res_n]['systemdefault'];
                             }
                             if (empty($value->type)) {
