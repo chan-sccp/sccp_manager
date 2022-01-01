@@ -34,7 +34,7 @@ class formcreate
         if (empty($child->nameseparator)) {
             $child->nameseparator = ' / ';
         }
-        $i = 0;
+
         ?>
         <div class="element-container">
             <div class="row">
@@ -51,6 +51,7 @@ class formcreate
                     }
 
         // Can have multiple inputs for a field which are displayed with a separator
+        $i = 0;
         foreach ($child->xpath('input') as $value) {
             $res_n =  (string)$value->name;
             $res_name = $npref . $res_n;
@@ -72,7 +73,7 @@ class formcreate
             }
             // Output current value
             if (empty($value->value)) {
-                echo "Value not found for {$res_n}";
+                echo "{$res_n} has not been set";
             }
             echo $value->value;
             $i ++;
@@ -85,21 +86,13 @@ class formcreate
                       <span class="radioset">
                         <input type="checkbox"
                             <?php
+                            echo " data-for={$res_id} data-type=text id=usedefault_{$res_id} ";
                             if ($usingSysDefaults) {
                                 // Setting a site specific value
-                                echo " data-for={$res_id}";
-                                echo " class=sccp-edit";
-                                echo " data-type=text";
-                                echo " id=usedefault_{$res_id}";
-                                echo " :checked";
+                                echo "class=sccp-edit :checked ";
                             } else {
                                 // reverting to chan-sccp default values
-                                echo " data-for={$res_id}";
-                                echo " data-type=text";
-                                echo " class=sccp-restore";
-                                echo " id=usedefault_{$res_id}";
-                                echo " data-default={$sccp_defaults[$res_n]['systemdefault']}";
-                                echo " ";
+                                echo "class=sccp-restore data-default={$sccp_defaults[$res_n]['systemdefault']} ";
                             }
                             ?>
                         >
@@ -390,21 +383,13 @@ class formcreate
                       <span class="radioset">
                         <input type="checkbox"
                             <?php
+                            echo " data-for={$res_id} data-type=radio id=usedefault_{$res_id} ";
                             if ($usingSysDefaults) {
                                 // Setting a site specific value
-                                echo " data-for={$res_id}";
-                                echo " data-type=radio";
-                                echo " class=sccp-edit";
-                                echo " id=usedefault_{$res_id}";
-                                echo " :checked";
+                                echo " class=sccp-edit :checked ";
                             } else {
                                 // reverting to chan-sccp default values
-                                echo " data-for={$res_id}";
-                                echo " data-type=radio";
-                                echo " data-default={$sccp_defaults[$res_n]['systemdefault']}";
-                                echo " class=sccp-restore";
-                                echo " id=usedefault_{$res_id}";
-                                echo " ";
+                                echo " data-default={$sccp_defaults[$res_n]['systemdefault']} class=sccp-restore ";
                             }
                             ?>
                         >
