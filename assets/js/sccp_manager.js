@@ -1186,6 +1186,9 @@ function sleep(milliseconds)
     }
 }
 
+// There are 2 dynamically created button Classes
+// sccp_restore for restoring system defaults, and sccp_edit for entering
+// custom values. Clicking on these buttons is handled by the 2 functions below.
 $(".sccp-restore").click(function() {
     //input is sent by data-for where for is an attribute
   	var id = $(this).data("for"), input = $("#" + id);
@@ -1195,7 +1198,9 @@ $(".sccp-restore").click(function() {
   		 return;
   	}
   	if ($(this).is(":checked")) {
+        console.log('restore/checked');
         // Restoring defaults
+        // show the edit block and populate with default values.
         edit_style.display = 'block';
         var defaultVal = $(this).data("default");
         if ($(this).data("type") === 'radio') {
@@ -1205,7 +1210,7 @@ $(".sccp-restore").click(function() {
                     radioElement.setAttribute('disabled', true);
                     if (radioElement.value === defaultVal){
                         radioElement.removeAttribute('disabled');
-                        radioElement.setAttribute('checked', true);
+                        radioElement.checked = true;
                     } else {
                         radioElement.removeAttribute('checked');
                     }
@@ -1221,51 +1226,60 @@ $(".sccp-restore").click(function() {
             input[0].readOnly = true;
             }
         }
-  	} else {
-        // editing for custom value
-        edit_style.display = 'none';
+      } else {
+          console.log('restore/unchecked');
+          edit_style.display = 'none';
+          if ($(this).data("type") === 'radio') {
+              input.forEach(
+                 function(radioElement) {
+                    //Revert to original value as have unchecked customise.
+                    radioElement.checked = radioElement.defaultChecked;
+                    radioElement.name.value = radioElement.name.defaultValue;
+                 }
+              );
+          } else if ($(this).data("type") === 'text') {
+              //Revert to original value as have unchecked customise.
+              input[0].value = input[0].defaultValue;
+          }
+    	}
+});
+
+$(".sccp-edit").click(function() {
+    //input is sent by data-xxx where xxx is an attribute
+    var id = $(this).data("for"), input = $("#" + id);
+    var edit_style = document.getElementById("edit_" + id).style;
+    input = document.getElementsByName(id);
+
+  	if (input.length === 0) {
+  		  return;
+  	}
+  	if ($(this).is(":checked")) {
+        // editing away from the default value
+        console.log('edit/checked');
+        edit_style.display = 'block';
         if ($(this).data("type") === 'radio') {
            input.forEach(
               function(radioElement) {
                   radioElement.removeAttribute('disabled');
               }
            );
+        return;
+      } else if ($(this).data("type") === 'text') {
+          input[0].focus();
+      }
+  	} else {
+        console.log('edit/unchecked');
+        edit_style.display = 'none';
+        if ($(this).data("type") === 'radio') {
+            input.forEach(
+               function(radioElement) {
+                  //Revert to original value as have unchecked customise.
+                  radioElement.checked = radioElement.defaultChecked;
+               }
+            );
+        } else if ($(this).data("type") === 'text') {
+            //Revert to original value as have unchecked customise.
+            input[0].value = input[0].defaultValue;
         }
   	}
-});
-
-$(".sccp-edit").click(function() {
-  //input is sent by data-xxx where xxx is an attribute
-  var id = $(this).data("for"), input = $("#" + id);
-  var edit_style = document.getElementById("edit_" + id).style;
-  if ($(this).data("type") === 'radio') {
-      input = document.getElementsByName(id);
-  }
-	if (input.length === 0) {
-		return;
-	}
-	if ($(this).is(":checked")) {
-    console.log('edit/checked');
-    edit_style.display = 'block';
-    if ($(this).data("type") === 'radio') {
-        // Security - attribute should not exist.
-       input.forEach(
-          function(radioElement) {
-              radioElement.removeAttribute('disabled');
-          }
-       );
-    return;
-    }
-		input.prop("readonly", false);
-    input.focus();
-	} else {
-    console.log('edit/unchecked');
-    edit_style.display = 'none';
-    if ($(this).data("type") === 'radio') {
-        return;
-    }
-		input.data("custom", input.val());
-		input.prop("readonly", true);
-		input.val(input.data("default"));
-	}
 });

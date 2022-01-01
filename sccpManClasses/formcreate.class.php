@@ -89,6 +89,7 @@ class formcreate
                                 // Setting a site specific value
                                 echo " data-for={$res_id}";
                                 echo " class=sccp-edit";
+                                echo " data-type=text";
                                 echo " id=usedefault_{$res_id}";
                                 echo " :checked";
                             } else {
