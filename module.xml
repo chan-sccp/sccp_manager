@@ -28,6 +28,8 @@
 		 * Version 14.3.0.16 * - Test version for freepbx upgrader.
 		 * Version 14.3.0.17 * - Test version for freepbx upgrader.
 		 * Version 14.3.0.18 * - Fix Issue 42
+		 * Version 14.3.0.22 * - Fix Issue 50
+		 * Version 14.3.0.23 * - Fix Issue 49
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>
