@@ -452,11 +452,10 @@ class xmlinterface
 
     function create_SEP_SIP_XML($store_path = '', $data_values = array(), $dev_config = array(), $dev_id = '', $lang_info = array())
     {
-
         $var_xml_general_fields = array('authenticationURL' => 'dev_authenticationURL', 'informationURL' => 'dev_informationURL', 'messagesURL' => 'dev_messagesURL',
             'servicesURL' => 'dev_servicesURL', 'directoryURL' => 'dev_directoryURL', 'proxyServerURL' => 'dev_proxyServerURL', 'idleTimeout' => 'dev_idleTimeout',
             'idleURL' => 'dev_idleURL', 'sshUserId' => 'dev_sshUserId', 'sshPassword' => 'dev_sshPassword',
-            'phonePersonalization' => 'phonePersonalization'
+            'phonePersonalization' => 'phonepersonalization'
         );
         $var_xml_sipProfile = array('phoneLabel' => 'description',
             'transferOnhookEnabled' => 'transferOnhookEnabled', 'enableVad' => 'enableVad', 'voipControlPort' => 'sipport'
