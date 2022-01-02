@@ -92,8 +92,8 @@ class sipconfigs
                         $result[$fpbx_protocol][$if_data['ip']]['ip']=$if_data['ip'];
                     }
                 } else {
-                    $result[$fpbx_protocol][$fpbx_ip]=$fpbx_port_arr;
-                    $result[$fpbx_protocol][$fpbx_ip]['ip']=$fpbx_ip;
+                    $result[$fpbx_protocol][$protocol_ip]=$protocol_port_arr;
+                    $result[$fpbx_protocol][$protocol_ip]['ip']=$protocol_ip;
                 }
             }
         }
