@@ -878,10 +878,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     switch ($tmp_line[0]) {
                         case 'line':
                             $dev_line_data = $this->sipconfigs->get_db_sip_TableData('DeviceById', array('id' => $tmp_line[1]));
-                            $f_linetype = ($dev_line_data['dial'] == 'PJSIP') ? 'pjsip' : 'sip';
+                            $f_linetype = (explode("/",$dev_line_data['dial'])[0] == 'PJSIP') ? 'pjsip' : 'sip';
                             $dev_line_data['sbind'] = $tmp_bind[$f_linetype];
                             if ((!$this->array_key_exists_recursive('udp', $tmp_bind[$f_linetype])) && (!$this->array_key_exists_recursive('tcp', $tmp_bind[$f_linetype]))) {
-                                print_r("Wrong sip server Config ! Not enabled UDP or TCP protocol");
+                                print_r("SIP server configuration error ! Neither UDP nor TCP protocol enabled");
                                 die();
                                 return -1;
                             }

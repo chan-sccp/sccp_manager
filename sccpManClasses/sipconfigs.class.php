@@ -10,7 +10,7 @@ class sipconfigs
 {
 //    protected $database;
 //    protected $freepbx;
-    
+
     public function __construct($parent_class = null)
     {
         $this->paren_class = $parent_class;
@@ -65,99 +65,41 @@ class sipconfigs
 
     public function getSipConfig()
     {
+        // Only called from sccp_manager class when saving SIP device
         $result = array();
-//        $def_sip_proto = 'sip';
-//        $def_proto = 'tcp';
-//        $supp_proto = '';
-        
-//        $result['sipport'] = \FreePBX::Sipsettings()->getConfig('bindport');
-//        $result['tlsport'] = \FreePBX::Sipsettings()->getConfig('tlsbindport');
-//        $tmp_sipsetigs = \FreePBX::Sipsettings()->getChanSipSettings();
+
         $tmp_binds = \FreePBX::Sipsettings()->getBinds();
         $if_list = $this->paren_class ->getIpInformation('ip4');
-        
-/*
-        $tmp_bind_ip = !empty($tmp_sipsetigs['externhost_val']) ? $tmp_sipsetigs['externhost_val'] : '';
-        $tmp_bind_ip = !empty($tmp_sipsetigs['externip_val']) ? $tmp_sipsetigs['externip_val'] : $tmp_bind_ip;
-        $tmp_bind_ip = !empty($tmp_sipsetigs['bindaddr']) ? $tmp_sipsetigs['bindaddr'] : $tmp_bind_ip;
-  */
-        $tmp_binds = is_array($tmp_binds) ? $tmp_binds: array();
-        $result = array();
-        foreach ($tmp_binds as $f_protocol => $f_bind) {
-            foreach ($f_bind as $f_ip => $f_port) {
-                if (($f_ip == '0.0.0.0') || ($f_ip == '[::]')) {
-                    foreach ($if_list as $f_if => $f_data) {
-                        if ($f_data['ip'] == "127.0.0.1") {
+        if (!is_array($tmp_binds)) {
+            // FreePBX has no sip bindings.
+            die_freepbx(_("SIP server configuration error ! No SIP protocols enabled"));
+        }
+        foreach ($tmp_binds as $fpbx_protocol => $fpbx_bind) {
+            foreach ($fpbx_bind as $protocol_ip => $protocol_port_arr) {
+                if (empty($protocol_port_arr)) {
+                    continue;
+                }
+                if (($protocol_ip == '0.0.0.0') || ($protocol_ip == '[::]')) {
+                    foreach ($if_list as $if_type => $if_data) {
+                        if ($if_data['ip'] == "127.0.0.1") {
                             continue;
                         }
-                        if (empty($result[$f_protocol][$f_data['ip']])) {
-                            $result[$f_protocol][$f_data['ip']]= $f_port;
+                        if (empty($result[$fpbx_protocol][$if_data['ip']])) {
+                            $result[$fpbx_protocol][$if_data['ip']]= $protocol_port_arr;
                         } else {
-                            $result[$f_protocol][$f_data['ip']]= array_merge($result[$f_protocol][$f_data['ip']],$f_port);
+                            $result[$fpbx_protocol][$if_data['ip']]= array_merge($result[$fpbx_protocol][$if_data['ip']],$protocol_port_arr);
                         }
-                        $result[$f_protocol][$f_data['ip']]['ip']=$f_data['ip'];
+                        $result[$fpbx_protocol][$if_data['ip']]['ip']=$if_data['ip'];
                     }
                 } else {
-                    $result[$f_protocol][$f_ip]=$f_port;
-                    $result[$f_protocol][$f_ip]['ip']=$f_ip;
+                    $result[$fpbx_protocol][$fpbx_ip]=$fpbx_port_arr;
+                    $result[$fpbx_protocol][$fpbx_ip]['ip']=$fpbx_ip;
                 }
             }
         }
-        return $result;
-/*
-//        $result['sipbind']  =  $tmp_bind_ip;
-        if (empty($tmp_sip_binds[$def_sip_proto])){
-            $def_proto = 'pjsip';
+        if (empty($result)) {
+            die_freepbx(_("SIP server configuration error ! No SIP protocols enabled"));
         }
         return $result;
-
-        foreach ($tmp_sip_binds[$def_sip_proto] as $key => $value) {
-            if (empty($value[$def_proto])) {
-                $def_proto = 'udp';
-                $supp_proto = 'udp';
-            }  else {
-                $supp_proto = !empty($value['udp']) ? 'tcp;udp' : 'tcp';
-            }
-            if (empty($def_key)) {
-                $def_key = $key;
-            }
-            if ($key != '0.0.0.0') {
-                $tmp_bind_ip = $key;
-            }
-            $result['sipbindport'] = $value[$def_proto];
-        }
-        $result['sipbind'] = $tmp_bind_ip;
-        $result['sipsuportproto'] = $supp_proto;
-
-        $binds= array();
-        $driver = \FreePBX::Config()->get_conf_setting('ASTSIPDRIVER');
-            if ($driver == "both" || $driver == "chan_pjsip") {
-                $b = \FreePBX::Sipsettings()->getConfig("binds");
-                $b = is_array($b) ? $b : array();
-                foreach($b as $protocol => $bind) {
-                    foreach($bind as $ip => $state) {
-                        if($state != "on") {
-                            continue;
-                        }
-                        $p = \FreePBX::Sipsettings()->getConfig($protocol."port-".$ip);
-                        $result['nb3'.$protocol] = $p;
-                        if ($flatten) {
-                            $binds['pjsip']['[::]'][$protocol] = $p;
-                        } else {
-                            $binds['pjsip'][$ip][$protocol] = $p;
-                        }
-                    }
-                }
-            } else {
-                $binds['pjsip'] = array("0.0.0.0" => array());
-            }
-
-        $result['nd'] = $driver;
-
-        $result['nb'] = $binds;
-        $result['nb2'] = $b;
-        return $result;
- *
- */
     }
 }

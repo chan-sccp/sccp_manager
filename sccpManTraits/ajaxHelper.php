@@ -649,7 +649,6 @@ trait ajaxHelper {
         $hdr_prefix = 'sccp_hw_';
         $hdr_arprefix = 'sccp_hw-ar_';
         $hdr_vendPrefix = 'vendorconfig_';
-
         $save_buttons = array();
         $save_settings = array();
         $save_codec = array();

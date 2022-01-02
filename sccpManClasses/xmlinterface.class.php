@@ -486,7 +486,6 @@ class xmlinterface
             $xml_template = $data_path . '/templates/SEP0000000000.cnf.xml_79df_sip_template';
         }
         $xml_name = $store_path . '/' . $dev_id . '.cnf.xml';
-        //$sip_bind = $this->get_server_sip_bind($data_values);
         $sip_bind = $data_values['sbind'];
         $bind_proto = 'tcp';
         $bind_ip_def = '';
