@@ -54,7 +54,7 @@ $(document).ready(function () {
                     if (data.message) {
                         bs_alert(data.message,data.status);
                     } else {
-                        fpbxToast(_('Data saved'),_('Data saved'), 'success');
+                        fpbxToast(_('Data saved'),'', 'success');
                     }
                 } else {
                     bs_alert(data.message,data.status);
@@ -86,27 +86,27 @@ $(document).ready(function () {
             url: 'ajax.php?module=sccp_manager&command=' + snd_command,
             data: vdata,
             success: function (data) {
+                // FreePbx handles first and returns its own values removing data sent
+                // so ajaxHandler echos data before return, and appends the ";#;" separator
+                // FreePbx own data is the second json after the separator
+                // without this this function fails as have 2 json fields.
+                data = JSON.parse(data.split(';#;')[0]);
                 if (data.status === true) {
                     if (data.table_reload === true) {
                         $('table').bootstrapTable('refresh');
                     }
-                    if (data.hash != null) {
-                        location.hash = data.hash;
-                    }
-                    if (data.href != null) {
-                        location.href = data.href;
-                    }
-                    if (data.path != null) {
-                        location.path = data.path;
-                    }
-                    if (data.search != null) {
-                        location.search = data.search;
-                    }
+                    var newLocation = location.href;
+                    newLocation = ('path' in data && data.path !== '') ? data.path : location.pathname;
+                    newLocation += ('search' in data && data.search !== '') ? `${data.search}` : `${location.search}`;
+                    // location.hash is set by (".change-tab") at line 198 for settings
+                    newLocation += ('hash' in data && data.hash !== '' ) ? data.hash : location.hash;
                     if (data.message) {
-                        fpbxToast(_('Configuration saved. Reloading Module'),_('Configuration saved'), 'success');
+                        fpbxToast(_(data.message),'', data.toastFlag);
+                        // If posting warning, allow time to read
+                        var toastDelay = (data.toastFlag == 'success') ? 500 : 1500;
                         if (data.reload === true) {
                             //Need setTimout or reload will kill Toast
-                            setTimeout(function(){location.reload();},500);
+                            setTimeout(function(){location.replace(newLocation);},toastDelay);
                         }
                     }
                 } else {
@@ -127,7 +127,6 @@ $(document).ready(function () {
     $(".table").on('click', '.table-js-del', function (e) {
         del_dynamic_table($(this), $(this).data('for'));
     });
-
 
     $(".table").on('click', '.btn-item-delete', function (e) {
         var dev_cmd = '';
@@ -194,7 +193,10 @@ $(document).ready(function () {
     });
 // ---------------------------------------
 
-
+// Set location.hash when changing tabs so that can return to same tab after reload.
+    $(".change-tab").click(function(){
+        window.location.hash = '#' + $(this).attr('data-name');
+    });
 
     $('.btnMultiselect').click(function (e) {
         var kid = $(this).data('id');

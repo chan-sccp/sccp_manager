@@ -517,10 +517,18 @@ trait ajaxHelper {
         }
         // rewrite sccp.conf
         $this->createDefaultSccpConfig($this->sccpvalues, $this->sccppath["asterisk"]);
-        $save_settings[] = array('status' => true, );
         $this->createDefaultSccpXml();
 
-        return $save_settings;
+        $toastFlag = 'success';
+        $msg = 'Data saved';
+        $search = '?display=sccpsettings';
+        $hash = '';
+
+        echo json_encode(array('status' => true, 'message' => $msg, 'reload' => true, 'toastFlag' => $toastFlag, 'search' => $search, 'hash' => $hash)). ";#;" ;
+        ob_flush();
+        flush();
+
+        return $true;
     }
 
     public function getMyConfig($var = null, $id = "noid") {
@@ -646,6 +654,7 @@ trait ajaxHelper {
     }
 
     function saveSccpDevice($get_settings, $validateonly = false) {
+        dbug($get_settings);
         $hdr_prefix = 'sccp_hw_';
         $hdr_arprefix = 'sccp_hw-ar_';
         $hdr_vendPrefix = 'vendorconfig_';
@@ -761,15 +770,28 @@ trait ajaxHelper {
         $this->dbinterface->write('sccpbuttons', $save_buttons, $update_hw, '', $name_dev);
         // Create new XML for this device, and then reset or restart the device
         // so that it loads the file from TFT.
-        $this->createSccpDeviceXML($name_dev);
-        if ($hw_id == 'new') {
-            $this->aminterface->sccpDeviceReset($name_dev, 'reset');
-        } else {
-            $this->aminterface->sccpDeviceReset($name_dev, 'restart');
-        }
         $msg = "Device Saved";
-
-        return array('status' => true, 'message' => $msg, 'reload' => true);
+        $toastFlag = 'success';
+        if (!$this->createSccpDeviceXML($name_dev)){
+            // will only be false if creating SIP SEP with no line.
+            $msg = "Device Saved but SEP config file not created as no SIP line attached to this device";
+            $toastFlag = 'warning';
+        };
+        $hash = '#sipdevice';
+        if ($get_settings['command'] != 'save_sip_device') {
+            $hash = '#sccpdevice';
+            // cannot restart SIP device via chan-sccp.
+            if ($hw_id == 'new') {
+                $this->aminterface->sccpDeviceReset($name_dev, 'reset');
+            } else {
+                $this->aminterface->sccpDeviceReset($name_dev, 'restart');
+            }
+        }
+        $search = '?display=sccp_phone';
+        echo json_encode(array('status' => true, 'message' => $msg, 'reload' => true, 'toastFlag' => $toastFlag, 'search' => $search, 'hash' => $hash)). ";#;" ;
+        ob_flush();
+        flush();
+        return true;
     }
 
 }

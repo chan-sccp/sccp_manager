@@ -870,6 +870,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $sccp_native = false;
                 $tmp_bind = $this->sipconfigs->getSipConfig();
                 $dev_ext_config = $this->dbinterface->getSccpDeviceTableData("SccpDevice", array('name' => $dev_id, 'fields' => 'sip_ext'));
+                if (empty($dev_ext_config)){
+                    // TODO: Placeholder. Have no associated sip line so cannot generate SEP Xml for SIP.
+                    // Need to return and inform user
+                    return false;
+                }
                 $data_value = array_merge($data_value, $dev_ext_config);
                 $data_tmp = explode(';', $dev_ext_config['sip_lines']);
                 $data_value['sbind'] = array();

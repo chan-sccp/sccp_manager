@@ -2,7 +2,7 @@
     "rawname": "sccp_manager",
     "repo": "stable",
     "name": "Sccp Manager",
-    "version": "14.3.0.25",
+    "version": "14.3.0.26",
     "publisher": "Steve Lad",
     "license": "GPL",
     "licenselink": "http://www.gnu.org/licenses/gpl.txt",
@@ -15,7 +15,7 @@
     "supported": {
         "version": "13.0"
     },
-    "location": "https://github.com/chan-sccp/sccp_manager/archive/refs/tags/v14.3.0.25.tar.gz",
+    "location": "https://github.com/chan-sccp/sccp_manager/archive/refs/tags/v14.3.0.26.tar.gz",
     "md5sum": "0da5aac57e47f27e8fad4cfb8c2b5629",
     "packaged": "1641125511"
 }

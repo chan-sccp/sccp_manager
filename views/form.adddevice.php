@@ -101,6 +101,7 @@ if (!empty($def_val['type'])) {
 <form autocomplete="off" name="frm_adddevice" id="frm_adddevice" class="fpbx-submit" action="" method="post" data-id="hw_edit">
     <input type="hidden" name="category" value="adddevice_form">
     <input type="hidden" name="Submit" value="Submit">
+    <input type="hidden" name="sccp_device_typeid" value="sccpdevice">
 
     <?php
     if (empty($dev_id)) {
