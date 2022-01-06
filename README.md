@@ -104,7 +104,10 @@ https://github.com/chan-sccp/sccp_manager/archive/refs/heads/develop.zip
 
 ### Module update to latest state
 
-If you installed the Develop branch, the module can be updated to the latest version via FreePBX. FreePBX -> Admin -> Module Admin.
+If you installed any version >14.3.0.13, the module can be updated to the latest version via FreePBX. The GUI version FreePBX -> Admin -> Module Admin currently has a reported bug, but the upgrade can be made via the command line using
+```
+fwconsole ma upgrade sccp_manager
+```
 
 
 ### IMPORTANT NOTES:
