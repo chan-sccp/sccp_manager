@@ -5,7 +5,6 @@
  * and open the template in the editor.
  */
 // vim: set ai ts=4 sw=4 ft=phtml:
-
 ?>
 
 <div class="fpbx-container container-fluid">
@@ -18,14 +17,14 @@
                     <button id="remove-sccp-sphone" class="btn btn-danger sccp_update btn-tab-select" data-id="delete_hardware" disabled>
                         <i class="glyphicon glyphicon-remove"></i> <span><?php echo _('Delete') ?></span>
                     </button>
-                    <button name="cr_sccp_sphone_xml" class="btn sccp_update btn-default" data-id="create-cnf">
+                    <button name="cr_sip_phone_xml" class="btn sccp_update btn-default" data-id="create-cnf">
                         <i class="glyphicon glyphicon-ok"></i> <span><?php echo _('Create CNF') ?></span>
                     </button>
-                    <button name="reset_sccp_sphone" class="btn sccp_update btn-default" data-id="reset_dev">
-                        <i class="glyphicon glyphicon-ok"></i> <span><?php echo _('Reset Device') ?></span>
-                    </button>
                 </div>
-                <table data-cookie="true" data-cookie-id-table="sccp-sphone" data-url="ajax.php?module=sccp_manager&command=getPhoneGrid&type=cisco-sip" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sip" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list" id="table-sip" data-id="mac">
+                <table data-cookie="true" data-cookie-id-table="sccp-sphone" data-url="ajax.php?module=sccp_manager&command=getPhoneGrid&type=cisco-sip"
+                            data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sip" data-maintain-selected="true"
+                            data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true"
+                            data-search="true" class="table table-striped ext-list" id="table-sip" data-id="name">
                     <thead>
                         <tr>
                             <th data-checkbox="true"></th>
@@ -45,6 +44,21 @@
 </div>
 
 <script>
+
+
+
+    function DispayTypeFormatter(value, row, index) {
+        var exp_model = value;
+        if (row['addon'] !== null ) {
+            var posd = row['addon'].indexOf(';');
+            if (posd >0) {
+                exp_model += ' + 2x ' + row['addon'].substring(0, posd);
+            } else {
+                exp_model += ' + ' + row['addon'];
+            }
+        }
+        return  exp_model;
+    }
     function DispayDeviceActionsKeyFormatterS(value, row, index) {
         var exp_model = '';
         if (row['new_hw'] == "Y") {
@@ -59,33 +73,20 @@
             exp_model += '</a> &nbsp;<a class="btn-item-delete" data-for="hardware" data-id="' + row['name'] + '"><i class="fa fa-trash"></i></a>';
         }
         return  exp_model;
-}
-
-    function DispayTypeFormatter(value, row, index) {
-        var exp_model = value;
-        if (row['addon'] !== null ) {
-            var posd = row['addon'].indexOf(';');
-            if (posd >0) {
-                exp_model += ' + 2x ' + row['addon'].substring(0, posd);
-            } else {
-                exp_model += ' + ' + row['addon'];
-            }
-        }
-        return  exp_model;
     }
-    function LineFormatterS(value, row, index) {
+    function LineFormatter(value, row, index) {
         if (value === null)  {
             return  '-- EMPTY --';
         }
         var data = value.split(";");
         result = '';
         for (var i = 0; i < data.length; i++) {
-          var val = data[i].split(',');
-          if (val[0] === 'line') {
+            var val = data[i].split(',');
+            if (val[0] === 'line') {
               result = result + val[1] + '<br>';
-          }
-    }
+            }
+        }
         return  result;
     }
-
+    
 </script>

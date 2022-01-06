@@ -22,7 +22,7 @@ class dbinterface
 
     public function info()
     {
-        $Ver = '13.0.10';    // This should be updated
+        $Ver = '14.0.0.1';    // This should be updated
         return array('Version' => $Ver,
             'about' => 'Data access interface ver: ' . $Ver);
     }
@@ -44,15 +44,13 @@ class dbinterface
         return $result;
     }
 
-    public function getSccpDeviceTableData($dataid, $data = array())
+    public function getSccpDeviceTableData(string $dataid, $data = array())
     {
         // $stmt is a single row fetch, $stmts is a fetchAll while stmtU is fetchAll UNIQUE
         $stmt = '';
         $stmts = '';
         $stmtU = '';
-        if ($dataid == '') {
-            return false;
-        }
+
         switch ($dataid) {
             case 'extGrid':
                 // only called by getExtensionGrid from hardware.extension.php view
@@ -376,6 +374,36 @@ class dbinterface
                 }
         }
         return $result;
+    }
+    //******** Get SIP settings *******
+    public function getSipTableData(string $dataid, $line='') {
+        global $db;
+        $tech = array();
+        switch ($dataid) {
+            case "DeviceById":
+                // TODO: This needs to be rewritten
+                $stmt = $this->db->prepare("SELECT keyword,data FROM sip WHERE id = '${line}'");
+                $stmt->execute();
+                $tech = $stmt->fetchAll(\PDO::FETCH_COLUMN | \PDO::FETCH_GROUP);
+                foreach ($tech as &$value) {
+                    $value = $value[0];
+                }
+
+                return $tech;
+            case "extensionList";
+                $stmt = $this->db->prepare("SELECT id as name, data as label  FROM sip WHERE keyword = 'callerid' order by name");
+                $stmt->execute();
+                $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                /*
+                foreach ($result as $value) {
+                    if (empty($tech[$value['id']]['id'])) {
+                        $tech[$value['id']]['id']= $value['id'];
+                    }
+                    $tech[$value['id']][$value['keyword']]=$value['data'];
+                }
+                */
+                return $result;
+        }
     }
 
     /*

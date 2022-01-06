@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.3.0.26</version>
+	<version>14.3.0.27</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -30,6 +30,9 @@
 		 * Version 14.3.0.18 * - Fix Issue 42
 		 * Version 14.3.0.22 * - Fix Issue 50
 		 * Version 14.3.0.23 * - Fix Issue 49
+		 * Version 14.3.0.25 * - Fix Issue 55
+		 * Version 14.3.0.26 * - Fix Issue 54
+		 * Version 14.3.0.27 * - Standardise treatment of SIP and SCCP hardware.
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>

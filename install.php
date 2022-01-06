@@ -641,7 +641,7 @@ function InstallDB_updateSchema($db_config)
               ('Nokia E', 'Nokia', 1, 28, '', 'loadInformation275', 0, NULL),
               ('VGC Phone', 'CISCO', 1, 1, '', 'loadInformation10', 0, NULL),
               ('7911-sip', 'CISCO-SIP', 1, 1, 'SIP11.9-2-1S', 'loadInformation307', 1, 'SEP0000000000.cnf.xml_791x_sip_template'),
-              ('9951-sip', 'CISCO-SIP', 1, 1, 'sip9951.9-2-2SR1-9', 'loadinformation537', 1, 'SEP0000000000.cnf.xml_99xx_sip_template'),
+              ('9951-sip', 'CISCO-SIP', 1, 5, 'sip9951.9-2-2SR1-9', 'loadinformation537', 1, 'SEP0000000000.cnf.xml_99xx_sip_template'),
               ('VGC Virtual', 'CISCO', 1, 1, '', 'loadInformation11', 0, NULL);";
     $check = $db->query($sql);
     if (DB::IsError($check)) {

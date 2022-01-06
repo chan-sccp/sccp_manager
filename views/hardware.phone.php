@@ -81,8 +81,7 @@
             exp_model += '</a> &nbsp;<a class="btn-item-delete" data-for="hardware" data-id="' + row['name'] + '"><i class="fa fa-trash"></i></a>';
         }
         return  exp_model;
-}
-
+    }
     function LineFormatter(value, row, index) {
         if (value === null)  {
             return  '-- EMPTY --';
@@ -90,11 +89,11 @@
         var data = value.split(";");
         result = '';
         for (var i = 0; i < data.length; i++) {
-          var val = data[i].split(',');
-          if (val[0] === 'line') {
+            var val = data[i].split(',');
+            if (val[0] === 'line') {
               result = result + val[1] + '<br>';
-          }
-    }
+            }
+        }
         return  result;
     }
 

@@ -27,6 +27,7 @@ if (!empty($_REQUEST['new_id'])) {
 if (!empty($_REQUEST['id'])) {
     // Editing an existing Device. Overwrite any defaults that are already set for this device.
     $dev_id = $_REQUEST['id'];
+
     $db_res = $this->dbinterface->getSccpDeviceTableData('get_sccpdevice_byid', array("id" => $dev_id));
     foreach ($db_res as $key => $val) {
         if (!empty($val)) {
@@ -101,28 +102,49 @@ if (!empty($def_val['type'])) {
 <form autocomplete="off" name="frm_adddevice" id="frm_adddevice" class="fpbx-submit" action="" method="post" data-id="hw_edit">
     <input type="hidden" name="category" value="adddevice_form">
     <input type="hidden" name="Submit" value="Submit">
-    <input type="hidden" name="sccp_device_typeid" value="sccpdevice">
 
     <?php
+
     if (empty($dev_id)) {
         echo '<input type="hidden" name="sccp_deviceid" value="new">';
     } else {
         $val = str_replace(array('SEP','ATA','VG'), '', $dev_id);
         $val = implode(':', sscanf($val, '%2s%2s%2s%2s%2s%2s')); // Convert to Cisco display Format
         $def_val['mac'] = array("keyword" => 'mac', "data" => $val, "seq" => "99");
-        echo '<input type="hidden" name="sccp_deviceid" value="'.$dev_id.'">';
+        echo '<input type="hidden" name="sccp_device_id" value="'.$dev_id.'">';
     }
-    if (empty($dev_id)) {
-        echo $this->showGroup('sccp_hw_dev', 1, 'sccp_hw', $def_val);
-    } else {
-        echo $this->showGroup('sccp_hw_dev_edit', 1, 'sccp_hw', $def_val);
+
+    if ($_REQUEST['tech_hardware'] == 'cisco') {
+        echo '<input type="hidden" name="sccp_device_typeid" value="sccpdevice">';
+        if (empty($dev_id)) {
+            echo $this->showGroup('sccp_hw_dev', 1, 'sccp_hw', $def_val);
+        } else {
+            echo $this->showGroup('sccp_hw_dev_edit', 1, 'sccp_hw', $def_val);
+        }
+        echo $this->showGroup('sccp_hw_dev2', 1, 'sccp_hw', $def_val);
+        echo $this->showGroup('sccp_hw_dev_advance', 1, 'sccp_hw', $def_val);
+        echo $this->showGroup('sccp_hw_dev_softkey', 1, 'sccp_hw', $def_val);
+        // echo $this->showGroup('sccp_hw_dev_pickup', 1, 'sccp_hw', $def_val); This are line properties and does not exist!
+        echo $this->showGroup('sccp_hw_dev_conference', 1, 'sccp_hw', $def_val);
+        echo $this->showGroup('sccp_dev_vendor_conf', 1, 'vendorconfig', $def_val);
+        echo $this->showGroup('sccp_hw_dev_network', 1, 'sccp_hw', $def_val);
+
+    } else if ($_REQUEST['tech_hardware'] == 'cisco-sip') {
+        echo '<input type="hidden" name="sccp_device_typeid" value="sipdevice">';
+        /*
+        if (empty($dev_new)) {
+            echo '<input type="hidden" name="sccp_deviceid" value="new">';
+        } else {
+            echo '<input type="hidden" name="sccp_deviceid" value="'.$dev_id.'">';
+        }
+        */
+        if (empty($dev_id)) {
+            echo $this->showGroup('sccp_hw_sip_dev', 1, 'sccp_hw', $def_val);
+        } else {
+            echo $this->showGroup('sccp_hw_dev_edit', 1, 'sccp_hw', $def_val);
+        }
+        echo $this->showGroup('sccp_hw_sip_dev2', 1, 'sccp_hw', $def_val);
+        echo $this->showGroup('sccp_hw_sip_conf', 1, 'sccp_hw', $def_val);
     }
-    echo $this->showGroup('sccp_hw_dev2', 1, 'sccp_hw', $def_val);
-    echo $this->showGroup('sccp_hw_dev_advance', 1, 'sccp_hw', $def_val);
-    echo $this->showGroup('sccp_hw_dev_softkey', 1, 'sccp_hw', $def_val);
-    // echo $this->showGroup('sccp_hw_dev_pickup', 1, 'sccp_hw', $def_val); This are line properties and does not exist!
-    echo $this->showGroup('sccp_hw_dev_conference', 1, 'sccp_hw', $def_val);
-    echo $this->showGroup('sccp_dev_vendor_conf', 1, 'vendorconfig', $def_val);
-    echo $this->showGroup('sccp_hw_dev_network', 1, 'sccp_hw', $def_val);
     ?>
 </form>

@@ -727,11 +727,17 @@ class formcreate
                 $select_opt= $model_list;
                 break;
             case 'SDML':
+                // Sccp extensions
                 $assignedExts = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData('getAssignedExtensions');
                 $select_opt = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData('SccpExtension');
                 foreach ($assignedExts as $name => $nameArr ) {
                       $select_opt[$name]['label'] .= " -  in use";
                 }
+                $child->default = $fvalues['defaultLine'];
+                break;
+            case 'SDMF':
+                // Sip extensions
+                $select_opt = \FreePBX::Sccp_manager()->dbinterface->getSipTableData('extensionList');
                 $child->default = $fvalues['defaultLine'];
                 break;
             case 'SDE':

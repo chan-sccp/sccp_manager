@@ -654,7 +654,6 @@ trait ajaxHelper {
     }
 
     function saveSccpDevice($get_settings, $validateonly = false) {
-        dbug($get_settings);
         $hdr_prefix = 'sccp_hw_';
         $hdr_arprefix = 'sccp_hw-ar_';
         $hdr_vendPrefix = 'vendorconfig_';
@@ -778,7 +777,7 @@ trait ajaxHelper {
             $toastFlag = 'warning';
         };
         $hash = '#sipdevice';
-        if ($get_settings['command'] != 'save_sip_device') {
+        if ($get_settings['sccp_device_typeid'] != 'sipdevice') {
             $hash = '#sccpdevice';
             // cannot restart SIP device via chan-sccp.
             if ($hw_id == 'new') {

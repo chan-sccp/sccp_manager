@@ -6,34 +6,26 @@
  * and open the template in the editor.
  */
 $forminfo =array(
-                array("name" => "dev_buttons", 'label' =>"Buttons Configuration"),
-                array("name" => "button", 'label'=>"Buttons ", 'help' => "help.")
-    );
+                array('name'=>'dev_buttons', 'label'=>'Buttons Configuration'),
+                array('name'=>'button', 'label'=>'Buttons', 'help'=>'help')
+                );
 //$buttons_type=  array("empty","line","service","feature","speeddial");
 //   "feature","service" -- Add leter !
 $buttons_type=  array("empty","line","silent","monitor","speeddial","feature","adv.line");
 $feature_list=  array('parkinglot'=>'Park Slots','monitor'=> "Record Calls",'devstate'=> "Change Status");
-/*
-   button = feature,PDefault,ParkingLot,default,RetrieveSingle
-            feature,P.slot,parkinglot,P.slot,
 
- */
+if ($_REQUEST['tech_hardware'] === 'cisco') {
+    $lines_list = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
+} else {
+    $lines_list = $this->dbinterface->getSipTableData('extensionList');
+}
 
-$lines_list = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
 $hint_list  = $this->getHintInformation(true, array('context'=>'park-hints')) ;
 
-
-/* REQUEST for new device
-[display] => sccp_phone
-[tech_hardware] => cisco
-[extdisplay] =>
-*/
-
-// print_r($hint_list);
 $line_id =0;
 $max_buttons =56;     //Don't know hardware type so set a maximum. On save, this is set to actual max buttons
 $show_buttons =1;
-//print_r($hint_list);
+
 if (!empty($_REQUEST['id'])) {
     $dev_id = $_REQUEST['id'];
     $db_buttons = $this->dbinterface->getSccpDeviceTableData('get_sccpdevice_buttons', array("id" => $dev_id));

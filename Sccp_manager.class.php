@@ -320,11 +320,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $this->pagedata = array(
                     "general" => array(
                         "name" => _("Sip device configuration"),
-                        "page" => 'views/form.addsdevice.php'
+                        "page" => 'views/form.adddevice.php'
                     ),
                     "buttons" => array(
                         "name" => _("Sip device Buttons"),
-                        "page" => 'views/form.sbuttons.php'
+                        "page" => 'views/form.buttons.php'
                     )
                 );
                 break;
@@ -854,11 +854,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      *          Create  (SEP) dev_ID.cnf.xml
      */
 
-    function createSccpDeviceXML($dev_id = '') {
+    function createSccpDeviceXML(string $dev_id) {
 
-        if (empty($dev_id)) {
-            return false;
-        }
         $sccp_native = true;
         $data_value = array();
         $dev_line_data = null;
@@ -868,7 +865,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if (!empty($dev_config['type'])) {
             if (strpos($dev_config['type'], 'sip') !== false) {
                 $sccp_native = false;
-                $tmp_bind = $this->sipconfigs->getSipConfig();
+                $tmp_bind = $this->getSipConfig();
                 $dev_ext_config = $this->dbinterface->getSccpDeviceTableData("SccpDevice", array('name' => $dev_id, 'fields' => 'sip_ext'));
                 if (empty($dev_ext_config)){
                     // TODO: Placeholder. Have no associated sip line so cannot generate SEP Xml for SIP.
@@ -882,15 +879,13 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     $tmp_line = explode(',', $value);
                     switch ($tmp_line[0]) {
                         case 'line':
-                            $dev_line_data = $this->sipconfigs->get_db_sip_TableData('DeviceById', array('id' => $tmp_line[1]));
-                            $f_linetype = (explode("/",$dev_line_data['dial'])[0] == 'PJSIP') ? 'pjsip' : 'sip';
+                            $dev_line_data = $this->dbinterface->getSipTableData('DeviceById', $tmp_line[1]);
+                            $f_linetype = ($dev_line_data['sipdriver'] == 'chan_sip') ? 'sip' : 'pjsip';
                             $dev_line_data['sbind'] = $tmp_bind[$f_linetype];
                             if ((!$this->array_key_exists_recursive('udp', $tmp_bind[$f_linetype])) && (!$this->array_key_exists_recursive('tcp', $tmp_bind[$f_linetype]))) {
-                                print_r("SIP server configuration error ! Neither UDP nor TCP protocol enabled");
-                                die();
-                                return -1;
+                                die_freepbx(_("SIP server configuration error ! Neither UDP nor TCP protocol enabled"));
+                                return false;
                             }
-
                             if (!empty($dev_line_data)) {
                                 $data_value['siplines'][] = $dev_line_data;
                             }

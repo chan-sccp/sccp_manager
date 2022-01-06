@@ -1385,6 +1385,82 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
     </page_group>
 
+    <page_group name="sccp_hw_sip_dev2">
+        <label>Device configuration</label>
+        <item type="IE" id="1" seq="99">
+            <label>Device Label</label>
+            <input>
+                <name>description</name>
+                <default>000000000</default>
+                <class>sccp-custom</class>
+                <options pattern="[0-9a-zA-Z]+"/>
+            </input>
+            <help>The information in the upper right corner of the device screen. Only English letters and digits !</help>
+        </item>
+        <item type="SDMF" id="1" seq="100">
+            <label>Default Line</label>
+            <name>defaultLine</name>
+            <default></default>
+            <select name="name" addlabel='label' dataid="name" dataval="label">model</select>
+            <class>lineSelect form-control</class>
+            <help>Select the default line for this device</help>
+        </item>
+        <item type="SLK" id="2" seq="99">
+            <label>Soft Keyset</label>
+            <name>softkeyset</name>
+            <default>default</default>
+            <select></select>
+            <help>System Default Softkey</help>
+        </item>
+        <item type="SLZ" id="3" seq="98">
+            <label>Time Zone offset</label>
+            <name>tzoffset</name>
+            <default>00</default>
+            <select></select>
+            <help>Time Zone offset</help>
+        </item>
+        <item type="SLTD" id="5" seq="98">
+            <label>SCCP Phone Device Language</label>
+            <name>devlang</name>
+            <default>English_United_States</default>
+            <select> </select>
+            <help>The user locale allows the phone to display text (menu items, soft keys etc.) native to the phone's language. If No language packs found is shown, you need to add locales in the tftp server</help>
+        </item>
+        <item type="SLTN" id="4" seq="98">
+            <label>SCCP Network Device Language</label>
+            <name>netlang</name>
+            <default>English_United_States</default>
+            <select></select>
+            <help>The Network locales allows the phone to play tones (ringing, busy etc.) native to the phone's country. If No language packs found is shown, you need to add locales in the tftp server</help>
+        </item>
+        <item type="IS" id="11" seq="98">
+            <name>phonepersonalization</name>
+            <label>Allow push background from server </label>
+            <default></default>
+            <button value="1">Enabled</button>
+            <button value="0">Disabled</button>
+            <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
+        </item>
+        <item type="IE" id="6" seq="99">
+            <label>Background Image</label>
+            <input>
+                <name>backgroundImage</name>
+                <default></default>
+                <class>sccp-custom</class>
+            </input>
+            <help>For phones that can display background images - display this one. Default is [empty]</help>
+        </item>
+        <item type="IE" id="7" seq="99">
+            <label>Ringtone</label>
+            <input>
+                <name>ringtone</name>
+                <default></default>
+                <class>sccp-custom</class>
+            </input>
+            <help>The ringtone that the phone will default to. Can be overridden in the phone. The files RINGLIST.XML provides the basic phone ring tones, while DISTINCTIVERINGLIST.XML defines the list of possible ring tones for your other line types. They, along with the actual 'raw' ringtones, are stored in the /tftpboot/ringtones directory with the rest of the config files.</help>
+        </item>
+    </page_group>
+
     <page_group name="sccp_hw_dev_button">
         <label>Buttons Configuration</label>
         <item type="IE" id="1" seq="99">
