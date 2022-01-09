@@ -45,6 +45,7 @@ trait ajaxHelper {
         $request = $_REQUEST;
         $msg = array();
         $cmd_id = $request['command'];
+        dbug('ajax', $cmd_id);
         switch ($cmd_id) {
             case 'savesettings':
                 // Consolidate this into a separate method to improve legibility

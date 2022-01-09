@@ -208,6 +208,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
     }
 
+    public function showPage() {
+        dbug('showPage called', $_REQUEST);
+        return;
+    }
+
     /*
      *  Show form information - General
      */
@@ -306,6 +311,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     public function phoneShowPage() {
+        dbug($_REQUEST);
+        dbug(debug_backtrace(0));
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
         $inputform = !empty($request['tech_hardware']) ? $request['tech_hardware'] : '';
