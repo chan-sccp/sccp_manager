@@ -17,13 +17,17 @@
     class="table">
     <thead>
         <tr>
-              <th data-sortable="true" data-field="mac"><?php echo _('SEP ID')?></th>
+              <th data-sortable="true" data-field="name"><?php echo _('SEP ID')?></th>
               <th data-sortable="true" data-field="description"><?php echo _('Descriptions')?></th>
         </tr>
     </thead>
 </table>
 <script type="text/javascript">
     $("#sccpnavgrid").on('click-row.bs.table',function(e,row,elem){
-        window.location = '?display=sccp_phone&tech_hardware=cisco&id='+row['mac'];
+        if (row['new_hw'] == 'Y' ) {
+            window.location = '?display=sccp_phone&tech_hardware=cisco&new_id=' +row['name'] +'&' +row['type'];
+        } else {
+            window.location = '?display=sccp_phone&tech_hardware=cisco&id='+row['name'];
+        };
     })
 </script>
