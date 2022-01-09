@@ -11,7 +11,6 @@
 <table id="sccpnavgrid"
     data-search="true"
     data-toolbar="#toolbar-sccp-rnav"
-    data-url="ajax.php?module=sccp_manager&command=getPhoneGrid&type=sccp"
     data-cache="false"
     data-toggle="table"
     class="table">
@@ -22,7 +21,13 @@
         </tr>
     </thead>
 </table>
+
 <script type="text/javascript">
+
+    $(function() {
+        $('#sccpnavgrid').bootstrapTable({data: <?php echo $data ?>});
+    })
+
     $("#sccpnavgrid").on('click-row.bs.table',function(e,row,elem){
         if (row['new_hw'] == 'Y' ) {
             window.location = '?display=sccp_phone&tech_hardware=cisco&new_id=' +row['name'] +'&' +row['type'];

@@ -187,7 +187,7 @@ $(document).ready(function () {
     $('.dropdown-menu a.dropitem').on("click", function (e) {
 
         $(this).parents('div.btn-group').find('.dropdown_capture').text($(this).text());
-//        console.log($(this).data('id'));
+        //console.log($(this).data('id'));
         ref_url = "ajax.php?module=sccp_manager&command=getDeviceModel&type=" + $(this).data('id');
         $('#table-models').bootstrapTable('refresh', {url: ref_url});
     });

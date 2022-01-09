@@ -31,7 +31,7 @@
                         <i class="glyphicon glyphicon-ok"></i> <span><?php echo _('Reset Token Device') ?></span>
                     </button>
                 </div>
-                <table data-cookie="true" data-cookie-id-table="sccp-phone" data-url="ajax.php?module=sccp_manager&command=getPhoneGrid&type=sccp"
+                <table data-cookie="true" data-cookie-id-table="sccp-phone" id="table-sccp-phone"
                             data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sccp" data-maintain-selected="true"
                             data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true"
                             data-search="true" class="table table-striped ext-list" id="table-sccp" data-id="name">
@@ -54,6 +54,11 @@
 </div>
 
 <script>
+
+    $(function() {
+        $('#table-sccp-phone').bootstrapTable({data: <?php echo $this->sccpPhoneData ?>});
+    })
+
     function DispayTypeFormatter(value, row, index) {
         var exp_model = value;
         if (row['addon'] !== null ) {

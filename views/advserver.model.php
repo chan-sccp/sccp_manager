@@ -36,7 +36,7 @@ global $amp_conf;
                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file_<?php echo $requestType; ?>"><i class="fa fa-bolt"></i> <?php echo _("Update Files from Provisioner"); ?>
                     </button>
                 </div>
-                <table data-cookie="true" data-row-style="SetRowColor" data-cookie-id-table="sccp_model-all" data-url="ajax.php?module=sccp_manager&command=getDeviceModel&type=enabled" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-model" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-condensed" id="table-models" data-id="model" data-unique-id="model">
+                <table data-cookie="true" data-row-style="SetRowColor" data-cookie-id-table="sccp_model-all" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-model" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-condensed" id="table-models" data-id="model" data-unique-id="model">
                    <thead>
                         <tr>
                             <th data-checkbox="true"></th>
@@ -263,9 +263,27 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
     </div>
 </div>
 
-
-
 <script>
+
+    $(function() {
+        $('#table-models').bootstrapTable({data: <?php echo $this->deviceModelData ?>});
+    })
+
+    function load_model(elmnt,clr) {
+        var drow = $("#table-models").bootstrapTable('getRowByUniqueId',clr);
+        if (drow == null) {
+            alert(drow);
+        } else {
+            document.getElementById("editd_model").value = clr;
+            document.getElementById("editd_loadimage").value = drow['loadimage'];
+            document.getElementById("editd_nametemplate").value = drow['nametemplate'];
+            document.getElementById("editd_loadinformationid").value = drow['loadinformationid'];
+            document.getElementById("editd_dns").value = drow['dns'];
+            document.getElementById("editd_vendor").value = drow['vendor'];
+            document.getElementById("editd_buttons").value = drow['buttons'];
+        }
+    }
+    
     function StatusIconFormatter(value, row) {
         return (value === '1') ? '<i class="fa fa-check-square-o" style="color:green" title="<?php echo _("Device is enabled")?>"></i>' : '<i class="fa fa-square-o" title="<?php echo _("Device is disabled")?>"></i>';
     }
@@ -273,10 +291,6 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
         var exp_model = ['Expansion Module', 'Not Available', 'One ExpModule', 'Two ExpModule'];
         return  exp_model[value];
     }
-
-//    function DispayInputFormatter(value, row, index) {
-//        return  (value == null) ?  '<input class="tabl-edit form-control" name="' + row['model'] + '_template" type="text" value="">'  : '<input class="tabl-edit form-control" name="' + row['model'] + '_template" type="text" value="' + value + '">';
-//    }
 
     function DispayActionsModelFormatter(value, row, index) {
         var exp_model = '';
@@ -312,19 +326,5 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
         return {classes: tclass};
     }
 
-    function load_model(elmnt,clr) {
-//        $("#edit_devmodel").text(clr);
-        var drow = $("#table-models").bootstrapTable('getRowByUniqueId',clr);
-        if (drow == null) {
-            alert(drow);
-        } else {
-            document.getElementById("editd_model").value = clr;
-            document.getElementById("editd_loadimage").value = drow['loadimage'];
-            document.getElementById("editd_nametemplate").value = drow['nametemplate'];
-            document.getElementById("editd_loadinformationid").value = drow['loadinformationid'];
-            document.getElementById("editd_dns").value = drow['dns'];
-            document.getElementById("editd_vendor").value = drow['vendor'];
-            document.getElementById("editd_buttons").value = drow['buttons'];
-        }
-    }
+
 </script>

@@ -265,6 +265,7 @@ trait helperfunctions {
         return true;
     }
 
+
     public function getChanSccpSettings() {
         // This is a utility function for debug only, and is not used by core code
         foreach (array('general','line', 'device') as $section) {

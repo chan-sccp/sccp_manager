@@ -21,7 +21,7 @@
                         <i class="glyphicon glyphicon-ok"></i> <span><?php echo _('Create CNF') ?></span>
                     </button>
                 </div>
-                <table data-cookie="true" data-cookie-id-table="sccp-sphone" data-url="ajax.php?module=sccp_manager&command=getPhoneGrid&type=cisco-sip"
+                <table data-cookie="true" data-cookie-id-table="sccp-sphone" id="table-sip-phone"
                             data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-sip" data-maintain-selected="true"
                             data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true"
                             data-search="true" class="table table-striped ext-list" id="table-sip" data-id="name">
@@ -45,7 +45,9 @@
 
 <script>
 
-
+    $(function() {
+        $('#table-sip-phone').bootstrapTable({data: <?php echo $this->sipPhoneData ?>});
+    })
 
     function DispayTypeFormatter(value, row, index) {
         var exp_model = value;
@@ -88,5 +90,5 @@
         }
         return  result;
     }
-    
+
 </script>
