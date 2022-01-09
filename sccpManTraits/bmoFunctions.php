@@ -153,6 +153,8 @@ trait bmoFunctions {
                     $final = $this->sccp_conf_init[$id];
                 }
             }
+
+            $i++;
         }
         return $final;
     }

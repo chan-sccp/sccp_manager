@@ -110,7 +110,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if ($freepbx == null) {
             throw new Exception("Not given a FreePBX Object");
         }
-
+        dbug('__construct called', debug_backtrace(2));
         $this->class_error = array();
         $this->FreePBX = $freepbx;
         $this->db = $freepbx->Database;
@@ -206,6 +206,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $value = $TZdata['offset']/60;   // TODO: Is this correct (storing in hours not minutes)
             $this->sccpvalues['tzoffset'] = array('keyword' => 'tzoffset', 'seq'=>98, 'type' => 2, 'data' => $value);
         }
+    }
+
+    public function showPage() {
+        dbug('showPage called', $_REQUEST);
+        return;
     }
 
     /*
@@ -306,6 +311,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     public function phoneShowPage() {
+        dbug($_REQUEST);
+        dbug(debug_backtrace(0));
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
         $inputform = !empty($request['tech_hardware']) ? $request['tech_hardware'] : '';
