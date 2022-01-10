@@ -106,7 +106,7 @@ $(document).ready(function () {
                         var toastDelay = (data.toastFlag == 'success') ? 500 : 1500;
                         if (data.reload === true) {
                             //Need setTimout or reload will kill Toast
-                            setTimeout(function(){location.replace(newLocation);},toastDelay);
+                            setTimeout(function(){location.replace(newLocation);location.reload()},toastDelay);
                         }
                     }
                 } else {

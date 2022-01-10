@@ -56,10 +56,7 @@ trait ajaxHelper {
 
                 // TODO: Need to be more specific on reload and only reload if critical settings changed.
                 $res = $this->aminterface->core_sccp_reload();
-                $msg [] = array ("Config Saved: {$res['Response']}", "Info : {$res['data']}");
-
-                // !TODO!: It is necessary in the future to check, and replace all server responses on correct messages. Use _(msg)
-                return array('status' => true, 'message' => $msg, 'reload' => true);
+                return true;
                 break;
             case 'save_sip_device':
             case 'save_device':
@@ -527,8 +524,6 @@ trait ajaxHelper {
         echo json_encode(array('status' => true, 'message' => $msg, 'reload' => true, 'toastFlag' => $toastFlag, 'search' => $search, 'hash' => $hash)). ";#;" ;
         ob_flush();
         flush();
-
-        return $true;
     }
 
     public function getMyConfig($var = null, $id = "noid") {
