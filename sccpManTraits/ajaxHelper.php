@@ -56,12 +56,11 @@ trait ajaxHelper {
 
                 // TODO: Need to be more specific on reload and only reload if critical settings changed.
                 $res = $this->aminterface->core_sccp_reload();
-                return true;
+                return array('status' => true, 'message' => 'Data saved', 'reload' => true, 'toastFlag' => 'success', 'search' => '?display=sccpsettings', 'hash' => '');
                 break;
             case 'save_sip_device':
             case 'save_device':
-                $this->saveSccpDevice($request);
-                return array('status' => true, 'search' => '?display=sccp_phone', 'hash' => 'sccpdevice');
+                return $this->saveSccpDevice($request);
                 break;
             case 'save_ruser':
                 //$res = $request;
@@ -515,15 +514,6 @@ trait ajaxHelper {
         // rewrite sccp.conf
         $this->createDefaultSccpConfig($this->sccpvalues, $this->sccppath["asterisk"]);
         $this->createDefaultSccpXml();
-
-        $toastFlag = 'success';
-        $msg = 'Data saved';
-        $search = '?display=sccpsettings';
-        $hash = '';
-
-        echo json_encode(array('status' => true, 'message' => $msg, 'reload' => true, 'toastFlag' => $toastFlag, 'search' => $search, 'hash' => $hash)). ";#;" ;
-        ob_flush();
-        flush();
     }
 
     public function getMyConfig($var = null, $id = "noid") {
@@ -782,10 +772,7 @@ trait ajaxHelper {
             }
         }
         $search = '?display=sccp_phone';
-        echo json_encode(array('status' => true, 'message' => $msg, 'reload' => true, 'toastFlag' => $toastFlag, 'search' => $search, 'hash' => $hash)). ";#;" ;
-        ob_flush();
-        flush();
-        return true;
+        return array('status' => true, 'message' => $msg, 'reload' => true, 'toastFlag' => $toastFlag, 'search' => $search, 'hash' => $hash);
     }
 
 }

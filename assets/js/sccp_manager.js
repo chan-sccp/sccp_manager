@@ -86,11 +86,6 @@ $(document).ready(function () {
             url: 'ajax.php?module=sccp_manager&command=' + snd_command,
             data: vdata,
             success: function (data) {
-                // FreePbx handles first and returns its own values removing data sent
-                // so ajaxHandler echos data before return, and appends the ";#;" separator
-                // FreePbx own data is the second json after the separator
-                // without this this function fails as have 2 json fields.
-                data = JSON.parse(data.split(';#;')[0]);
                 if (data.status === true) {
                     if (data.table_reload === true) {
                         $('table').bootstrapTable('refresh');
@@ -105,8 +100,13 @@ $(document).ready(function () {
                         // If posting warning, allow time to read
                         var toastDelay = (data.toastFlag == 'success') ? 500 : 1500;
                         if (data.reload === true) {
-                            //Need setTimout or reload will kill Toast
-                            setTimeout(function(){location.replace(newLocation);location.reload()},toastDelay);
+                            setTimeout(function(){
+                                location.replace(newLocation);
+                                if (data.search == `?display=sccpsettings`) {
+                                    location.reload();
+                                }
+                            },
+                            toastDelay);
                         }
                     }
                 } else {
