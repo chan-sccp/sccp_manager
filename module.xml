@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.3.0.28</version>
+	<version>14.3.0.29</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -34,6 +34,7 @@
 		 * Version 14.3.0.26 * - Fix Issue 54
 		 * Version 14.3.0.27 * - Standardise treatment of SIP and SCCP hardware.
 		 * Version 14.3.0.28 * - Fix issue with RNav which caused exception with new device
+		 * Version 14.3.0.29 * - Fix issue reloading page after saving settings and not restarting devices.
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<supported>
