@@ -110,7 +110,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if ($freepbx == null) {
             throw new Exception("Not given a FreePBX Object");
         }
-        dbug('__construct called', debug_backtrace(2));
+
         $this->class_error = array();
         $this->FreePBX = $freepbx;
         $this->db = $freepbx->Database;
