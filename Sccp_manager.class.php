@@ -110,7 +110,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         if ($freepbx == null) {
             throw new Exception("Not given a FreePBX Object");
         }
-        dbug('__construct called', debug_backtrace(2));
+
         $this->class_error = array();
         $this->FreePBX = $freepbx;
         $this->db = $freepbx->Database;
@@ -136,11 +136,20 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             return;
         }
 
-        $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); //Initialise core settings
-        $this->initializeSccpPath();  //Set required Paths
-        $this->updateTimeZone();   // Get timezone from FreePBX
-        //$this->findInstLangs();
-        $this->saveSccpSettings();
+        //if (!isset(\FreePBX::create()->Sccp_manager)) {
+            // This test is a workaround for a bug in BMO/GUIHooks class where
+            // doBMOConfigPage is called with an incorrect class (class path instead of class)
+            // The __Get override then determines that the class does not exist and so creates a new class Which
+            // in turn calls this __construct. This test can be removed when the bug is fixed in FreePBX.
+
+            dbug('__construct called', debug_backtrace(2));
+
+            $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); //Initialise core settings
+            $this->initializeSccpPath();  //Set required Paths
+            $this->updateTimeZone();   // Get timezone from FreePBX
+            //$this->findInstLangs();
+            $this->saveSccpSettings();
+        //}
     }
 
     /*

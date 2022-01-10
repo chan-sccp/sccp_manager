@@ -6,7 +6,6 @@ trait bmoFunctions {
 
     //Need to reload freePBX for modifications below to work
 
-    //want to catch extensions
     public static function myConfigPageInits() {
         return array('sccpsettings', 'sccp_phone','sccp_adv');
     }
