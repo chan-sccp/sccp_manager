@@ -10,10 +10,10 @@
     "category": "Sccp Connectivity",
     "description": "The Sccp Manager module lets you manage the chan-sccp driver.",
     "depends": {
-        "version": "14.0"
+        "version": "16.0"
     },
     "supported": {
-        "version": "13.0"
+        "version": "15.0"
     },
     "location": "https://github.com/chan-sccp/sccp_manager/archive/refs/tags/v14.3.0.30.tar.gz",
     "md5sum": "d25c3c4b02cad89a2e867b4f77d485bc",
