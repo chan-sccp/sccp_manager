@@ -41,6 +41,7 @@
 	<depends>
 		<version>15</version>
 		<phpversion>7.0</phpversion>
+		<phpcomponent>zip</phpcomponent>
 	</depends>
 	<supported>
 		<version>13.0.0.2M</version>
