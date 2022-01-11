@@ -38,6 +38,10 @@
 		 * Version 14.3.0.30 * - Fix reversion in 29. Not returning to correct page when saving device.
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
+	<depends>
+		<version>15</version>
+		<phpversion>7.0</phpversion>
+	</depends>
 	<supported>
 		<version>13.0.0.2M</version>
 	</supported>
