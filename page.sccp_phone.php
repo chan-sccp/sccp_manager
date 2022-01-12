@@ -14,12 +14,6 @@ if (!defined('FREEPBX_IS_AUTH')) {
 // function is called. This is where you do any changes. The page.foo.php
 // is only for DISPLAYING things.  MVC is a cool idea, ya know?
 //
-dbug(debug_backtrace());
-if (isset(\FreePBX::create()->Sccp_manager)) {
-    dbug('is set');
-} else {
-    dbug('is not set');
-}
 $spage = FreePBX::create()->Sccp_manager;
 if (empty($spage->class_error)) {
     $display_page = $spage->phoneShowPage();
