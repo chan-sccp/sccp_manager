@@ -48,6 +48,8 @@ if ($h_show==1) {
 
 <?php
 }
+// Use BMO - this will return an Sccp_manager object if it already exists in BMO, or create one if not
+$sccpManager = FreePBX::create()->Sccp_manager;
 foreach ($items as $child) {
     $disabledButtons = array();
     if (empty($child->help)) {
@@ -57,10 +59,10 @@ foreach ($items as $child) {
     echo "<!-- Begin {$child->label} -->";
     switch ($child['type']) {
         case 'IE':
-            \FreePbx::sccp_manager()->formcreate->addElementIE($child, $fvalues, $sccp_defaults,$npref);
+            $sccpManager->formcreate->addElementIE($child, $fvalues, $sccp_defaults,$npref);
             break;
         case 'IED':
-            \FreePbx::sccp_manager()->formcreate->addElementIED($child, $fvalues, $sccp_defaults,$npref, $napref);
+            $sccpManager->formcreate->addElementIED($child, $fvalues, $sccp_defaults,$npref, $napref);
             break;
         case 'ISC':
             // This is a special case for Provision mode. Set some parameters here and fall through to IS.
@@ -69,7 +71,7 @@ foreach ($items as $child) {
                 $disabledButtons = array('off' => 'Off');
             }
         case 'IS':
-            \FreePbx::sccp_manager()->formcreate->addElementIS($child, $fvalues, $sccp_defaults,$npref, $disabledButtons);
+            $sccpManager->formcreate->addElementIS($child, $fvalues, $sccp_defaults,$npref, $disabledButtons);
             break;
         case 'SLD':
         case 'SLM':
@@ -81,11 +83,11 @@ foreach ($items as $child) {
         case 'SLA':
         case 'SLZ':
         case 'SL':
-            \FreePbx::sccp_manager()->formcreate->addElementSL($child, $fvalues, $sccp_defaults,$npref, $installedLangs);
+            $sccpManager->formcreate->addElementSL($child, $fvalues, $sccp_defaults,$npref, $installedLangs);
             break;
         case 'SLDA':
         case 'SLNA':
-            \FreePbx::sccp_manager()->formcreate->addElementSLNA($child, $fvalues, $sccp_defaults,$npref, $installedLangs);
+            $sccpManager->formcreate->addElementSLNA($child, $fvalues, $sccp_defaults,$npref, $installedLangs);
             break;
         case 'SDM':
         case 'SDMS':
@@ -93,16 +95,16 @@ foreach ($items as $child) {
         case 'SDMF':
         case 'SDE':
         case 'SDD':
-            \FreePbx::sccp_manager()->formcreate->addElementSD($child, $fvalues, $sccp_defaults,$npref);
+            $sccpManager->formcreate->addElementSD($child, $fvalues, $sccp_defaults,$npref);
             break;
         case 'ITED':
-            \FreePbx::sccp_manager()->formcreate->addElementITED($child, $fvalues, $sccp_defaults, $npref, $napref);
+            $sccpManager->formcreate->addElementITED($child, $fvalues, $sccp_defaults, $npref, $napref);
             break;
         case 'HLP':
-            \FreePbx::sccp_manager()->formcreate->addElementHLP($child, $fvalues, $sccp_defaults,$npref);
+            $sccpManager->formcreate->addElementHLP($child, $fvalues, $sccp_defaults,$npref);
             break;
         case 'SLTZN':
-            \FreePbx::sccp_manager()->formcreate->addElementSLTZN($child, $fvalues, $sccp_defaults,$npref);
+            $sccpManager->formcreate->addElementSLTZN($child, $fvalues, $sccp_defaults,$npref);
             break;
     }
     echo "<!-- END {$child->label} -->";

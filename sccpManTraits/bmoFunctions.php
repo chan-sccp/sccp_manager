@@ -13,25 +13,16 @@ trait bmoFunctions {
     public function doConfigPageInit($page) {
         switch ($page) {
             case 'sccpsettings':
-                dbug('doConfigPageInit called for', $page);
                 break;
             case 'sccp_phone':
-                dbug('doConfigPageInit called for', $page);
-                //dbug('doConfigPageInit called from', debug_backtrace());
-                //"ajax.php?module=sccp_manager&command=getExtensionGrid&type=extGrid"
-                //header('Content-type: application/json');
                 $this->extensionData = json_encode($this->getExtensionGrid('extGrid'));
-                //$this->extensionData = $this->getExtensionGrid('extGrid');
-                //"ajax.php?module=sccp_manager&command=getPhoneGrid&type=sccp
                 $this->sccpPhoneData = json_encode($this->getPhoneGrid('sccp'));
                 $this->sipPhoneData = json_encode($this->getPhoneGrid('cisco-sip'));
                 break;
             case 'sccp_adv':
-                dbug('doConfigPageInit called for', $page);
                 $this->dialTemplateData = json_encode($this->getDialTemplate());
                 $this->softKeyData = json_encode($this->getSoftKey());
                 $this->deviceModelData = json_encode($this->ajaxHandler($_REQUEST = array('command'=>'getDeviceModel', 'type'=>'enabled')));
-                //dbug($this->deviceModelData);
                 break;
             default:
                 break;
@@ -141,10 +132,29 @@ trait bmoFunctions {
                     $result[$i][$key] = str_replace(',', '<br>', $value);
                 }
             }
-
             $i++;
         }
         return $result;
+    }
+
+    public function getMyConfig(string $var, $id = "noid") {
+        $final = array();
+        $i = 0;
+        if ($id == "noid") {
+            foreach ($this->sccp_conf_init as $key => $value) {
+                if ($this->sccp_conf_init[$key]['type'] == 'softkeyset') {
+                    $final[$i] = $value;
+                    $i++;
+                }
+            }
+        } else {
+            if (!empty($this->sccp_conf_init[$id])) {
+                if ($this->sccp_conf_init[$id]['type'] == 'softkeyset') {
+                    $final = $this->sccp_conf_init[$id];
+                }
+            }
+        }
+        return $final;
     }
     /* unused but FPBX API requires it */
 

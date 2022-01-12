@@ -142,7 +142,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             // The __Get override then determines that the class does not exist and so creates a new class Which
             // in turn calls this __construct. This test can be removed when the bug is fixed in FreePBX.
 
-            dbug('__construct called', debug_backtrace(2));
+            //dbug('__construct called', debug_backtrace(2));
 
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); //Initialise core settings
             $this->initializeSccpPath();  //Set required Paths
@@ -206,11 +206,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $value = $TZdata['offset']/60;   // TODO: Is this correct (storing in hours not minutes)
             $this->sccpvalues['tzoffset'] = array('keyword' => 'tzoffset', 'seq'=>98, 'type' => 2, 'data' => $value);
         }
-    }
-
-    public function showPage() {
-        dbug('showPage called', $_REQUEST);
-        return;
     }
 
     /*
@@ -311,8 +306,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     }
 
     public function phoneShowPage() {
-        dbug($_REQUEST);
-        dbug(debug_backtrace(0));
         $request = $_REQUEST;
         $action = !empty($request['action']) ? $request['action'] : '';
         $inputform = !empty($request['tech_hardware']) ? $request['tech_hardware'] : '';
@@ -573,7 +566,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
         $this->dbinterface->write('sccpuser', $save_settings, 'replace', 'name');
         $this->dbinterface->write('sccpbuttons', $save_buttons, 'delete', '', $name_dev); //standardise to delete
-        return $save_buttons;
+        return array('status' => true, 'search' => '?display=sccp_phone', 'hash' => 'general');
     }
 
     public function getCodecs($type, $showDefaults = false) {

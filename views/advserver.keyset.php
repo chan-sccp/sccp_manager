@@ -165,7 +165,12 @@ foreach ($keysetarray as $key => $value) {
 </div>
 
 <script>
-    function DispayActionsKeyFormatter(value, row, index) {
+
+    $(function() {
+        $('#softkey-all').bootstrapTable({data: <?php echo $this->softKeyData ?>});
+    })
+
+    function DisplayActionsKeyFormatter(value, row, index) {
         var exp_model = '';
         if (row['softkeys'] !== 'default') {
             exp_model += '<a href="#edit_softkeys"   onclick="load_oncliсk(this, &quot;'+row['softkeys']+'&quot;)" data-toggle="modal" data-target=".edit_new_keyset"><i class="fa fa-pencil"></i></a>&nbsp;';

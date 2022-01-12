@@ -45,24 +45,17 @@ trait ajaxHelper {
         $request = $_REQUEST;
         $msg = array();
         $cmd_id = $request['command'];
-        dbug('ajax', $cmd_id);
         switch ($cmd_id) {
             case 'savesettings':
                 // Consolidate this into a separate method to improve legibility
-                $this->handleSubmit($request);
-
-                // TODO: Need to be more specific on reload and only reload if critical settings changed.
-                $res = $this->aminterface->core_sccp_reload();
-                return array('status' => true, 'message' => 'Data saved', 'reload' => true, 'toastFlag' => 'success', 'search' => '?display=sccpsettings', 'hash' => '');
+                return $this->saveSccpSettings($request);
                 break;
             case 'save_sip_device':
             case 'save_device':
                 return $this->saveSccpDevice($request);
                 break;
             case 'save_ruser':
-                //$res = $request;
-                $res = $this->handleRoamingUsers($request);
-                return array('status' => true, 'search' => '?display=sccp_phone', 'hash' => 'general');
+                return $this->handleRoamingUsers($request);
                 break;
             case 'save_dialplan_template':
                 /* !TODO!: -TODO-: dialplan templates should be removed (only required for very old devices (like ATA) */
@@ -79,7 +72,7 @@ trait ajaxHelper {
                 if (!empty($request['dialplan'])) {
                     $get_file = $request['dialplan'];
                     $res = $this->deleteDialPlan($get_file);
-                    return array('status' => true, 'message' => 'Dial Template has been deleted ! ', 'table_reload' => true);
+                    return array('status' => true, 'message' => 'Dial Template has been deleted !', 'table_reload' => true);
                 } else {
                     return array('status' => false, 'message' => print_r($res));
                 }
@@ -95,7 +88,7 @@ trait ajaxHelper {
                             $this->aminterface->sccpDeviceReset($idv, 'reset');
                         }
                     }
-                    return array('status' => true, 'table_reload' => true, 'message' => 'Hardware device has been deleted! ');
+                    return array('status' => true, 'table_reload' => true, 'message' => 'Hardware device has been deleted!');
                 }
                 break;
             case 'create_hw_tftp':
@@ -116,7 +109,7 @@ trait ajaxHelper {
                 foreach ($models as $data) {
                     $ver_id = $this->createSccpDeviceXML($data['name']);
                     if ($ver_id == -1) {
-                        return array('status' => false, 'message' => 'Error Create Configuration Divice :' . $data['name']);
+                        return array('status' => false, 'message' => 'Error Creating Device Configuration: ' . $data['name']);
                     }
                 };
 
@@ -285,7 +278,7 @@ trait ajaxHelper {
         }
     }
 
-    function handleSubmit($request, $validateonly = false) {
+    function saveSccpSettings($request, $validateonly = false) {
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -404,32 +397,9 @@ trait ajaxHelper {
         // rewrite sccp.conf
         $this->createDefaultSccpConfig($this->sccpvalues, $this->sccppath["asterisk"]);
         $this->createDefaultSccpXml();
-    }
-
-    public function getMyConfig($var = null, $id = "noid") {
-        // TODO: this function has little purpose - need to integrate into AjaxHelper
-        switch ($var) {
-            case "softkeyset":
-                $final = array();
-                $i = 0;
-                if ($id == "noid") {
-                    foreach ($this->sccp_conf_init as $key => $value) {
-                        if ($this->sccp_conf_init[$key]['type'] == 'softkeyset') {
-                            $final[$i] = $value;
-                            $i++;
-                        }
-                    }
-                } else {
-                    if (!empty($this->sccp_conf_init[$id])) {
-                        if ($this->sccp_conf_init[$id]['type'] == 'softkeyset') {
-                            $final = $this->sccp_conf_init[$id];
-                        }
-                    }
-                }
-
-                break;
-        }
-        return $final;
+        // TODO: Need to be more specific on reload and only reload if critical settings changed.
+        $res = $this->aminterface->core_sccp_reload();
+        return array('status' => true, 'message' => 'Data saved', 'reload' => true, 'toastFlag' => 'success', 'search' => '?display=sccpsettings', 'hash' => '');
     }
 
     public function getFilesFromProvisioner($request) {
