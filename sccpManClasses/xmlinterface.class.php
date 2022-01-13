@@ -358,8 +358,8 @@ class xmlinterface
                     $xml_node->winCharSet = $dev_config['phonecodepage'];
                     $xml_node->name = $dev_config['devlang'];
                     $xml_node->langCode = 'en';
-                    if (isset($langCodeArray['devlang'])) {
-                        $xml_node->langCode = $langCodeArray['devlang'];
+                    if (isset($langCodeArray[$dev_config['devlang']])) {
+                        $xml_node->langCode = $langCodeArray[$dev_config['devlang']];
                     }
                     $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                     break;
