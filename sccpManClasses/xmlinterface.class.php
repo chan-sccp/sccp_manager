@@ -311,8 +311,18 @@ class xmlinterface
                     foreach ($xml_work->$key->children() as $dkey => $ddata) {
                         if (isset($data_values[strtolower($dkey)])) {
                             $vtmp_data = $data_values[strtolower($dkey)];
-                            if ((!empty($vtmp_data)) || ($vtmp_data == "0")) {
-                                $xml_node->$dkey = $vtmp_data;
+                            if (!empty($vtmp_data)) {
+                                switch ($vtmp_data) {
+                                    case 'off':
+                                        $xml_node->$dkey = 1;
+                                        break;
+                                    case 'on':
+                                        $xml_node->$dkey = 0;
+                                        break;
+                                    default:
+                                        $xml_node->$dkey = $vtmp_data;
+                                        break;
+                                }
                             }
                         }
                     }
