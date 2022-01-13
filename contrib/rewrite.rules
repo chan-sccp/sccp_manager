@@ -181,8 +181,8 @@ ri ^\/((.+\-cnf.xml)(\.enc)?(\.sgn)?)$ settings/\1
 ri ^\/((SPA504G-cfg.xml)(\.enc)?(\.sgn)?)$ settings/\1
 
 # Keep firmware in a separate directory (optional)
-ri ^(.+\.loads)$ firmware/\1
-ri ^(.+\.sbn)$ firmware/\1
+#ri ^(.+\.loads)$ firmware/\1
+#ri ^(.+\.sbn)$ firmware/\1
 
 
 ri ^(.+)\/(.+-sccp.jar)$ locales/languages/\1/\2
