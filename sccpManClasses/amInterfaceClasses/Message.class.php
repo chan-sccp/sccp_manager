@@ -126,7 +126,7 @@ abstract class Message
 
     protected function setSanitizedKey($key, $value)
     {
-        $key = strtolower((string) $key);
+        //$key = strtolower((string) $key);
         $_string_key = array('actionid', 'descr');
         if (array_search($key, $_string_key) !== false) {
             $this->keys[$key] = (string) $this->sanitizeInput($value, 'string');
@@ -257,6 +257,7 @@ abstract class IncomingMessage extends Message
     public function __construct($rawContent)
     {
         parent::__construct();
+        dbug($rawContent);
         $this->rawContent = $rawContent;
         $lines = explode(Message::EOL, $rawContent);
         foreach ($lines as $line) {
@@ -269,6 +270,7 @@ abstract class IncomingMessage extends Message
             } catch (AMIException $e) {
                 throw new AMIException("Error: '" . $e . "'\n Dump RawContent:\n" . $this->rawContent . "\n");
             }
+            dbug($this->keys);
         }
     }
 }

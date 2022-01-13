@@ -376,7 +376,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
     public function processPageData() {
         foreach ($this->pagedata as &$page) {
-            // own version of load_view - simplifies passing variables
+            // own version of load_view - simplifies passing variables as in object context
             ob_start();
             include($page['page']);
             $page['content'] = ob_get_contents();

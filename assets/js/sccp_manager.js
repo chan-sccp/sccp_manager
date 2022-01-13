@@ -52,9 +52,7 @@ $(document).ready(function () {
             success: function (data) {
                 if (data.status === true) {
                     if (data.message) {
-                        bs_alert(data.message,data.status);
-                    } else {
-                        fpbxToast(_('Data saved'),'', 'success');
+                        fpbxToast(_(data.message),'', 'success');
                     }
                 } else {
                     bs_alert(data.message,data.status);

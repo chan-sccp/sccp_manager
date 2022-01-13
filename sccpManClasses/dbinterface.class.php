@@ -22,7 +22,7 @@ class dbinterface
 
     public function info()
     {
-        $Ver = '14.0.0.1';    // This should be updated
+        $Ver = '16.0.0.1';    // This should be updated
         return array('Version' => $Ver,
             'about' => 'Data access interface ver: ' . $Ver);
     }
@@ -70,12 +70,12 @@ class dbinterface
                 switch ($data['type']) {
                     case "cisco-sip":
                         $stmts = $this->db->prepare("SELECT name, type, button, addon, description, 'not connected' AS status, '- -' AS address, 'N' AS new_hw
-                            FROM sccpdeviceconfig WHERE type LIKE '%-sip' ORDER BY name");
+                            FROM sccpdeviceconfig WHERE RIGHT(type,4) = '-sip' ORDER BY name");
                         break;
                     case "sccp":      // Fall through to default intentionally
                     default:
                         $stmts = $this->db->prepare("SELECT name, type, button, addon, description, 'not connected' AS status, '- -' AS address, 'N' AS new_hw
-                            FROM sccpdeviceconfig WHERE type not LIKE '%-sip' ORDER BY name");
+                            FROM sccpdeviceconfig WHERE RIGHT(type,4) != '-sip' ORDER BY name");
                         break;
                 }
                 break;
@@ -101,11 +101,11 @@ class dbinterface
                 } elseif (!empty($data['type'])) {
                     switch ($data['type']) {
                         case "cisco-sip":
-                            $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE TYPE LIKE '%-sip' ORDER BY name");
+                            $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE RIGHT(type,4) = '-sip' ORDER BY name");
                             break;
                         case "cisco":      // Fall through to default intentionally
                         default:
-                            $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE TYPE not LIKE '%-sip' ORDER BY name");
+                            $stmts = $this->db->prepare("SELECT {$fld} FROM sccpdeviceconfig WHERE RIGHT(type,4) != '-sip' ORDER BY name");
                             break;
                     }
                 } else {      //no filter and no name provided - return all
@@ -239,10 +239,10 @@ class dbinterface
                 $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns != 0) and (enabled = 1) ORDER BY model");
                 break;
             case 'ciscophones':
-                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor NOT LIKE '%-sip' ORDER BY model");
+                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND RIGHT(vendor,4) != '-sip' ORDER BY model");
                 break;
             case 'sipphones':
-                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND vendor LIKE '%-sip' ORDER BY model");
+                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND RIGHT(vendor,4) = '-sip' ORDER BY model");
                 break;
             case 'all':     // Fall through to default
             default:
@@ -253,7 +253,7 @@ class dbinterface
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    function write($table_name = "", $save_value = array(), $mode = 'update', $key_fld = "", $hwid = "")
+    function write(string $table_name, $save_value = array(), string $mode = 'update', $key_fld = "", $hwid = "")
     {
         // mode clear  - Empty table before update
         // mode update - update / replace record
@@ -281,36 +281,36 @@ class dbinterface
             case 'sccpdevmodel':    // Fall through to next intentionally
             case 'sccpdevice':      // Fall through to next intentionally
             case 'sccpuser':
-                $sql_key = "";
-                $sql_var = "";
-                foreach ($save_value as $key_v => $data) {
-                    if (!empty($sql_var)) {
-                        $sql_var .= ', ';
-                    }
-                    if ($data === $this->val_null) {
-                        $sql_var .= $key_v . '= NULL';
-                    } else {
-                        $sql_var .= $key_v . ' = \'' . $data . '\''; //quote data as normally is string
-                    }
-                    if ($key_v === $key_fld) {
-                        $sql_key = $key_v . ' = \'' . $data . '\'';  //quote data as normally is string
-                    }
-                }
-                if (!empty($sql_var)) {
+                $sql_key = '';
+                $stmt = '';
+                $formattedSQL = array_reduce(
+                    array_keys($save_value),                       // pass in the array_keys instead of the array here
+                    function ($carry, $key) use ($save_value) {    // ... then 'use' the actual array here
+                        return "${carry}${key} = '${save_value[$key]}', ";
+                    },
+                );
+                if (isset($formattedSQL)) {                         // if array is empty returns null
+                    $formattedSQL = rtrim($formattedSQL,', ');      // Remove the trailing ',' and any spaces.
                     switch ($mode) {
                         case 'delete':
-                            $stmt = $this->db->prepare("DELETE FROM {$table_name} WHERE {$sql_key}");
+                            if (array_key_exists($key_fld, $save_value)) {
+                                $sql_key = "${key_fld} = '${save_value[$key_fld]}'";  //quote data as normally is string
+                                $stmt = $this->db->prepare("DELETE FROM {$table_name} WHERE {$sql_key}");
+                            }
                             break;
                         case 'update':
-                            $stmt = $this->db->prepare("UPDATE {$table_name} SET {$sql_var} WHERE {$sql_key}");
+                            if (array_key_exists($key_fld, $save_value)) {
+                                $sql_key = "${key_fld} = '${save_value[$key_fld]}'";  //quote data as normally is string
+                                $stmt = $this->db->prepare("UPDATE {$table_name} SET {$formattedSQL} WHERE {$sql_key}");
+                            }
                             break;
                         case 'replace':
-                            $stmt = $this->db->prepare("REPLACE INTO {$table_name} SET {$sql_var}");
+                            $stmt = $this->db->prepare("REPLACE INTO {$table_name} SET {$formattedSQL}");
                             break;
                         // no default mode - must be explicit.
                     }
                 }
-                $result = $stmt->execute();
+                $result = (!empty($stmt)) ? $stmt->execute() : false;
                 break;
             case 'sccpbuttons':
                 switch ($mode) {

@@ -95,7 +95,7 @@ class aminterface
 
     public function info()
     {
-        $Ver = '13.0.4';
+        $Ver = '16.0.0.1';
         if ($this->_config['enabled']){
             return array('Version' => $Ver,
                 'about' => 'AMI data ver: ' . $Ver, 'test' => get_declared_classes());
