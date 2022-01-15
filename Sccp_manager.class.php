@@ -675,9 +675,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     private function initializeTFtpLanguagePath() {
-        $dir = $this->sccppath["tftp_lang_path"];
+        //$dir = $this->sccppath["tftp_lang_path"];
         foreach ($this->extconfigs->getExtConfig('sccp_lang') as $langKey => $langValueArr) {
-            $localeDir = $dir . DIRECTORY_SEPARATOR . $langValueArr['locale'];
+            $localeDir = $this->sccppath["tftp_lang_path"] . DIRECTORY_SEPARATOR . $langValueArr['locale'];
             if (!is_dir($localeDir)) {
                 if (!mkdir($localeDir, 0755, true)) {
                     die("Error creating $localeDir directory");

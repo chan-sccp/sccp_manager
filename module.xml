@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.3.0.33</version>
+	<version>14.4.0.1</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -36,7 +36,8 @@
 		 * Version 14.3.0.28 * - Fix issue with RNav which caused exception with new device
 		 * Version 14.3.0.29 * - Fix issue reloading page after saving settings and not restarting devices.
 		 * Version 14.3.0.30 * - Fix reversion in 29. Not returning to correct page when saving device.
-		 * Version 14.3.0.30 * - Fix rewrite rules.
+		 * Version 14.3.0.31 * - Fix rewrite rules.
+		 * Version 14.4.0.1 * - Modify installer to avoid data loss on existing 14.3 fields. Bump Minor version to reflect this.
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<depends>
@@ -56,6 +57,7 @@
 			<field name="name" type="string" length="15" primarykey="true"/>
 			<field name="type" type="string" length="15" notnull="false"/>
 			<field name="addon" type="string" length="45" notnull="false"/>
+			<field name="description" type="string" length="45" notnull="false"/>
 			<field name="_description" type="string" length="45" notnull="false"/>
 			<field name="tzoffset" type="string" length="5" notnull="false"/>
 			<field name="imageversion" type="string" length="31" notnull="false"/>
@@ -89,8 +91,11 @@
 			<field name="backgroundThumbnail" type="string" length="255" notnull="false"/>
 			<field name="ringtone" type="string" length="255" notnull="false"/>
 			<field name="callhistory_answered_elsewhere" type="string" notnull="false"/>
+			<field name="loginname" type="string" length="20" default="NULL" notnull="false"/>
 			<field name="_loginname" type="string" length="20" notnull="false"/>
-			<field name="_profileid" type="integer" default="0"/>
+			<field name="profileid" type="integer" default="0"/>
+			<field name="_profileid" type="integer" notnull="false"/>
+			<field name="dialrules" type="string" length="255" default="NULL" notnull="false"/>
 			<field name="_dialrules" type="string" length="255" notnull="false"/>
 			<field name="useRedialMenu" type="string" length="5" default="no" notnull="false"/>
 			<field name="cfwdnoanswer" type="string" default="on" notnull="false"/>
@@ -98,6 +103,71 @@
 			<field name="monitor" type="string" notnull="false"/>
 			<field name="transfer_on_hangup" type="string" notnull="false"/>
 			<field name="phonecodepage" type="string" length="50" notnull="false"/>
+			<field name="logserver" type="string" length="100" default="NULL" notnull="false"/>
+			<field name="_logserver" type="string" length="100" notnull="false"/>
+			<field name="daysdisplaynotactive" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_daysdisplaynotactive" type="string" length="20" notnull="false"/>
+			<field name="displayontime" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_displayontime" type="string" length="20" notnull="false"/>
+			<field name="displayonduration" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_displayonduration" type="string" length="20" notnull="false"/>
+			<field name="displayidletimeout" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_displayidletimeout" type="string" length="20" notnull="false"/>
+			<field name="settingsaccess" type="string" default="off"/>
+			<field name="_settingsaccess" type="string" notnull="false"/>
+			<field name="videocapability" type="string" default="off"/>
+			<field name="_videocapability" type="string" notnull="false"/>
+			<field name="webaccess" type="string" default="off"/>
+			<field name="_webaccess" type="string" notnull="false"/>
+			<field name="webadmin" type="string" default="off"/>
+			<field name="_webadmin" type="string" notnull="false"/>
+			<field name="pcport" type="string" default="on"/>
+			<field name="_pcport" type="string" notnull="false"/>
+			<field name="spantopcport" type="string" default="on"/>
+			<field name="_spantopcport" type="string" notnull="false"/>
+			<field name="voicevlanaccess" type="string" default="off"/>
+			<field name="_voicevlanaccess" type="string" notnull="false"/>
+			<field name="enablecdpswport" type="string" default="off"/>
+			<field name="_enablecdpswport" type="string" notnull="false"/>
+			<field name="enablecdppcport" type="string" default="off"/>
+			<field name="_enablecdppcport" type="string" notnull="false"/>
+			<field name="enablelldpswport" type="string" default="off"/>
+			<field name="_enablelldpswport" type="string" notnull="false"/>
+			<field name="enablelldppcport" type="string" default="off"/>
+			<field name="_enablelldppcport" type="string" notnull="false"/>
+			<field name="firstdigittimeout" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_firstdigittimeout" type="string" length="20" notnull="false"/>
+			<field name="digittimeout" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_digittimeout" type="string" length="20" notnull="false"/>
+			<field name="cfwdnoanswer_timeout" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_cfwdnoanswer_timeout" type="string" length="20" notnull="false"/>
+			<field name="autoanswer_ring_time" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_autoanswer_ring_time" type="string" length="20" notnull="false"/>
+			<field name="autoanswer_tone" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_autoanswer_tone" type="string" length="20" notnull="false"/>
+			<field name="remotehangup_tone" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_remotehangup_tone" type="string" length="20" notnull="false"/>
+			<field name="transfer_tone" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_transfer_tone" type="string" length="20" notnull="false"/>
+			<field name="callwaiting_tone" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="_callwaiting_tone" type="string" length="20" notnull="false"/>
+			<field name="callanswerorder" type="string" default="latestfirst"/>
+			<field name="_callanswerorder" type="string"  notnull="false"/>
+			<field name="sccp_tos" type="string" length="11" default="0x68"/>
+			<field name="_sccp_tos" type="string" length="11"  notnull="false"/>
+			<field name="sccp_cos" type="string" length="11" default="0x4"/>
+			<field name="_sccp_cos" type="string" length="11"  notnull="false"/>
+			<field name="dev_sshPassword" type="string" length="25" default="cisco"/>
+			<field name="_dev_sshPassword" type="string" length="25"  notnull="false"/>
+			<field name="dev_sshUserId" type="string" length="25" default="cisco"/>
+			<field name="_dev_sshUserId" type="string" length="25" notnull="false"/>
+			<field name="phonepersonalization" type="string" length="25" default="0"/>
+			<field name="_phonepersonalization" type="string" length="25"  notnull="false"/>
+			<field name="devlang" type="string" length="50" default="NULL" notnull="false"/>
+			<field name="_devlang" type="string" length="50"  notnull="false"/>
+			<field name="netlang" type="string" length="50" default="NULL" notnull="false"/>
+			<field name="_netlang" type="string" length="50"  notnull="false"/>
+			<field name="keepalive" type="integer" default="60" notnull="false"/>
 		</table>
 			<table name="sccpline">
 			<field name="id" type="integer" autoincrement="true"/>
@@ -139,6 +209,18 @@
 			<field name="setvar" type="string" length="50" notnull="false"/>
 			<field name="name" type="string" length="40" primarykey="true"/>
 			<field name="phonecodepage" type="string" length="50" notnull="false"/>
+		    <field name="regcontext" type="string" length="20" default="sccpregistration" notnull="false"/>
+			<field name="_regcontext" type="string" length="20"  notnull="false"/>
+			<field name="transfer_on_hangup" type="string" default="off"/>
+			<field name="_transfer_on_hangup" type="string"  notnull="false"/>
+		    <field name="autoselectline_enabled" type="string" default="off"/>
+			<field name="_autoselectline_enabled" type="string"  notnull="false"/>
+		    <field name="autocall_select" type="string" default="off"/>
+			<field name="_autocall_select" type="string" notnull="false"/>
+		    <field name="backgroundImageAccess" type="string" default="off"/>
+			<field name="_backgroundImageAccess" type="string" notnull="false"/>
+		    <field name="callLogBlfEnabled" type="string" default="2"/>
+			<field name="_callLogBlfEnabled" type="string" notnull="false"/>
 			<key name="id" type="unique">
 				<column name="id"/>
 			</key>

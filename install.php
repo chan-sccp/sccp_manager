@@ -377,12 +377,72 @@ function CheckChanSCCPCompatible()
 
 function InstallDB_updateSchema($db_config)
 {
+    /*
+    Initially, referred to schema existing and created db from scratch. This required
+    initialising sccp_manager object which in term required that sccpsettings existed
+    To overcome this, moved to creation/modification of db via module.xml.
+    In early version of 14.3, only used initial fields present in older versions, and then
+    added new required fields. This resulted in new fields being dropped at next install.
+    Now include all fields in module.xml, and then transfer any data in old fields to new fields
+    before then deleting old fields, rather than renaming columns which will no longer work as
+    the new column already exists, and may contain data. This affected 36 fields in sccpdevice
+    and 5 fields in sccpline which in old db schema used _ prefix to hide from chan-sccp.
+    */
     global $db;
     if (!$db_config) {
         die_freepbx("No db_config provided");
     }
+    outn("<li>" . _("Saving legacy data into current column") . "</li>");
+    $priorSchemaFields = array(
+        'sccpdevice' => array(
+            '_description', '_loginname', '_profileid', '_dialrules', '_devlang', '_netlang', '_logserver',
+            '_daysdisplaynotactive', '_displayontime', '_displayonduration', '_displayidletimeout', '_settingsaccess', '_videocapability',
+            '_webaccess', '_webadmin', '_pcport', '_spantopcport', '_voicevlanaccess', '_enablecdpswport', '_enablecdppcport',
+            '_enablelldpswport', '_enablelldppcport', '_firstdigittimeout', '_digittimeout', '_cfwdnoanswer_timeout',
+            '_autoanswer_ring_time', '_autoanswer_tone', '_remotehangup_tone', '_transfer_tone', '_callwaiting_tone',
+            '_callanswerorder', '_sccp_tos', '_sccp_cos', '_dev_sshPassword', '_dev_sshUserId', '_phonepersonalization'),
+        'sccpline' => array(
+            '_regcontext', '_transfer_on_hangup', '_autoselectline_enabled', '_autocall_select', '_backgroundImageAccess', '_callLogBlfEnabled')
+        );
+    foreach ($priorSchemaFields as $table => $fieldsArr) {
+        // First get any data in columns to be deleted ( _Column)
+        $sqlMatch = array_reduce($fieldsArr, function($carry, $column) {
+                return "${carry}  ${column} IS NOT NULL OR";
+        });
+        unset($column);
+        $sqlFields = array_reduce($fieldsArr, function($carry, $column) {
+                return "${carry}  ${column} AS " . ltrim($column,"_") .",";
+        });
+
+        $sqlMatch = rtrim($sqlMatch, "OR");
+        $sqlFields = rtrim($sqlFields, ",");
+        $stmt = $db->prepare("SELECT name, ${sqlFields} FROM ${table} WHERE ${sqlMatch}");
+        $stmt->execute();
+        $dbResult = $stmt->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
+        // Now move any data found from _Column to Column. This is safe as the two should not exist.
+        if (!empty($dbResult)) {
+            foreach ($dbResult as $name => $columnArr) {
+                $sqlVar = array_reduce(array_keys($columnArr), function($carry, $key) use ($columnArr){
+                        $carry .= (isset($columnArr[$key])) ? "${key} = '${columnArr[$key]}'," : "";
+                        return $carry;
+                });
+                $sqlVar = rtrim($sqlVar, ",");
+                $stmt = $db->prepare("UPDATE ${table} SET ${sqlVar} WHERE name = '${name}'");
+                $stmt->execute();
+            }
+        }
+        // Processed all _Column names; now safe to delete them
+        $sqlDrop = array_reduce($fieldsArr, function($carry, $column) {
+                return "${carry} DROP COLUMN IF EXISTS ${column},";
+        });
+        $sqlDrop = rtrim($sqlDrop, ", ");
+        $stmt = $db->prepare("ALTER TABLE ${table} ${sqlDrop}");
+        $stmt->execute();
+    }
+
+    // Now process the column updates as per the legacy installer
     $count_modify = 0;
-    outn("<li>" . _("Modify Database schema") . "</li>");
+    outn("<li>" . _("Modifying Database schema") . "</li>");
     foreach ($db_config as $tabl_name => $tab_modif) {
         $sql_create = '';
         $sql_modify = '';
@@ -399,9 +459,11 @@ function InstallDB_updateSchema($db_config)
         foreach ($db_result as $fld_id => $tabl_data) {
             if (!empty($tab_modif[$fld_id])) {
                 // have column in table so potentially something to update
-                // if dropping column, prepare sql and continue
+                // if dropping column, prepare sql and continue. The drop case will never
+                // occur as columns that are dropped should no longer be in the module.xml schema
+                // and so Doctrine will have already dropped them.
                 if (!empty($tab_modif[$fld_id]['drop'])) {
-                    $sql_create .= "DROP COLUMN {$row_fld}, ";
+                    $sql_create .= "DROP COLUMN IF EXISTS {$row_fld}, ";
                     unset($tab_modif[$fld_id]['drop']);
                     continue;
                 }
@@ -438,25 +500,33 @@ function InstallDB_updateSchema($db_config)
                         $count_modify ++;
                     }
                 }
-
+                // Now handle rename. Need to be carefull that the newname does not exist. If it does then need to
+                // ignore or unexpected things may happen.
                 if (!empty($tab_modif[$fld_id]['rename'])) {
-                    // Field currently exists so need to rename (and keep data)
+                    // Field currently exists so need to rename (and keep data). All of legacy _columns have already
+                    // been dropped so will not get here as $fld_id cannot be _column.
                     // for backward compatibility use CHANGE - REPLACE is only available in MariaDb > 10.5.
                     $fld_id_newName = $tab_modif[$fld_id]['rename'];
-                    // Does a create exist for newName
-                    if (!empty($tab_modif[$fld_id_newName]['create'])) {
-                        //carry the attributes from the new create to the rename
-                        $sql_rename .= "CHANGE COLUMN {$fld_id} {$fld_id_newName} {$tab_modif[$fld_id_newName]['create']}, ";
-                        // do not create newName as modifying existing
-                        unset($tab_modif[$fld_id_newName]['create']);
-                    } else {
-                        // add current attributes to the new name.
-                        $existingAttrs = strtoupper($tabl_data['Type']).(($tabl_data['Null'] == 'NO') ?' NOT NULL': ' NULL') .
-                                        ((empty($tabl_data['Default']))?'': ' DEFAULT ' . "'" . $tabl_data['Default']."'");
-                        $sql_rename .= "CHANGE COLUMN {$fld_id} {$fld_id_newName} {$existingAttrs}, ";
+
+                    // Only execute if the newname column does not already exist.
+                    if (empty($db_result[$fld_id_newName])) {
+                        // Trying to rename to an existing column. Ignore this case.
+                        // Does a create exist for newName
+                        if (!empty($tab_modif[$fld_id_newName]['create'])) {
+                            //carry the attributes from the new create to the rename
+                            $sql_rename .= "CHANGE COLUMN {$fld_id} {$fld_id_newName} {$tab_modif[$fld_id_newName]['create']}, ";
+                            // do not create newName as modifying existing
+                            unset($tab_modif[$fld_id_newName]['create']);
+                        } else {
+                            // add current attributes to the new name.
+                            $existingAttrs = strtoupper($tabl_data['Type']).(($tabl_data['Null'] == 'NO') ?' NOT NULL': ' NULL') .
+                                            ((empty($tabl_data['Default']))?'': ' DEFAULT ' . "'" . $tabl_data['Default']."'");
+                            $sql_rename .= "CHANGE COLUMN {$fld_id} {$fld_id_newName} {$existingAttrs}, ";
+                        }
+                        $count_modify ++;
                     }
+                    // Have treated this rename so unset. If the newname already exists, have done nothing.
                     unset($tab_modif[$fld_id]['rename']);
-                    $count_modify ++;
                 }
                 // is there a create for this field
                 if (!empty($tab_modif[$fld_id]['create'])) {
@@ -502,15 +572,6 @@ function InstallDB_updateSchema($db_config)
         }
     }
     outn("<li>" . _("Total modify count :") . $count_modify . "</li>");
-    /*
-    $stmt = $db->prepare('SELECT CASE WHEN EXISTS(SELECT 1 FROM sccpdevmodel) THEN 0 ELSE 1 END AS IsEmpty;');
-    $stmt->execute();
-    $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    if (!$result[0]['IsEmpty']) {
-        return;
-    } else {
-
-    */
 
     // Force update of sccp devmodel to ensure changes are taken into account
     outn("Updating sccpdevmodel...");
@@ -647,7 +708,6 @@ function InstallDB_updateSchema($db_config)
     if (DB::IsError($check)) {
         die_freepbx("Can not create sccpdevmodel table, error:$check\n");
     }
-    //}
     return;
 }
 
@@ -747,9 +807,9 @@ function InstallDbCreateViews($sccp_compatible)
             GROUP BY sccpdevice.name;";
     }
     $stmt = $db->prepare($sql);
-    $stmt->execute();
-    if (DB::IsError($stmt)) {
-        die_freepbx(sprintf(_("Error updating sccpdeviceconfig view. Command was: %s; error was: %s "), $sql, $results->getMessage()));
+    $result = $stmt->execute();
+    if (!$result) {
+        die_freepbx(sprintf(_("Error updating sccpdeviceconfig view. Command was: %s"), $sql));
     }
 
     outn("<li>" . _("(Re)Create sccplineconfig view") . "</li>");
@@ -766,9 +826,9 @@ function InstallDbCreateViews($sccp_compatible)
                 sccpline.namedcallgroup, sccpline.namedpickupgroup, sccpline.phonecodepage, sccpline.videomode
                 FROM sccpline";
     $stmt = $db->prepare($sql);
-    $stmt->execute();
-    if (DB::IsError($stmt)) {
-        die_freepbx(sprintf(_("Error updating sccplineconfig view. Command was: %s; error was: %s "), $sql, $results->getMessage()));
+    $result = $stmt->execute();
+    if (!$result) {
+        die_freepbx(sprintf(_("Error updating sccplineconfig view. Command was: %s"), $sql));
     }
     return true;
 }

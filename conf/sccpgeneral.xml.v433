@@ -502,7 +502,7 @@ and open the template in the editor. Base Version before all crash :-)
 
     <page_group name="sccp_dev_time">
         <label>SCCP Time Service config</label>
-        <item type="SLD" id="1" seq="1">
+        <item type="SLD" id="1" seq="0">
             <label>Display Day Format</label>
             <name>dateformat</name>
             <select>

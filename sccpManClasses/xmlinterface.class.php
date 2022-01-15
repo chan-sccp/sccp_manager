@@ -21,6 +21,46 @@ class xmlinterface
     public function __construct($parent_class = null)
     {
         $this->paren_class = $parent_class;
+        $this->langCodeArray = array(
+            'Arabic_Saudi_Arabia' => 'ar',
+            'Bulgarian_Bulgaria' => 'bg',
+            'Czech_Czech_Republic' => 'cz',
+            'Danish_Denmark' => 'da',
+            'German_Germany' => 'de',
+            'Greek_Greece' => 'el',
+            'AU_English_United_States' => 'en',
+            'English_United_Kingdom' => 'en',
+            'English_United_States' => 'en',
+            'Spanish_Spain' => 'es',
+            'Estonian_Estonia' => 'et',
+            'Finnish_Finland' => 'fi',
+            'French_Canada' => 'fr',
+            'French_France' => 'fr',
+            'Hebrew_Israel' => 'he',
+            'Croatian_Croatia' => 'hr',
+            'Hungarian_Hungary' => 'hu',
+            'Italian_Italy' => 'it',
+            'Japanese_Japan' => 'ja',
+            'Korean_Korea_Republic' => 'ko',
+            'Lithuanian_Lithuania' => 'lt',
+            'Latvian_Latvia' => 'lv',
+            'Dutch_Netherlands' => 'nl',
+            'Norwegian_Norway' => 'no',
+            'Polish_Poland' => 'pl',
+            'Portuguese_Brazil' => 'pt',
+            'Portuguese_Portugal' => 'pt',
+            'Romanian_Romania' => 'ro',
+            'Russian_Russian_Federation' => 'ru',
+            'Slovak_Slovakia' => 'sk',
+            'Slovenian_Slovenia' => 'sl',
+            'Serbian_Republic_of_Montenegro' => 'sr',
+            'Serbian_Republic_of_Serbia' => 'rs',
+            'Swedish_Sweden' => 'sv',
+            'Thai_Thailand' => 'th',
+            'Turkish_Turkey' => 'tr',
+            'Chinese_China' => 'cn',
+            'Chinese_Taiwan' => 'zh'
+        );
     }
 
     public function info()
@@ -120,46 +160,7 @@ class xmlinterface
     {
         // TODO: $data_values are system wide defaults, $dev_config are specific device values.
         // Need to merge the two arrays so that device specific values override system values
-        $langCodeArray = array(
-            'Arabic_Saudi_Arabia' => 'ar',
-            'Bulgarian_Bulgaria' => 'bg',
-            'Czech_Czech_Republic' => 'cz',
-            'Danish_Denmark' => 'da',
-            'German_Germany' => 'de',
-            'Greek_Greece' => 'el',
-            'AU_English_United_States' => 'en',
-            'English_United_Kingdom' => 'en',
-            'English_United_States' => 'en',
-            'Spanish_Spain' => 'es',
-            'Estonian_Estonia' => 'et',
-            'Finnish_Finland' => 'fi',
-            'French_Canada' => 'fr',
-            'French_France' => 'fr',
-            'Hebrew_Israel' => 'he',
-            'Croatian_Croatia' => 'hr',
-            'Hungarian_Hungary' => 'hu',
-            'Italian_Italy' => 'it',
-            'Japanese_Japan' => 'ja',
-            'Korean_Korea_Republic' => 'ko',
-            'Lithuanian_Lithuania' => 'lt',
-            'Latvian_Latvia' => 'lv',
-            'Dutch_Netherlands' => 'nl',
-            'Norwegian_Norway' => 'no',
-            'Polish_Poland' => 'pl',
-            'Portuguese_Brazil' => 'pt',
-            'Portuguese_Portugal' => 'pt',
-            'Romanian_Romania' => 'ro',
-            'Russian_Russian_Federation' => 'ru',
-            'Slovak_Slovakia' => 'sk',
-            'Slovenian_Slovenia' => 'sl',
-            'Serbian_Republic_of_Montenegro' => 'sr',
-            'Serbian_Republic_of_Serbia' => 'rs',
-            'Swedish_Sweden' => 'sv',
-            'Thai_Thailand' => 'th',
-            'Turkish_Turkey' => 'tr',
-            'Chinese_China' => 'cn',
-            'Chinese_Taiwan' => 'zh'
-        );
+
 
         $data_values = array_merge($data_values, $dev_config);
         $var_xml_general_fields = array('authenticationurl' => 'dev_authenticationURL', 'informationurl' => 'dev_informationURL', 'messagesurl' => 'dev_messagesURL',
@@ -368,8 +369,8 @@ class xmlinterface
                     $xml_node->winCharSet = $dev_config['phonecodepage'];
                     $xml_node->name = $dev_config['devlang'];
                     $xml_node->langCode = 'en';
-                    if (isset($langCodeArray[$dev_config['devlang']])) {
-                        $xml_node->langCode = $langCodeArray[$dev_config['devlang']];
+                    if (isset($this->langCodeArray[$dev_config['devlang']])) {
+                        $xml_node->langCode = $this->langCodeArray[$dev_config['devlang']];
                     }
                     $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                     break;
@@ -693,8 +694,8 @@ class xmlinterface
                         $xml_node->winCharSet = $dev_config['phonecodepage'];
                         $xml_node->name = $dev_config['devlang'];
                         $xml_node->langCode = 'en';
-                        if (isset($langCodeArray['devlang'])) {
-                            $xml_node->langCode = $langCodeArray['devlang'];
+                        if (isset($this->langCodeArray['devlang'])) {
+                            $xml_node->langCode = $this->langCodeArray['devlang'];
                         }
                         $this->replaceSimpleXmlNode($xml_work->$key, $xml_node);
                         break;
