@@ -59,8 +59,7 @@ class aminterface
                         'pass' => '',
                         'port' => '5038',
                         'tsoket' => 'tcp://',
-                        'timeout' => 30,
-                        'enabled' => true
+                        'timeout' => 30
                       );
         $this->_eventListeners = array();
         $this->_incomingMsgObjectList = array();
@@ -76,33 +75,14 @@ class aminterface
                 }
             }
         }
-        if ($this->_config['enabled']) {
-            $this->load_subspace();
-        }
-
-        if ($this->_config['enabled']) {
-            // Ami is not hard disabled in __construct line 63.
-            if ($this->open()) {
-                // Can open a connection. Now check compatibility with chan-sccp.
-                // will return true if compatible.
-                if (!$this->get_compatible_sccp(true)[1]) {
-                    // Close the open socket as will not use
-                    $this->close();
-                }
-            }
-        }
+        $this->load_subspace();
+        $this->open();
     }
 
     public function info()
     {
         $Ver = '16.0.0.1';
-        if ($this->_config['enabled']){
-            return array('Version' => $Ver,
-                'about' => 'AMI data ver: ' . $Ver, 'test' => get_declared_classes());
-        } else {
-            return array('Version' => $Ver,
-                'about' => 'Disabled AMI  ver: ' . $Ver);
-        }
+        return array('Version' => $Ver, 'about' => 'AMI data ver: ' . $Ver);
     }
 
     /*
@@ -508,17 +488,5 @@ class aminterface
             }
         }
         return $cmd_res;
-    }
-
-    public function get_compatible_sccp($revNumComp=false) {
-        // only called with args from installer to get revision and compatibility
-        $res = $this->getSCCPVersion();
-        if ($res['RevisionNum'] < 11063) {
-            $this->useAmiInterface = false;
-        }
-        if ($revNumComp) {
-            return array($res['vCode'], true);
-        }
-        return $res['vCode'];
     }
 }

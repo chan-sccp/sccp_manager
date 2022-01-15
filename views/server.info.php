@@ -27,7 +27,7 @@ foreach ($ast_realtime as $key => $value) {
 $conf_realtime = $this->extconfigs->validate_RealTime($ast_realm);
 $db_Schema = $this->dbinterface->validate();
 $mysql_info = $this->dbinterface->get_db_sysvalues();
-$compatible = $this->aminterface->get_compatible_sccp();
+$compatible = $core['vCode'];
 $info = array();
 
 //$info['srvinterface'] = $this->srvinterface->info();

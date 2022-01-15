@@ -71,7 +71,8 @@ abstract class Message
           print_r($value);
          */
     }
-
+/*
+    // Duplicate declaration - also declared in Response class where is used.
     public function getVariable($key)
     {
         $key = strtolower($key);
@@ -81,17 +82,11 @@ abstract class Message
         }
         return $this->variables[$key];
     }
-
+*/
     protected function setKey($key, $value)
     {
         $key = strtolower((string) $key);
         $this->keys[$key] = (string) $value;
-        /*
-          print_r('<br>----Set Key -------<br>');
-          print_r($key);
-          print_r($value);
-         *
-         */
     }
 
     public function getKey($key)
@@ -126,8 +121,24 @@ abstract class Message
 
     protected function setSanitizedKey($key, $value)
     {
-        //$key = strtolower((string) $key);
-        $_string_key = array('actionid', 'descr');
+        // TODO: Need to handle JSON here rather than in getVariable as have
+        // already broken data into array.
+        $key = strtolower($key);
+        switch ($key) {
+            case 'json':
+                $this->keys['JSONRAW'] = (string) $value;
+                break;
+            case 'actionid':
+            case 'desc':
+                $this->keys[$key] = (string) $value;
+                break;
+            default:
+                $this->keys[$key] = $this->sanitizeInput($value);
+                break;
+        }
+
+
+        $_string_key = array('actionid', 'descr', 'json');
         if (array_search($key, $_string_key) !== false) {
             $this->keys[$key] = (string) $this->sanitizeInput($value, 'string');
         } else {
@@ -138,9 +149,11 @@ abstract class Message
     protected function sanitizeInput($value, $prefered_type = '')
     {
         if ($prefered_type == '') {
-            if (!isset($value) || $value === null || strlen($value) == 0) {
-                return null;
-            } elseif (is_numeric($value)) {
+            // No longer send empty values
+            //if (!isset($value) || $value === null || strlen($value) == 0) {
+                //return null;
+            //} elseif (is_numeric($value)) {
+            if (is_numeric($value)) {
                 $prefered_type = 'numeric';
             } elseif (is_string($value)) {
                 $prefered_type = 'string';
@@ -148,38 +161,38 @@ abstract class Message
                 throw new AMIException("Don't know how to convert: '" . $value . "'\n");
             }
         }
-        if ($prefered_type !== '') {
-            switch ($prefered_type) {
-                case 'string':
-                    if (!isset($value) || $value === null || strlen($value) == 0) {
-                        return '';
-                    }
-                    if (filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
-                        return (boolean) $value;
-                    } elseif (filter_var($value, FILTER_SANITIZE_STRING, FILTER_NULL_ON_FAILURE)) {
-                        return (string) $value;
-                    } elseif (filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE)) {
-                        return (string) htmlspecialchars($value, ENT_QUOTES);
-                    } else {
-                        throw new AMIException("Incoming String is not sanitary. Skipping: '" . $value . "'\n");
-                    }
-                    break;
-                case 'numeric':
-                    if (!isset($value) || $value === null || strlen($value) == 0) {
-                        return 0;
-                    }
-                    if (filter_var($value, FILTER_VALIDATE_INT, FILTER_FLAG_ALLOW_HEX | FILTER_FLAG_ALLOW_OCTAL)) {
-                        return intval($value, 0);
-                    } elseif (filter_var($value, FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_SCIENTIFIC)) {
-                        return (float) $value;
-                    } else {
-                        return (double) $value;
-                    }
-                default:
-                    throw new AMIException("Don't know how to convert: '" . $value . "'\n");
-                    break;
-            }
+        //if ($prefered_type !== '') {
+        switch ($prefered_type) {
+            case 'string':
+                //if (!isset($value) || $value === null || strlen($value) == 0) {
+                    //return '';
+                //}
+                if (filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+                    return (boolean) $value;
+                } elseif (filter_var($value, FILTER_SANITIZE_STRING, FILTER_NULL_ON_FAILURE)) {
+                    return (string) $value;
+                } elseif (filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE)) {
+                    return (string) htmlspecialchars($value, ENT_QUOTES);
+                } else {
+                    throw new AMIException("Incoming String is not sanitary. Skipping: '" . $value . "'\n");
+                }
+                break;
+            case 'numeric':
+                //if (!isset($value) || $value === null || strlen($value) == 0) {
+                    //return 0;
+                //}
+                if (filter_var($value, FILTER_VALIDATE_INT, FILTER_FLAG_ALLOW_HEX | FILTER_FLAG_ALLOW_OCTAL)) {
+                    return intval($value, 0);
+                } elseif (filter_var($value, FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND | FILTER_FLAG_ALLOW_SCIENTIFIC)) {
+                    return (float) $value;
+                } else {
+                    return (double) $value;
+                }
+            default:
+                throw new AMIException("Don't know how to convert: '" . $value . "'\n");
+                break;
         }
+        //}
     }
 
     protected function finishMessage($message)
@@ -257,21 +270,28 @@ abstract class IncomingMessage extends Message
     public function __construct($rawContent)
     {
         parent::__construct();
-        dbug($rawContent);
+        //dbug($rawContent);
         $this->rawContent = $rawContent;
         $lines = explode(Message::EOL, $rawContent);
         foreach ($lines as $line) {
             $content = explode(':', $line);
-            $name = strtolower(trim($content[0]));
-            unset($content[0]);
-            $value = isset($content[1]) ? trim(implode(':', $content)) : '';
+            //$content = preg_split("/: /",$line);
+            //$name = strtolower(trim($content[0]));
+            // do strtolower in setSanitizedKey
+            $name = array_shift($content);
+            //unset($content[0]);
+            if (!isset($content[0])) {
+                continue;
+            }
+            //$value = isset($content[0]) ? trim(implode(':', $content)) : '';
             try {
-                $this->setSanitizedKey($name, $value);
+                $this->setSanitizedKey($name, trim(implode(':', $content)));
             } catch (AMIException $e) {
                 throw new AMIException("Error: '" . $e . "'\n Dump RawContent:\n" . $this->rawContent . "\n");
             }
-            dbug($this->keys);
+            //dbug($this->keys);
         }
+        //dbug($this->keys);
     }
 }
 
@@ -405,9 +425,9 @@ class SCCPDeviceRestartAction extends ActionMessage
     {
         parent::__construct('SCCPDeviceRestart');
         $this->setResponseHandler("Generic");
-        if (empty($Type)) {
-            $Type = "restart";
-        }
+        //if (empty($Type)) {
+            //$Type = "restart";
+        //}
         $this->setKey('DeviceName', $DeviceName);
         if (in_array(strtolower($Type), array('restart', 'full', 'reset'))) {
             $this->setKey('Type', $Type);

@@ -71,8 +71,10 @@ abstract class Response extends IncomingMessage
         $this->setKey('ActionId', $actionId);
     }
 
-    public function getVariable($_rawContent, $_fields = '')
+    public function getVariable(string $_rawContent, array $_fields)
     {
+        dbug($_rawContent);
+        dbug($_fields);
         $lines = explode(Message::EOL, $_rawContent);
         foreach ($_fields as $key => $value) {
             foreach ($lines as $data) {
@@ -83,9 +85,6 @@ abstract class Response extends IncomingMessage
             }
         }
     }
-}
-class GenericResponse extends Response
-{
 }
 
 //****************************************************************************
@@ -106,7 +105,6 @@ class Generic_Response extends Response
         $this->_events['ClosingEvent'] = new ResponseComplete_Event($rawContent);
         $this->_completed = true;
         $this->eventListIsCompleted = true;
-
     }
 }
 
@@ -157,7 +155,7 @@ class SCCPJSON_Response extends Generic_Response
     public function __construct($rawContent)
     {
         parent::__construct($rawContent);
-        $this->getVariable($rawContent, array("DataType" => "DataType:", "JSONRAW" => "JSON:"));
+        //$this->getVariable($rawContent, array("DataType" => "DataType:", "JSONRAW" => "JSON:"));
         if (null !== $this->getKey('JSONRAW')) {
             $this->setKey('Response', 'Success');
         }

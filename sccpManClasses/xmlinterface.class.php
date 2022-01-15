@@ -126,9 +126,9 @@ class xmlinterface
                             } else {
                                 $lang = $data_values['devlang'];
                             }
-                            if (isset($lang_info[$lang])) {
-                                $xnode->name = $lang_info[$lang]['locale'];
-                                $xnode->langCode = $lang_info[$lang]['code'];
+                            if (isset($this->langCodeArray[$lang])) {
+                                $xnode->name = $lang;
+                                $xnode->langCode = $this->langCodeArray[$lang];
                             } else {
                                 $xnode->name = '';
                                 $xnode->langCode = '';
@@ -156,7 +156,7 @@ class xmlinterface
         }
     }
 
-    function create_SEP_XML($store_path, $data_values, $dev_config, $dev_id, $lang_info = array())
+    function create_SEP_XML($store_path, $data_values, $dev_config, $dev_id)
     {
         // TODO: $data_values are system wide defaults, $dev_config are specific device values.
         // Need to merge the two arrays so that device specific values override system values
@@ -461,7 +461,7 @@ class xmlinterface
         return $res;
     }
 
-    function create_SEP_SIP_XML($store_path = '', $data_values = array(), $dev_config = array(), $dev_id = '', $lang_info = array())
+    function create_SEP_SIP_XML($store_path = '', $data_values = array(), $dev_config = array(), $dev_id = '')
     {
         $var_xml_general_fields = array('authenticationURL' => 'dev_authenticationURL', 'informationURL' => 'dev_informationURL', 'messagesURL' => 'dev_messagesURL',
             'servicesURL' => 'dev_servicesURL', 'directoryURL' => 'dev_directoryURL', 'proxyServerURL' => 'dev_proxyServerURL', 'idleTimeout' => 'dev_idleTimeout',

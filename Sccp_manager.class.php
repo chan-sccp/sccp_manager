@@ -165,7 +165,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         // load metainfo from chan-sccp - help information if not in xml. Only load first time as static data.
         if (empty($this->sccpHelpInfo)) {
             $sysConfiguration = $this->aminterface->getSCCPConfigMetaData('general');
-
             foreach ($sysConfiguration['Options'] as $key => $valueArray) {
                 foreach ($valueArray['Description'] as $descKey => $descValue) {
                     $this->sccpHelpInfo[$valueArray['Name']] .= $descValue . '<br>';
@@ -920,12 +919,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $dev_config['addon_info'][$key] = $hw_data[0]['loadimage'];
             }
         }
-
-        $lang_data = $this->extconfigs->getExtConfig('sccp_lang');
         if (!$sccp_native) {
-            return $this->xmlinterface->create_SEP_SIP_XML($this->sccppath["tftp_store_path"], $data_value, $dev_config, $dev_id, $lang_data);
+            return $this->xmlinterface->create_SEP_SIP_XML($this->sccppath["tftp_store_path"], $data_value, $dev_config, $dev_id);
         }
-        return $this->xmlinterface->create_SEP_XML($this->sccppath["tftp_templates_path"], $data_value, $dev_config, $dev_id, $lang_data);
+        return $this->xmlinterface->create_SEP_XML($this->sccppath["tftp_templates_path"], $data_value, $dev_config, $dev_id);
     }
 
     function deleteSccpDeviceXML($dev_id = '') {

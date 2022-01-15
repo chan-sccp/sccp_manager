@@ -10,7 +10,6 @@ global $version;
 global $aminterface;
 global $extconfigs;
 global $mobile_hw;
-global $useAmiForSoftKeys;
 global $settingsFromDb;
 global $thisInstaller;
 global $cnf_int;
@@ -21,7 +20,6 @@ $mobile_hw = '0';
 $autoincrement = (($amp_conf["AMPDBENGINE"] == "sqlite") || ($amp_conf["AMPDBENGINE"] == "sqlite3")) ? "AUTOINCREMENT" : "AUTO_INCREMENT";
 $table_req = array('sccpdevice', 'sccpline', 'sccpsettings');
 $sccp_compatible = 0;
-$chanSCCPWarning = true;
 $db_config = '';
 $sccp_version = array();
 $cnf_int = \FreePBX::Config();
@@ -45,16 +43,14 @@ foreach ($requiredClasses as $className) {
 }
 
 CheckAsteriskVersion();
-$sccp_version = CheckChanSCCPCompatible();
-$sccp_compatible = $sccp_version[0];
-$chanSCCPWarning = $sccp_version[1] ^= 1;
+$sccp_compatible = $aminterface->getSCCPVersion['vCode'];
+
 outn("<li>" . _("Sccp model Compatible code : ") . $sccp_compatible . "</li>");
 if ($sccp_compatible == 0) {
     outn("<br>");
-    outn("<font color='red'>Chan Sccp not Found. Install it before continuing !</font>");
+    outn("<font color='red'>chan-sccp not found. Install it before continuing !</font>");
     die();
 }
-
 // BackUp Old config
 createBackUpConfig();
 RenameConfig();
@@ -68,10 +64,7 @@ InstallDB_createButtonConfigTrigger();
 InstallDbCreateViews($sccp_compatible);
 installDbPopulateSccpline();
 InstallDB_updateDBVer($sccp_compatible);
-if ($chanSCCPWarning) {
-    outn("<br>");
-    outn("<font color='red'>Error: installed version of chan-sccp is not compatible. Please upgrade chan-sccp</font>");
-}
+
 Setup_RealTime();
 addDriver($sccp_compatible);
 checkTftpServer();
@@ -369,10 +362,8 @@ function CheckAsteriskVersion()
 
 function CheckChanSCCPCompatible()
 {
-    global $chanSCCPWarning;
     global $aminterface;
-    // calling with true returns array with compatibility and RevisionNumber
-    return $aminterface->get_compatible_sccp(true);
+    return $aminterface->getSCCPVersion['vCode'];
 }
 
 function InstallDB_updateSchema($db_config)
