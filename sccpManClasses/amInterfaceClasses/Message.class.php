@@ -17,7 +17,6 @@ class AMIException extends \Exception
 
 abstract class Message
 {
-
     const EOL = "\r\n";
     const EOM = "\r\n\r\n";
 
@@ -360,8 +359,8 @@ class ExtensionStateListAction extends ActionMessage
     public function __construct()
     {
         parent::__construct('ExtensionStateList');
-        $this->setKey('Segment', 'general');
-        $this->setKey('ResultFormat', 'command');
+        //$this->setKey('Segment', 'general');
+        //$this->setKey('ResultFormat', 'command');
         $this->setResponseHandler("ExtensionStateList");
     }
 }
@@ -379,8 +378,8 @@ class SCCPShowSoftkeySetsAction extends ActionMessage
     public function __construct()
     {
         parent::__construct('SCCPShowSoftkeySets');
-        $this->setKey('Segment', 'general');
-        $this->setKey('ResultFormat', 'command');
+        //$this->setKey('Segment', 'general');
+        //$this->setKey('ResultFormat', 'command');
         $this->setResponseHandler("SCCPShowSoftkeySets");
     }
 }
@@ -391,8 +390,8 @@ class SCCPShowDeviceAction extends ActionMessage
     public function __construct($devicename)
     {
         parent::__construct('SCCPShowDevice');
-        $this->setKey('Segment', 'general');
-        $this->setKey('ResultFormat', 'command');
+        //$this->setKey('Segment', 'general');
+        //$this->setKey('ResultFormat', 'command');
         $this->setKey('DeviceName', $devicename);
         $this->setResponseHandler("SCCPShowDevice");
     }
@@ -404,8 +403,8 @@ class SCCPShowDevicesAction extends ActionMessage
     public function __construct()
     {
         parent::__construct('SCCPShowDevices');
-        $this->setKey('Segment', 'general');
-        $this->setKey('ResultFormat', 'command');
+        //$this->setKey('Segment', 'general');
+        //$this->setKey('ResultFormat', 'command');
         $this->setResponseHandler("SCCPShowDevices");
     }
 }

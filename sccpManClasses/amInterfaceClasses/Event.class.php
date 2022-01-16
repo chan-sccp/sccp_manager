@@ -1,13 +1,5 @@
 <?php
 
-/**
- *
- * Core Comsnd Interface
- *
- *  https://www.voip-info.org/asterisk-manager-example-php/
- */
-/* !TODO!: Re-Indent this file.  -TODO-: What do you mean? coreaccessinterface  ??  */
-
 namespace FreePBX\modules\Sccp_manager\aminterface;
 
 // ************************************************************************** Event  *********************************************
@@ -94,7 +86,7 @@ class SCCPDeviceEntry_Event extends Event
 {
     // This is a list of tables, each table is an entry
 }
-
+/*
 class SCCPShowDevice_Event extends Event
 {
     // This is a list of tables
@@ -109,7 +101,8 @@ class SCCPShowDevice_Event extends Event
         }
         return $ret;
     }
-
+    */
+/*
     public function getCodecsPreference()
     {
         // TODO unused method - to be deleted?
@@ -121,7 +114,8 @@ class SCCPShowDevice_Event extends Event
         }
         return $ret;
     }
-}
+    */
+//}
 class SCCPDeviceButtonEntry_Event extends Event
 {
 }

@@ -19,8 +19,8 @@ if ($_REQUEST['tech_hardware'] === 'cisco') {
 } else {
     $lines_list = $this->dbinterface->getSipTableData('extensionList');
 }
-
-$hint_list  = $this->getHintInformation(true, array('context'=>'park-hints'));
+// TODO: actually returning all hints - the filter is currently ignored.
+$hint_list  = $this->getHintInformation(array('context'=>'park-hints'));
 
 $line_id =0;
 $max_buttons =56;     //Don't know hardware type so set a maximum. On save, this is set to actual max buttons

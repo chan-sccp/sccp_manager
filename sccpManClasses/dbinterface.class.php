@@ -66,6 +66,9 @@ class dbinterface
                     $stmts->bindParam(':name', $data['name'],\PDO::PARAM_STR);
                 }
                 break;
+            case 'sccpHints':
+                $stmtU = $this->db->prepare('SELECT name, name, label FROM sccpline ORDER BY name');
+                break;
             case 'phoneGrid':
                 switch ($data['type']) {
                     case "cisco-sip":

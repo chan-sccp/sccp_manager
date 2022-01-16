@@ -429,6 +429,12 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
                         break;
                     case 'monitor':
+                        $hint = $this->aminterface->core_list_hints();
+                        foreach ($hint as $key => $value) {
+                            if ($this->hint_context['default'] != $value) {
+                                $this->hint_context[$key] = $value;
+                            }
+                        }
                         $btn_t = 'speeddial';
                         $btn_opt = (string) $get_settings["button${it}_line"];
                         $db_res = $this->dbinterface->getSccpDeviceTableData('SccpExtension', array('name' => $btn_opt));
@@ -711,13 +717,14 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 }
             }
         }
-
+        /*
         $hint = $this->aminterface->core_list_hints();
         foreach ($hint as $key => $value) {
             if ($this->hint_context['default'] != $value) {
                 $this->hint_context[$key] = $value;
             }
         }
+        */
     }
 
     /*
@@ -1055,34 +1062,35 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         return $modelList;
     }
 
-    function getHintInformation($sort = true, $filter = array()) {
+    function getHintInformation($filter = array()) {
         $res = array();
         $default_hint = '@ext-local';
 
-        if (empty($res)) {
+        //if (empty($res)) {
             // Old Req get all hints
-            $tmp_data = $this->aminterface->core_list_all_hints();
-            foreach ($tmp_data as $value) {
-                $res[$value] = array('key' => $value, 'exten' => $this->before('@', $value), 'label' => $value);
-            }
-        }
+            // Avoid post processing - return dat in required format.
+        $res = $this->aminterface->core_list_all_hints();
+        //foreach ($tmp_data as $value) {
+            //$res[$value] = array('key' => $value, 'exten' => $this->before('@', $value), 'label' => $value);
+        //}
+        //dbug($res);
+        //}
 
         // Update info from sccp_db
-        $tmp_data = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
-        foreach ($tmp_data as $value) {
-            $name_l = $value['name'];
-            if (!empty($res[$name_l . $default_hint])) {
-                $res[$name_l . $default_hint]['exten'] = $name_l;
-                $res[$name_l . $default_hint]['label'] = $value['label'];
+        foreach ($this->dbinterface->getSccpDeviceTableData('sccpHints') as $key => $value) {
+            if (!empty($res[$key . $default_hint])) {
+                $res[$key . $default_hint]['exten'] = $key;
+                $res[$key . $default_hint]['label'] = $value['label'];
             } else {
                 // if not exist in system hints ..... ???????
-                $res[$name_l . $default_hint] = array('key' => $name_l . $default_hint, 'exten' => $name_l, 'label' => $value['label']);
+                $res[$key . $default_hint] = array('key' => $key . $default_hint, 'exten' => $key, 'label' => $value['label']);
             }
         }
-        if (!$sort) {
-            return $res;
-        }
-
+        // Hints returned from db are already sorted by name
+        //if (!$sort) {
+        return $res;
+        //}
+        /*
         foreach ($res as $key => $value) {
             $data_sort[$value['exten']] = $key;
         }
@@ -1090,10 +1098,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         foreach ($data_sort as $key => $value) {
             $res_sort[$value] = $res[$value];
         }
-
+        */
         // Update info from sip DB
         /* !TODO!: Update Hint info from sip DB ??? */
-        return $res_sort;
+        //return $res_sort;
+
     }
 }
 ?>
