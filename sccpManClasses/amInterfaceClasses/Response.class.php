@@ -262,17 +262,23 @@ class SCCPGeneric_Response extends Response
             // No need to test if $_fkey is array as array required
             foreach ($_fkey as $_fid) {
                 if (empty($_row[$_fid])) {
-                    return array();
+                    $all_key_ok = false;
                 } else {
-                    $result[$_row[$_fid]] = $_row;
+                    $set_name[$_fid] = $_row[$_fid];
                 }
             }
-            // Change any key labels that require changing for db compatibility.
-            foreach ($_fields as $value_key => $value_id) {
-                $result[$_row[$_fid]][$value_id] = $result[$_row[$_fid]][$value_key];
+            $Data = &$result;
+
+            if ($all_key_ok) {
+                foreach ($set_name as $value_id) {
+                    $Data = &$Data[$value_id];
+                }
+                // Label converter in case labels and keys are different
+                foreach ($_fields as $value_key => $value_id) {
+                    $Data[$value_id] = $_row[$value_key];
+                }
             }
         }
-        dbug($result);
         return $result;
     }
 
@@ -335,7 +341,11 @@ class SCCPShowSoftkeySets_Response extends SCCPGeneric_Response
     }
     public function getResult()
     {
-        return $this->ConvertTableData('SoftKeySets', array('set'), array());
+        return $this->ConvertTableData(
+            'SoftKeySets',
+            array('set','mode'),
+            array('description'=>'description','label'=>'label','lblid'=>'lblid')
+            );
     }
 }
 
@@ -348,7 +358,12 @@ class SCCPShowDevices_Response extends SCCPGeneric_Response
     }
     public function getResult()
     {
-        return $this->ConvertTableData('Devices', array('mac'), array('mac'=>'name','regstate'=>'status'));
+        return $this->ConvertTableData(
+            'Devices',
+            array('mac'),
+            array('mac'=>'name','address'=>'address','descr'=>'descr','regstate'=>'status',
+                  'token'=>'token','act'=>'act', 'lines'=>'lines','nat'=>'nat','regtime'=>'regtime')
+            );
     }
 }
 
@@ -368,9 +383,26 @@ class SCCPShowDevice_Response extends SCCPGeneric_Response
                 $result = array_merge($result, $trow->getKeys());
         }
         // Now handle label changes so that keys from AMI correspond to db keys in _tables
-        $result['Buttons'] = $this->ConvertTableData('Buttons', array('id'), array());
-        $result['SpeeddialButtons'] = $this->ConvertTableData('SpeeddialButtons', array('id'), array());
-        $result['CallStatistics'] = $this->ConvertTableData('CallStatistics', array('type'), array());
+        $result['Buttons'] = $this->ConvertTableData(
+            'Buttons',
+            array('id'),
+            array('id'=>'id','channelobjecttype'=>'channelobjecttype','inst'=>'inst',
+                  'typestr'=>'typestr', 'type'=>'type', 'pendupdt'=>'pendupdt', 'penddel'=>'penddel', 'default'=>'default'
+                  )
+        );
+        $result['SpeeddialButtons'] = $this->ConvertTableData(
+            'SpeeddialButtons',
+            array('id'),
+            array('id'=>'id','channelobjecttype'=>'channelobjecttype','name'=>'name','number'=>'number','hint'=>'hint')
+        );
+        $result['CallStatistics'] = $this->ConvertTableData(
+            'CallStatistics',
+            array('type'),
+            array('type'=>'type','channelobjecttype'=>'channelobjecttype','calls'=>'calls','pcktsnt'=>'pcktsnt','pcktrcvd'=>'pcktrcvd',
+                  'lost'=>'lost','jitter'=>'jitter','latency'=>'latency', 'quality'=>'quality','avgqual'=>'avgqual','meanqual'=>'meanqual',
+                  'maxqual'=>'maxqual', 'rconceal'=>'rconceal', 'sconceal'=>'sconceal'
+                  )
+        );
         $result['SCCP_Vendor'] = array('vendor' => strtok($result['skinnyphonetype'], ' '), 'model' => strtok('('),
                                        'model_id' => strtok(')'), 'vendor_addon' => strtok($result['configphonetype'], ' '),
                                        'model_addon' => strtok(' '));
