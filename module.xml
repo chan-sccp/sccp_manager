@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.4.0.1</version>
+	<version>14.4.0.2</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -38,6 +38,7 @@
 		 * Version 14.3.0.30 * - Fix reversion in 29. Not returning to correct page when saving device.
 		 * Version 14.3.0.31 * - Fix rewrite rules.
 		 * Version 14.4.0.1 * - Modify installer to avoid data loss on existing 14.3 fields. Bump Minor version to reflect this.
+		 * Version 14.4.0.2 * - Revert error in Installer db calls - IF EXISTS is not valid in MariaDb v5 (package DB)
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<depends>

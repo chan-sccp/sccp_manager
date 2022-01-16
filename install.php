@@ -433,7 +433,7 @@ function InstallDB_updateSchema($db_config)
         }
         // Processed all _Column names; now safe to delete them
         $sqlDrop = array_reduce($fieldsArr, function($carry, $column) {
-                return "${carry} DROP COLUMN IF EXISTS ${column},";
+                return "${carry} DROP COLUMN ${column},";
         });
         $sqlDrop = rtrim($sqlDrop, ", ");
         $stmt = $db->prepare("ALTER TABLE ${table} ${sqlDrop}");
@@ -463,7 +463,7 @@ function InstallDB_updateSchema($db_config)
                 // occur as columns that are dropped should no longer be in the module.xml schema
                 // and so Doctrine will have already dropped them.
                 if (!empty($tab_modif[$fld_id]['drop'])) {
-                    $sql_create .= "DROP COLUMN IF EXISTS {$row_fld}, ";
+                    $sql_create .= "DROP COLUMN {$row_fld}, ";
                     unset($tab_modif[$fld_id]['drop']);
                     continue;
                 }
