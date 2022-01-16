@@ -15,8 +15,10 @@ trait bmoFunctions {
             case 'sccpsettings':
                 break;
             case 'sccp_phone':
-                $this->extensionData = json_encode($this->getExtensionGrid('extGrid'));
-                $this->sccpPhoneData = json_encode($this->getPhoneGrid('sccp'));
+                // Get activeDevices once and pass to functions.
+                $activeDevices = $this->aminterface->sccp_get_active_device();
+                $this->extensionData = json_encode($this->getExtensionGrid('extGrid', $activeDevices));
+                $this->sccpPhoneData = json_encode($this->getPhoneGrid('sccp', $activeDevices));
                 $this->sipPhoneData = json_encode($this->getPhoneGrid('cisco-sip'));
                 break;
             case 'sccp_adv':
@@ -29,7 +31,7 @@ trait bmoFunctions {
         }
     }
 
-    function getPhoneGrid(string $type){
+    function getPhoneGrid(string $type, $activeDevices =array()){
         $dbDevices = array();
         // Find all devices defined in the database.
         $dbDevices = $this->dbinterface->getSccpDeviceTableData('phoneGrid', array('type' => $type));
@@ -39,7 +41,7 @@ trait bmoFunctions {
             return $dbDevices;     //this may be empty
         }
         // Find all devices currently connected
-        $activeDevices = $this->aminterface->sccp_get_active_device();
+        //$activeDevices = $this->aminterface->sccp_get_active_device();
 
         foreach ($dbDevices as &$dev_id) {
             if (!empty($activeDevices[$dev_id['name']])) {
@@ -87,12 +89,12 @@ trait bmoFunctions {
         return $dbDevices;
     }
 
-    function getExtensionGrid(string $type) {
+    function getExtensionGrid(string $type, $activeDevices = array()) {
         $lineList = $this->dbinterface->getSccpDeviceTableData($type);
         if (empty($lineList)) {
             return array();
         }
-        $activeDevices = $this->aminterface->sccp_get_active_device();
+        //$activeDevices = $this->aminterface->sccp_get_active_device();
         $uniqueLineList = array();
         foreach ($lineList as $key => &$lineArr) {
             if (array_key_exists($lineArr['mac'], $activeDevices)) {

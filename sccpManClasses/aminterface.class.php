@@ -141,7 +141,7 @@ class aminterface
         $messageToSend = $message->serialize();
         $length = strlen($messageToSend);
         $this->_DumpMessage = '';
-        $this->_lastActionId = $message->getActionID();
+        $this->_lastActionId = $message->getKey('ActionID');
         $this->_lastRequestedResponseHandler = $message->getResponseHandler();
         $this->_lastActionClass = $message;
         $this->_incomingRawMessage[$this->_lastActionId] = '';
@@ -281,7 +281,7 @@ class aminterface
             }
         }
         $response = new $responseClass($message);
-        $actionId = $response->getActionID();
+        $actionId = $response->getKey('ActionID');
         if ($actionId === null) {
             $response->setActionId($this->_lastActionId);
         }
@@ -466,7 +466,7 @@ class aminterface
     {
         // Initialise array with default values to eliminate testing later
         $result = array();
-        $cmd_res = array();
+        //$cmd_res = array();
         $cmd_res = ['sccp' => ['message' => 'legacy value', 'realm' => '', 'status' => 'ERROR']];
         if ($this->_connect_state) {
             $_action = new \FreePBX\modules\Sccp_manager\aminterface\CommandAction('realtime mysql status');

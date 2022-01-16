@@ -70,7 +70,7 @@ abstract class Response extends IncomingMessage
     {
         $this->setKey('ActionId', $actionId);
     }
-
+/*
     public function getVariable(string $_rawContent, array $_fields)
     {
         dbug($_rawContent);
@@ -85,6 +85,8 @@ abstract class Response extends IncomingMessage
             }
         }
     }
+    */
+
 }
 
 //****************************************************************************
@@ -117,6 +119,7 @@ class Command_Response extends Generic_Response
     private $_temptable;
     public function __construct($rawContent)
     {
+        //dbug($rawContent);
         $this->_temptable = array();
         parent::__construct($rawContent);
         $lines = explode(Message::EOL, $rawContent);
@@ -155,14 +158,15 @@ class SCCPJSON_Response extends Generic_Response
     public function __construct($rawContent)
     {
         parent::__construct($rawContent);
+        //dbug($rawContent);
         //$this->getVariable($rawContent, array("DataType" => "DataType:", "JSONRAW" => "JSON:"));
-        if (null !== $this->getKey('JSONRAW')) {
-            $this->setKey('Response', 'Success');
-        }
+        //if (null !== $this->getKey('JSON')) {
+            //$this->setKey('Response', 'Success');
+        //}
     }
     public function getResult()
     {
-        if (($json = json_decode($this->getKey('JSON'), true)) != false) {
+        if ($json = json_decode($this->getKey('JSON'), true)) {
             return $json;
         }
     }
@@ -248,6 +252,7 @@ class SCCPGeneric_Response extends Response
 
     protected function ConvertTableData( $_tablename, array $_fkey, array $_fields)
     {
+        //dbug(debug_backtrace(2));
         $result = array();
         $_rawtable = $this->Table2Array($_tablename);
         // Check that there is actually data to be converted

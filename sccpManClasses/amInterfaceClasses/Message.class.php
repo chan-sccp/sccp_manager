@@ -103,12 +103,12 @@ abstract class Message
     {
         return $this->variables;
     }
-
+/*
     public function getActionID()
     {
         return $this->getKey('ActionID');
     }
-
+*/
     public function getKeys()
     {
         return $this->keys;
@@ -126,8 +126,10 @@ abstract class Message
         $key = strtolower($key);
         switch ($key) {
             case 'json':
-                $this->keys['JSONRAW'] = (string) $value;
+                //$this->keys['JSONRAW'] = (string) $value;
+                $this->keys['json'] = (string) $value;
                 break;
+            case 'response':
             case 'actionid':
             case 'desc':
                 $this->keys[$key] = (string) $value;
@@ -137,13 +139,14 @@ abstract class Message
                 break;
         }
 
-
-        $_string_key = array('actionid', 'descr', 'json');
+/*
+        $_string_key = array('actionid', 'descr');
         if (array_search($key, $_string_key) !== false) {
             $this->keys[$key] = (string) $this->sanitizeInput($value, 'string');
         } else {
             $this->keys[$key] = $this->sanitizeInput($value);
         }
+*/
     }
 
     protected function sanitizeInput($value, $prefered_type = '')
