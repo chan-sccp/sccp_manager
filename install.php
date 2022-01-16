@@ -43,7 +43,7 @@ foreach ($requiredClasses as $className) {
 }
 
 CheckAsteriskVersion();
-$sccp_compatible = $aminterface->getSCCPVersion['vCode'];
+$sccp_compatible = $aminterface->getSCCPVersion()['vCode'];
 
 outn("<li>" . _("Sccp model Compatible code : ") . $sccp_compatible . "</li>");
 if ($sccp_compatible == 0) {
