@@ -677,14 +677,20 @@ trait ajaxHelper {
                     }
                     break;
                 case 'phonecodepage':
+                    // phonecodepage depends on 2 variables - language and phone type (uses java or not).
+                    // Non java phones use ISO8859-1 or CP1251 (Cyrillic); java phones use UTF-8. See @dkgroot.
+                    // Below list is not definitive or necessarily accurate - needs to be maintained.
+                    $nonJavaPhones = array(
+                        '6901', '6911', '6921', '6945', '7902', '7905', '7910', '7911', '7912', '7914', '7915', '7916', '7920', '7925', '7926', '7931', '7935', '7936', '7937', '7940', '7960'
+                        );
                     // TODO: May be other exceptions so use switch. Historically this is the only one handled
                     if (!empty($get_settings["{$hdr_prefix}devlang"])) {
                         switch ($get_settings["{$hdr_prefix}devlang"]) {
                             case 'Russian_Russian_Federation':
-                                $value = 'CP1251';
+                                $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1251' : 'utf-8';
                                 break;
                             default:
-                                $value = 'ISO8859-1';
+                                $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO8859-1' : 'utf-8';
                                 break;
                         }
                     }

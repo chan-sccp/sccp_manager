@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>14.4.0.2</version>
+	<version>14.4.0.3</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -39,6 +39,7 @@
 		 * Version 14.3.0.31 * - Fix rewrite rules.
 		 * Version 14.4.0.1 * - Modify installer to avoid data loss on existing 14.3 fields. Bump Minor version to reflect this.
 		 * Version 14.4.0.2 * - Revert error in Installer db calls - IF EXISTS is not valid in MariaDb v5 (package DB)
+		 * Version 14.4.0.3 * - Change method of selecting phonecodepage depending on if is java phone.
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<depends>
