@@ -25,6 +25,7 @@ trait bmoFunctions {
                 $this->dialTemplateData = json_encode($this->getDialTemplate());
                 $this->softKeyData = json_encode($this->getSoftKey());
                 $this->deviceModelData = json_encode($this->ajaxHandler($_REQUEST = array('command'=>'getDeviceModel', 'type'=>'enabled')));
+                dbug($this->deviceModelData);
                 break;
             default:
                 break;
@@ -32,6 +33,7 @@ trait bmoFunctions {
     }
 
     function getPhoneGrid(string $type, $activeDevices =array()){
+        
         $dbDevices = array();
         // Find all devices defined in the database.
         $dbDevices = $this->dbinterface->getSccpDeviceTableData('phoneGrid', array('type' => $type));
@@ -40,8 +42,6 @@ trait bmoFunctions {
         if ($type == 'cisco-sip') {
             return $dbDevices;     //this may be empty
         }
-        // Find all devices currently connected
-        //$activeDevices = $this->aminterface->sccp_get_active_device();
 
         foreach ($dbDevices as &$dev_id) {
             if (!empty($activeDevices[$dev_id['name']])) {

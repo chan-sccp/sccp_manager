@@ -86,7 +86,7 @@ class SCCPDeviceEntry_Event extends Event
 {
     // This is a list of tables, each table is an entry
 }
-/*
+
 class SCCPShowDevice_Event extends Event
 {
     // This is a list of tables
@@ -101,7 +101,7 @@ class SCCPShowDevice_Event extends Event
         }
         return $ret;
     }
-    */
+}
 /*
     public function getCodecsPreference()
     {

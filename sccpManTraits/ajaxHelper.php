@@ -223,9 +223,9 @@ trait ajaxHelper {
                         $devices = $this->getSccpModelInformation($request['type'], $validate = true);
                         break;
                 }
-                if (empty($devices)) {
-                    return array();
-                }
+                //if (empty($devices)) {
+                    //return array();
+                //}
                 return $devices;
                 break;
 
@@ -550,7 +550,6 @@ trait ajaxHelper {
                     $nonJavaPhones = array(
                         '6901', '6911', '6921', '6945', '7902', '7905', '7910', '7911', '7912', '7914', '7915', '7916', '7920', '7925', '7926', '7931', '7935', '7936', '7937', '7940', '7960'
                         );
-                    dbug($get_settings); //[sccp_hw_type]
                     if (!empty($get_settings["{$hdr_prefix}devlang"])) {
                         switch ($get_settings["{$hdr_prefix}devlang"]) {
                             case 'Russian_Russian_Federation':

@@ -719,11 +719,11 @@ class formcreate
         }
         switch ($child['type']) {
             case 'SDM':
-                $model_list = \FreePBX::Sccp_manager()->dbinterface->getDb_model_info('ciscophones', 'model');
+                $model_list = \FreePBX::Sccp_manager()->dbinterface->getModelInfoFromDb('ciscophones', 'model');
                 $select_opt= $model_list;
                 break;
             case 'SDMS':
-                $model_list = \FreePBX::Sccp_manager()->dbinterface->getDb_model_info('sipphones', 'model');
+                $model_list = \FreePBX::Sccp_manager()->dbinterface->getModelInfoFromDb('sipphones', 'model');
                 $select_opt= $model_list;
                 break;
             case 'SDML':
@@ -741,7 +741,7 @@ class formcreate
                 $child->default = $fvalues['defaultLine'];
                 break;
             case 'SDE':
-                $extension_list = \FreePBX::Sccp_manager()->dbinterface->getDb_model_info('extension', 'model');
+                $extension_list = \FreePBX::Sccp_manager()->dbinterface->getModelInfoFromDb('extension', 'model');
                 $extension_list[] = array( 'model' => 'NONE', 'vendor' => 'CISCO', 'dns' => '0');
                 foreach ($extension_list as &$data) {
                     $d_name = explode(';', $data['model']);

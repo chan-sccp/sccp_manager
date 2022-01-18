@@ -919,7 +919,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $dev_config = array_merge($dev_config, $this->sccppath);
         $dev_config['tftp_firmware'] = '';
         $dev_config['addon_info'] = array();
-        if (!empty($dev_config['addon'])) {
+        if ($dev_config['addon'] !== 'NONE') {
             $hw_addon = explode(',', $dev_config['addon']);
             foreach ($hw_addon as $key) {
                 $hw_data = $this->getSccpModelInformation('byid', false, "all", array('model' => $key));
@@ -1004,10 +1004,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         unlink($result);
         return $filename;
     }
-
     function getSccpModelInformation($get = "all", $validate = false, $format_list = "all", $filter = array()) {
         $file_ext = array('.loads', '.sbn', '.bin', '.zup', '.sbin', '.SBN', '.LOADS');
-        $dir = $this->sccppath['tftp_firmware_path'];
+        $dir = $this->sccpvalues['tftp_firmware_path']['data'];
 
         $search_mode = $this->sccpvalues['tftp_rewrite']['data'];
         switch ($search_mode) {
@@ -1021,17 +1020,18 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $dir_list = $this->findAllFiles($dir, $file_ext, 'dirFileBaseName');
                 break;
         }
-        $modelList = $this->dbinterface->getDb_model_info($get, $format_list, $filter);
+        $modelList = $this->dbinterface->getModelInfoFromDb($get, $format_list, $filter);
+        //dbug($modelList);
         if ($validate) {
             foreach ($modelList as &$raw_settings) {
                 if (!empty($raw_settings['loadimage'])) {
-                    $raw_settings['validate'] = 'no;';
+                    $raw_settings['fwFound'] = false;
                     switch ($search_mode) {
                         case 'pro':
                         case 'on':
                         case 'internal':
                             if (in_array($raw_settings['loadimage'], $dir_list, true)) {
-                                $raw_settings['validate'] = 'yes;';
+                                $raw_settings['fwFound'] = true;
                             }
                             break;
                         case 'internal2':
@@ -1039,26 +1039,28 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         case 'off':
                         default: // Place in root TFTP dir
                             if (in_array("{$dir}/{$raw_settings['loadimage']}", $dir_list, true)) {
-                                $raw_settings['validate'] = 'yes;';
+                                $raw_settings['fwFound'] = true;
                             }
                             break;
                     }
-                } else {
-                    $raw_settings['validate'] = '-;';
-                }
+                } //else {
+                    //$raw_settings['validate'] = '-;';
+                //}
+                $raw_settings['templateFound'] = false;
                 if (!empty($raw_settings['nametemplate'])) {
                     $file = $this->sccppath['tftp_templates_path'] . '/' . $raw_settings['nametemplate'];
                     if (file_exists($file)) {
-                        $raw_settings['validate'] .= 'yes';
-                    } else {
-                        $raw_settings['validate'] .= 'no';
-                    }
-                } else {
-                    $raw_settings['validate'] .= '-';
-                }
+                        $raw_settings['templateFound'] = true;
+                    } //else {
+                        //$raw_settings['templateFound'] .= 'no';
+                    //}
+                } //else {
+                    //$raw_settings['validate'] .= '-';
+                //}
             }
         }
         unset($raw_settings);   // passed as reference so must unset.
+        dbug($modelList);
         return $modelList;
     }
 

@@ -90,17 +90,10 @@ trait helperfunctions {
         return $def_val;
     }
 
-    private function getTableEnums($table, $trim_underscore = true) {
+    private function getTableEnums($table) {
         $enumFields = array();
-        $sccpTableDesc = $this->dbinterface->getSccpDeviceTableData("get_columns_{$table}");
+        $sccpTableDesc = $this->dbinterface->getSccpDeviceTableData("get_columns_${table}");
         foreach ($sccpTableDesc as $key => $data) {
-            // function has 2 roles: return actual table keys (trim_underscore = false)
-            // return sanitised keys to add defaults (trim_underscore = true)
-            if ($trim_underscore) {
-                // Remove any leading (or trailing but should be none) underscore
-                // These are only used to hide fields from chan-sccp for compatibility
-                $key = trim($key,'_');
-            }
             $typeArray = explode('(', $data['Type']);
             if ($typeArray[0] == 'enum') {
                 $enumOptions = explode(',', trim($typeArray[1],')'));

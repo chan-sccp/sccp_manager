@@ -30,11 +30,11 @@
                             <th data-checkbox="true"></th>
                             <th data-sortable="true" data-field="name"><?php echo _('Device ID') ?></th>
                             <th data-sortable="true" data-field="description"><?php echo _('Device  Description') ?></th>
-                            <th data-sortable="true" data-formatter="DispayTypeFormatter" data-field="type"><?php echo _('Device type') ?></th>
+                            <th data-sortable="true" data-formatter="SipDisplayTypeFormatter" data-field="type"><?php echo _('Device type') ?></th>
                             <th data-sortable="true" data-field="button" data-formatter="LineFormatter"><?php echo _('Line') ?></th>
                             <th data-sortable="true" data-field="status"><?php echo _('Status') ?></th>
                             <th data-sortable="true" data-field="address"><?php echo _('Address') ?></th>
-                            <th data-field="actions" data-formatter="DispayDeviceActionsKeyFormatterS"><?php echo _('Actions') ?></th>
+                            <th data-field="actions" data-formatter="SipDisplayDeviceActionsKeyFormatterS"><?php echo _('Actions') ?></th>
                         </tr>
                     </thead>
                 </table>
@@ -49,7 +49,7 @@
         $('#table-sip-phone').bootstrapTable({data: <?php echo $this->sipPhoneData ?>});
     })
 
-    function DispayTypeFormatter(value, row, index) {
+    function SipDisplayTypeFormatter(value, row, index) {
         var exp_model = value;
         if (row['addon'] !== null ) {
             var posd = row['addon'].indexOf(';');
@@ -61,7 +61,7 @@
         }
         return  exp_model;
     }
-    function DispayDeviceActionsKeyFormatterS(value, row, index) {
+    function SipDisplayDeviceActionsKeyFormatterS(value, row, index) {
         var exp_model = '';
         if (row['new_hw'] == "Y") {
             exp_model += '<a href="?display=sccp_phone&tech_hardware=cisco-sip&new_id=' + row['name'] + '&type='+ row['type'];

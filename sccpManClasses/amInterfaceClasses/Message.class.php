@@ -117,15 +117,15 @@ abstract class Message
     {
         return "Variable: $key=$value";
     }
-
+/*
+    // Obsolete - integrated into single method that calls for performance
     protected function setSanitizedKey($key, $value)
     {
-        // TODO: Need to handle JSON here rather than in getVariable as have
-        // already broken data into array.
+        // Handle JSON here rather than in getVariable as have already broken data into array.
+        // Force preference here rather than test later as is faster.
         $key = strtolower($key);
         switch ($key) {
             case 'json':
-                //$this->keys['JSONRAW'] = (string) $value;
                 $this->keys['json'] = (string) $value;
                 break;
             case 'response':
@@ -133,48 +133,38 @@ abstract class Message
             case 'desc':
                 $this->keys[$key] = (string) $value;
                 break;
+            case 'listitems';
+                $this->keys[$key] = $this->sanitizeInput($value,'numeric');
+                break;
             default:
                 $this->keys[$key] = $this->sanitizeInput($value);
                 break;
         }
-
-/*
-        $_string_key = array('actionid', 'descr');
-        if (array_search($key, $_string_key) !== false) {
-            $this->keys[$key] = (string) $this->sanitizeInput($value, 'string');
-        } else {
-            $this->keys[$key] = $this->sanitizeInput($value);
-        }
-*/
     }
-
+*/
     protected function sanitizeInput($value, $prefered_type = '')
     {
-        if ($prefered_type == '') {
-            // No longer send empty values
-            //if (!isset($value) || $value === null || strlen($value) == 0) {
-                //return null;
-            //} elseif (is_numeric($value)) {
+        if ($prefered_type === '') {
+            // Find numeric first as this is coersion - is_string will always match!
             if (is_numeric($value)) {
                 $prefered_type = 'numeric';
-            } elseif (is_string($value)) {
-                $prefered_type = 'string';
             } else {
-                throw new AMIException("Don't know how to convert: '" . $value . "'\n");
+                $prefered_type = 'string';
             }
         }
         //if ($prefered_type !== '') {
         switch ($prefered_type) {
             case 'string':
-                //if (!isset($value) || $value === null || strlen($value) == 0) {
-                    //return '';
-                //}
                 if (filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
                     return (boolean) $value;
                 } elseif (filter_var($value, FILTER_SANITIZE_STRING, FILTER_NULL_ON_FAILURE)) {
                     return (string) $value;
                 } elseif (filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE)) {
                     return (string) htmlspecialchars($value, ENT_QUOTES);
+                } elseif (empty($value)) {
+                    // In rare cases, $value will be empty, and so treated as a string. Trap here
+                    // to avoid performance hit on all message lines if testing earlier.
+                    return;
                 } else {
                     throw new AMIException("Incoming String is not sanitary. Skipping: '" . $value . "'\n");
                 }
@@ -244,6 +234,42 @@ abstract class Message
 
 abstract class IncomingMessage extends Message
 {
+    public function __construct($rawContent)
+    {
+        parent::__construct();
+        $this->rawContent = $rawContent;
+        $lines = explode(Message::EOL, $rawContent);
+        foreach ($lines as $line) {
+            $content = explode(':', $line);
+            $key = strtolower(array_shift($content));
+            // May now have an empty array, or an array with just ' ', both of which
+            // are rare and will be turned into an empty string below.
+            // Do not test for here, as most times will not be empty, and testing here
+            // would mean a performance hit given the number of lines handled
+
+            // Performance - integrate method here as is only called from here!
+            //$this->setSanitizedKey($name, trim(implode(':', $content)));
+            $value = trim(implode(':', $content));
+            // Handle JSON here rather than in old getVariable as have already broken data into array.
+            // Force preference here rather than test later as is faster.
+            switch ($key) {
+                case 'json':
+                    $this->keys['json'] = (string) $value;
+                    break;
+                case 'response':
+                case 'actionid':
+                case 'desc':
+                    $this->keys[$key] = (string) $value;
+                    break;
+                case 'listitems';
+                    $this->keys[$key] = $this->sanitizeInput($value,'numeric');
+                    break;
+                default:
+                    $this->keys[$key] = $this->sanitizeInput($value);
+                    break;
+            }
+        }
+    }
 
     protected $rawContent;
 
@@ -267,33 +293,6 @@ abstract class IncomingMessage extends Message
         $ret = parent::__sleep();
         $ret[] = 'rawContent';
         return $ret;
-    }
-
-    public function __construct($rawContent)
-    {
-        parent::__construct();
-        //dbug($rawContent);
-        $this->rawContent = $rawContent;
-        $lines = explode(Message::EOL, $rawContent);
-        foreach ($lines as $line) {
-            $content = explode(':', $line);
-            //$content = preg_split("/: /",$line);
-            //$name = strtolower(trim($content[0]));
-            // do strtolower in setSanitizedKey
-            $name = array_shift($content);
-            //unset($content[0]);
-            if (!isset($content[0])) {
-                continue;
-            }
-            //$value = isset($content[0]) ? trim(implode(':', $content)) : '';
-            try {
-                $this->setSanitizedKey($name, trim(implode(':', $content)));
-            } catch (AMIException $e) {
-                throw new AMIException("Error: '" . $e . "'\n Dump RawContent:\n" . $this->rawContent . "\n");
-            }
-            //dbug($this->keys);
-        }
-        //dbug($this->keys);
     }
 }
 

@@ -283,7 +283,7 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
             document.getElementById("editd_buttons").value = drow['buttons'];
         }
     }
-    
+
     function StatusIconFormatter(value, row) {
         return (value === '1') ? '<i class="fa fa-check-square-o" style="color:green" title="<?php echo _("Device is enabled")?>"></i>' : '<i class="fa fa-square-o" title="<?php echo _("Device is disabled")?>"></i>';
     }
@@ -301,13 +301,15 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
     }
 
     function SetColFirmNf(value, row, index) {
-        if (row['validate'].split(';')[0] === 'no') {
+        //if (row['validate'].split(';')[0] === 'no') {
+        if (!row['fwFound']) {
             return  "File not found<br />" + value;
         }
         return value;
     }
     function SetColTemplNf(value, row, index) {
-        if (row['validate'].split(';')[1] === 'no') {
+        //if (row['validate'].split(';')[1] === 'no') {
+        if (!row['templateFound']) {
             return  "File not found<br /> " + value ;
         }
         return value;
@@ -318,7 +320,7 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
         if (row['enabled'] === 1) {
             tclass = (index % 2 === 0) ? "info" : "info";
         }
-        if ((row['validate'] === 'yes;yes') || (row['validate'] === 'yes;-')) {
+        if (row['fwFound']) {
 //            tclass = (row['enabled'] === '1') ?  "danger" : "warning";
         } else {
             tclass = (row['enabled'] === '1') ?  "danger" : "warning";

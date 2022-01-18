@@ -348,7 +348,7 @@ class aminterface
             $_res = $this->send($_action)->getResult();
             foreach ($_res as $key => $value) {
                 foreach ($value as $key2 => $value2) {
-                    //$result[$key.'@'.$key2] = $key.'@'.$key2; 
+                    //$result[$key.'@'.$key2] = $key.'@'.$key2;
                     $result[$key.'@'.$key2] = ['key' => $key.'@'.$key2, 'exten' => $key, 'label' => $key.'@'.$key2];
                 }
             }

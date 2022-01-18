@@ -27,7 +27,7 @@ if (!empty($this->sccpvalues['system_rouminguser'])) {
                             <th data-sortable="true" data-field="label"><?php echo _('Display Name') ?></th>
                             <th data-sortable="true" data-field="mac"><?php echo _('Device') ?></th>
                             <th data-sortable="true" data-field="line_status" class="text-center"><?php echo _('Status | Active') ?></th>
-                            <th data-field="actions" data-formatter="DispayPhoneActionsKeyFormatter"><?php echo _('Actions') ?></th>
+                            <th data-field="actions" data-formatter="DisplayPhoneActionsKeyFormatter"><?php echo _('Actions') ?></th>
                         </tr>
                     </thead>
                 </table>
@@ -41,7 +41,7 @@ if (!empty($this->sccpvalues['system_rouminguser'])) {
         $('#table-sccp-extension').bootstrapTable({data: <?php echo $this->extensionData ?>});
     })
 
-    function DispayPhoneActionsKeyFormatter(value, row, index) {
+    function DisplayPhoneActionsKeyFormatter(value, row, index) {
         var exp_dev = '';
         var rmn_dev = '<?php echo $roming_enable ?>';
         exp_dev += '<a href="config.php?display=extensions&amp;extdisplay=' + row['name'] + '"><i class="fa fa-pencil"></i></a> &nbsp;';

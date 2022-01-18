@@ -200,56 +200,52 @@ class dbinterface
      *      Get Sccp Device Model information
      */
 
-    function getDb_model_info($get = 'all', $format_list = 'all', $filter = array())
+    function getModelInfoFromDb($get = 'all', $format_list = 'all', $filter = array())
     {
-        $sel_inf = '*, 0 as validate';
+        $sel_inf = "*, model, false as fwFound, false as templateFound";
         if ($format_list === 'model') {
-            $sel_inf = "model, vendor, dns, buttons, '-;-' as validate";
+            $sel_inf = "model, vendor, dns, buttons, false as fwFound, false as templateFound";
         }
         switch ($get) {
             case 'byciscoid':
-                if (!empty($filter)) {
-                    if (!empty($filter['model'])) {
-                        if (!strpos($filter['model'], 'loadInformation')) {
-                            $filter['model'] = 'loadInformation' . $filter['model'];
-                        }
-                        $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (loadinformationid = :model ) ORDER BY model");
-                        $stmt->bindParam(':model', $filter['model'], \PDO::PARAM_STR);
-                    } else {
-                        $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel ORDER BY model");
+                if (isset($filter['model'])) {
+                    if (!strpos($filter['model'], 'loadInformation')) {
+                        $filter['model'] = 'loadInformation' . $filter['model'];
                     }
-                    break;
+                    $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (loadinformationid = :model ) ORDER BY model");
+                    $stmt->bindParam(':model', $filter['model'], \PDO::PARAM_STR);
+                } else {
+                    $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel ORDER BY model");
                 }
                 break;
             case 'byid':
-                if (!empty($filter)) {
-                    if (!empty($filter['model'])) {
-                        $stmt = $this->db->prepare("SELECT  {$sel_inf} FROM sccpdevmodel WHERE model = :model ORDER BY model");
-                        $stmt->bindParam(':model', $filter['model'],\PDO::PARAM_STR);
-                    } else {
-                        $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel ORDER BY model");
-                    }
-                    break;
+                if (isset($filter['model'])) {
+                    $stmtU = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE model = :model ORDER BY model");
+                    $stmtU->bindParam(':model', $filter['model'],\PDO::PARAM_STR);
+                } else {
+                    $stmtU = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel ORDER BY model");
                 }
+                $stmtU->execute();
+                return $stmtU->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
                 break;
             case 'extension':
-                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns = 0) and (enabled = 1) ORDER BY model");
+                $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (dns = 0) and (enabled = 1) ORDER BY model");
                 break;
             case 'enabled':
                 //$stmt = $db->prepare('SELECT ' . {$sel_inf} . ' FROM sccpdevmodel WHERE enabled = 1 ORDER BY model'); //previously this fell through to phones.
                 //break;  // above includes expansion modules but was not original behaviour so commented out. Falls through to phones.
             case 'phones':
-                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns != 0) and (enabled = 1) ORDER BY model");
+                $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (dns != 0) and (enabled = 1) ORDER BY model");
                 break;
             case 'ciscophones':
-                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND RIGHT(vendor,4) != '-sip' ORDER BY model");
+                $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND RIGHT(vendor,4) != '-sip' ORDER BY model");
                 break;
             case 'sipphones':
-                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND RIGHT(vendor,4) = '-sip' ORDER BY model");
+                $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND RIGHT(vendor,4) = '-sip' ORDER BY model");
                 break;
             case 'all':     // Fall through to default
             default:
-                $stmt = $this->db->prepare("SELECT {$sel_inf} FROM sccpdevmodel ORDER BY model");
+                $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel ORDER BY model");
                 break;
         }
         $stmt->execute();

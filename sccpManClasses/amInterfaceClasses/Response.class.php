@@ -378,7 +378,6 @@ class SCCPShowDevice_Response extends SCCPGeneric_Response
     {
         // This object has a list of events _events, and a list of tables _tables.
         $result = array();
-
         foreach ($this->_events as $trow) {
                 $result = array_merge($result, $trow->getKeys());
         }
