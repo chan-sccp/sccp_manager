@@ -302,14 +302,14 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
 
     function SetColFirmNf(value, row, index) {
         //if (row['validate'].split(';')[0] === 'no') {
-        if (!row['fwFound']) {
+        if (row['fwfound'] === 'no') {
             return  "File not found<br />" + value;
         }
         return value;
     }
     function SetColTemplNf(value, row, index) {
         //if (row['validate'].split(';')[1] === 'no') {
-        if (!row['templateFound']) {
+        if (row['templatefound'] === 'no') {
             return  "File not found<br /> " + value ;
         }
         return value;
@@ -320,7 +320,7 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
         if (row['enabled'] === 1) {
             tclass = (index % 2 === 0) ? "info" : "info";
         }
-        if (row['fwFound']) {
+        if (row['fwfound'] === 'yes') {
 //            tclass = (row['enabled'] === '1') ?  "danger" : "warning";
         } else {
             tclass = (row['enabled'] === '1') ?  "danger" : "warning";

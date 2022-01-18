@@ -56,6 +56,7 @@ if (!empty($_REQUEST['id'])) {
         }
     }
 }
+// TODO: dev_id should always be set so do not need this??
 if (empty($dev_id)) {
     $dev_id = 'new';
 } else {
@@ -69,10 +70,10 @@ if (!empty($def_val['type']['data'])) {
     if (isset($tmp_raw[$def_val['type']['data']])) {
         $tmp_raw = $tmp_raw[$def_val['type']['data']];
     }
-    if (!$tmp_raw['fwFound']) {
+    if ($tmp_raw['fwfound'] === 'no') {
         $device_warning['Image'] = array('Device firmware not found : '.$tmp_raw['loadimage']);
     }
-    if (!$tmp_raw['templateFound']) {
+    if ($tmp_raw['templatefound'] === 'no') {
         $device_warning['Template'] = array('Missing device configuration template : '. $tmp_raw['nametemplate']);
     }
     if (!empty($device_warning)) {

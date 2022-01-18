@@ -202,9 +202,9 @@ class dbinterface
 
     function getModelInfoFromDb($get = 'all', $format_list = 'all', $filter = array())
     {
-        $sel_inf = "*, model, false as fwFound, false as templateFound";
+        $sel_inf = "*, model";
         if ($format_list === 'model') {
-            $sel_inf = "model, vendor, dns, buttons, false as fwFound, false as templateFound";
+            $sel_inf = "model, vendor, dns, buttons";
         }
         switch ($get) {
             case 'byciscoid':

@@ -1,7 +1,7 @@
 <module>
 	<rawname>sccp_manager</rawname>
 	<name>SCCP Manager</name>
-	<version>16.0.0.1</version>
+	<version>16.0.0.2</version>
 	<type>setup</type>
 	<category>SCCP Connectivity</category>
 	<publisher>Steve Lad, Alex GP</publisher>
@@ -9,8 +9,8 @@
 	<description>SCCP Phone and Extension Manager</description>
 	<menuitems>
 		<sccpsettings	sort="1">Server Config</sccpsettings>
-		<sccp_adv	sort="2">System Parameters</sccp_adv>
-		<sccp_phone	sort="3">Phones Manager</sccp_phone>
+		<sccp_adv	sort="2">Phone Types</sccp_adv>
+		<sccp_phone	sort="3">Lines and Devices</sccp_phone>
 	</menuitems>
 	<changelog>
 		 * Version 13.0.0.1 * - Alfa Release tested on freepbx v.13.0.192.16, v.14.0.1.5
@@ -250,6 +250,8 @@
 			 <field name="loadinformationid" type="string" length="30" notnull="false"/>
 			 <field name="enabled" type="integer" default="0" notnull="false"/>
 			 <field name="nametemplate" type="string" length="50" notnull="false"/>
+			 <field name="fwfound" type="string" length="50" notnull="false"/>
+			 <field name="templatefound" type="string" length="50" notnull="false"/>
 			 <key name="model" type="index">
 				 <column name="model"/>
 			 </key>

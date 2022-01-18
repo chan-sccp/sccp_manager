@@ -1005,10 +1005,24 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         return $filename;
     }
     function getSccpModelInformation($get = "all", $validate = false, $format_list = "all", $filter = array()) {
+        $modelList = $this->dbinterface->getModelInfoFromDb($get, $format_list, $filter);
+
+        if (!$validate) {
+            return $modelList;
+        }
+        // Here so want to see if FW and template files exist on TFTP server.
+
+        $needToCheckFw = array_search('no', array_column($modelList, 'fwfound'), true);
+        $needToCheckTemp = array_search('no', array_column($modelList, 'templatefound'), true);
+
+        if (!$needToCheckFw && !$needToCheckTemp) {
+            // in modellist, all firmware shows as being available (no not found for either)
+            return $modelList;
+        }
         $file_ext = array('.loads', '.sbn', '.bin', '.zup', '.sbin', '.SBN', '.LOADS');
         $dir = $this->sccpvalues['tftp_firmware_path']['data'];
-
         $search_mode = $this->sccpvalues['tftp_rewrite']['data'];
+
         switch ($search_mode) {
             case 'pro':
             case 'on':
@@ -1020,47 +1034,39 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $dir_list = $this->findAllFiles($dir, $file_ext, 'dirFileBaseName');
                 break;
         }
-        $modelList = $this->dbinterface->getModelInfoFromDb($get, $format_list, $filter);
-        //dbug($modelList);
-        if ($validate) {
-            foreach ($modelList as &$raw_settings) {
-                if (!empty($raw_settings['loadimage'])) {
-                    $raw_settings['fwFound'] = false;
-                    switch ($search_mode) {
-                        case 'pro':
-                        case 'on':
-                        case 'internal':
-                            if (in_array($raw_settings['loadimage'], $dir_list, true)) {
-                                $raw_settings['fwFound'] = true;
-                            }
-                            break;
-                        case 'internal2':
-                            break;
-                        case 'off':
-                        default: // Place in root TFTP dir
-                            if (in_array("{$dir}/{$raw_settings['loadimage']}", $dir_list, true)) {
-                                $raw_settings['fwFound'] = true;
-                            }
-                            break;
-                    }
-                } //else {
-                    //$raw_settings['validate'] = '-;';
-                //}
-                $raw_settings['templateFound'] = false;
-                if (!empty($raw_settings['nametemplate'])) {
-                    $file = $this->sccppath['tftp_templates_path'] . '/' . $raw_settings['nametemplate'];
-                    if (file_exists($file)) {
-                        $raw_settings['templateFound'] = true;
-                    } //else {
-                        //$raw_settings['templateFound'] .= 'no';
-                    //}
-                } //else {
-                    //$raw_settings['validate'] .= '-';
-                //}
+        foreach ($modelList as &$raw_settings) {
+            if ((!empty($raw_settings['loadimage'])) && ($raw_settings['fwfound'] === 'no')) {
+                switch ($search_mode) {
+                    case 'pro':
+                    case 'on':
+                    case 'internal':
+                        if (in_array($raw_settings['loadimage'], $dir_list, true)) {
+                            $raw_settings['fwfound'] = 'yes';
+                        }
+                        break;
+                    case 'internal2':
+                        break;
+                    case 'off':
+                    default: // Place in root TFTP dir
+                        if (in_array("{$dir}/{$raw_settings['loadimage']}", $dir_list, true)) {
+                            $raw_settings['fwfound'] = 'yes';
+                        }
+                        break;
+                }
+            }
+            if (!empty($raw_settings['nametemplate'])) {
+                $file = $this->sccppath['tftp_templates_path'] . '/' . $raw_settings['nametemplate'];
+                if (file_exists($file)) {
+                    $raw_settings['templatefound'] = 'yes';
+                }
             }
         }
         unset($raw_settings);   // passed as reference so must unset.
-        dbug($modelList);
+        // Now need to update database to avoid checks in future
+        // // TODO: First pass - need to refine.
+        foreach ($modelList as $key => $value) {
+            $this->dbinterface->write('sccpdevmodel', $value, 'replace');
+        }
         return $modelList;
     }
 

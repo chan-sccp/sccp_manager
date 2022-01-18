@@ -182,7 +182,7 @@ function Get_DB_config($sccp_compatible)
                         'modify' => "enum('sccpdevice', 'sipdevice', 'sccpuser')" ),
         )
     );
-//  Hardware Mobile.  Can switch Softwate to Hardware
+//  Hardware Mobile.  Can switch Software to Hardware
     $db_config_v4M = array(
         'sccpdevmodel' => array(
             'loadinformationid' => array('create' => "VARCHAR(30) NULL DEFAULT NULL")
@@ -289,7 +289,7 @@ function Get_DB_config($sccp_compatible)
               '_description' => array('rename' => 'description'),
               'keepalive' => array('create' => "INT(11) DEFAULT '60'", 'modify' => 'INT(11)', 'def_modify' => "60")
             ),
-        'sccpline' => array (
+        'sccpline' => array(
               'regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
               'transfer_on_hangup' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               'autoselectline_enabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
@@ -303,9 +303,13 @@ function Get_DB_config($sccp_compatible)
               '_backgroundImageAccess' => array('rename' => 'backgroundImageAccess'),
               '_callLogBlfEnabled' => array('rename' => 'callLogBlfEnabled')
             ),
-        'sccpsettings' => array (
+        'sccpsettings' => array(
               'systemdefault' => array('create' => "VARCHAR(255) NULL default ''")
-        )
+            ),
+        'sccpdevmodel' => array(
+                'fwfound' => array('create' => "enum('yes','no') NOT NULL default 'no'", 'modify' => "enum('yes','no')"),
+                'templatefound' => array('create' => "enum('yes','no') NOT NULL default 'no'", 'modify' => "enum('yes','no')")
+            )
     );
 
     if ($sccp_compatible >= 433) {
@@ -318,6 +322,7 @@ function Get_DB_config($sccp_compatible)
             $db_config_v4['sccpdevice'] = array_merge($db_config_v4['sccpdevice'],$db_config_v5['sccpdevice']);
             $db_config_v4['sccpline'] = array_merge($db_config_v4['sccpline'],$db_config_v5['sccpline']);
             $db_config_v4['sccpsettings'] = $db_config_v5['sccpsettings'];
+            $db_config_v4['sccpdevmodel'] = $db_config_v5['sccpdevmodel'];
         }
         return $db_config_v4;
     }
