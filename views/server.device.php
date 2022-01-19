@@ -13,7 +13,7 @@
     <div class="fpbx-container container-fluid">
         <div class="row">
             <div class="container">
-                <h2 style="border:2px solid Tomato;color:Tomato;" ><?php echo _("Warning : Any changes to the device configuration can cause all phones to restart"); ?></h2>
+                <h2 style="border:2px solid Tomato;color:Tomato;" ><?php echo _("Warning : Any changes to the device configuration can cause all phones to restart.<br>It is important to read the information on hotline below before using this capability"); ?></h2>
             </div>
         </div>
     </div>

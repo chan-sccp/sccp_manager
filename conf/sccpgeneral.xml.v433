@@ -950,7 +950,7 @@ and open the template in the editor. Base Version before all crash :-)
                 </row>
             </element>
             <element type='p'> </element>
-            <element type='h3'>Be careful with this function. Especially not to the internet. So i would restring the deny/permit to 'internal' by default in that case.</element>
+            <element type='h3'>Be careful with this function. It is recommended to restrict to internal network use; set the deny/permit to 'internal' by default. This is insecure and should be switched off before going into production. A PLAR phone is still able to ring any other extension by entering the number on the phone before going off-hook. So either setup a secure context for these types of phones or switch off hotline.</element>
             <element type='table'>
                 <row>
                     <col>Allow =</col>
@@ -978,7 +978,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="1">
             <name>hotline_enabled</name>
             <label>Hotline</label>
-            <default>off</default>
+            <default>"no"</default>
             <button value="no">No</button>
             <button value="yes">Yes</button>
             <help>Hotline Enabled: This allows unregistered extensions to connect to the system and dial the number listed below.</help>
