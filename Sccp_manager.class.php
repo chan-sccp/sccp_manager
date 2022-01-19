@@ -390,21 +390,10 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
 
         // $lines_list = $this->dbinterface->getSccpDeviceTableData('SccpExtension');
         $max_btn = (!empty($get_settings['buttonscount']) ? $get_settings['buttonscount'] : 60);
-        $last_btn = $max_btn;
-        for ($it = $max_btn; $it >= 0; $it--) {
-            if (!empty($get_settings['button' . $it . '_type'])) {
-                $last_btn = $it;
-                $btn_t = $get_settings['button' . $it . '_type'];
-                if ($btn_t != 'empty') {
-                    break;
-                }
-            }
-        }
 
-        for ($it = 0; $it <= $last_btn; $it++) {
-            if (!empty($get_settings['button' . $it . '_type'])) {
-                $btn_t = $get_settings['button' . $it . '_type'];
-
+        for ($it = 0; $it < $max_btn; $it++) {
+            if (!empty($get_settings["button${it}_type"])) {
+                $btn_t = $get_settings["button${it}_type"];
                 $btn_n = '';
                 $btn_opt = '';
                 if ($it == 0) {
@@ -412,9 +401,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 }
                 switch ($btn_t) {
                     case 'feature':
-                        $btn_f = $get_settings['button' . $it . '_feature'];
+                        $btn_f = $get_settings["button${it}_feature"];
                         // $btn_opt = (empty($get_settings['button' . $it . '_fvalue'])) ? '' : $get_settings['button' . $it . '_fvalue'];
-                        $btn_n = (empty($get_settings['button' . $it . '_flabel'])) ? $def_feature[$btn_f]['name'] : $get_settings['button' . $it . '_flabel'];
+                        $btn_n = (empty($get_settings["button${it}_flabel"])) ? $def_feature[$btn_f]['name'] : $get_settings["button${it}_flabel"];
                         $btn_opt = $btn_f;
                         if (!empty($def_feature[$btn_f]['value'])) {
                             if (empty($get_settings['button' . $it . '_fvalue'])) {
@@ -432,46 +421,46 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                         break;
                     case 'monitor':
                         $btn_t = 'speeddial';
-                        $btn_opt = (string) $get_settings['button' . $it . '_line'];
+                        $btn_opt = (string) $get_settings["button${it}_line"];
                         $db_res = $this->dbinterface->getSccpDeviceTableData('SccpExtension', array('name' => $btn_opt));
                         $btn_n = $db_res[0]['label'];
                         $btn_opt .= ',' . $btn_opt . $this->hint_context['default'];
                         break;
                     case 'speeddial':
-                        if (!empty($get_settings['button' . $it . '_input'])) {
-                            $btn_n = $get_settings['button' . $it . '_input'];
+                        if (!empty($get_settings["button${it}_input"])) {
+                            $btn_n = $get_settings["button${it}_input"];
                         }
-                        if (!empty($get_settings['button' . $it . '_phone'])) {
-                            $btn_opt = $get_settings['button' . $it . '_phone'];
+                        if (!empty($get_settings["button${it}_phone"])) {
+                            $btn_opt = $get_settings["button${it}_phone"];
                             if (empty($btn_n)) {
                                 $btn_n = $btn_opt;
                             }
                         }
 
-                        if (!empty($get_settings['button' . $it . '_hint'])) {
-                            if ($get_settings['button' . $it . '_hint'] == "hint") {
+                        if (!empty($get_settings["button${it}_hint"])) {
+                            if ($get_settings["button${it}_hint"] == "hint") {
                                 if (empty($btn_n)) {
                                     $btn_t = 'line';
-                                    $btn_n = $get_settings['button' . $it . '_hline'] . '!silent';
+                                    $btn_n = $get_settings["button${it}_hline"] . '!silent';
                                     $btn_opt = '';
                                 } else {
                                     // $btn_opt .= ',' . $get_settings['button' . $it . '_hline'] . $this->hint_context['default'];
-                                    $btn_opt .= ',' . $get_settings['button' . $it . '_hline'];
+                                    $btn_opt .= ',' . $get_settings["button${it}_hline"];
                                 }
                             }
                         }
                         break;
                     case 'adv.line':
                         $btn_t = 'line';
-                        $btn_n = (string) $get_settings['button' . $it . '_line'];
-                        $btn_n .= '@' . (string) $get_settings['button' . $it . '_advline'];
-                        $btn_opt = (string) $get_settings['button' . $it . '_advopt'];
+                        $btn_n = (string) $get_settings["button${it}_line"];
+                        $btn_n .= '@' . (string) $get_settings["button${it}_advline"];
+                        $btn_opt = (string) $get_settings["button${it}_advopt"];
 
                         break;
                     case 'line':
                     case 'silent':
-                        if (isset($get_settings['button' . $it . '_line'])) {
-                            $btn_n = (string) $get_settings['button' . $it . '_line'];
+                        if (isset($get_settings["button${it}_line"])) {
+                            $btn_n = (string) $get_settings["button${it}_line"];
                             if ($it > 0) {
                                 if ($btn_t == 'silent') {
                                     $btn_n .= '!silent';

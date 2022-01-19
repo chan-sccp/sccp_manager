@@ -647,9 +647,9 @@ trait ajaxHelper {
         $save_codec = array();
         $name_dev = '';
         $db_field = array_keys($this->dbinterface->getSccpDeviceTableData("get_columns_sccpdevice"));
-        $hw_id = (empty($get_settings['sccp_deviceid'])) ? 'new' : $get_settings['sccp_deviceid'];
+        $hw_id = (empty($get_settings['sccp_device_id'])) ? 'new' : $get_settings['sccp_device_id'];
         $hw_type = (empty($get_settings['sccp_device_typeid'])) ? 'sccpdevice' : $get_settings['sccp_device_typeid'];
-        $update_hw = ($hw_id == 'new') ? 'add' : 'clear'; // Clear is delete + add
+        $update_hw = ($hw_id == 'new') ? 'add' : 'clear'; // Clear is delete + add. Only used for buttons
         $hw_prefix = 'SEP';
         if (!empty($get_settings[$hdr_prefix . 'type'])) {
             $value = $get_settings[$hdr_prefix . 'type'];

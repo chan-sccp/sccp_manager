@@ -334,27 +334,7 @@ class dbinterface
                         break;
                     case 'add':
                         foreach ($save_value as $button_array) {
-                            $stmt = $this->db->prepare("INSERT INTO sccpbuttonconfig SET ref = :ref, reftype = :reftype, instance = :instance, buttontype = :buttontype, name = :name, options = :options
-                                          ON DUPLICATE KEY UPDATE ref = :refU, reftype = :reftypeU, instance = :instanceU, buttontype = :buttontypeU, name = :nameU, options = :optionsU");
-                            $stmt->bindParam(':ref', $button_array['ref'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':reftype', $button_array['reftype'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':instance', $button_array['instance'],\PDO::PARAM_INT);
-                            $stmt->bindParam(':buttontype', $button_array['buttontype'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':name', $button_array['name'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':options', $button_array['options'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':refU', $button_array['ref'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':reftypeU', $button_array['reftype'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':instanceU', $button_array['instance'],\PDO::PARAM_INT);
-                            $stmt->bindParam(':buttontypeU', $button_array['buttontype'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':nameU', $button_array['name'],\PDO::PARAM_STR);
-                            $stmt->bindParam(':optionsU', $button_array['options'],\PDO::PARAM_STR);
-                            $result = $stmt->execute();
-                        }
-                        break;
-                    /*
-                    case 'add':
-                        foreach ($save_value as $button_array) {
-                            $stmt = $this->db->prepare('INSERT INTO sccpbuttonconfig (ref, reftype, instance, buttontype, name, options) VALUES (:ref, :reftype, :instance, :buttontype, :name, :options)');
+                            $stmt = $this->db->prepare("INSERT INTO sccpbuttonconfig SET ref = :ref, reftype = :reftype, instance = :instance, buttontype = :buttontype, name = :name, options = :options");
                             $stmt->bindParam(':ref', $button_array['ref'],\PDO::PARAM_STR);
                             $stmt->bindParam(':reftype', $button_array['reftype'],\PDO::PARAM_STR);
                             $stmt->bindParam(':instance', $button_array['instance'],\PDO::PARAM_INT);
@@ -362,9 +342,9 @@ class dbinterface
                             $stmt->bindParam(':name', $button_array['name'],\PDO::PARAM_STR);
                             $stmt->bindParam(':options', $button_array['options'],\PDO::PARAM_STR);
                             $result = $stmt->execute();
+
                         }
                         break;
-                    */
                     case 'clear';
                         // Clear is equivalent of delete + insert. Mode is used in order to activate trigger.
                         $this->write('sccpbuttons', '', $mode = 'delete','', $hwid);
