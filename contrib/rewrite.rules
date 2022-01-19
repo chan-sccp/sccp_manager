@@ -206,6 +206,9 @@ ri ^(.+)(\.raw|\.rwb|\.pcm)(\.sgn)?$ ringtones/\1\2\3
 #ri ^Desktops/(.+)/(List\.xml)(\.sgn)?$ wallpapers/\1/\2\3
 #ri ^Desktops/(.+)/(.+\.png)(\.sgn)?$ wallpapers/\1/\2\3
 
+# Dialplan
+ri ^(dialplan.xml)$ dialplan/\1
+
 ri ^authorized_keys$ settings/authorized_keys
 
 #
