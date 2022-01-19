@@ -42,6 +42,9 @@ trait bmoFunctions {
             return $dbDevices;     //this may be empty
         }
 
+        //$testData = $this->aminterface->sccp_getdevice_info('SEP0019305DC7F4');
+        //dbug($testData);
+
         foreach ($dbDevices as &$dev_id) {
             if (!empty($activeDevices[$dev_id['name']])) {
                 // Device is in db and is connected
@@ -69,8 +72,12 @@ trait bmoFunctions {
                     }
                     $dev_schema = $this->getSccpModelInformation('byciscoid', false, "all", array('model' => $dev_data['SCCP_Vendor']['model_id']));
                     if (empty($dev_schema)) {
-                        $dev_schema[0]['model'] = "ERROR in Model Schema";
+                        $dev_schema[0]['model'] = "Model ${dev_data['SCCP_Vendor']['model_id']} not found in model Database";
+                    } else if ( $dev_schema[0]['enabled' == 0]) {
+                        // Need to enable this model in phone types
+                        $this->dbinterface->write('sccpdevmodel', array('model'=> $dev_data['SCCP_Vendor']['model_id'], 'enabled = 1'), 'update' , 'model');
                     }
+
                     $dbDevices[] = array(
                         'name' => $id_name,
                         'mac' => $id_name,

@@ -31,7 +31,7 @@
                             <th data-sortable="true" data-field="name"><?php echo _('Device ID') ?></th>
                             <th data-sortable="true" data-field="description"><?php echo _('Device  Description') ?></th>
                             <th data-sortable="true" data-formatter="SipDisplayTypeFormatter" data-field="type"><?php echo _('Device type') ?></th>
-                            <th data-sortable="true" data-field="button" data-formatter="LineFormatter"><?php echo _('Line') ?></th>
+                            <th data-sortable="true" data-field="button" data-formatter="SipLineFormatter"><?php echo _('Line') ?></th>
                             <th data-sortable="true" data-field="status"><?php echo _('Status') ?></th>
                             <th data-sortable="true" data-field="address"><?php echo _('Address') ?></th>
                             <th data-field="actions" data-formatter="SipDisplayDeviceActionsKeyFormatterS"><?php echo _('Actions') ?></th>
@@ -76,7 +76,7 @@
         }
         return  exp_model;
     }
-    function LineFormatter(value, row, index) {
+    function SipLineFormatter(value, row, index) {
         if (value === null)  {
             return  '-- EMPTY --';
         }

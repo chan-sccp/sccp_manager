@@ -499,6 +499,7 @@ trait ajaxHelper {
     }
 
     function saveSccpDevice($get_settings, $validateonly = false) {
+        dbug($get_settings);
         $hdr_prefix = 'sccp_hw_';
         $hdr_arprefix = 'sccp_hw-ar_';
         $hdr_vendPrefix = 'vendorconfig_';
