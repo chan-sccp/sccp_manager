@@ -1218,6 +1218,8 @@ function cleanUpSccpSettings() {
         // Override certain chan-sccp defaults as they are based on a non-FreePbx system
         $settingsFromDb['context']['systemdefault'] = 'from-internal';
         $settingsFromDb['directed_pickup']['systemdefault'] = 'no';
+        // Override this chan-sccp default as it is a potential security risk. See Issue 29
+        $settingsFromDb['hotline_enabled']['systemdefault'] = 'no';
 
         unset($sysConfiguration[$key]);
     }
