@@ -252,7 +252,7 @@ trait ajaxHelper {
                     // !TODO!: -TODO-:  Check SIP Support Enabled
                     $this->createSccpXmlSoftkey();
                     $msg = print_r($this->aminterface->core_sccp_reload(), 1);
-                    return array('status' => true, 'table_reload' => true);
+                    return array('status' => true, 'table_reload' => true, 'msg' => $msg);
                 }
                 break;
             case 'backupsettings':
