@@ -46,39 +46,37 @@ $keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Displa
 <form autocomplete="off" name="frm_keyset" id="frm_keyset" class="fpbx-submit" action="" method="post">
     <input type="hidden" name="category" value="keysetform">
     <input type="hidden" name="Submit" value="Submit">
-
-<div class="fpbx-container container-fluid">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="display no-border">
-                        <div id="toolbar-all">
-                            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" onclick="load_oncliсk(this,'*new*')" data-target=".edit_new_keyset"><i class="fa fa-bolt"></i> <?php echo _("Add Keyset"); ?></button>
-            </div>
-                        <table data-cookie="true" data-cookie-id-table="sccp_keyset-all" data-url="ajax.php?module=sccp_manager&command=getSoftKey&type=active" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list" id="softkey-all" data-unique-id="softkeys">
-                            <thead>
-                                <tr>
-<!--                                    <th data-checkbox="true"></th> -->
-                                    <th data-sortable="true" data-field="softkeys"><?php echo _('KeySetName')?></th>
-                                    <?php
-                                    $i = 0;
-                                    foreach ($keynamearray as $key => $value) {
-                                        if ($i < 9) {
-                                            echo '<th data-sortable="false" data-field="'.$key.'">'._($value['sname']).'</th>';
-                                        }
-                                        $i ++;
+    <div class="fpbx-container container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="display no-border">
+                    <div id="toolbar-all">
+                        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" onclick="load_oncliсk(this,'*new*')" data-target=".edit_new_keyset"><i class="fa fa-bolt"></i> <?php echo _("Add Keyset"); ?></button>
+                    </div>
+                    <table data-cookie="true" data-cookie-id-table="sccp_keyset-all" data-url="ajax.php?module=sccp_manager&command=getSoftKey&type=active" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list" id="softkey-all" data-unique-id="softkeys">
+                        <thead>
+                            <tr>
+                                <th data-sortable="true" data-field="softkeys"><?php echo _('KeySetName')?></th>
+                                <?php
+                                $i = 0;
+                                foreach ($keynamearray as $key => $value) {
+                                    if ($i < 12) {
+                                        echo '<th data-sortable="false" data-field="'.$key.'">'._($value['sname']).'</th>';
                                     }
-                                    ?>
-                                    <th data-field="actions" data-formatter="DispayActionsKeyFormatter"><?php echo _('Actions')?></th>
-                </tr>
-                            </thead>
-                            <tbody>
+                                    $i ++;
+                                }
+                                ?>
+                                <th data-field="actions" data-formatter="DispayActionsKeyFormatter"><?php echo _('Actions')?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                            </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </form>
 
 <!-- Begin Form Input New / Edit  -->
@@ -90,18 +88,27 @@ $keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Displa
                 <h4 class="modal-title" id="gridSystemModalLabel">Add New KeySet</h4>
             </div>
             <div class="modal-body">
-
-                <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
-                        <label class="control-label" for="new_keysetname">Name Keyset</label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="new_devmodel"></i>
-                    </div><div class="col-md-9">
-                        <input type="text" maxlength="15" class="form-control" id="new_keySetname" name="new_keySetname" value="SoftKeyset">
-                    </div> </div></div>
-                    <div class="row"><div class="col-md-12">
-                        <span id="new_devmodel-help" class="help-block fpbx-help-block">Help. max len = 15</span>
-                </div></div></div>
-
-
+                <style type="text/css">
+                    input:invalid {border: red solid 3px;}
+                </style>
+                <div class="element-container">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="new_keysetname">Name Keyset</label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="new_devmodel"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" maxlength="15" pattern="[a-zA-Z0-9]{4,15}" class="form-control" id="new_keySetname" name="new_keySetname" value="SoftKeyset">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="new_devmodel-help" class="help-block fpbx-help-block">Max length 15 letters or numbers without spaces</span>
+                        </div>
+                    </div>
+                </div>
                 <ul class="nav nav-tabs" role="tablist">
 
 <?php
@@ -156,8 +163,6 @@ foreach ($keysetarray as $key => $value) {
         </div>
     </div>
 </div>
-
-
 
 <script>
     function DispayActionsKeyFormatter(value, row, index) {

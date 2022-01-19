@@ -280,8 +280,8 @@ trait helperfunctions {
         // [general] section
         // TODO: Need to review sccpsettings seq numbering, as will speed this up, and remove the need for $permittedSettings.
         $cnf_wr = \FreePBX::WriteConfig();
-        //clear old settings, and initiate with allow/disallow and permit/deny keys in correct order
-        $this->sccp_conf_init = array();
+        //clear old general settings, and initiate with allow/disallow and permit/deny keys in correct order
+        $this->sccp_conf_init['general'] = array();
         $this->sccp_conf_init['general']['disallow'] = 'all';
         $this->sccp_conf_init['general']['allow'] = '';
         $this->sccp_conf_init['general']['deny'] = '0.0.0.0/0.0.0.0';
@@ -352,7 +352,6 @@ trait helperfunctions {
             );
         }
         $cnf_wr->WriteConfig('sccp.conf', $this->sccp_conf_init);
-        //$this->$cnf_wr->writeConfig('sccp.conf', $this->sccp_conf_init);
     }
 
     public function initVarfromXml() {
