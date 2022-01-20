@@ -180,16 +180,7 @@ $(document).ready(function () {
 
 
 
-// ----------------------- Server.model.Button.Select----------------
 
-    $('.dropdown-menu a.dropitem').on("click", function (e) {
-
-        $(this).parents('div.btn-group').find('.dropdown_capture').text($(this).text());
-        //console.log($(this).data('id'));
-        ref_url = "ajax.php?module=sccp_manager&command=getDeviceModel&type=" + $(this).data('id');
-        $('#table-models').bootstrapTable('refresh', {url: ref_url});
-    });
-// ---------------------------------------
 
 // Set location.hash when changing tabs so that can return to same tab after reload.
     $(".change-tab").click(function(){
@@ -526,12 +517,24 @@ $(document).ready(function () {
     });
 
 
+    // -----------------------adserver.model view Select models by status----------------
 
+    $('.dropdown-menu a.dropitem').on("click", function (e) {
+
+        $(this).parents('div.btn-group').find('.dropdown_capture').text($(this).text());
+        //console.log($(this).data('id'));
+        ref_url = "ajax.php?module=sccp_manager&command=getDeviceModel&type=" + $(this).data('id');
+        $('#table-models').bootstrapTable('refresh', {url: ref_url});
+        $('#table-models').bootstrapTable('uncheckAll');
+        $("#buttonDeviceEnable").attr('disabled', true);
+        $("#buttonDeviceDisable").attr('disabled', true);
+    });
+    // ---------------------------------------
 
     $('.sccp_update').on('click', function (e) {
 //        console.log($(this).data('id'));
 
-// ----------------------- Server.keyset form ----------------
+// ----------------------- advserver.keyset view ----------------
 //
         if ($(this).data('id') === 'keyset_add') {
             var dev_cmd = 'updateSoftKey';
@@ -558,7 +561,8 @@ $(document).ready(function () {
             ;
         }
 
-// ----------------------- Server.model form ----------------
+// ----------------------- advserver.model view ----------------
+
         if ($(this).data('id') === 'model_add') {
             var dev_cmd = 'model_add';
 //            var dev_fld = ["model","vendor","dns","buttons","loadimage","loadinformationid","validate","enabled"];
@@ -608,8 +612,9 @@ $(document).ready(function () {
                     i++;
                 });
             }
-            console.log(datas);
+        //    console.log(datas);
         }
+        // Delete action button
         if ($(this).data('id') === 'delete_hardware') {
             var dev_cmd = $(this).data('id');
             var datas = '';
@@ -667,16 +672,16 @@ $(document).ready(function () {
                 url: 'ajax.php?module=sccp_manager&command=' + dev_cmd,
                 data: datas,
                 success: function (data) {
-
                     if (data.status === true) {
                         if (data.table_reload === true) {
-                            $('table').bootstrapTable('refresh');
+                            $('#table-models').bootstrapTable('refresh');
                         }
                         if (data.message) {
-                            fpbxToast(data.message,_('Operation Result'), 'success');
+                            fpbxToast(data.message,'', 'success');
                             if (data.reload === true) {
                                 //Need setTimout or reload will kill Toast
                                 setTimeout(function(){location.reload();},500);
+                                $('#table-models').bootstrapTable("resetSearch","");
                             }
                         }
                     } else {
@@ -782,31 +787,42 @@ $(document).ready(function () {
 //        console.log($('#update-sccp-phone').find(':selected').data('val'));
 
     });
-
+// End DOCUMENT READY **************************************************
 });
-
-
-
-//$("table").on('click-cell.bs.table', function (field, value, row, $element) {
-//    var id_fld=$element['model']; Работает !
-//    console.log('Table test: '+ id_fld);
-//    $('#bt'+id_fld).removeAttr('hidden');
-//});
-
 
 //    Bootstrap table Enable / Disable buttons ( class="btn-tab-select")
 $("table").on('check-all.bs.table', function (rows) {
     var id_fld = $(this).data('id');
-    $(".btn-tab-select").each(function () {
-        $(this).removeAttr('disabled');
-    });
-//    console.log('Table  unselect all' + id_fld);
+
+    if (id_fld === 'model') {
+        var firstRow = $('#table-models').bootstrapTable('getData')[0];
+        if (firstRow['enabled'] === "1") {
+            $("#buttonDeviceDisable").removeAttr('disabled');
+        } else {
+            $("#buttonDeviceEnable").removeAttr('disabled');
+        }
+    } else {
+        $(".btn-tab-select").each(function () {
+            $(this).removeAttr('disabled');
+        });
+    }
+   //console.log('Table  unselect all' + id_fld);
 });
 $("table").on('check.bs.table', function (e, row) {
     var id_fld = $(this).data('id');
-    $(".btn-tab-select").each(function () {
-        $(this).removeAttr('disabled');
-    });
+
+    if (id_fld === 'model') {
+        if (row['enabled'] === "1") {
+            $("#buttonDeviceDisable").removeAttr('disabled');
+        } else if (row['enabled'] === "0") {
+            $("#buttonDeviceEnable").removeAttr('disabled');
+
+        }
+    } else {
+        $(".btn-tab-select").each(function () {
+            $(this).removeAttr('disabled');
+        });
+    }
 //    console.log('Table  select ' + id_fld);
 });
 $("table").on('uncheck.bs.table', function (e, row) {
@@ -819,7 +835,7 @@ $("table").on('uncheck.bs.table', function (e, row) {
             $(this).attr('disabled', true);
         });
     }
-//    console.log('Table  unselect ' + id_count);
+//    console.log('Table  unselect ' + id_fld + id_count);
 });
 $("table").on('uncheck-all.bs.table', function (rows) {
     var id_fld = $(this).data('id');

@@ -11,16 +11,18 @@ global $amp_conf;
 <div class="fpbx-container container-fluid">
     <div class="row">
         <div class="col-sm-12">
-
             <div class="display no-border">
                 <div id="toolbar-model">
-                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".add_new_model"><i class="fa fa-bolt"></i> <?php echo _("Add model"); ?>
+                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".add_new_model">
+                        <i class="fa fa-plus"></i> <?php echo _("Add model"); ?>
                     </button>
-                    <button data-id="model_disabled" class="btn btn-danger sccp_update btn-tab-select" data-type="sccp_model" data-table="table-models" disabled data-section="all">
-                        <i class="glyphicon glyphicon-remove"></i> <span><?php echo _('Disable') ?></span>
+                    <button data-id="model_disabled" id=buttonDeviceDisable class="btn btn-danger sccp_update btn-tab-select" data-type="sccp_model" data-table="table-models" disabled data-section="all">
+                        <i class="glyphicon glyphicon-remove"></i>
+                        <span><?php echo _('Disable') ?></span>
                     </button>
-                    <button data-id="model_enabled" class="btn btn-danger sccp_update btn-tab-select" data-table="table-models" data-type="sccp_model" disabled data-section="all">
-                        <i class="glyphicon glyphicon-active"></i> <span><?php echo _('Enable') ?></span>
+                    <button data-id="model_enabled" id=buttonDeviceEnable class="btn btn-success sccp_update btn-tab-select" data-table="table-models" data-type="sccp_model" disabled data-section="all">
+                        <i class="fa fa-check"></i>
+                        <span><?php echo _('Enable') ?></span>
                     </button>
                     <div class="btn-group">
                         <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -28,9 +30,12 @@ global $amp_conf;
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropitem" data-id="enabled" tabindex="-1" href="#"><span><?php echo _('Show Enabled') ?></span></a></li>
-                            <li><a class="dropitem" data-id="extension" tabindex="-1" href="#"><span><?php echo _('Expansion Module')?></span></a></li>
-                            <li><a class="dropitem" data-id="all" tabindex="-1" href="#"><span><?php echo _('Show All') ?></span></a></li>
+                            <li><a class="dropitem" data-id="enabled" tabindex="-1" href="#">
+                                <span><?php echo _('Show Enabled') ?></span></a></li>
+                            <li><a class="dropitem" data-id="expansion" tabindex="-1" href="#">
+                                <span><?php echo _('Show Expansion Modules')?></span></a></li>
+                            <li><a class="dropitem" data-id="disabled" tabindex="-1" href="#">
+                                <span><?php echo _('Show Disabled') ?></span></a></li>
                         </ul>
                     </div>
                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target=".get_ext_file_<?php echo $requestType; ?>"><i class="fa fa-bolt"></i> <?php echo _("Update Files from Provisioner"); ?>
@@ -45,8 +50,8 @@ global $amp_conf;
                             <th data-sortable="true" data-field="vendor"><?php echo _('Vendor');?></th>
                             <th data-sortable="false" data-formatter="DisplayDnsFormatter" data-field="dns"><?php echo _('Expansion Module');?></th>
                             <th data-sortable="false" data-field="buttons"><?php echo _('Buttons');?></th>
-                            <th data-sortable="false" data-formatter="SetColFirmNf" data-field="loadimage"><?php echo _('Loadimage');?></th>
                             <th data-sortable="false" data-field="loadinformationid"><?php echo _('Loadinformation ID');?></th>
+                            <th data-sortable="false" data-formatter="SetColFirmNf" data-field="loadimage"><?php echo _('Loadimage');?></th>
                             <th data-sortable="false" data-formatter="SetColTemplNf" data-field="nametemplate"><?php echo _('Model template');?></th>
                             <th data-field="actions" data-formatter="DispayActionsModelFormatter"><?php echo _('Actions');?></th>
                         </tr>
@@ -63,84 +68,144 @@ global $amp_conf;
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="gridSystemModalLabel"><?php echo _('Add new model');?></h4>
             </div>
             <div class="modal-body">
-                <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
-                        <label class="control-label" for="new_model"><?php echo _('Device Model');?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="new_model"></i>
-                    </div><div class="col-md-9">
-                        <input type="text" class="form-control" id="new_model" name="new_model" value="79XX">
-                    </div> </div></div>
-                    <div class="row"><div class="col-md-12">
-                        <span id="new_model-help" class="help-block fpbx-help-block">Help.</span>
-                </div></div></div>
+                <div class="element-container">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="new_model"><?php echo _('Device Model');?></label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="new_model"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="new_model" name="new_model" value="79XX">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="new_model-help" class="help-block fpbx-help-block">Help.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="element-container">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="new_vendor"><?php echo _('Vendor name');?></label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="new_vendor"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="new_vendor" name="new_vendor" value="CISCO">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="new_vendor-help" class="help-block fpbx-help-block">Use "CISCO" for the Skinny Client Control Protocol and "CISCO-SIP" for the CISCO Sip Protocol</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="element-container">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="new_dns"><?php echo _('Expansion Module');?></label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="new_dns"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <select name="new_dns" id="new_dns">
+                                    <option value="1"  selected='selected'>Phone - no sidecars.</option>
+                                    <option value="2">Phone - one sidecar.</option>
+                                    <option value="3">Phone - two sidecars.</option>
+                                    <option value="0">Sidecar</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="new_dns-help" class="help-block fpbx-help-block">Help.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="element-container">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="new_buttons"><?php echo _('Model Line Buttons');?></label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="new_buttons"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="number" min="1" min="96" class="form-control" id="new_buttons" name="new_buttons" value="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="new_buttons-help" class="help-block fpbx-help-block">Help.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="element-container">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="new_loadimage"><?php echo _('Load Image');?></label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="new_loadimage"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="new_loadimage" name="new_loadimage" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="new_loadimage-help" class="help-block fpbx-help-block">Help.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="element-container">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="new_loadinformationid"><?php echo _('Load Information ID');?></label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="new_loadinformationid"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="new_loadinformationid" name="new_loadinformationid" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="new_loadinformationid-help" class="help-block fpbx-help-block">Help.</span>
+                        </div>
+                    </div>
+                </div>
 
-                <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
-                        <label class="control-label" for="new_vendor"><?php echo _('Vendor name');?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="new_vendor"></i>
-                    </div><div class="col-md-9">
-                        <input type="text" class="form-control" id="new_vendor" name="new_vendor" value="CISCO">
-                    </div> </div></div>
-                    <div class="row"><div class="col-md-12">
-                        <span id="new_vendor-help" class="help-block fpbx-help-block">Use "CISCO" for the Skinny Client Control Protocol and "CISCO-SIP" for the CISCO Sip Protocol</span>
-                </div></div></div>
-
-                <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
-                        <label class="control-label" for="new_dns"><?php echo _('Expansion Module');?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="new_dns"></i>
-                    </div><div class="col-md-9">
-                    <select name="new_dns" id="new_dns">
-                        <option value="1"  selected='selected'>Phone - no sidecars.</option>
-                            <option value="2">Phone - one sidecar.</option>
-                            <option value="3">Phone - two sidecars.</option>
-                            <option value="0">Sidecar</option>
-                        </select>
-                    </div> </div></div>
-                    <div class="row"><div class="col-md-12">
-                        <span id="new_dns-help" class="help-block fpbx-help-block">Help.</span>
-                </div></div></div>
-
-                <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
-                        <label class="control-label" for="new_buttons"><?php echo _('Model Line Buttons');?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="new_buttons"></i>
-                    </div><div class="col-md-9">
-                        <input type="number" min="1" min="96" class="form-control" id="new_buttons" name="new_buttons" value="1">
-                    </div> </div></div>
-                    <div class="row"><div class="col-md-12">
-                        <span id="new_buttons-help" class="help-block fpbx-help-block">Help.</span>
-                </div></div></div>
-
-                <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
-                        <label class="control-label" for="new_loadimage"><?php echo _('Load Image');?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="new_loadimage"></i>
-                    </div><div class="col-md-9">
-                        <input type="text" class="form-control" id="new_loadimage" name="new_loadimage" value="">
-                    </div> </div></div>
-                    <div class="row"><div class="col-md-12">
-                        <span id="new_loadimage-help" class="help-block fpbx-help-block">Help.</span>
-                </div></div></div>
-
-                <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
-                        <label class="control-label" for="new_loadinformationid"><?php echo _('Load Information ID');?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="new_loadinformationid"></i>
-                    </div><div class="col-md-9">
-                        <input type="text" class="form-control" id="new_loadinformationid" name="new_loadinformationid" value="">
-                    </div> </div></div>
-                    <div class="row"><div class="col-md-12">
-                        <span id="new_loadinformationid-help" class="help-block fpbx-help-block">Help.</span>
-                </div></div></div>
-
-                <div class="element-container"><div class="row"> <div class="form-group"><div class="col-md-3">
-                        <label class="control-label" for="new_nametemplate"><?php echo _('Model template XML');?></label>
-                        <i class="fa fa-question-circle fpbx-help-icon" data-for="new_nametemplate"></i>
-                    </div><div class="col-md-9">
-                        <input type="text" class="form-control" id="new_nametemplate" name="new_nametemplate" value="">
-                    </div> </div></div>
-                    <div class="row"><div class="col-md-12">
-                        <span id="new_nametemplate-help" class="help-block fpbx-help-block">Help.</span>
-                </div></div></div>
+                <div class="element-container">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <label class="control-label" for="new_nametemplate"><?php echo _('Model template XML');?></label>
+                                <i class="fa fa-question-circle fpbx-help-icon" data-for="new_nametemplate"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="new_nametemplate" name="new_nametemplate" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="new_nametemplate-help" class="help-block fpbx-help-block">Help.</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _('Close');?></button>
@@ -317,16 +382,13 @@ include($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/views/getFileModa
 
     function SetRowColor(row, index) {
         var tclass = "active";
-        if (row['enabled'] === 1) {
-            tclass = (index % 2 === 0) ? "info" : "info";
+        if (row['enabled'] === "1") {
+            tclass = "success";
         }
-        if (row['fwfound'] === 'yes') {
-//            tclass = (row['enabled'] === '1') ?  "danger" : "warning";
-        } else {
-            tclass = (row['enabled'] === '1') ?  "danger" : "warning";
+        if (row['fwfound'] !== 'yes') {
+            tclass = (row['enabled'] === "1") ?  "danger" : "warning";
         }
         return {classes: tclass};
     }
-
 
 </script>

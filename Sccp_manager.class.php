@@ -1011,11 +1011,13 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             return $modelList;
         }
         // Here so want to see if FW and template files exist on TFTP server.
+        // only look in relevant column indexed by model so that returned value is ne 0
+        // will be boolean false if not found
 
-        $needToCheckFw = array_search('no', array_column($modelList, 'fwfound'), true);
-        $needToCheckTemp = array_search('no', array_column($modelList, 'templatefound'), true);
+        $needToCheckFw = array_search('no', array_column($modelList, 'fwfound', 'model'), true);
+        $needToCheckTemp = array_search('no', array_column($modelList, 'templatefound', 'model'), true);
 
-        if (!$needToCheckFw && !$needToCheckTemp) {
+        if ($needToCheckFw === false && $needToCheckTemp === false) {
             // in modellist, all firmware shows as being available (no not found for either)
             return $modelList;
         }

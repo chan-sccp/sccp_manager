@@ -228,7 +228,7 @@ class dbinterface
                 $stmtU->execute();
                 return $stmtU->fetchAll(\PDO::FETCH_ASSOC|\PDO::FETCH_UNIQUE);
                 break;
-            case 'extension':
+            case 'expansion':
                 $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (dns = 0) and (enabled = 1) ORDER BY model");
                 break;
             case 'enabled':
@@ -236,6 +236,9 @@ class dbinterface
                 //break;  // above includes expansion modules but was not original behaviour so commented out. Falls through to phones.
             case 'phones':
                 $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (dns != 0) and (enabled = 1) ORDER BY model");
+                break;
+            case 'disabled':
+                $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (dns != 0) and (enabled = 0) ORDER BY model");
                 break;
             case 'ciscophones':
                 $stmt = $this->db->prepare("SELECT ${sel_inf} FROM sccpdevmodel WHERE (dns > 0) and (enabled = 1) AND RIGHT(vendor,4) != '-sip' ORDER BY model");

@@ -207,7 +207,7 @@ trait ajaxHelper {
                         $this->dbinterface->write('sccpdevmodel', array('model' => $idv, 'enabled' => $model_set), 'update', "model");
                     }
                 }
-                return array('status' => true, 'table_reload' => true);
+                return array('status' => true, 'reload' => true , 'message' => ($model_set) ? "Devices Enabled" : "Devices Disabled");
                 break;
             case 'model_delete':
                 if (!empty($request['model'])) {
@@ -217,8 +217,8 @@ trait ajaxHelper {
                 break;
             case 'getDeviceModel':
                 switch ($request['type']) {
-                    case 'all':
-                    case 'extension':
+                    case 'disabled':
+                    case 'expansion':
                     case 'enabled':
                         $devices = $this->getSccpModelInformation($request['type'], $validate = true);
                         break;
