@@ -53,7 +53,7 @@ $keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Displa
                     <div id="toolbar-all">
                         <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" onclick="load_oncliсk(this,'*new*')" data-target=".edit_new_keyset"><i class="fa fa-bolt"></i> <?php echo _("Add Keyset"); ?></button>
                     </div>
-                    <table data-cookie="true" data-cookie-id-table="sccp_keyset-all" data-url="ajax.php?module=sccp_manager&command=getSoftKey&type=active" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list" id="softkey-all" data-unique-id="softkeys">
+                    <table data-cookie="true" data-cookie-id-table="sccp_keyset-all" data-cache="false" data-show-refresh="true" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped ext-list" id="softkey-all" data-unique-id="softkeys">
                         <thead>
                             <tr>
                                 <th data-sortable="true" data-field="softkeys"><?php echo _('KeySetName')?></th>
@@ -66,7 +66,7 @@ $keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Displa
                                     $i ++;
                                 }
                                 ?>
-                                <th data-field="actions" data-formatter="DispayActionsKeyFormatter"><?php echo _('Actions')?></th>
+                                <th data-field="actions" data-formatter="DisplayActionsKeyFormatter"><?php echo _('Actions')?></th>
                             </tr>
                         </thead>
                         <tbody>
