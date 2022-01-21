@@ -26,20 +26,19 @@ $keysetarray =  $this->extconfigs->getExtConfig('keyset');
                     'uriaction'  => array('default'));
 */
 //   ------------------------------------- Key Set Display information  ---------------------------------------------------------
-$keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Display Onhook', 'help' =>'help.'),
-                    'connected'  => array('sname' => 'CONNECTED', 'name' =>'Display Connected', 'help' =>'help.'),
-                    'onhold'     => array('sname' => 'ONHOLD', 'name' =>'Display onhold', 'help' =>'help.'),
-                    'ringin'     => array('sname' => 'RINGIN', 'name' =>'Display ringin', 'help' =>'help.'),
-                    'offhook'    => array('sname' => 'OFFHOOK', 'name' =>'Display offhook', 'help' =>'help.'),
-                    'conntrans'  => array('sname' => 'CONNTRANS', 'name' =>'Display conntrans', 'help' =>'help.'),
-                    'digitsfoll' => array('sname' => 'DIGITSFOLL', 'name' =>'Display digitsfoll', 'help' =>'help.'),
-                    'connconf'   => array('sname' => 'CONNCONF', 'name' =>'Display connconf', 'help' =>'help.'),
-                    'ringout'    => array('sname' => 'RINGOUT', 'name' =>'Display ringout', 'help' =>'help.'),
-                    'offhookfeat'=> array('sname' => 'OFFHOOKFEAT', 'name' =>'Display offhookfeat', 'help' =>'help.'),
-                    'onhint'     => array('sname' => 'ONHINT', 'name' =>'Display onhint', 'help' =>'help.'),
-                    'onstealable'=> array('sname' => 'onstealable', 'name' =>'Display onstealable', 'help' =>'help.'),
-                    'holdconf'   => array('sname' => 'HOLDCONF', 'name' =>'Display holdconf', 'help' =>'help.'),
-                    'uriaction'  => array('sname' => '', 'name' =>'Display uriaction', 'help' =>'help.')
+$keynamearray = array('ONHOOK'    => array('sname' => 'ONHOOK', 'name' =>'Display Onhook', 'help' =>'help.'),
+                    'CONNECTED'  => array('sname' => 'CONNECTED', 'name' =>'Display Connected', 'help' =>'help.'),
+                    'ONHOLD'     => array('sname' => 'ONHOLD', 'name' =>'Display onhold', 'help' =>'help.'),
+                    'RINGIN'     => array('sname' => 'RINGIN', 'name' =>'Display ringin', 'help' =>'help.'),
+                    'OFFHOOK'    => array('sname' => 'OFFHOOK', 'name' =>'Display offhook', 'help' =>'help.'),
+                    'CONNTRANS'  => array('sname' => 'CONNTRANS', 'name' =>'Display conntrans', 'help' =>'help.'),
+                    'DIGITSFOLL' => array('sname' => 'DIGITSFOLL', 'name' =>'Display digitsfoll', 'help' =>'help.'),
+                    'CONNCONF'   => array('sname' => 'CONNCONF', 'name' =>'Display connconf', 'help' =>'help.'),
+                    'RINGOUT'    => array('sname' => 'RINGOUT', 'name' =>'Display ringout', 'help' =>'help.'),
+                    'OFFHOOKFEAT'=> array('sname' => 'OFFHOOKFEAT', 'name' =>'Display offhookfeat', 'help' =>'help.'),
+                    'INUSEHINT'     => array('sname' => 'INUSEHINT', 'name' =>'Display inusehint', 'help' =>'help.'),
+                    'ONHOOKSTEALABLE'=> array('sname' => 'ONHOOKSTEALABLE', 'name' =>'Display onhookstealable', 'help' =>'help.'),
+                    'HOLDCONF'   => array('sname' => 'HOLDCONF', 'name' =>'Display holdconf', 'help' =>'help.')
     );
 
 ?>
@@ -60,7 +59,7 @@ $keynamearray = array('onhook'    => array('sname' => 'ONHOOK', 'name' =>'Displa
                                 <?php
                                 $i = 0;
                                 foreach ($keynamearray as $key => $value) {
-                                    if ($i < 12) {
+                                    if ($i < 13) {
                                         echo '<th data-sortable="false" data-field="'.$key.'">'._($value['sname']).'</th>';
                                     }
                                     $i ++;

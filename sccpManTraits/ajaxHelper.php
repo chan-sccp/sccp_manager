@@ -234,8 +234,8 @@ trait ajaxHelper {
                     //$id_name = $request['softkey'];
                     unset($this->sccp_conf_init[$request['softkey']]);
                     $this->createDefaultSccpConfig($this->sccpvalues, $this->sccppath["asterisk"]);
-                    $msg = print_r($this->aminterface->core_sccp_reload(), 1);
-                    return array('status' => true, 'table_reload' => true);
+                    $msg = $this->aminterface->core_sccp_reload();
+                    return array('status' => true, 'reload' => true, 'message' => $msg['Response'] .' -  Softkey set deleted');
                 }
                 break;
             case 'updateSoftKey':
@@ -251,8 +251,8 @@ trait ajaxHelper {
 
                     // !TODO!: -TODO-:  Check SIP Support Enabled
                     $this->createSccpXmlSoftkey();
-                    $msg = print_r($this->aminterface->core_sccp_reload(), 1);
-                    return array('status' => true, 'table_reload' => true, 'msg' => $msg);
+                    $msg = $this->aminterface->core_sccp_reload();
+                    return array('status' => true, 'reload' => true, 'message' => $msg['Response'] .' - Softkey sets updated');
                 }
                 break;
             case 'backupsettings':

@@ -23,7 +23,7 @@ trait bmoFunctions {
                 break;
             case 'sccp_adv':
                 $this->dialTemplateData = json_encode($this->getDialTemplate());
-                $this->softKeyData = json_encode($this->getSoftKey());
+                $this->softKeyData = json_encode(array_values($this->aminterface->sccp_list_keysets()));
                 $this->deviceModelData = json_encode($this->ajaxHandler($_REQUEST = array('command'=>'getDeviceModel', 'type'=>'enabled')));
                 break;
             default:
@@ -125,47 +125,6 @@ trait bmoFunctions {
         return $result;
     }
 
-    function getSoftKey() {
-        $result = array();
-        $i = 0;
-        $keyl = 'default';
-        foreach ($this->aminterface->sccp_list_keysets() as $keyl => $vall) {
-            $result[$i]['softkeys'] = $keyl;
-            if ($keyl == 'default') {
-                foreach ($this->extconfigs->getExtConfig('keyset') as $key => $value) {
-                    $result[$i][$key] = str_replace(',', '<br>', $value);
-                }
-            } else {
-                foreach ($this->getMyConfig('softkeyset', $keyl) as $key => $value) {
-                    $result[$i][$key] = str_replace(',', '<br>', $value);
-                }
-            }
-            $i++;
-        }
-        return $result;
-    }
-
-    public function getMyConfig(string $var, $id = "noid") {
-        $final = array();
-        $i = 0;
-        if ($id == "noid") {
-            foreach ($this->sccp_conf_init as $key => $value) {
-                if ($this->sccp_conf_init[$key]['type'] == 'softkeyset') {
-                    $final[$i] = $value;
-                    $i++;
-                }
-            }
-        } else {
-            if (!empty($this->sccp_conf_init[$id])) {
-                if ($this->sccp_conf_init[$id]['type'] == 'softkeyset') {
-                    $final = $this->sccp_conf_init[$id];
-                }
-            }
-
-            $i++;
-        }
-        return $final;
-    }
     /* unused but FPBX API requires it */
 
     public function install() {

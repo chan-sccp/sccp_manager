@@ -571,9 +571,12 @@ class formcreate
                             <?php
                             echo  '<select name="'.$res_id.'" class="'. $child->class . '" id="' . $res_id . '">';
                             foreach ($select_opt as $key => $val) {
+                                // TODO: Clean this up - its a bunch of fixes
                                 if (is_array($val)) {
                                     $opt_key = (isset($val['id'])) ? $val['id'] : $key;
                                     $opt_val = (isset($val['val'])) ? $val['val'] : $val;
+                                    $opt_key = (isset($val['softkeys'])) ? $val['softkeys'] : $key;
+                                    $opt_val = (isset($val['softkeys'])) ? $val['softkeys'] : $val;
                                 } else if (\FreePBX::Sccp_manager()->is_assoc($select_opt)){
                                     // have associative array
                                     $opt_key = $key;

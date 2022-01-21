@@ -252,33 +252,47 @@ class SCCPGeneric_Response extends Response
 
     protected function ConvertTableData( $_tablename, array $_fkey, array $_fields)
     {
-        //dbug(debug_backtrace(2));
+        /* except for softkeysets, $_fkey is a single element array so the Returned
+        array is a normal array. For softkey sets, need to return an associative
+        array with a second level.
+        */
         $result = array();
         $_rawtable = $this->Table2Array($_tablename);
         // Check that there is actually data to be converted
-        if (empty($_rawtable)) { return $result;}
-        foreach ($_rawtable as $_row) {
-            $all_key_ok = true;
-            // No need to test if $_fkey is array as array required
-            foreach ($_fkey as $_fid) {
-                if (empty($_row[$_fid])) {
-                    $all_key_ok = false;
-                } else {
-                    $set_name[$_fid] = $_row[$_fid];
-                }
-            }
-            $Data = &$result;
-
-            if ($all_key_ok) {
-                foreach ($set_name as $value_id) {
-                    $Data = &$Data[$value_id];
-                }
-                // Label converter in case labels and keys are different
-                foreach ($_fields as $value_key => $value_id) {
-                    $Data[$value_id] = $_row[$value_key];
-                }
+        if (empty($_rawtable)) {
+            return $result;
+        }
+        // Now check that fkey fields exist in the $_rawtable. If exists in
+        // the first element, Assume that it exists in all elements.
+        foreach ($_fkey as $_fid) {
+            if (!isset($_rawtable[0][$_fid])) {
+                return $result;
             }
         }
+        // could also use tablename here
+        $complexArray = true;
+        if (count($_fkey) === 1) {
+            $complexArray = false;
+        }
+        foreach ($_rawtable as $_rowArr) {
+            // $_row is a table element
+            $outputArr = array();
+            foreach ($_fields as $value_key => $value_id) {
+                $outputArr[$value_id] = $_rowArr[$value_key];
+            }
+            if ($complexArray) {
+                // We are returning softkey sets. Only looking for formatted value
+                $result[$_rowArr[$_fkey[0]]]['softkeys'] = $_rowArr[$_fkey[0]];
+                if (isset($result[$_rowArr[$_fkey[0]]][$_rowArr[$_fkey[1]]])) {
+                    $result[$_rowArr[$_fkey[0]]][$_rowArr[$_fkey[1]]] .=  "{$outputArr['label']}<br>";
+                } else {
+                    $result[$_rowArr[$_fkey[0]]][$_rowArr[$_fkey[1]]] =  "{$outputArr['label']}<br>";
+                }
+            } else {
+                $result[$_rowArr[$_fkey[0]]] =  $outputArr;
+            }
+        }
+        //dbug($result);
         return $result;
     }
 
