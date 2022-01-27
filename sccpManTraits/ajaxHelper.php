@@ -440,38 +440,32 @@ trait ajaxHelper {
         $sccpdevice_def = (array)$this->getTableDefaults('sccpdevice', false);
         $sccpline_def = (array)$this->getTableDefaults('sccpline', false);
 
+        // before handling arrays, need to see if deny and permit are set in the request
+        // if they have been cleared by the users, will not be present
+
+        foreach (['deny','permit'] as $keyVal) {
+            if (!isset($request[$hdr_arprefix.$keyVal])) {
+                $tmpArr = $this->convertCsvToArray($this->sccpvalues[$keyVal]['systemdefault']);
+                if (isset($tmpArr[0]['internal'])) {
+                    $request[$hdr_arprefix.$keyVal][0] = $tmpArr[0];
+                } else {
+                    $request[$hdr_arprefix.$keyVal][1]['net'] = $tmpArr[0]['net'];
+                    $request[$hdr_arprefix.$keyVal][1]['mask'] = $tmpArr[0]['mask'];
+                }
+            }
+        }
+
         foreach ($request as $key => $value) {
             // First handle any arrays as their prefix is part common with normal data
+            //$netvalue = array();
             $key = (str_replace($hdr_arprefix, '', $key, $count_mods));
             if ($count_mods) {
-                $arr_data = '';
-                if (!empty($this->sccpvalues[$key])) {
-                    foreach ($value as $valArr) {
-                        foreach ($valArr as $vkey => $vval) {
-                            switch ($vkey) {
-                                case 'inherit':
-                                case 'internal':
-                                    if ($vval == 'on') {
-                                        $arr_data .= 'internal;';
-                                    }
-                                    break;
-                                case 'port':
-                                    $arr_data .= ":{$vval}";
-                                    break;
-                                case 'mask':
-                                    $arr_data .= "/{$vval}";
-                                    break;
-                                default:
-                                    $arr_data .= $vval;
-                                    break;
-                            }
-                        }
-                    }
-                    if (!($this->sccpvalues[$key]['data'] == $arr_data)) {
-                        $save_settings[$key] = $this->sccpvalues[$key];
-                        $save_settings[$key]['data'] = $arr_data;
-                    }
-                }
+                // Only arrays : network lists or ip lists.
+                $save_settings[$key]['keyword'] = $key;
+                $save_settings[$key]['type'] = $this->sccpvalues[$key]['type'];
+                $save_settings[$key]['seq'] = $this->sccpvalues[$key]['seq'];
+                $save_settings[$key]['data'] = $this->convertArrayToCsv($value);
+                $save_settings[$key]['systemdefault'] = $this->sccpvalues[$key]['systemdefault'];
                 continue;
             }
             // Now handle any normal data - arrays will not match as already handled.
@@ -500,12 +494,27 @@ trait ajaxHelper {
                     continue 2;
                 }
             }
+
         }
         $extSettings = $this->extconfigs->updateTftpStructure(array_merge($this->sccpvalues, $save_settings));
         $save_settings = array_merge($save_settings, $extSettings);
+        //dbug($save_settings);
         if (!empty($save_settings)) {
             $this->saveSccpSettings($save_settings);
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
+        }
+
+        // now add the site defaults from sccpsettings to sccpdevice for permit and deny, so that these will override
+        foreach (['deny', 'permit'] as $fieldId) {
+            $output = array();
+            foreach ($this->convertCsvToArray($this->sccpvalues[$fieldId]['data']) as $netValue) {
+                if (isset($netValue['internal'])) {
+                    $output[] = 'internal';
+                    continue;
+                }
+                $output[] = implode('/', $netValue);
+            }
+            $dbSaveArray[$fieldId] = array('table' => 'sccpdevice', 'field' => $fieldId, 'Default' => implode(';',$output));
         }
 
         foreach ($dbSaveArray as $key => $rowToSave) {
@@ -697,56 +706,51 @@ trait ajaxHelper {
                     break;
                 default:
                     // handle vendor prefix
-                    if (!empty($get_settings[$hdr_vendPrefix . $key])) {
-                        $value = $get_settings[$hdr_vendPrefix  . $key];
+                    if (!empty($get_settings["${hdr_vendPrefix}${key}"])) {
+                        $value = $get_settings["${hdr_vendPrefix}${key}"];
                     }
                     // handle array prefix
-                    if (!empty($get_settings[$hdr_arprefix . $key])) {
+                    if (!empty($get_settings["${hdr_arprefix}${key}"])) {
+                        // Only 3 types of array returned permit,deny, setvar
                         $arr_data = '';
                         $arr_clear = false;
-                        foreach ($get_settings[$hdr_arprefix . $key] as $vkey => $vval) {
-                            $tmp_data = '';
-                            foreach ($vval as $vkey => $vval) {
-                                switch ($vkey) {
-                                    case 'inherit':
-                                        if ($vval == 'on') {
-                                            $arr_clear = true;
-                                            // Злобный ХАК ?!TODO!?
-                                            if ($key == 'permit') {
-                                                $save_settings['deny'] = 'NONE';
-                                            }
-                                        }
-                                        break;
-                                    case 'internal':
-                                        if ($vval == 'on') {
-                                            $tmp_data .= 'internal;';
-                                        }
-                                        break;
-                                    default:
-                                        $tmp_data .= $vval . '/';
-                                        break;
-                                }
+                        $output = array();
+                        foreach ($get_settings["${hdr_arprefix}${key}"] as $netValue) {
+                            switch ($key) {
+                                case 'permit':
+                                case 'deny';
+                                    // Now have an array of settings each with keys net and Mask
+                                    // TODO: This needs to be optimised
+                                    //foreach ($valueArr as $netValue) {
+                                    if (isset($netValue['inherit'])) {
+                                        $save_settings['deny'] = 'NONE';
+                                        continue 2;
+                                    }
+                                    if (isset($netValue['internal'])) {
+                                        $output[] = 'internal';
+                                        continue;
+                                    }
+                                    if (empty($netValue['net'])) {
+                                        // empty net so ignored
+                                        continue;
+                                    }
+                                    $netValue['mask'] = (empty($netValue['mask'])) ? "255.255.255.0" : $netValue['mask'];
+                                    $output[]= implode('/', $netValue);
+                                    //}
+                                    break;
+                                case 'setvar':
+                                    $output[] = implode(';', $netValue);
+                                    break;
+                                // No default case
                             }
-                            if (strlen($tmp_data) > 2) {
-                                while (substr($tmp_data, -1) == '/') {
-                                    $tmp_data = substr($tmp_data, 0, -1);
-                                }
-                                $arr_data .= $tmp_data . ';';
-                            }
-                        }
-                        while (substr($arr_data, -1) == ';') {
-                            $arr_data = substr($arr_data, 0, -1);
-                        }
-                        if ($arr_clear) {
-                            $value = 'NONE';
-                        } else {
-                            $value = $arr_data;
-                        }
                     }
-                    // Now only have normal prefix
-                    if (!empty($get_settings["{$hdr_prefix}{$key}"])) {
-                        $value = $get_settings["{$hdr_prefix}{$key}"];
-                    }
+                    $save_settings[$key] = implode(';', $output);
+                    unset($output);
+                }
+                // Now only have normal prefix
+                if (!empty($get_settings["{$hdr_prefix}{$key}"])) {
+                    $value = $get_settings["{$hdr_prefix}{$key}"];
+                }
             }
             if (!empty($value)) {
                 $save_settings[$key] = $value;
@@ -780,7 +784,5 @@ trait ajaxHelper {
         $search = '?display=sccp_phone';
         return array('status' => true, 'message' => $msg, 'reload' => true, 'toastFlag' => $toastFlag, 'search' => $search, 'hash' => $hash);
     }
-
 }
-
 ?>

@@ -3,8 +3,76 @@
 namespace FreePBX\modules\Sccp_manager\sccpManTraits;
 
 trait helperfunctions {
+    private function convertCsvToArray($stringToConvert = "") {
+        // Take a csv string form of net/mask or ip/port and convert to an array
+        // sub arrays are separated by ";"
+        $outputArr = array();
+        if (empty($stringToConvert)) {
+            return $outputArr;
+        }
+        foreach (explode(";", $stringToConvert) as $value) {
+            //internal is always the first setting if present
+            if ($value == 'internal') {
+                $outputArr[] = array('internal' => 'on');
+                continue;
+            }
+            // Now handle rest of value types
+            $subArr = explode("/", $value);
+            if (count($subArr) === 2) {
+                // Have net/mask
+                $outputArr[] = array('net' => $subArr[0], 'mask' => $subArr[1]);
+            } else {
+                // have ip:port
+                $subArr = explode(":", $value);
+                $outputArr[] = array('ip' => $subArr[0], 'port' => $subArr[1]);
+            }
+        }
+        return $outputArr;
+    }
 
-    function getIpInformation($type = '') {
+    private function convertArrayToCsv(array $arrayToConvert) {
+        // About to save to db so need to convert to string
+        // Take an array form of net mask or ip port and convert to a csv
+        // sub arrays are separated by ";"
+        if (empty($arrayToConvert)) {
+            return '';
+        }
+        $output = array();
+        // Internal is always element 0, nets and ips start at element 1.
+        if ((isset($arrayToConvert[1]['net'])) || (isset($arrayToConvert[0]['internal']))) {
+            // Have net masks
+            foreach ($arrayToConvert as $netValue) {
+                if (isset($netValue['internal'])) {
+                    $output[] = 'internal';
+                    continue;
+                }
+                if (empty($netValue['net'])) {
+                    // If network not set, user error, has added empty row so delete
+                    continue;
+                }
+                // If the mask has not been set, set to this subnet
+                $netValue['mask'] = (empty($netValue['mask'])) ? "255.255.255.0" : $netValue['mask'];
+                $output[] = implode('/', $netValue);
+            }
+        } else {
+            // Have ip addresses
+            foreach ($arrayToConvert as $ipArr) {
+                if (isset($ipArr['internal'])) {
+                    // should not be set for an ip address
+                    continue;
+                }
+                if (empty($ipArr['ip'])) {
+                    // If ip not set, user error, has added empty row so delete
+                    continue;
+                }
+                $ipArr['port'] = (empty($ipArr['port'])) ? "2000" : $ipArr['port'];
+                $output[] = implode(':', $ipArr);
+            }
+        }
+        return implode(';', $output);
+    }
+
+    private function getIpInformation($type = '') {
         $interfaces = array();
         switch ($type) {
             case 'ip4':
@@ -307,15 +375,9 @@ trait helperfunctions {
                     case "allow":
                     case "disallow":
                     case "deny":
-                        $this->sccp_conf_init['general'][$key] = explode(';', $value['data']);
-                        break;
                     case "localnet":
                     case "permit":
-                        $content = $value['data'];
-                        if (strpos($content, 'internal') !== false) {
-                            $content = str_replace(';0.0.0.0/0.0.0.0', '', $value['data']);
-                        }
-                        $this->sccp_conf_init['general'][$key] = explode(';', $content);
+                        $this->sccp_conf_init['general'][$key] = explode(';', $value['data']);
                         break;
                     case "devlang":
                         /*

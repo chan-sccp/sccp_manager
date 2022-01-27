@@ -15,7 +15,7 @@ namespace FreePBX\modules\Sccp_manager;
 
 class xmlinterface
 {
-
+    use \FreePBX\modules\Sccp_Manager\sccpManTraits\helperFunctions;
     private $val_null = 'NONE'; /// REPLACE to null Field
 
     public function __construct($parent_class = null)
@@ -152,7 +152,7 @@ class xmlinterface
                     $node->addAttribute('model', $var['vendor'] . ' ' . $var['model']);
                 }
             }
-            \FreePBX::Sccp_manager()->saveXml($xml_work, $xml_name);  // Save  XMLDefault1.cnf.xml
+            $this->saveXml($xml_work, $xml_name);  // Save  XMLDefault1.cnf.xml
         }
     }
 
@@ -251,29 +251,15 @@ class xmlinterface
                                 $xnode->userModifiable = $data_values['srst_userModifiable'];
                                 $xnode->isSecure = $data_values['srst_isSecure'];
 
-                                $srst_fld = array('srst_ip' => array('ipAddr', 'port'));
-                                foreach ($srst_fld as $srst_pro => $srs_put) {
-                                    if (empty($data_values[$srst_pro]) || ($data_values['srst_Option'] == 'disable') ) {
-                                        $srst_data =array();
-                                    } else  {
-                                        $srst_data = explode(';', $data_values[$srst_pro]);
-                                    }
-                                    $si = 1;
-                                    foreach ($srst_data as $value) {
-                                        $srs_val = explode('/', $value);
-                                        $nod = $srs_put[0] . $si;
-                                        $xnode->$nod = $srs_val[0];
-                                        $nod = $srs_put[1] . $si;
-                                        $xnode->$nod = ((empty($srs_val[1])) ? "2000": $srs_val[1]);
-                                        $si++;
-                                    }
-                                    while ($si < 4) {
-                                        $nod = $srs_put[0] . $si;
-                                        $xnode->$nod = '';
-                                        $nod = $srs_put[1] . $si;
-                                        $xnode->$nod = '';
-                                        $si++;
-                                    }
+                                // srst addresses are now stored as json;
+                                $srst_addrs = $this->convertCsvToArray($data_values['srst_ip']);
+                                //Now have an array of srst addresses - maybe empty
+
+                                foreach ($srst_addrs as $netKey => $netValue) {
+                                    $nodeName = "ipAddr${netKey}";
+                                    $xnode->$nodeName = $netValue['ip'];
+                                    $nodeName = "port${netKey}";
+                                    $xnode->$nodeName = $netValue['port'];
                                 }
                                 break;
                             case 'connectionmonitorduration':
@@ -403,7 +389,7 @@ class xmlinterface
             }
         }
 
-        \FreePBX::Sccp_manager()->saveXml($xml_work, $xml_name);  // Save
+        $this->saveXml($xml_work, $xml_name);  // Save
 
         return time();
     }
@@ -418,20 +404,11 @@ class xmlinterface
         }
         $ip_fill = true;
         if (!empty($data_values['ccm_address'])) {
-            $ccm_address = $data_values['ccm_address'];
-            if (strpos($ccm_address, 'internal') === false && strpos($ccm_address, '0.0.0.0') === false) {
-                $tmp_data = explode(';', $ccm_address);
-                $ip_fill = false;
-                foreach ($tmp_data as $tmp_row) {
-                    if (strpos($tmp_row, '/') !== false) {
-                        $ttmp_r = explode('/', $tmp_row); // IPv6 - ????
-                        $rkey = $ttmp_r[0];
-                        $res[$rkey] = array('ip' => $rkey, 'port' => $ttmp_r[1]);
-                    } else {
-                        $rkey = $tmp_row;
-                        $res[$rkey] = array('ip' => $rkey, 'port' => $data_values['port']);
-                    }
-                }
+            // ccm_address is json from sccpsettings
+            $ccm_address = $this->convertCsvToArray($data_values['ccm_address'], true);
+            // This is a sanitised list of ipaddresses and ports
+            foreach ($ccm_address as $netValue) {
+                $res[$netValue['ip']] = $netValue;
             }
         }
         if ($ip_fill) {
@@ -728,7 +705,7 @@ class xmlinterface
                 }
             }
 
-            \FreePBX::Sccp_manager()->saveXml($xml_work, $xml_name);  // Save
+            $this->saveXml($xml_work, $xml_name);  // Save
         } else {
             die('Error Hardware template :' . $xml_template . ' not found');
         }

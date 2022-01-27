@@ -116,10 +116,6 @@ $(document).ready(function () {
         });
     });
 
-    $(".input-js-add").click(function () {
-        add_dynamic_input($(this), $(this).data('for'), "", "");
-    });
-
     $(".table").on('click', '.table-js-add', function (e) {
         add_dynamic_table($(this), $(this).data('for'), "", "");
     });
@@ -920,32 +916,51 @@ function load_oncliсk(e, data)
     }
 }
 
+// call from here not document.ready as have dynamic content
+$(document).on('click', ".input-js-remove" , function () {
+    // delete the current row
+    var pname = $(this).data('id');
+    $('#' + pname).remove();
+});
 
-function add_dynamic_input(pe, pclass, vdefault)
-{
-    // We'd like a new one, please.
-    pcls = pe.data('for');
-    pname = pe.data('id');
-    pmax = pe.data('max');
-    jdata = JSON.parse(hex2bin(pe.data('json')));
+$(document).on('click', ".input-js-add" , function () {
+    // Add new row to networks or ip array
+    var pcls = $(this).data('for'),
+        pname = $(this).data('id'),
+        pmax = $(this).data('max'),
+        prow = $(this).data('row'),
+        pcount = $("." + pcls).length;
+    if (pcount == pmax){
+        //already reached max elements
+        return;
+    }
 
-    var last = $("." + pcls + ":last"),
-            ourid = last.data('nextid'),
-            nextid = ourid + 1;
-    var html = "<div class = '" + pcls + " form-group form-inline' data-nextid=" + nextid + ">";
+    jdata = JSON.parse(hex2bin($(this).data('json')));
+
+    var last = $("." + pcls).last(),
+        ourid = last.data('nextid'),
+        nextid = ourid + 1,
+        html = "<div class = '" + pcls + "' id ='" + pname + nextid + "' form-group form-inline' data-nextid=" + nextid + ">";
     for (var key in jdata) {
         html_opt = '';
-        html_calss = jdata[key]['class'];
         for (var skey in jdata[key]['options']) {
             html_opt += ' ' + skey + '="' + jdata[key]['options'][skey] + '"';
         }
-        html += "<input type='text' name='" + pname + "[" + ourid + "][" + key + "]' class='" + html_calss + "' " + html_opt + " value='" + vdefault + "'> " + jdata[key]['nameseparator'] + " ";
+        html += "<input type='text' name='" + pname + "[" + nextid + "][" + key + "]' class " + html_opt + "> " + jdata[key]['nameseparator'] + " ";
     }
+    // add remove button
+    html += "<button type='button' class='btn btn-danger btn-lg input-js-remove' id='" + pname + nextid + "-btn-remove' data-id='" + pname + nextid + "' data-for='" + pname + "'>";
+    html += "<i class='fa fa-minus pull-right'></i></button>";
+    // add plus button
+    html += "<button type='button' class='btn btn-primary btn-lg input-js-add' id='" + pname + nextid + "-btn-add' data-id='" + pname + "'";
+    html += " data-row='" + nextid + "' data-for='" + pname + "' data-max='" + pmax + "' data-json='" + $(this).data('json') + "' >";
+    html += "<i class='fa fa-plus pull-right'></i></button>";
     html += "</div>\n";
-    if (pmax >= nextid) {
-        last.after(html);
-    }
-}
+
+    last.after(html);
+
+    $('#' + pname + prow + '-btn-add').remove();
+});
 
 function del_dynamic_table(pe, pclass, vdefault)
 {
