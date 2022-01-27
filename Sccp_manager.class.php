@@ -148,7 +148,11 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $this->initializeSccpPath();  //Set required Paths
             $this->updateTimeZone();   // Get timezone from FreePBX
             //$this->findInstLangs();
-            $this->saveSccpSettings();
+            // Only data that has been updated (potentially) are the 2 timezone related parameters
+            // So save these 2 directly to db in updateTimeZone, rather than rewrite all settings
+            //$this->saveSccpSettings();
+
+
         //}
     }
 
@@ -197,14 +201,17 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     public function updateTimeZone() {
-        // Get latest FreePBX time $timeZoneOffsetList
+        // Get latest FreePBX time $timeZoneOffsetList - need to reflect standard/summer time etc
         $freepbxTZ = \date_default_timezone_get();
-        $this->sccpvalues['ntp_timezone'] = array('keyword' => 'ntp_timezone', 'seq'=>95, 'type' => 2, 'data' => $freepbxTZ);
+        $this->sccpvalues['ntp_timezone']['data'] = $freepbxTZ;
         $TZdata = $this->extconfigs->getExtConfig('sccp_timezone', $freepbxTZ);
         if (!empty($TZdata)) {
-            $value = $TZdata['offset']/60;   // TODO: Is this correct (storing in hours not minutes)
-            $this->sccpvalues['tzoffset'] = array('keyword' => 'tzoffset', 'seq'=>98, 'type' => 2, 'data' => $value);
+            // TODO: Is this correct (storing in hours not minutes)
+            $this->sccpvalues['tzoffset']['data'] = $TZdata['offset']/60;
         }
+        $this->dbinterface->write('sccpsettings', [$this->sccpvalues['tzoffset'], $this->sccpvalues['ntp_timezone']], 'update');
+        //$this->saveSccpSettings([$this->sccpvalues['tzoffset'], $this->sccpvalues['ntp_timezone']]);
+
     }
     /*
      *  Show form information - General
@@ -821,7 +828,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     /*
      *      Save Config Value to mysql DB
      */
-
+/*
     private function saveSccpSettings($save_value = array()) {
 
         if (empty($save_value)) {
@@ -831,7 +838,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
         return true;
     }
-
+*/
     /*
      *          Create XMLDefault.cnf.xml
      */

@@ -9,7 +9,6 @@ class formcreate
     public function __construct($parent_class = null) {
         $this->buttonDefLabel = 'chan-sccp';
         $this->buttonHelpLabel = 'site';
-        $this->Sccp_manager = \FreePBX::create()->Sccp_manager;
     }
 
     function addElementIE ($child, $fvalues, $sccp_defaults, $npref) {
@@ -552,12 +551,12 @@ class formcreate
                 break;
             case 'SLK':
                 $softKeyList = array();
-                $softKeyList = $this->Sccp_manager->aminterface->sccp_list_keysets();
+                $softKeyList = \FreePBX::Sccp_manager()->aminterface->sccp_list_keysets();
                 $select_opt= $softKeyList;
                 break;
             case 'SLP':
                 $dialplan_list = array();
-                foreach ($this->Sccp_manager->getDialPlanList() as $tmpkey) {
+                foreach (\FreePBX::Sccp_manager()->getDialPlanList() as $tmpkey) {
                     $tmp_id = $tmpkey['id'];
                     $dialplan_list[$tmp_id] = $tmp_id;
                 }
@@ -744,17 +743,17 @@ class formcreate
         }
         switch ($child['type']) {
             case 'SDM':
-                $model_list = $this->Sccp_manager->dbinterface->getModelInfoFromDb('ciscophones', 'model');
+                $model_list = \FreePBX::Sccp_manager()->dbinterface->getModelInfoFromDb('ciscophones', 'model');
                 $select_opt= $model_list;
                 break;
             case 'SDMS':
-                $model_list = $this->Sccp_manager->dbinterface->getModelInfoFromDb('sipphones', 'model');
+                $model_list = \FreePBX::Sccp_manager()->dbinterface->getModelInfoFromDb('sipphones', 'model');
                 $select_opt= $model_list;
                 break;
             case 'SDML':
                 // Sccp extensions
-                $assignedExts = $this->Sccp_manager->dbinterface->getSccpDeviceTableData('getAssignedExtensions');
-                $select_opt = $this->Sccp_manager->dbinterface->getSccpDeviceTableData('SccpExtension');
+                $assignedExts = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData('getAssignedExtensions');
+                $select_opt = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData('SccpExtension');
                 foreach ($assignedExts as $name => $nameArr ) {
                       $select_opt[$name]['label'] .= " -  in use";
                 }
@@ -762,11 +761,11 @@ class formcreate
                 break;
             case 'SDMF':
                 // Sip extensions
-                $select_opt = $this->Sccp_manager->dbinterface->getSipTableData('extensionList');
+                $select_opt = \FreePBX::Sccp_manager()->dbinterface->getSipTableData('extensionList');
                 $child->default = $fvalues['defaultLine'];
                 break;
             case 'SDE':
-                $extension_list = $this->Sccp_manager->dbinterface->getModelInfoFromDb('extension', 'model');
+                $extension_list = \FreePBX::Sccp_manager()->dbinterface->getModelInfoFromDb('extension', 'model');
                 $extension_list[] = array( 'model' => 'NONE', 'vendor' => 'CISCO', 'dns' => '0');
                 foreach ($extension_list as &$data) {
                     $d_name = explode(';', $data['model']);
@@ -780,7 +779,7 @@ class formcreate
                 $select_opt= $extension_list;
                 break;
             case 'SDD':
-                $device_list = $this->Sccp_manager->dbinterface->getSccpDeviceTableData("SccpDevice");
+                $device_list = \FreePBX::Sccp_manager()->dbinterface->getSccpDeviceTableData("SccpDevice");
                 $device_list[]=array('name' => 'NONE', 'description' => 'No Device');
                 $select_opt = $device_list;
                 break;

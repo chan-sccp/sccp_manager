@@ -279,7 +279,6 @@ trait ajaxHelper {
     }
 
     function saveServerSettings($request, $validateonly = false) {
-        dbug($request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -384,7 +383,8 @@ trait ajaxHelper {
         $save_settings = array_merge($save_settings, $extSettings);
         //dbug($save_settings);
         if (!empty($save_settings)) {
-            $this->saveSccpSettings($save_settings);
+            //$this->saveSccpSettings($save_settings);
+            $this->dbinterface->write('sccpsettings', $save_settings, 'update');
             $this->sccpvalues = $this->dbinterface->get_db_SccpSetting();
         }
 
@@ -409,7 +409,7 @@ trait ajaxHelper {
         $this->createDefaultSccpXml();
         // TODO: Need to be more specific on reload and only reload if critical settings changed.
         $res = $this->aminterface->core_sccp_reload();
-        return array('status' => true, 'message' => 'Data saved', 'reload' => true, 'toastFlag' => 'success', 'search' => '?display=sccpsettings', 'hash' => '');
+        return array('status' => true, 'message' => "Data saved - {$res['Response']}", 'reload' => true, 'toastFlag' => 'success', 'search' => '?display=sccpsettings', 'hash' => '');
     }
 
     public function getFilesFromProvisioner($request) {
