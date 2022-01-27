@@ -728,11 +728,11 @@ trait ajaxHelper {
                                     }
                                     if (isset($netValue['internal'])) {
                                         $output[] = 'internal';
-                                        continue;
+                                        continue 2;
                                     }
                                     if (empty($netValue['net'])) {
                                         // empty net so ignored
-                                        continue;
+                                        continue 2;
                                     }
                                     $netValue['mask'] = (empty($netValue['mask'])) ? "255.255.255.0" : $netValue['mask'];
                                     $output[]= implode('/', $netValue);
