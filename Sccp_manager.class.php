@@ -624,7 +624,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         $result = array();
 
         if (!file_exists("{$this->sccppath['tftp_path']}/masterFilesStructure.xml")) {
-            if (!$this->getFileListFromProvisioner($this->sccppath['tftp_path'])) {
+            if (!$this->getFileListFromProvisioner($this->sccpvalues['tftp_path']['data'])) {
                 // File does not exist and cannot get from internet.
                 return $result;
             };
@@ -695,7 +695,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     function initializeSccpPath() {
-
         $this->sccppath = array(
                     'asterisk' => $this->sccpvalues['asterisk_etc_path']['data'],
                     'tftp_path' => $this->sccpvalues['tftp_path']['data'],
@@ -923,7 +922,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $hw_addon = explode(',', $dev_config['addon']);
             foreach ($hw_addon as $key) {
                 $hw_data = $this->getSccpModelInformation('byid', false, "all", array('model' => $key));
-                $dev_config['addon_info'][$key] = $hw_data[0]['loadimage'];
+                $dev_config['addon_info'][$key] = $hw_data[$key]['loadimage'];
             }
         }
         if (!$sccp_native) {

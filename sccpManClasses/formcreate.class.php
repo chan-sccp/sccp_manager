@@ -4,6 +4,8 @@ namespace FreePBX\modules\Sccp_manager;
 
 class formcreate
 {
+    use \FreePBX\modules\Sccp_Manager\sccpManTraits\helperFunctions;
+
     public function __construct($parent_class = null) {
         $this->buttonDefLabel = 'chan-sccp';
         $this->buttonHelpLabel = 'site';
@@ -174,6 +176,8 @@ class formcreate
     }
 
     function addElementIED($child, $fvalues, $sccp_defaults,$npref, $napref) {
+        //$Sccp_manager = \FreePBX::create()->Sccp_manager;
+        // IED fields are arrays of networks and masks, or ip and ports.
         $res_input = '';
         $res_value = '';
         $opt_at = array();
@@ -187,20 +191,27 @@ class formcreate
     //        $res_value
         $lnhtm = '';
         $res_id = $napref.$child->name;
-        $i = 0;
+        //$i = 0;
         $max_row = 255;
         if (!empty($child->max_row)) {
             $max_row = $child->max_row;
         }
 
+        // fvalues are current settings - the encoding depends on where the data is
+        // coming from: IED fields in sccpsettings are json, elsewhere they are ; delimited.
         if (!empty($fvalues[$res_n])) {
             if (!empty($fvalues[$res_n]['data'])) {
-                $res_value = explode(';', $fvalues[$res_n]['data']);
+                $res_value = $this->convertCsvToArray($fvalues[$res_n]['data']);
             }
+        }
+
+        if ($res_n == 'srst_ip') {
+            $res_value = $this->convertCsvToArray($sccp_defaults[$res_n]['data']);
         }
         if (empty($res_value)) {
             $res_value = array((string) $child->default);
         }
+
         ?>
     <div class="element-container">
             <div class="row">
@@ -218,15 +229,21 @@ class formcreate
                                 echo '<div class="form-group form-inline">';
                                 foreach ($child->xpath('cbutton') as $value) {
                                     $res_n = $res_id.'[0]['.$value['field'].']';
-                                    $res_vf = '';
+                                    // res_vf sets the state of the checkbox internal. This is always
+                                    // the first array element in $res_value if set
+                                    $res_vf = false;
                                     if ($value['value']=='NONE' && empty($res_value)) {
-                                        $res_vf = 'active';
+                                        $res_vf = true;
                                     }
-                                    $ch_key = array_search($value['value'], $res_value);
-                                    if ($ch_key !== false) {
-                                        unset($res_value[$ch_key]);
-                                        $res_vf = 'active';
-                                        $res_value = explode(';', implode(';', $res_value));
+                                    if ((isset($res_value[0]['internal'])) || ($res_value[0] == 'internal')) {
+                                        $res_vf = true;
+                                        // Remove the value from $res_value so that do not add empty row for internal
+                                        array_shift($res_value);
+                                        // If now have an empty array, add a new empty element
+                                        if (count($res_value) == 0) {
+                                            // although handle also ip, internal is never set for those arrays
+                                            $res_value[0] = array('net'=>"", 'mask' =>"");
+                                        }
                                     }
                                     $opt_hide ='';
                                     $opt_class="button-checkbox";
@@ -250,9 +267,9 @@ class formcreate
                                         $opt_class .= " ".(string)$value->class;
                                     }
 
-                                    echo '<span class="'.$opt_class.'"'.$opt_hide.'><button type="button" class="btn '.$res_vf.'" data-color="primary">';
-                                    echo '<i class="state-icon '. (($res_vf == 'active')?'glyphicon glyphicon-check"':'glyphicon glyphicon-uncheck'). '"></i> ';
-                                    echo $value.'</button><input type="checkbox" name="'. $res_n.'" class="hidden" '. (($res_vf == 'active')?'checked="checked"':'') .'/></span>';
+                                    echo '<span class="'.$opt_class.'"'.$opt_hide.'><button type="button" class="btn '.(($res_vf) ? 'active':"").'" data-color="primary">';
+                                    echo '<i class="state-icon '. (($res_vf)?'glyphicon glyphicon-check"':'glyphicon glyphicon-uncheck'). '"></i> ';
+                                    echo $value.'</button><input type="checkbox" name="'. $res_n.'" class="hidden" '. (($res_vf)?'checked="checked"':'') .'/></span>';
                                 }
                                 echo '</div>';
                             }
@@ -261,36 +278,40 @@ class formcreate
                                 $opt_class .= " ".(string)$child->class;
                             }
                             echo '<div class = "'.$opt_class.'">';
-
-                            foreach ($res_value as $dat_v) {
+                            $i=1;
+                            foreach ($res_value as $addrArr) {
                                 ?>
-                                <div class = "<?php echo $res_id;?> form-group form-inline" data-nextid=<?php echo $i+1;?> >
+                                <div class = "<?php echo $res_id;?> form-group form-inline" data-nextid=<?php echo $i;?> id= <?php echo $res_id . $i;?>>
                                 <?php
-                                //$res_vf = explode('/', $dat_v);
-                                $i2 = 0;
                                 foreach ($child->xpath('input') as $value) {
-                                    $res_n = $res_id.'['.$i.']['.$value['field'].']';
-                                    $fields_id = (string)$value['field'];
-                                    //$opt_at[$fields_id]['nameseparator']=(string)$value['nameseparator'];
+                                    $field_id = (string)$value['field'];
+                                    $res_n = $res_id.'['.$i.']['.$field_id.']';
                                     if (!empty($value->class)) {
-                                        $opt_at[$fields_id]['class']='form-control ' .(string)$value->class;
+                                        $opt_at[$field_id]['class']='form-control ' .(string)$value->class;
                                     }
-                                    //$opt_at[$fields_id]['nameseparator']=(string)$value['nameseparator'];
-                                    if (!empty((string)$value['nameseparator'])) {
-                                        $res_vf = explode((string)$value['nameseparator'], $dat_v);
-                                    }
-                                    echo '<input type="text" name="'. $res_n.'" class="'.$opt_at[$fields_id]['class'].'" value="'.$res_vf[$i2].'"';
+
+                                    $defValue = (isset($addrArr[$field_id])) ? $addrArr[$field_id]: "";
+                                    echo '<input type="text" name="'. $res_n.'" class="'.$opt_at[$field_id]['class'].'" value="'. $defValue .'"';
+
+
                                     if (isset($value->options)) {
                                         foreach ($value->options ->attributes() as $optkey => $optval) {
-                                            $opt_at[$fields_id]['options'][$optkey]=(string)$optval;
+                                            $opt_at[$field_id]['options'][$optkey]=(string)$optval;
+                                            $opt_at[$field_id]['nameseparator'] = (null !== (string)$value['nameseparator']) ? (string)$value['nameseparator'] : '';
                                             echo  ' '.$optkey.'="'.$optval.'"';
                                         }
                                     }
                                     echo '> '.(string)$value['nameseparator'].' ';
-                                    $i2 ++;
                                 }
+
                                 if (!empty($child->add_pluss)) {
-                                    echo '<button type="button" class="btn btn-primary btn-lg input-js-add" id="'.$res_id.'-btn" data-id="'.$res_id.'" data-for="'.$res_id.'" data-max="'.$max_row.'"data-json="'.bin2hex(json_encode($opt_at)).'"><i class="fa fa-plus pull-right"></i></button>';
+                                    if ($i <= count($res_value)) {
+                                        echo '<button type="button" class="btn btn-danger btn-lg input-js-remove" id="'.$res_id.$i.'-btn-del" data-id="'.$res_id.$i.'"><i class="fa fa-minus pull-right"></i></button>';
+                                    }
+                                    // only add plus button to the last row
+                                    if ($i == count($res_value)) {
+                                        echo '<button type="button" class="btn btn-primary btn-lg input-js-add" id="'.$res_id.$i.'-btn-add" data-id="'.$res_id.'" data-row="'.$i.'" data-for="'.$res_id.'" data-max="'.$max_row.'"data-json="'.bin2hex(json_encode($opt_at)).'"><i class="fa fa-plus pull-right"></i></button>';
+                                    }
                                 }
                                 echo '</div>';
                                 $i++;

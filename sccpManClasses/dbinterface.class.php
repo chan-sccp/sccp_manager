@@ -266,7 +266,7 @@ class dbinterface
                     $this->db->prepare('TRUNCATE sccpsettings')->execute();
                     $stmt = $this->db->prepare('INSERT INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES (:keyword,:data,:seq,:type,:systemdefault)');
                 } else {
-                    $stmt = $this->db->prepare('REPLACE INTO sccpsettings (keyword, data, seq, type, systemdefault) VALUES (:keyword,:data,:seq,:type,:systemdefault)');
+                    $stmt = $this->db->prepare('REPLACE INTO sccpsettings (keyword, seq, type, data, systemdefault) VALUES (:keyword,:seq,:type,:data,:systemdefault)');
                 }
                 foreach ($save_value as $key => $dataArr) {
                     if (empty($dataArr)) {
