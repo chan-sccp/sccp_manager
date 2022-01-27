@@ -906,7 +906,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
             $hw_addon = explode(',', $dev_config['addon']);
             foreach ($hw_addon as $key) {
                 $hw_data = $this->getSccpModelInformation('byid', false, "all", array('model' => $key));
-                $dev_config['addon_info'][$key] = $hw_data[$key]['loadimage'];
+                $dev_config['addon_info'][$key] = $hw_data[0]['loadimage'];
             }
         }
 
