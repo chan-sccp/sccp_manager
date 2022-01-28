@@ -1024,13 +1024,6 @@ function addDriver($sccp_compatible) {
     $file = $amp_conf['AMPWEBROOT'] . '/admin/modules/core/functions.inc/drivers/Sccp.class.php';
     $contents = "<?php include '/var/www/html/admin/modules/sccp_manager/sccpManClasses/Sccp.class.php.v{$sccp_compatible}'; ?>";
     file_put_contents($file, $contents);
-
-    $dir = $cnf_int->get('ASTETCDIR');
-    if (!file_exists("{$dir}/sccp.conf")) { // System re Config
-        outn("<li>" . _("Adding default configuration file ...") . "</li>");
-        $sccpfile = file_get_contents($amp_conf['AMPWEBROOT'] . '/admin/modules/sccp_manager/conf/sccp.conf');
-        file_put_contents("{$dir}/sccp.conf", $sccpfile);
-    }
 }
 function checkTftpServer() {
     outn("<li>" . _("Checking TFTP server path and availability ...") . "</li>");
@@ -1292,9 +1285,10 @@ function cleanUpSccpSettings() {
                 )";
         $results = $db->query($sql);
     }
-
-    // Now correct sccp.conf to replace any illegal settings
-    $thisInstaller->createDefaultSccpConfig($settingsFromDb, $cnf_int->get('ASTETCDIR'));
+    // Need to load any existing sccp.conf so that retain softkeys section if exists.
+    $sccp_conf_init = $thisInstaller->initialiseConfInit();
+    // Now correct sccp.conf to replace any illegal settings passing $sccp_conf_init
+    $thisInstaller->createDefaultSccpConfig($settingsFromDb, $cnf_int->get('ASTETCDIR'), $sccp_conf_init);
 
     // have to correct prior verion sccpline lists for allow/disallow and deny permit. Prior
     // versions used csl, but chan-sccp expects ; separated lists when returned by db.
