@@ -10,7 +10,6 @@ global $version;
 global $aminterface;
 global $extconfigs;
 global $mobile_hw;
-global $useAmiForSoftKeys;
 global $settingsFromDb;
 global $thisInstaller;
 global $cnf_int;
@@ -21,7 +20,6 @@ $mobile_hw = '0';
 $autoincrement = (($amp_conf["AMPDBENGINE"] == "sqlite") || ($amp_conf["AMPDBENGINE"] == "sqlite3")) ? "AUTOINCREMENT" : "AUTO_INCREMENT";
 $table_req = array('sccpdevice', 'sccpline', 'sccpsettings');
 $sccp_compatible = 0;
-$chanSCCPWarning = true;
 $db_config = '';
 $sccp_version = array();
 $cnf_int = \FreePBX::Config();
@@ -45,16 +43,14 @@ foreach ($requiredClasses as $className) {
 }
 
 CheckAsteriskVersion();
-$sccp_version = CheckChanSCCPCompatible();
-$sccp_compatible = $sccp_version[0];
-$chanSCCPWarning = $sccp_version[1] ^= 1;
+$sccp_compatible = $aminterface->getSCCPVersion()['vCode'];
+
 outn("<li>" . _("Sccp model Compatible code : ") . $sccp_compatible . "</li>");
 if ($sccp_compatible == 0) {
     outn("<br>");
-    outn("<font color='red'>Chan Sccp not Found. Install it before continuing !</font>");
+    outn("<font color='red'>chan-sccp not found. Install it before continuing !</font>");
     die();
 }
-
 // BackUp Old config
 createBackUpConfig();
 RenameConfig();
@@ -68,10 +64,7 @@ InstallDB_createButtonConfigTrigger();
 InstallDbCreateViews($sccp_compatible);
 installDbPopulateSccpline();
 InstallDB_updateDBVer($sccp_compatible);
-if ($chanSCCPWarning) {
-    outn("<br>");
-    outn("<font color='red'>Error: installed version of chan-sccp is not compatible. Please upgrade chan-sccp</font>");
-}
+
 Setup_RealTime();
 addDriver($sccp_compatible);
 checkTftpServer();
@@ -189,7 +182,7 @@ function Get_DB_config($sccp_compatible)
                         'modify' => "enum('sccpdevice', 'sipdevice', 'sccpuser')" ),
         )
     );
-//  Hardware Mobile.  Can switch Softwate to Hardware
+//  Hardware Mobile.  Can switch Software to Hardware
     $db_config_v4M = array(
         'sccpdevmodel' => array(
             'loadinformationid' => array('create' => "VARCHAR(30) NULL DEFAULT NULL")
@@ -296,7 +289,7 @@ function Get_DB_config($sccp_compatible)
               '_description' => array('rename' => 'description'),
               'keepalive' => array('create' => "INT(11) DEFAULT '60'", 'modify' => 'INT(11)', 'def_modify' => "60")
             ),
-        'sccpline' => array (
+        'sccpline' => array(
               'regcontext' => array('create' => "VARCHAR(20) NULL default 'sccpregistration'", 'modify' => "VARCHAR(20)"),
               'transfer_on_hangup' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
               'autoselectline_enabled' => array('create' => "enum('on','off') NOT NULL default 'off'", 'modify' => "enum('on','off')"),
@@ -310,9 +303,13 @@ function Get_DB_config($sccp_compatible)
               '_backgroundImageAccess' => array('rename' => 'backgroundImageAccess'),
               '_callLogBlfEnabled' => array('rename' => 'callLogBlfEnabled')
             ),
-        'sccpsettings' => array (
+        'sccpsettings' => array(
               'systemdefault' => array('create' => "VARCHAR(255) NULL default ''")
-        )
+            ),
+        'sccpdevmodel' => array(
+                'fwfound' => array('create' => "enum('yes','no') NOT NULL default 'no'", 'modify' => "enum('yes','no')"),
+                'templatefound' => array('create' => "enum('yes','no') NOT NULL default 'no'", 'modify' => "enum('yes','no')")
+            )
     );
 
     if ($sccp_compatible >= 433) {
@@ -325,6 +322,7 @@ function Get_DB_config($sccp_compatible)
             $db_config_v4['sccpdevice'] = array_merge($db_config_v4['sccpdevice'],$db_config_v5['sccpdevice']);
             $db_config_v4['sccpline'] = array_merge($db_config_v4['sccpline'],$db_config_v5['sccpline']);
             $db_config_v4['sccpsettings'] = $db_config_v5['sccpsettings'];
+            $db_config_v4['sccpdevmodel'] = $db_config_v5['sccpdevmodel'];
         }
         return $db_config_v4;
     }
@@ -369,10 +367,8 @@ function CheckAsteriskVersion()
 
 function CheckChanSCCPCompatible()
 {
-    global $chanSCCPWarning;
     global $aminterface;
-    // calling with true returns array with compatibility and RevisionNumber
-    return $aminterface->get_compatible_sccp(true);
+    return $aminterface->getSCCPVersion['vCode'];
 }
 
 function InstallDB_updateSchema($db_config)
@@ -573,137 +569,148 @@ function InstallDB_updateSchema($db_config)
     }
     outn("<li>" . _("Total modify count :") . $count_modify . "</li>");
 
-    // Force update of sccp devmodel to ensure changes are taken into account
+    // Now see if sccpdevmodel is populated.
+    $devModelArr = array( "('12 SP', 'CISCO', 1, 1, '', 'loadInformation3', 0, NULL)",
+                            "('12 SP+', 'CISCO', 1, 1, '', 'loadInformation2', 0, NULL)",
+                            "('30 SP+', 'CISCO', 1, 1, '', 'loadInformation1', 0, NULL)",
+                            "('30 VIP', 'CISCO', 1, 1, '', 'loadInformation5', 0, NULL)",
+                            "('3911', 'CISCO', 1, 1, '', 'loadInformation446', 0, NULL)",
+                            "('3951', 'CISCO', 1, 1, '', 'loadInformation412', 0, '')",
+                            "('6901', 'CISCO', 1, 1, 'SCCP6901.9-2-1-a', 'loadInformation547', 0, NULL)",
+                            "('6911', 'CISCO', 1, 1, 'SCCP6911.9-2-1-a', 'loadInformation548', 0, NULL)",
+                            "('6921', 'CISCO', 1, 1, 'SCCP69xx.9-4-1-3SR3', 'loadInformation496', 0, NULL)",
+                            "('6941', 'CISCO', 1, 1, 'SCCP69xx.9-3-1-3', 'loadInformation495', 0, NULL)",
+                            "('6945', 'CISCO', 1, 1, 'SCCP6945.9-3-1-3', 'loadInformation564', 0, NULL)",
+                            "('6961', 'CISCO', 1, 1, 'SCCP69xx.9-2-1-0', 'loadInformation497', 0, NULL)",
+                            "('7902', 'CISCO', 1, 1, 'CP7902080002SCCP060817A', 'loadInformation30008', 0, NULL)",
+                            "('7905', 'CISCO', 1, 1, 'CP7905080003SCCP070409A', 'loadInformation20000', 0, NULL)",
+                            "('7906', 'CISCO', 1, 1, 'SCCP11.9-4-2SR3-1S', 'loadInformation369', 1, 'SEP0000000000.cnf.xml_791x_template')",
+                            "('7910', 'CISCO', 1, 1, 'P00405000700', 'loadInformation6', 1, 'SEP0000000000.cnf.xml_791x_template')",
+                            "('7911', 'CISCO', 1, 1, 'SCCP11.9-4-2SR3-1S', 'loadInformation307', 1, 'SEP0000000000.cnf.xml_791x_template')",
+                            "('7912', 'CISCO', 1, 1, 'CP7912080004SCCP080108A', 'loadInformation30007', 0, NULL)",
+                            "('7914', 'CISCO', 0, 14, 'S00105000400', 'loadInformation124', 1, NULL)",
+                            "('7914;7914', 'CISCO', 0, 28, 'S00105000400', 'loadInformation124', 1, NULL)",
+                            "('7915', 'CISCO', 0, 24, 'B015-1-0-4-2', 'loadInformation227', 1, NULL)",
+                            "('7915;7915', 'CISCO', 0, 48, 'B015-1-0-4-2', 'loadInformation228', 1, NULL)",
+                            "('7916', 'CISCO', 0, 24, 'B016-1-0-4-2', 'loadInformation229', 1, NULL)",
+                            "('7916;7916', 'CISCO', 0, 48, 'B016-1-0-4-2', 'loadInformation230', 1, NULL)",
+                            "('7920', 'CISCO', 1, 1, 'cmterm_7920.4.0-03-02', 'loadInformation30002', 0, NULL)",
+                            "('7921', 'CISCO', 1, 1, 'CP7921G-1.4.6.3', 'loadInformation365', 0, NULL)",
+                            "('7925', 'CISCO', 1, 6, 'CP7925G-1.4.1SR1', 'loadInformation484', 0, 'SEP0000000000.cnf.xml_7925_template')",
+                            "('7926', 'CISCO', 1, 1, 'CP7926G-1.4.5.3', 'loadInformation577', 0, '')",
+                            "('7931', 'CISCO', 1, 34, 'SCCP31.9-2-1S', 'loadInformation348', 0, NULL)",
+                            "('7935', 'CISCO', 1, 2, 'P00503021900', 'loadInformation9', 0, NULL)",
+                            "('7936', 'CISCO', 1, 1, 'cmterm_7936.3-3-21-0', 'loadInformation30019', 0, NULL)",
+                            "('7937', 'CISCO', 1, 1, 'apps37sccp.1-4-5-7', 'loadInformation431', 0, 'SEP0000000000.cnf.xml_7937_template')",
+                            "('7940', 'CISCO', 1, 2, 'P0030801SR02', 'loadInformation8', 1, 'SEP0000000000.cnf.xml_7940_template')",
+                            "('7941', 'CISCO', 1, 2, 'SCCP41.9-4-2SR3-1S', 'loadInformation115', 0, 'SEP0000000000.cnf.xml_796x_template')",
+                            "('7941G-GE', 'CISCO', 1, 2, 'SCCP41.9-4-2SR3-1S', 'loadInformation309', 0, 'SEP0000000000.cnf.xml_796x_template')",
+                            "('7942', 'CISCO', 1, 2, 'SCCP42.9-4-2SR3-1S', 'loadInformation434', 0, 'SEP0000000000.cnf.xml_796x_template')",
+                            "('7945', 'CISCO', 1, 2, 'SCCP45.9-3-1SR1-1S', 'loadInformation435', 0, 'SEP0000000000.cnf.xml_796x_template')",
+                            "('7960', 'CISCO', 3, 6, 'P0030801SR02', 'loadInformation7', 1, 'SEP0000000000.cnf.xml_7940_template')",
+                            "('7961', 'CISCO', 3, 6, 'SCCP41.9-4-2SR3-1S', 'loadInformation30018', 0, 'SEP0000000000.cnf.xml_796x_template')",
+                            "('7961G-GE', 'CISCO', 3, 6, 'SCCP41.9-4-2SR3-1S', 'loadInformation308', 0, 'SEP0000000000.cnf.xml_796x_template')",
+                            "('7962', 'CISCO', 3, 6, 'SCCP42.9-4-2SR3-1S', 'loadInformation404', 0, 'SEP0000000000.cnf.xml_796x_template')",
+                            "('7965', 'CISCO', 3, 6, 'SCCP45.9-3-1SR1-1S', 'loadInformation436', 0, 'SEP0000000000.cnf.xml_796x_template')",
+                            "('7821', 'CISCO', 1, 1, '', 'loadInformation621', 0, '')",
+                            "('7841', 'CISCO', 1, 1, '', 'loadInformation622', 0, '')",
+                            "('7861', 'CISCO', 1, 1, '', 'loadInformation623', 0, '')",
+                            "('7970', 'CISCO', 3, 8, 'SCCP70.9-4-2SR3-1S', 'loadInformation30006', 0, 'SEP0000000000.cnf.xml_797x_template')",
+                            "('7971', 'CISCO', 1, 2, 'SCCP70.9-4-2SR3-1S', 'loadInformation119', 0, 'SEP0000000000.cnf.xml_797x_template')",
+                            "('7975', 'CISCO', 3, 8, 'SCCP75.9-4-2SR3-1S', 'loadInformation437', 0, 'SEP0000000000.cnf.xml_7975_template')",
+                            "('7985', 'CISCO', 3, 8, 'cmterm_7985.4-1-7-0', 'loadInformation302', 0, NULL)",
+                            "('8831', 'CISCO', 1, 1, '', 'loadInformation659', 0, '')",
+                            "('8841', 'CISCO', 1, 1, '', 'loadInformation683', 0, '')",
+                            "('8851', 'CISCO', 1, 1, '', 'loadInformation684', 0, '')",
+                            "('8861', 'CISCO', 1, 1, '', 'loadInformation685', 0, '')",
+                            "('8941', 'CISCO', 1, 4, 'SCCP894x.9-4-2SR1-2', 'loadInformation586', 0, 'SEP0000000000.cnf.xml_797x_template')",
+                            "('8945', 'CISCO', 1, 4, 'SCCP894x.9-4-2SR1-2', 'loadInformation585', 0, 'SEP0000000000.cnf.xml_7975_template')",
+                            "('ATA 186', 'CISCO', 1, 1, 'ATA030204SCCP090202A', 'loadInformation12', 0, 'SEP0000000000.cnf.xml_ATA_template')",
+                            "('ATA 187', 'CISCO', 1, 1, 'ATA187.9-2-3-1', 'loadInformation550', 0, 'SEP0000000000.cnf.xml_ATA_template')",
+                            "('CN622', 'MOTOROLA', 1, 1, '', 'loadInformation335', 0, NULL)",
+                            "('Digital Access', 'CISCO', 1, 1, 'D001M022', 'loadInformation40', 0, NULL)",
+                            "('Digital Access+', 'CISCO', 1, 1, 'D00303010033', 'loadInformation42', 0, NULL)",
+                            "('E-Series', 'NOKIA', 1, 1, '', '', 0, NULL)",
+                            "('ICC', 'NOKIA', 1, 1, '', '', 0, NULL)",
+                            "('Analog Access', 'CISCO', 1, 1, 'A001C030', 'loadInformation30', 0, '')",
+                            "('WS-X6624', 'CISCO', 1, 1, 'A00204000013', 'loadInformation43', 0, '')",
+                            "('WS-X6608', 'CISCO', 1, 1, 'C00104000003', 'loadInformation51', 0, '')",
+                            "('H.323 Phone', 'CISCO', 1, 1, '', 'loadInformation61', 0, '')",
+                            "('Simulator', 'CISCO', 1, 1, '', 'loadInformation100', 0, '')",
+                            "('MTP', 'CISCO', 1, 1, '', 'loadInformation111', 0, '')",
+                            "('MGCP Station', 'CISCO', 1, 1, '', 'loadInformation120', 0, '')",
+                            "('MGCP Trunk', 'CISCO', 1, 1, '', 'loadInformation121', 0, '')",
+                            "('UPC', 'CISCO', 1, 1, '', 'loadInformation358', 0, '')",
+                            "('TelePresence', 'TELEPRESENCE', 1, 1, '', 'loadInformation375', 0, '')",
+                            "('1000', 'TELEPRESENCE', 1, 1, '', 'loadInformation478', 0, '')",
+                            "('3000', 'TELEPRESENCE', 1, 1, '', 'loadInformation479', 0, '')",
+                            "('3200', 'TELEPRESENCE', 1, 1, '', 'loadInformation480', 0, '')",
+                            "('500-37', 'TELEPRESENCE', 1, 1, '', 'loadInformation481', 0, '')",
+                            "('1300-65', 'TELEPRESENCE', 1, 1, '', 'loadInformation505', 0, '')",
+                            "('1100', 'TELEPRESENCE', 1, 1, '', 'loadInformation520', 0, '')",
+                            "('200', 'TELEPRESENCE', 1, 1, '', 'loadInformation557', 0, '')",
+                            "('400', 'TELEPRESENCE', 1, 1, '', 'loadInformation558', 0, '')",
+                            "('EX90', 'TELEPRESENCE', 1, 1, '', 'loadInformation584', 0, '')",
+                            "('500-32', 'TELEPRESENCE', 1, 1, '', 'loadInformation590', 0, '')",
+                            "('1300-47', 'TELEPRESENCE', 1, 1, '', 'loadInformation591', 0, '')",
+                            "('TX1310-65', 'TELEPRESENCE', 1, 1, '', 'loadInformation596', 0, '')",
+                            "('EX60', 'TELEPRESENCE', 1, 1, '', 'loadInformation604', 0, '')",
+                            "('C90', 'TELEPRESENCE', 1, 1, '', 'loadInformation606', 0, '')",
+                            "('C60', 'TELEPRESENCE', 1, 1, '', 'loadInformation607', 0, '')",
+                            "('C40', 'TELEPRESENCE', 1, 1, '', 'loadInformation608', 0, '')",
+                            "('C20', 'TELEPRESENCE', 1, 1, '', 'loadInformation609', 0, '')",
+                            "('C20-42', 'TELEPRESENCE', 1, 1, '', 'loadInformation610', 0, '')",
+                            "('C60-42', 'TELEPRESENCE', 1, 1, '', 'loadInformation611', 0, '')",
+                            "('C40-52', 'TELEPRESENCE', 1, 1, '', 'loadInformation612', 0, '')",
+                            "('C60-52', 'TELEPRESENCE', 1, 1, '', 'loadInformation613', 0, '')",
+                            "('C60-52D', 'TELEPRESENCE', 1, 1, '', 'loadInformation614', 0, '')",
+                            "('C60-65', 'TELEPRESENCE', 1, 1, '', 'loadInformation615', 0, '')",
+                            "('C90-65', 'TELEPRESENCE', 1, 1, '', 'loadInformation616', 0, '')",
+                            "('MX200', 'TELEPRESENCE', 1, 1, '', 'loadInformation617', 0, '')",
+                            "('TX9000', 'TELEPRESENCE', 1, 1, '', 'loadInformation619', 0, '')",
+                            "('TX9200', 'TELEPRESENCE', 1, 1, '', 'loadInformation620', 0, '')",
+                            "('SX20', 'TELEPRESENCE', 1, 1, '', 'loadInformation626', 0, '')",
+                            "('MX300', 'TELEPRESENCE', 1, 1, '', 'loadInformation627', 0, '')",
+                            "('C40-42', 'TELEPRESENCE', 1, 1, '', 'loadInformation633', 0, '')",
+                            "('Jabber', 'CISCO', 1, 1, '', 'loadInformation652', 0, '')",
+                            "('S60', 'NOKIA', 0, 1, '', 'loadInformation376', 0, '')",
+                            "('9971', 'CISCO', 1, 1, '', 'loadInformation493', 0, '')",
+                            "('9951', 'CISCO', 1, 1, '', 'loadInformation537', 0, '')",
+                            "('8961', 'CISCO', 1, 1, '', 'loadInformation540', 0, '')",
+                            "('Iphone', 'APPLE', 0, 1, '', 'loadInformation562', 0, '')",
+                            "('Android', 'ANDROID', 0, 1, '', 'loadInformation575', 0, '')",
+
+                            "('VXC 6215', 'CISCO', 1, 1, '', 'loadInformation634', 0, '')",
+                            "('Analog', 'CISCO', 1, 1, '', 'loadInformation30027', 0, '')",
+                            "('ISDN', 'CISCO', 1, 1, '', 'loadInformation30028', 0, '')",
+                            "('SCCP GW', 'CISCO', 1, 1, '', 'loadInformation30032', 0, '')",
+                            "('IP-STE', 'CISCO', 1, 1, '', 'loadInformation30035', 0, '')",
+                            "('SPA 521S', 'CISCO', 1, 1, '', 'loadInformation80000', 0, '')",
+                            "('SPA 502G', 'CISCO', 1, 1, '', 'loadInformation80003', 0, '')",
+                            "('SPA 504G', 'CISCO', 1, 1, '', 'loadInformation80004', 0, '')",
+                            "('SPA 525G', 'CISCO', 1, 1, '', 'loadInformation80005', 0, '')",
+                            "('SPA 525G2', 'CISCO', 1, 1, '', 'loadInformation80009', 0, '')",
+                            "('SPA 303G', 'CISCO', 1, 1, '', 'loadInformation80011', 0, '')",
+                            "('IP Communicator', 'CISCO', 1, 1, '', 'loadInformation30016', 0, NULL)",
+                            "('Nokia E', 'Nokia', 1, 28, '', 'loadInformation275', 0, NULL)",
+                            "('VGC Phone', 'CISCO', 1, 1, '', 'loadInformation10', 0, NULL)",
+                            "('7911-sip', 'CISCO-SIP', 1, 1, 'SIP11.9-2-1S', 'loadInformation307', 1, 'SEP0000000000.cnf.xml_791x_sip_template')",
+                            "('9951-sip', 'CISCO-SIP', 1, 5, 'sip9951.9-2-2SR1-9', 'loadinformation537', 1, 'SEP0000000000.cnf.xml_99xx_sip_template')",
+                            "('VGC Virtual', 'CISCO', 1, 1, '', 'loadInformation11', 0, NULL)"
+                        );
+
+    $test = $db->prepare("SELECT count(*) AS modelCount from sccpdevmodel");
+    $test->execute();
+    if ($test->fetchAll()[0]['modelCount'] == count($devModelArr)) {
+        // Appear to have a correctly populated sccpdevmodel table. Do not overwrite
+        // as may contain user modifications;
+        outn("<li>" . _("sccpdevmodel appears to be populated; not overwriting") . "</li>");
+        return;
+    };
+    // Update sccpdevmodel as counts do not match
     outn("Updating sccpdevmodel...");
     outn("<li>" . _("Fill sccpdevmodel") . "</li>");
-    $sql = "REPLACE INTO sccpdevmodel (model, vendor, dns, buttons, loadimage, loadinformationid, enabled, nametemplate) VALUES
-              ('12 SP', 'CISCO', 1, 1, '', 'loadInformation3', 0, NULL),
-              ('12 SP+', 'CISCO', 1, 1, '', 'loadInformation2', 0, NULL),
-              ('30 SP+', 'CISCO', 1, 1, '', 'loadInformation1', 0, NULL),
-              ('30 VIP', 'CISCO', 1, 1, '', 'loadInformation5', 0, NULL),
-              ('3911', 'CISCO', 1, 1, '', 'loadInformation446', 0, NULL),
-              ('3951', 'CISCO', 1, 1, '', 'loadInformation412', 0, ''),
-              ('6901', 'CISCO', 1, 1, 'SCCP6901.9-2-1-a', 'loadInformation547', 0, NULL),
-              ('6911', 'CISCO', 1, 1, 'SCCP6911.9-2-1-a', 'loadInformation548', 0, NULL),
-              ('6921', 'CISCO', 1, 1, 'SCCP69xx.9-4-1-3SR3', 'loadInformation496', 0, NULL),
-              ('6941', 'CISCO', 1, 1, 'SCCP69xx.9-3-1-3', 'loadInformation495', 0, NULL),
-              ('6945', 'CISCO', 1, 1, 'SCCP6945.9-3-1-3', 'loadInformation564', 0, NULL),
-              ('6961', 'CISCO', 1, 1, 'SCCP69xx.9-2-1-0', 'loadInformation497', 0, NULL),
-              ('7902', 'CISCO', 1, 1, 'CP7902080002SCCP060817A', 'loadInformation30008', 0, NULL),
-              ('7905', 'CISCO', 1, 1, 'CP7905080003SCCP070409A', 'loadInformation20000', 0, NULL),
-              ('7906', 'CISCO', 1, 1, 'SCCP11.9-4-2SR3-1S', 'loadInformation369', 1, 'SEP0000000000.cnf.xml_791x_template'),
-              ('7910', 'CISCO', 1, 1, 'P00405000700', 'loadInformation6', 1, 'SEP0000000000.cnf.xml_791x_template'),
-              ('7911', 'CISCO', 1, 1, 'SCCP11.9-4-2SR3-1S', 'loadInformation307', 1, 'SEP0000000000.cnf.xml_791x_template'),
-              ('7912', 'CISCO', 1, 1, 'CP7912080004SCCP080108A', 'loadInformation30007', 0, NULL),
-              ('7914', 'CISCO', 0, 14, 'S00105000400', 'loadInformation124', 1, NULL),
-              ('7914;7914', 'CISCO', 0, 28, 'S00105000400', 'loadInformation124', 1, NULL),
-              ('7915', 'CISCO', 0, 24, 'B015-1-0-4-2', 'loadInformation227', 1, NULL),
-              ('7915;7915', 'CISCO', 0, 48, 'B015-1-0-4-2', 'loadInformation228', 1, NULL),
-              ('7916', 'CISCO', 0, 24, 'B016-1-0-4-2', 'loadInformation229', 1, NULL),
-              ('7916;7916', 'CISCO', 0, 48, 'B016-1-0-4-2', 'loadInformation230', 1, NULL),
-              ('7920', 'CISCO', 1, 1, 'cmterm_7920.4.0-03-02', 'loadInformation30002', 0, NULL),
-              ('7921', 'CISCO', 1, 1, 'CP7921G-1.4.6.3', 'loadInformation365', 0, NULL),
-              ('7925', 'CISCO', 1, 6, 'CP7925G-1.4.1SR1', 'loadInformation484', 0, 'SEP0000000000.cnf.xml_7925_template'),
-              ('7926', 'CISCO', 1, 1, 'CP7926G-1.4.1SR1', 'loadInformation557', 0, NULL),
-              ('7931', 'CISCO', 1, 34, 'SCCP31.9-2-1S', 'loadInformation348', 0, NULL),
-              ('7935', 'CISCO', 1, 2, 'P00503021900', 'loadInformation9', 0, NULL),
-              ('7936', 'CISCO', 1, 1, 'cmterm_7936.3-3-21-0', 'loadInformation30019', 0, NULL),
-              ('7937', 'CISCO', 1, 1, 'apps37sccp.1-4-5-7', 'loadInformation431', 0, 'SEP0000000000.cnf.xml_7937_template'),
-              ('7940', 'CISCO', 1, 2, 'P0030801SR02', 'loadInformation8', 1, 'SEP0000000000.cnf.xml_7940_template'),
-              ('7941', 'CISCO', 1, 2, 'SCCP41.9-4-2SR3-1S', 'loadInformation115', 0, 'SEP0000000000.cnf.xml_796x_template'),
-              ('7941G-GE', 'CISCO', 1, 2, 'SCCP41.9-4-2SR3-1S', 'loadInformation309', 0, 'SEP0000000000.cnf.xml_796x_template'),
-              ('7942', 'CISCO', 1, 2, 'SCCP42.9-4-2SR3-1S', 'loadInformation434', 0, 'SEP0000000000.cnf.xml_796x_template'),
-              ('7945', 'CISCO', 1, 2, 'SCCP45.9-3-1SR1-1S', 'loadInformation435', 0, 'SEP0000000000.cnf.xml_796x_template'),
-              ('7960', 'CISCO', 3, 6, 'P0030801SR02', 'loadInformation7', 1, 'SEP0000000000.cnf.xml_7940_template'),
-              ('7961', 'CISCO', 3, 6, 'SCCP41.9-4-2SR3-1S', 'loadInformation30018', 0, 'SEP0000000000.cnf.xml_796x_template'),
-              ('7961G-GE', 'CISCO', 3, 6, 'SCCP41.9-4-2SR3-1S', 'loadInformation308', 0, 'SEP0000000000.cnf.xml_796x_template'),
-              ('7962', 'CISCO', 3, 6, 'SCCP42.9-4-2SR3-1S', 'loadInformation404', 0, 'SEP0000000000.cnf.xml_796x_template'),
-              ('7965', 'CISCO', 3, 6, 'SCCP45.9-3-1SR1-1S', 'loadInformation436', 0, 'SEP0000000000.cnf.xml_796x_template'),
-              ('7970', 'CISCO', 3, 8, 'SCCP70.9-4-2SR3-1S', 'loadInformation30006', 0, 'SEP0000000000.cnf.xml_797x_template'),
-              ('7971', 'CISCO', 1, 2, 'SCCP70.9-4-2SR3-1S', 'loadInformation119', 0, 'SEP0000000000.cnf.xml_797x_template'),
-              ('7975', 'CISCO', 3, 8, 'SCCP75.9-4-2SR3-1S', 'loadInformation437', 0, 'SEP0000000000.cnf.xml_7975_template'),
-              ('7985', 'CISCO', 3, 8, 'cmterm_7985.4-1-7-0', 'loadInformation302', 0, NULL),
-              ('8941', 'CISCO', 1, 4, 'SCCP894x.9-4-2SR1-2', 'loadInformation586', 0, 'SEP0000000000.cnf.xml_797x_template'),
-              ('8945', 'CISCO', 1, 4, 'SCCP894x.9-4-2SR1-2', 'loadInformation585', 0, 'SEP0000000000.cnf.xml_7975_template'),
-              ('ATA 186', 'CISCO', 1, 1, 'ATA030204SCCP090202A', 'loadInformation12', 0, 'SEP0000000000.cnf.xml_ATA_template'),
-              ('ATA 187', 'CISCO', 1, 1, 'ATA187.9-2-3-1', 'loadInformation550', 0, 'SEP0000000000.cnf.xml_ATA_template'),
-              ('CN622', 'MOTOROLA', 1, 1, '', 'loadInformation335', 0, NULL),
-              ('Digital Access', 'CISCO', 1, 1, 'D001M022', 'loadInformation40', 0, NULL),
-              ('Digital Access+', 'CISCO', 1, 1, 'D00303010033', 'loadInformation42', 0, NULL),
-              ('E-Series', 'NOKIA', 1, 1, '', '', 0, NULL),
-              ('ICC', 'NOKIA', 1, 1, '', '', 0, NULL),
-              ('Analog Access', 'CISCO', 1, 1, 'A001C030', 'loadInformation30', 0, ''),('WS-X6608', 'CISCO', 1, 1, 'D00404000032', 'loadInformation43', 0, ''),
-              ('WS-X6624', 'CISCO', 1, 1, 'A00204000013', 'loadInformation43', 0, ''),
-              ('WS-X6608', 'CISCO', 1, 1, 'C00104000003', 'loadInformation51', 0, ''),
-              ('H.323 Phone', 'CISCO', 1, 1, '', 'loadInformation61', 0, ''),
-              ('Simulator', 'CISCO', 1, 1, '', 'loadInformation100', 0, ''),
-              ('MTP', 'CISCO', 1, 1, '', 'loadInformation111', 0, ''),
-              ('MGCP Station', 'CISCO', 1, 1, '', 'loadInformation120', 0, ''),
-              ('MGCP Trunk', 'CISCO', 1, 1, '', 'loadInformation121', 0, ''),
-              ('UPC', 'CISCO', 1, 1, '', 'loadInformation358', 0, ''),
-              ('TelePresence', 'TELEPRESENCE', 1, 1, '', 'loadInformation375', 0, ''),
-              ('1000', 'TELEPRESENCE', 1, 1, '', 'loadInformation478', 0, ''),
-              ('3000', 'TELEPRESENCE', 1, 1, '', 'loadInformation479', 0, ''),
-              ('3200', 'TELEPRESENCE', 1, 1, '', 'loadInformation480', 0, ''),
-              ('500-37', 'TELEPRESENCE', 1, 1, '', 'loadInformation481', 0, ''),
-              ('1300-65', 'TELEPRESENCE', 1, 1, '', 'loadInformation505', 0, ''),
-              ('1100', 'TELEPRESENCE', 1, 1, '', 'loadInformation520', 0, ''),
-              ('200', 'TELEPRESENCE', 1, 1, '', 'loadInformation557', 0, ''),
-              ('400', 'TELEPRESENCE', 1, 1, '', 'loadInformation558', 0, ''),
-              ('EX90', 'TELEPRESENCE', 1, 1, '', 'loadInformation584', 0, ''),
-              ('500-32', 'TELEPRESENCE', 1, 1, '', 'loadInformation590', 0, ''),
-              ('1300-47', 'TELEPRESENCE', 1, 1, '', 'loadInformation591', 0, ''),
-              ('TX1310-65', 'TELEPRESENCE', 1, 1, '', 'loadInformation596', 0, ''),
-              ('EX60', 'TELEPRESENCE', 1, 1, '', 'loadInformation604', 0, ''),
-              ('C90', 'TELEPRESENCE', 1, 1, '', 'loadInformation606', 0, ''),
-              ('C60', 'TELEPRESENCE', 1, 1, '', 'loadInformation607', 0, ''),
-              ('C40', 'TELEPRESENCE', 1, 1, '', 'loadInformation608', 0, ''),
-              ('C20', 'TELEPRESENCE', 1, 1, '', 'loadInformation609', 0, ''),
-              ('C20-42', 'TELEPRESENCE', 1, 1, '', 'loadInformation610', 0, ''),
-              ('C60-42', 'TELEPRESENCE', 1, 1, '', 'loadInformation611', 0, ''),
-              ('C40-52', 'TELEPRESENCE', 1, 1, '', 'loadInformation612', 0, ''),
-              ('C60-52', 'TELEPRESENCE', 1, 1, '', 'loadInformation613', 0, ''),
-              ('C60-52D', 'TELEPRESENCE', 1, 1, '', 'loadInformation614', 0, ''),
-              ('C60-65', 'TELEPRESENCE', 1, 1, '', 'loadInformation615', 0, ''),
-              ('C90-65', 'TELEPRESENCE', 1, 1, '', 'loadInformation616', 0, ''),
-              ('MX200', 'TELEPRESENCE', 1, 1, '', 'loadInformation617', 0, ''),
-              ('TX9000', 'TELEPRESENCE', 1, 1, '', 'loadInformation619', 0, ''),
-              ('TX9200', 'TELEPRESENCE', 1, 1, '', 'loadInformation620', 0, ''),
-              ('SX20', 'TELEPRESENCE', 1, 1, '', 'loadInformation626', 0, ''),
-              ('MX300', 'TELEPRESENCE', 1, 1, '', 'loadInformation627', 0, ''),
-              ('C40-42', 'TELEPRESENCE', 1, 1, '', 'loadInformation633', 0, ''),
-              ('Jabber', 'CISCO', 1, 1, '', 'loadInformation652', 0, ''),
-              ('S60', 'NOKIA', 0, 1, '', 'loadInformation376', 0, ''),
-              ('9971', 'CISCO', 1, 1, '', 'loadInformation493', 0, ''),
-              ('9951', 'CISCO', 1, 1, '', 'loadInformation537', 0, ''),
-              ('8961', 'CISCO', 1, 1, '', 'loadInformation540', 0, ''),
-              ('Iphone', 'APPLE', 0, 1, '', 'loadInformation562', 0, ''),
-              ('Android', 'ANDROID', 0, 1, '', 'loadInformation575', 0, ''),
-              ('7926', 'CISCO', 1, 1, 'CP7926G-1.4.5.3', 'loadInformation577', 0, ''),
-              ('7821', 'CISCO', 1, 1, '', 'loadInformation621', 0, ''),
-              ('7841', 'CISCO', 1, 1, '', 'loadInformation622', 0, ''),
-              ('7861', 'CISCO', 1, 1, '', 'loadInformation623', 0, ''),
-              ('VXC 6215', 'CISCO', 1, 1, '', 'loadInformation634', 0, ''),
-              ('8831', 'CISCO', 1, 1, '', 'loadInformation659', 0, ''),
-              ('8841', 'CISCO', 1, 1, '', 'loadInformation683', 0, ''),
-              ('8851', 'CISCO', 1, 1, '', 'loadInformation684', 0, ''),
-              ('8861', 'CISCO', 1, 1, '', 'loadInformation685', 0, ''),
-              ('Analog', 'CISCO', 1, 1, '', 'loadInformation30027', 0, ''),
-              ('ISDN', 'CISCO', 1, 1, '', 'loadInformation30028', 0, ''),
-              ('SCCP GW', 'CISCO', 1, 1, '', 'loadInformation30032', 0, ''),
-              ('IP-STE', 'CISCO', 1, 1, '', 'loadInformation30035', 0, ''),
-              ('SPA 521S', 'CISCO', 1, 1, '', 'loadInformation80000', 0, ''),
-              ('SPA 502G', 'CISCO', 1, 1, '', 'loadInformation80003', 0, ''),
-              ('SPA 504G', 'CISCO', 1, 1, '', 'loadInformation80004', 0, ''),
-              ('SPA 525G', 'CISCO', 1, 1, '', 'loadInformation80005', 0, ''),
-              ('SPA 525G2', 'CISCO', 1, 1, '', 'loadInformation80009', 0, ''),
-              ('SPA 303G', 'CISCO', 1, 1, '', 'loadInformation80011', 0, ''),
-              ('IP Communicator', 'CISCO', 1, 1, '', 'loadInformation30016', 0, NULL),
-              ('Nokia E', 'Nokia', 1, 28, '', 'loadInformation275', 0, NULL),
-              ('VGC Phone', 'CISCO', 1, 1, '', 'loadInformation10', 0, NULL),
-              ('7911-sip', 'CISCO-SIP', 1, 1, 'SIP11.9-2-1S', 'loadInformation307', 1, 'SEP0000000000.cnf.xml_791x_sip_template'),
-              ('9951-sip', 'CISCO-SIP', 1, 5, 'sip9951.9-2-2SR1-9', 'loadinformation537', 1, 'SEP0000000000.cnf.xml_99xx_sip_template'),
-              ('VGC Virtual', 'CISCO', 1, 1, '', 'loadInformation11', 0, NULL);";
+    $sql = "REPLACE INTO sccpdevmodel (model, vendor, dns, buttons, loadimage, loadinformationid, enabled, nametemplate) VALUES" . implode(',',$devModelArr);
     $check = $db->query($sql);
     if (DB::IsError($check)) {
         die_freepbx("Can not create sccpdevmodel table, error:$check\n");
@@ -1142,19 +1149,6 @@ function cleanUpSccpSettings() {
     outn(_("Found DB Schema : {$settingsFromDb['sccp_compatible']['data']}"));
     }
     // Check that required settings are initialised and update db and $settingsFromDb if not
-    /*
-    foreach ($extconfigs->getExtConfig('sccpDefaults') as $key => $value) {
-        if (empty($settingsFromDb[$key])) {
-            $settingsFromDb[$key] = array('keyword' => $key, 'data' => $value, 'type' => 0, 'seq' => 0);
-
-            $sql = "REPLACE INTO sccpsettings (keyword, data, seq, type) VALUES ('{$key}', '{$value}', 0, 0)";
-            $results = $db->query($sql);
-            if (DB::IsError($results)) {
-                die_freepbx(_("Error updating sccpsettings: $key"));
-            }
-        }
-    }
-    */
     // Clean up sccpsettings to remove legacy values.
     $xml_vars = $amp_conf['AMPWEBROOT'] . "/admin/modules/sccp_manager/conf/sccpgeneral.xml.v{$sccp_compatible}";
     $thisInstaller->xml_data = simplexml_load_file($xml_vars);
@@ -1222,6 +1216,8 @@ function cleanUpSccpSettings() {
         // Override certain chan-sccp defaults as they are based on a non-FreePbx system
         $settingsFromDb['context']['systemdefault'] = 'from-internal';
         $settingsFromDb['directed_pickup']['systemdefault'] = 'no';
+        // Override this chan-sccp default as it is a potential security risk. See Issue 29
+        $settingsFromDb['hotline_enabled']['systemdefault'] = 'no';
 
         unset($sysConfiguration[$key]);
     }
