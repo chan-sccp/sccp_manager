@@ -723,7 +723,6 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                 $this->hint_context[$key] = $value;
             }
         }
-        */
     }
 
     /*
