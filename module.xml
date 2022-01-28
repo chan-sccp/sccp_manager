@@ -42,7 +42,7 @@
 		 * Version 14.4.0.3 * - Change method of selecting phonecodepage depending on if is java phone.
 		 * Version 14.4.0.5 * - Fix issue #59.
 		 * Version 14.5.0.2 * - Fix issue #32.
-		 * Version 14.5.0.4 * - Fix issue where values with spaces are truncated.
+		 * Version 14.5.0.4 * - Fix issue where values with spaces are truncated. Preserve softkeys accross installs
 	</changelog>
 	<location>https://github.com/chan-sccp/sccp_manager</location>
 	<depends>

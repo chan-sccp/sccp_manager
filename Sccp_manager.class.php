@@ -692,15 +692,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     'tftp_countries_path' => $this->sccpvalues['tftp_countries_path']['data']
                   );
 
-        $read_config = $this->cnf_read->getConfig('sccp.conf');
-        $this->sccp_conf_init['general'] = $read_config['general'];
-        foreach ($read_config as $key => $value) {
-            if (isset($read_config[$key]['type'])) { // copy soft key
-                if ($read_config[$key]['type'] == 'softkeyset') {
-                    $this->sccp_conf_init[$key] = $read_config[$key];
-                }
-            }
-        }
+        // initialise $sccp_conf_init
+        $this->sccp_conf_init = $this->initialiseConfInit();
 
         $hint = $this->aminterface->core_list_hints();
         foreach ($hint as $key => $value) {

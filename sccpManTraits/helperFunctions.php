@@ -275,6 +275,20 @@ trait helperfunctions {
         return false;
     }
 
+    public function initialiseConfInit(){
+        $read_config = \FreePBX::LoadConfig()->getConfig('sccp.conf');
+        $sccp_conf_init['general'] = $read_config['general'];
+        foreach ($read_config as $key => $value) {
+            if (isset($read_config[$key]['type'])) { // copy soft key
+                if ($read_config[$key]['type'] == 'softkeyset') {
+                    $sccp_conf_init[$key] = $read_config[$key];
+                }
+            }
+        }
+        return $sccp_conf_init;
+    }
+
+
     public function checkTftpMapping(){
         exec('in.tftpd -V', $tftpInfo);
         $info['TFTP Server'] = array('Version' => 'Not Found', 'about' => 'Mapping not available');
@@ -342,18 +356,18 @@ trait helperfunctions {
         unset($sysConfig);
     }
 
-    public function createDefaultSccpConfig(array $sccpvalues, string $asteriskPath) {
+    public function createDefaultSccpConfig(array $sccpvalues, string $asteriskPath, $conf_init) {
         global $cnf_wr;
         // Make sccp.conf data
         // [general] section
         // TODO: Need to review sccpsettings seq numbering, as will speed this up, and remove the need for $permittedSettings.
         $cnf_wr = \FreePBX::WriteConfig();
         //clear old general settings, and initiate with allow/disallow and permit/deny keys in correct order
-        $this->sccp_conf_init['general'] = array();
-        $this->sccp_conf_init['general']['disallow'] = 'all';
-        $this->sccp_conf_init['general']['allow'] = '';
-        $this->sccp_conf_init['general']['deny'] = '0.0.0.0/0.0.0.0';
-        $this->sccp_conf_init['general']['permit'] = '0.0.0.0/0.0.0.0';
+        $conf_init['general'] = array();
+        $conf_init['general']['disallow'] = 'all';
+        $conf_init['general']['allow'] = '';
+        $conf_init['general']['deny'] = '0.0.0.0/0.0.0.0';
+        $conf_init['general']['permit'] = '0.0.0.0/0.0.0.0';
         // permitted chan-sccp settings array
         $permittedSettings = array(
                           'debug', 'servername', 'keepalive', 'context', 'dateformat', 'bindaddr', 'port', 'secbindaddr', 'secport', 'disallow', 'allow', 'deny', 'permit',
@@ -377,7 +391,7 @@ trait helperfunctions {
                     case "deny":
                     case "localnet":
                     case "permit":
-                        $this->sccp_conf_init['general'][$key] = explode(';', $value['data']);
+                        $conf_init['general'][$key] = explode(';', $value['data']);
                         break;
                     case "devlang":
                         /*
@@ -394,7 +408,7 @@ trait helperfunctions {
                         break;
                     default:
                         if (!empty($value['data'])) {
-                            $this->sccp_conf_init['general'][$key] = $value['data'];
+                            $conf_init['general'][$key] = $value['data'];
                         }
                 }
             }
@@ -404,7 +418,7 @@ trait helperfunctions {
         // This will complicate solving problems caused by unexpected solutions from users.
         //
         if (file_exists($asteriskPath . "/sccp_custom.conf")) {
-            $this->sccp_conf_init['HEADER'] = array(
+            $conf_init['HEADER'] = array(
                 ";                                                                                ;",
                 ";  It is a very bad idea to add an external configuration file !!!!              ;",
                 ";  This will complicate solving problems caused by unexpected solutions          ;",
@@ -413,7 +427,7 @@ trait helperfunctions {
                 "#include sccp_custom.conf"
             );
         }
-        $cnf_wr->WriteConfig('sccp.conf', $this->sccp_conf_init);
+        $cnf_wr->WriteConfig('sccp.conf', $conf_init);
     }
 
     public function initVarfromXml() {
