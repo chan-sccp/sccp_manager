@@ -340,7 +340,6 @@ trait ajaxHelper {
 
         foreach ($request as $key => $value) {
             // First handle any arrays as their prefix is part common with normal data
-            //$netvalue = array();
             $key = (str_replace($hdr_arprefix, '', $key, $count_mods));
             if ($count_mods) {
                 // Only arrays : network lists or ip lists.
@@ -381,7 +380,6 @@ trait ajaxHelper {
         }
         $extSettings = $this->extconfigs->updateTftpStructure(array_merge($this->sccpvalues, $save_settings));
         $save_settings = array_merge($save_settings, $extSettings);
-        //dbug($save_settings);
         if (!empty($save_settings)) {
             //$this->saveSccpSettings($save_settings);
             $this->dbinterface->write('sccpsettings', $save_settings, 'update');
@@ -587,6 +585,9 @@ trait ajaxHelper {
                             switch ($key) {
                                 case 'permit':
                                 case 'deny';
+                                    $this->convertArrayToCsv($netValue);
+
+                                    /*
                                     // Now have an array of settings each with keys net and Mask
                                     // TODO: This needs to be optimised
                                     //foreach ($valueArr as $netValue) {
@@ -596,15 +597,17 @@ trait ajaxHelper {
                                     }
                                     if (isset($netValue['internal'])) {
                                         $output[] = 'internal';
-                                        continue;
+                                        continue 2;
                                     }
                                     if (empty($netValue['net'])) {
                                         // empty net so ignored
-                                        continue;
+                                        continue 2;
                                     }
                                     $netValue['mask'] = (empty($netValue['mask'])) ? "255.255.255.0" : $netValue['mask'];
                                     $output[]= implode('/', $netValue);
                                     //}
+                                    */
+                                    
                                     break;
                                 case 'setvar':
                                     $output[] = implode(';', $netValue);
