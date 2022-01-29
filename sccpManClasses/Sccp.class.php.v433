@@ -413,21 +413,29 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                     unset($select);
                     break;
                 case 'SLG':
+                    // namedcallgroup and namedpickupgroup.
+                    //$extensionId = $display_info['id'];
                     $elementID = (string)$child->name;
-                    $named_group = \FreePbx::sccp_manager()->dbinterface->getNamedGroup($elementID);
-                    if (!empty($named_group[$elementID])) {
+                    $setting[$elementID] = \FreePbx::sccp_manager()->dbinterface->getLineGroups($elementID, $deviceInfo['id']);
+                    $named_group = \FreePbx::sccp_manager()->dbinterface->getNamedGroup('namedcallgroup');
+                    if (!empty($named_group['namedcallgroup'])) {
+                        /* This commented out code will display as a list
                         foreach ($named_group[$elementID] as $val) {
                             $select[] = array('value' => $val, 'text' => $val);
                         }
+                        */
+                        $select = ltrim(implode(',', $named_group['namedcallgroup']), " ,");
                     }
                     // Disable and hide list elements if there are no valid values
+                    $thisHelp = (string)$child->help . ". <br>Known sccp named groups are: " . $select;
+                    //Need element (array)select in array below to have list.
+                    dbug($setting[$elementID]);
                     $tmparr[(string)$child->name] = array('prompttext' => _((string)$child->label),
-                                                'value' => $this->line_defaults[(string)$child->name],
-                                                'tt' => (string)$child->help,
-                                                'select' => $select,
+                                                'value' => $setting[$elementID],
+                                                'tt' => $thisHelp,
                                                 'level' => 1,
-                                                'disable' => empty($named_group[$elementID][0]),
-                                                'hidden' => empty($named_group[$elementID][0]),
+                                                'disable' => empty($named_group),
+                                                'hidden' => empty($named_group),
                                                 'section' => $section,
                                                 'category' => $gn_category
                                               );

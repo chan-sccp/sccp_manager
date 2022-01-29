@@ -435,9 +435,14 @@ class dbinterface
         return $result;
     }
 
+    public function getLineGroups($element, $id){
+        $sth = $this->db->prepare("SELECT {$element} FROM sccpline WHERE name='{$id}'");
+        $sth->execute();
+        return $sth->fetchAll()[$element];
+    }
     public function getNamedGroup($callGroup) {
-        $sql = "SELECT {$callGroup} FROM sccpline GROUP BY {$callGroup}";
-        $sth = $this->db->prepare($sql);
+        //$sql = "SELECT {$callGroup} FROM sccpline GROUP BY {$callGroup}";
+        $sth = $this->db->prepare("SELECT {$callGroup} FROM sccpline GROUP BY {$callGroup}");
         $result = array();
         $tech = array();
         try {
@@ -447,6 +452,7 @@ class dbinterface
                $tech[$callGroup][] = $val[0];
             }
         } catch(\Exception $e) {}
+        dbug($tech);
     return $tech;
     }
 }

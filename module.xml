@@ -200,8 +200,8 @@
 			<field name="silencesuppression" type="string" default="off"/>
 			<field name="callgroup" type="string" length="45" notnull="false"/>
 			<field name="pickupgroup" type="string" length="45" notnull="false"/>
-			<field name="namedcallgroup" type="string" length="100" notnull="false"/>
-			<field name="namedpickupgroup" type="string" length="100" notnull="false"/>
+			<field name="namedcallgroup" type="string" length="255" notnull="false"/>
+			<field name="namedpickupgroup" type="string" length="255" notnull="false"/>
 			<field name="adhocNumber" type="string" length="45" notnull="false"/>
 			<field name="meetme" type="string" length="5" notnull="false"/>
 			<field name="meetmenum" type="string" length="45" notnull="false"/>

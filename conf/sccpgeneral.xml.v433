@@ -2056,6 +2056,24 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Context: This is the context in which your phones will operate. It should match the context you are using for the rest of your phones (if you have any). The FreePBX default is 'from-internal'</help>
         </item>
+        <item type="SLG" id="7">
+            <label>Named Call Group</label>
+            <name>namedcallgroup</name>
+            <select>
+                <default></default>
+            </select>
+            <help>Sets the groups this line is a member of. Incoming calls to this line are given these groups as an identifier. This is a comma separated list of group names.
+                (It is not recommended to use numeric names)
+                </help>
+        </item>
+        <item type="SLG" id="7">
+            <label>Named Pickup Group</label>
+            <name>namedpickupgroup</name>
+            <select>
+                <default></default>
+            </select>
+            <help>This is the list of groups that this line can pickup from. This is a comma separated list of group names</help>
+        </item>
         <item type="IE" id="7">
             <label>Directed pickup context</label>
             <input>
@@ -2064,23 +2082,23 @@ and open the template in the editor. Base Version before all crash :-)
                 <options placeholder="from_internal"></options>
                 <class>sccp-custom</class>
             </input>
-            <help>Context where direct pickup search for extensions. if not set current context will be use.</help>
+            <help>Context where direct pickup searches for extensions. if not set current context will be use.</help>
         </item>
-        <item type="SLG" id="7">
-            <label>Named Call Group</label>
-            <name>namedcallgroup</name>
-            <select>
-                <default></default>
-            </select>
-            <help>Sets the named caller groups this line is a member of</help>
+        <item type="IS" id="11">
+            <name>directed_pickup</name>
+            <label>Directed Pickup</label>
+            <default></default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Enable/disable directed Pickup button (to do directed pickup from a specific extension).</help>
         </item>
-        <item type="SLG" id="7">
-            <label>Named Pickup Group</label>
-            <name>namedpickupgroup</name>
-            <select>
-                <default></default>
-            </select>
-            <help>Named PickupGroup - the list is of pickup groups used on the system</help>
+        <item type="IS" id="11">
+            <name>pickup_modeanswer</name>
+            <label>Directed Pickup Answer</label>
+            <default>off</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>When using directed pickup, if this flag is set to Yes, the call will automatically be answered upon pickup</help>
         </item>
         <item type="IE" id="7">
             <label>Secondary dialtone digits</label>
@@ -2098,22 +2116,6 @@ and open the template in the editor. Base Version before all crash :-)
                 <default></default>
             </select>
             <help>Outside dialtone frequency (default 0x22)</help>
-        </item>
-        <item type="IS" id="11">
-            <name>directed_pickup</name>
-            <label>Directed Pickup</label>
-            <default></default>
-            <button value="yes">Yes</button>
-            <button value="no">No</button>
-            <help>Enable/disable Pickup button to do directed pickup from a specific extension.</help>
-        </item>
-        <item type="IS" id="11">
-            <name>pickup_modeanswer</name>
-            <label>Directed Pickup Answer</label>
-            <default>off</default>
-            <button value="yes">Yes</button>
-            <button value="no">No</button>
-            <help>Directed Pickup Mode (Answer): If a call is sent with the "directed pickup" flag, the phone will answer when set to "Yes".</help>
         </item>
         <item type="IS" id="1" seq="0">
             <name>transfer</name>
