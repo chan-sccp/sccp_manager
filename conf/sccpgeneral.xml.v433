@@ -134,6 +134,8 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="on">On</button>
             <help>Global NAT support (default Auto)</help>
         </item>
+        <!--TODO change debug options "core, hint, rtp, device, line, action, channel, config, feature, feature_button, softkey, indicate, pbx,socket, mwi,
+        event, conference, buttontemplate, speeddial, codec, realtime, parkinglot, none -->
         <item type="IS" id="6">
             <name>debug</name>
             <label>SCCP DEBUG</label>
@@ -286,17 +288,6 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Digit Timeout: The amount of time to wait after the second (or subsequent) dialed digit. Override rules are the same as for firstdigittimeout.</help>
         </item>
         <item type="IE" id="3">
-            <label>No Answer Ring Time</label>
-            <input>
-                <name>cfwdnoanswer_timeout</name>
-                <default>30</default>
-                <class>sccp-custom</class>
-                <type>number</type>
-                <options min="0" max="120"></options>
-            </input>
-            <help>Timeout after which callforward noanswer (when active) will be triggered. default is 30 seconds</help>
-        </item>
-        <item type="IE" id="3">
             <label>Autoanswer Ring Time</label>
             <input>
                 <name>autoanswer_ring_time</name>
@@ -307,43 +298,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Autoanswer Ring Time: The amount of time the phones will ring when being called as Intercom or Paging mode.</help>
         </item>
-        <item type="IE" id="4">
-            <label>Autoanswer Tone</label>
-            <input>
-                <name>autoanswer_tone</name>
-                <default>0x32</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>Autoanswer Tone: The tone the phone plays back when it picks up the phone in autoanswer mode. Default is '0x32'. Silence is '0x00'. There are lots of tones, all expressed as '0XNN' where 'NN' is a hexadecimal number.</help>
-        </item>
-        <item type="IE" id="5">
-            <label>Remote Hangup Tone</label>
-            <input>
-                <name>remotehangup_tone</name>
-                <default>0x32</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>Remote Hangup Tone: The tone played by the phone when it received a remote hang-up signal. Use '0' to disable the tone.</help>
-        </item>
-        <item type="IE" id="6">
-            <label>Transfer Tone</label>
-            <input>
-                <name>transfer_tone</name>
-                <default>0x32</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>Transfer Tone: The tone played when a call is transferred. Use '0' to disable the tone.</help>
-        </item>
-        <item type="IE" id="7">
-            <label>Call Waiting Tone</label>
-            <input>
-                <name>callwaiting_tone</name>
-                <default>0x2D</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>Call Waiting Tone: The tone played when a call is waiting. If you set this one to '0', you will not get a tone in your current call if a new call comes in, so you might want to disable call waiting for this line instead.</help>
-        </item>
-
         <item type="IS" id="10">
             <name>private</name>
             <label>Private Calling</label>
@@ -393,6 +347,7 @@ and open the template in the editor. Base Version before all crash :-)
 
     <page_group name="sccp_dev_advconfig">
         <label>SCCP Device advanced config</label>
+        <!--
         <item type="IS" id="4" seq="0">
             <name>directrtp</name>
             <label>Direct RTP</label>
@@ -401,6 +356,7 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="no">NO</button>
             <help>This option set global allow devices to do direct RTP sessions (default Off)</help>
         </item>
+    -->
         <item type="IS" id="5" seq="99">
             <name>earlyrtp</name>
             <label>Early RTP</label>
@@ -425,6 +381,53 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="0">Disabled</button>
             <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
         </item>
+        <item type="IE" id="4">
+            <label>Autoanswer Tone</label>
+            <input>
+                <name>autoanswer_tone</name>
+                <default>0x32</default>
+                <class>sccp-custom</class>
+            </input>
+            <help>Autoanswer Tone: The tone the phone plays back when it picks up the phone in autoanswer mode. Default is '0x32'. Silence is '0x00'. There are lots of tones, all expressed as '0XNN' where 'NN' is a hexadecimal number.</help>
+        </item>
+        <item type="IE" id="5">
+            <label>Remote Hangup Tone</label>
+            <input>
+                <name>remotehangup_tone</name>
+                <default>0x32</default>
+                <class>sccp-custom</class>
+            </input>
+            <help>Remote Hangup Tone: The tone played by the phone when it received a remote hang-up signal. Use '0' to disable the tone.</help>
+        </item>
+        <item type="IE" id="6">
+            <label>Transfer Tone</label>
+            <input>
+                <name>transfer_tone</name>
+                <default>0x32</default>
+                <class>sccp-custom</class>
+            </input>
+            <help>Transfer Tone: The tone played when a call is transferred. Use '0' to disable the tone.</help>
+        </item>
+        <item type="IE" id="7">
+            <label>Call Waiting Tone</label>
+            <input>
+                <name>callwaiting_tone</name>
+                <default>0x2D</default>
+                <class>sccp-custom</class>
+            </input>
+            <help>Call Waiting Tone: The tone played when a call is waiting. If you set this one to '0', you will not get a tone in your current call if a new call comes in, so you might want to disable call waiting for this line instead.</help>
+        </item>
+        <item type="IE" id="3">
+            <label>No Answer Ring Time</label>
+            <input>
+                <name>cfwdnoanswer_timeout</name>
+                <default>30</default>
+                <class>sccp-custom</class>
+                <type>number</type>
+                <options min="0" max="120"></options>
+            </input>
+            <help>Timeout after which callforward noanswer (when active) will be triggered. default is 30 seconds</help>
+        </item>
     </page_group>
 
     <page_group name="sccp_dev_softkey">
@@ -447,7 +450,7 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
         <item type="IS" id="3" seq="0">
             <name>cfwdnoanswer</name>
-            <label>Call Forward NOANSWER</label>
+            <label>Forward call when not answered</label>
             <default>off</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
@@ -1026,7 +1029,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Context: This is the context in which your phones will operate. It should match the context you are using for the rest of your phones (if you have any). The FreePBX default is 'from-internal'</help>
         </item>
         <item type="IE" id="5">
-            <label>Dynamically registration Context</label>
+            <label>Dynamic registration Context</label>
             <input>
                 <name>regcontext</name>
                 <default>sccpregistration</default>
@@ -1090,7 +1093,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="7" seq="98">
             <name>autoselectline_enabled</name>
             <label>Autoselect Line</label>
-            <default>off</default>
+            <default>on</default>
             <button value="on">Enabled</button>
             <button value="off">Disabled</button>
             <help>Enables and Disables auto line selection.</help>
@@ -1115,7 +1118,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="10" seq="98">
             <name>autocall_select</name>
             <label>Auto Call Select</label>
-            <default>off</default>
+            <default>on</default>
             <button value="on">Enabled</button>
             <button value="off">Disabled</button>
             <help></help>
@@ -1512,7 +1515,7 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
         <item type="IS" id="3" seq="0">
             <name>cfwdnoanswer</name>
-            <label>Call Forward NOANSWER</label>
+            <label>Forward call when not answered</label>
             <default>on</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
@@ -1715,6 +1718,7 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="on">On</button>
             <help>Device NAT support (default Auto)</help>
         </item>
+        <!--
         <item type="IS" id="4" seq="99">
             <name>directrtp</name>
             <label>Direct RTP</label>
@@ -1723,6 +1727,7 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="Yes">Yes</button>
             <help>This option allow devices to do direct RTP sessions (default Off)</help>
         </item>
+    -->
         <item type="IS" id="5" seq="99">
             <name>earlyrtp</name>
             <label>Early RTP</label>
