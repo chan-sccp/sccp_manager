@@ -146,7 +146,7 @@ class extconfigs
         'holdconf' => 'resume,newcall,endcall,join',
         'uriaction' => 'default');
     
-//   Cisco  Language Code / Directory
+    //   Cisco  Language Code / Directory
     private $cisco_language = array(
         'ar_SA' => array('code' => 'ar', 'language' => 'Arabic', 'locale' => 'Arabic_Saudi_Arabia', 'codepage' => 'ISO-8859-6'),
         'bg_BG' => array('code' => 'bg', 'language' => 'Bulgarian', 'locale' => 'Bulgarian_Bulgaria', 'codepage' => 'CP1251'),
