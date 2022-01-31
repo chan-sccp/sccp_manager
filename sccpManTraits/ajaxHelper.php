@@ -701,13 +701,20 @@ trait ajaxHelper {
                             case 'Greek_Greece':
                                     $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO-8859-7' : 'utf-8';
                                     break;
-                            case ['Bulgarian_Bulgaria', 'Russian_Russian_Federation']:
+                            case 'Bulgarian_Bulgaria':
+                            case 'Russian_Russian_Federation':
                                     $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1251' : 'utf-8';
                                     break;
-                            case ['Slovenian_Slovenia','Serbian_Republic_of_Montenegro','Serbian_Republic_of_Serbia','Croatian_Croatia','Hungarian_Hungary','Lithuanian_Lithuania']:
+                            case 'Slovenian_Slovenia':
+                            case 'Serbian_Republic_of_Montenegro':
+                            case 'Serbian_Republic_of_Serbia':
+                            case 'Croatian_Croatia':
+                            case 'Hungarian_Hungary':
+                            case 'Lithuanian_Lithuania':
                                     $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1252' : 'utf-8';
                                     break;
-                            case ['Czech_Czech_Republic', 'Slovak_Slovakia']:
+                            case 'Czech_Czech_Republic':
+                            case 'Slovak_Slovakia':
                                     $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1254' : 'utf-8';
                                     break;
                             case 'Hebrew_Israel':
@@ -719,7 +726,8 @@ trait ajaxHelper {
                             case 'Turkish_Turkey':
                                     $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO-8859-9' : 'utf-8';
                                     break;
-                            case ['Chinese_China','Chinese_Taiwan']:
+                            case 'Chinese_China':
+                            case 'Chinese_Taiwan':
                                     $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'GB2312' : 'utf-8';
                                     break;
                             case 'Japanese_Japan':
