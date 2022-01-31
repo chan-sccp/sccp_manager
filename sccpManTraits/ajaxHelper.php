@@ -557,9 +557,47 @@ trait ajaxHelper {
 
                     if (!empty($get_settings["{$hdr_prefix}devlang"])) {
                         switch ($get_settings["{$hdr_prefix}devlang"]) {
+                            case 'Arabic_Saudi_Arabia':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO-8859-6' : 'utf-8';
+                                    break;
+                            case 'Greek_Greece':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO-8859-7' : 'utf-8';
+                                    break;
+                            case 'Bulgarian_Bulgaria':
                             case 'Russian_Russian_Federation':
-                                $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1251' : 'utf-8';
-                                break;
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1251' : 'utf-8';
+                                    break;
+                            case 'Slovenian_Slovenia':
+                            case 'Serbian_Republic_of_Montenegro':
+                            case 'Serbian_Republic_of_Serbia':
+                            case 'Croatian_Croatia':
+                            case 'Hungarian_Hungary':
+                            case 'Lithuanian_Lithuania':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1252' : 'utf-8';
+                                    break;
+                            case 'Czech_Czech_Republic':
+                            case 'Slovak_Slovakia':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1254' : 'utf-8';
+                                    break;
+                            case 'Hebrew_Israel':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1255' : 'utf-8';
+                                    break;
+                            case 'Thai_Thailand':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'TIS-620' : 'utf-8';
+                                    break;
+                            case 'Turkish_Turkey':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO-8859-9' : 'utf-8';
+                                    break;
+                            case 'Chinese_China':
+                            case 'Chinese_Taiwan':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'GB2312' : 'utf-8';
+                                    break;
+                            case 'Japanese_Japan':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'SHIFT_JIS' : 'utf-8';
+                                    break;
+                            case 'Korean_Korea_Republic':
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'EUC-KR' : 'utf-8';
+                                    break;
                             default:
                                 $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO8859-1' : 'utf-8';
                                 break;
