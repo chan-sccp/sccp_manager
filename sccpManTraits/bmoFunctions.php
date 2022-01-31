@@ -62,6 +62,7 @@ trait bmoFunctions {
             // Have a device that is connected but is not currently in the database
             // This device must have connected via hotline or config in sccp.conf.
             // Pass parameters to addDevice so that can be added to db.
+            // TODO: Should use LoadInformationId as a key as this is unique $dev_data['SCCP_Vendor']['model_id'] (numeric)
             foreach ($activeDevices as $dev_ids) {
                 $id_name = $dev_ids['name'];
                 $dev_data = $this->aminterface->sccp_getdevice_info($id_name);

@@ -386,7 +386,7 @@ class formcreate
                     }
                     if (!empty($sccp_defaults[$res_n]['systemdefault'])) {
                     // There is a system default, so add button to customise or reset
-                    // the closing } is after the code to include the button at line ~438
+                    // the closing } is after the code to include the button at line ~427
 
                     //-- Start include of defaults button --
                     echo "<div class='col-md-3'>";

@@ -434,7 +434,7 @@ and open the template in the editor. Base Version before all crash :-)
         <label>Global Enable/Disable Softkeys</label>
             <item type="IS" id="2" seq="0">
             <name>cfwdall</name>
-            <label>Call Forward</label>
+            <label>Enable "Call Forward"</label>
             <default>off</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
@@ -442,7 +442,7 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
         <item type="IS" id="3" seq="0">
             <name>cfwdbusy</name>
-            <label>Call Forward busy</label>
+            <label>Enable "Call Forward when busy"</label>
             <default>off</default>
             <button value="yes">Yes</button>Call Forward
             <button value="no">No</button>
@@ -450,7 +450,7 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
         <item type="IS" id="3" seq="0">
             <name>cfwdnoanswer</name>
-            <label>Forward call when not answered</label>
+            <label>Enable "Forward call when not answered"</label>
             <default>off</default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
@@ -458,15 +458,16 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
         <item type="IS" id="5" seq="0">
             <name>dndFeature</name>
-            <label>DND Button on Device</label>
+            <label>Enable "Do Not Disturb"</label>
             <default>on</default>
             <button value="on">On</button>
             <button value="off">Off</button>
             <help>Do Not Disturb. Default is Off</help>
         </item>
         <item type="IS" id="1" seq="0">
+            <!--Need to change to enable "Transfer"-->
             <name>transfer</name>
-            <label>Transfer</label>
+            <label>Enable "Transfer"</label>
             <default></default>
             <button value="yes">Yes</button>
             <button value="no">No</button>
@@ -589,7 +590,7 @@ and open the template in the editor. Base Version before all crash :-)
         <item type="IS" id="6" seq="98">
             <name>videocapability</name>
             <label>Video Capability</label>
-            <default>off</default>
+            <default>on</default>
             <button value="off">Disabled</button>
             <button value="on">Enabled</button>
             <help></help>
@@ -758,16 +759,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help></help>
         </item>
-        <item type="IE" id="1" seq="10">
-            <label>Phone Secure Service URL</label>
-            <input>
-                <name>dev_secureservicesURL</name>
-                <default></default>
-                <value></value>
-                <options placeholder="https://x.x.x.x:port/cisco_menu/service.php"></options>
-            </input>
-            <help></help>
-        </item>
         <item type="IE" id="2" seq="10">
             <label>Phone authentication URL</label>
             <input>
@@ -778,30 +769,11 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>The above is simply a dummy authentication page.  It literally contains one word: AUTHORIZED (it receives UserId, Password, and devicename in the url - if you truly wish to implement special auth)</help>
         </item>
-        <item type="IE" id="2" seq="10">
-            <label>Phone Secure authentication URL</label>
-            <input>
-                <name>dev_secureauthenticationURL</name>
-                <options placeholder="https://x.x.x.x:port/cisco_menu/authentication.php"></options>
-                <default></default>
-                <value></value>
-            </input>
-            <help></help>
-        </item>
         <item type="IE" id="4" seq="10">
             <label>Phone information URL</label>
             <input>
                 <name>dev_informationURL</name>
                 <options placeholder="http://x.x.x.x/cisco_menu/information.php"></options>
-                <default></default>
-            </input>
-            <help></help>
-        </item>
-        <item type="IE" id="4" seq="10">
-            <label>Phone Secure information URL</label>
-            <input>
-                <name>dev_secureinformationURL</name>
-                <options placeholder="https://x.x.x.x/cisco_menu/information.php"></options>
                 <default></default>
             </input>
             <help></help>
@@ -815,15 +787,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help></help>
         </item>
-        <item type="IE" id="5" seq="10">
-            <label>Phone Secure messages URL</label>
-            <input>
-                <name>dev_securemessagesURL</name>
-                <options placeholder="https://x.x.x.x:port/cisco_menu/messages.php"></options>
-                <default></default>
-            </input>
-            <help></help>
-        </item>
         <item type="IE" id="6" seq="10">
             <label>Phone directory service URL</label>
             <input>
@@ -832,15 +795,6 @@ and open the template in the editor. Base Version before all crash :-)
                 <default></default>
             </input>
             <help>This is the URL for a CiscoIPPhoneMenu which gets appended to the end of the Missed/Received/Placed calls.  I don't use it (I find it makes more sense to put my phone book under services)</help>
-        </item>
-        <item type="IE" id="6" seq="10">
-            <label>Phone Secure directory service URL</label>
-            <input>
-                <name>dev_securedirectoryURL</name>
-                <options placeholder="https://x.x.x.x/cisco_menu/directories.php"></options>
-                <default></default>
-            </input>
-            <help></help>
         </item>
         <item type="IE" id="3" seq="10">
             <label>Phone Idle information URL</label>
@@ -852,17 +806,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>URL of CiscoIPPhoneImage. Requires a non-zero setting in idleTimeout.</help>
         </item>
-        <item type="IE" id="3" seq="10">
-            <label>Phone Secure Idle information URL</label>
-            <input>
-                <name>dev_secureidleURL</name>
-                <options placeholder="https://x.x.x.x/cisco_menu/idle.php"></options>
-                <default></default>
-                <value></value>
-            </input>
-            <help></help>
-        </item>
-
         <item type="IE" id="7" seq="10">
             <label>Phone proxyServer URL</label>
             <input>
@@ -882,6 +825,63 @@ and open the template in the editor. Base Version before all crash :-)
                 <class>sccp-custom</class>
                 <type>number</type>
                 <options min="0" max="3600"></options>
+            </input>
+            <help></help>
+        </item>
+        <item type="IE" id="1" seq="10">
+            <label>Phone Secure Service URL</label>
+            <input>
+                <name>dev_secureservicesURL</name>
+                <default></default>
+                <value></value>
+                <options placeholder="https://x.x.x.x:port/cisco_menu/service.php"></options>
+            </input>
+            <help></help>
+        </item>
+        <item type="IE" id="2" seq="10">
+            <label>Phone Secure authentication URL</label>
+            <input>
+                <name>dev_secureauthenticationURL</name>
+                <options placeholder="https://x.x.x.x:port/cisco_menu/authentication.php"></options>
+                <default></default>
+                <value></value>
+            </input>
+            <help></help>
+        </item>
+        <item type="IE" id="4" seq="10">
+            <label>Phone Secure information URL</label>
+            <input>
+                <name>dev_secureinformationURL</name>
+                <options placeholder="https://x.x.x.x/cisco_menu/information.php"></options>
+                <default></default>
+            </input>
+            <help></help>
+        </item>
+        <item type="IE" id="5" seq="10">
+            <label>Phone Secure messages URL</label>
+            <input>
+                <name>dev_securemessagesURL</name>
+                <options placeholder="https://x.x.x.x:port/cisco_menu/messages.php"></options>
+                <default></default>
+            </input>
+            <help></help>
+        </item>
+        <item type="IE" id="6" seq="10">
+            <label>Phone Secure directory service URL</label>
+            <input>
+                <name>dev_securedirectoryURL</name>
+                <options placeholder="https://x.x.x.x/cisco_menu/directories.php"></options>
+                <default></default>
+            </input>
+            <help></help>
+        </item>
+        <item type="IE" id="3" seq="10">
+            <label>Phone Secure Idle information URL</label>
+            <input>
+                <name>dev_secureidleURL</name>
+                <options placeholder="https://x.x.x.x/cisco_menu/idle.php"></options>
+                <default></default>
+                <value></value>
             </input>
             <help></help>
         </item>
@@ -1207,6 +1207,7 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="pro">Provision</button>
             <help>Support the use of regular-expression-based filename remapping</help>
         </item>
+        <!--
         <item type="IE" id="2">
             <label>SCCP SERVER MySQL Device Table</label>
             <input>
@@ -1225,6 +1226,7 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Line Table: This is the linetable for your realtime configuration. Don't change this unless you know what you are doing and have made all the appropriate changes in the rest of your Asterisk config files. If you do not want to use the realtime database anymore, you can set this to blank. NOT RECOMMENDED.</help>
         </item>
+    -->
         <item type="IS" id="4" seq="99">
             <name>createlangdir</name>
             <label>Create tftp empty language dir</label>
@@ -1493,8 +1495,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>park</name>
             <label>Park</label>
             <default>on</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Take a look to the compile how-to. Park stuff is not compiled by default.</help>
         </item>
         <item type="IS" id="2" seq="99">
@@ -1563,8 +1565,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>mwioncall</name>
             <label>Message Lamp On Call</label>
             <default>on</default>
-            <button value="on">Yes</button>
-            <button value="off">No</button>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
             <help>Set the MWI on call.</help>
         </item>
 
@@ -1728,7 +1730,7 @@ and open the template in the editor. Base Version before all crash :-)
             <help>This option allow devices to do direct RTP sessions (default Off)</help>
         </item>
     -->
-        <item type="IS" id="5" seq="99">
+        <item type="IS" id="5" seq="98">
             <name>earlyrtp</name>
             <label>Early RTP</label>
             <default></default>

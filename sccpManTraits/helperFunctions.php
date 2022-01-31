@@ -455,6 +455,7 @@ trait helperfunctions {
                             } else {
                                 $datav = (string) $child->value;
                             }
+                            dbug($child->name);
                             if (empty($this->sccpvalues[(string) $child->name])) {
                                 $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq, 'systemdefault' => '');
                             }
@@ -473,6 +474,7 @@ trait helperfunctions {
                 }
             }
         }
+        dbug($this->sccpvalues['earlyrtp']);
     }
 
     public function getSipConfig() {

@@ -83,9 +83,9 @@
 			<field name="directrtp" type="string" notnull="false"/>
 			<field name="softkeyset" type="string" length="100" default="softkeyset" notnull="false"/>
 			<field name="audio_tos" type="string" length="11" default="0xB8" notnull="false"/>
-			<field name="audio_cos" type="string" length="1" default="6" notnull="false"/>
+			<field name="audio_cos" type="string" length="11" default="6" notnull="false"/>
 			<field name="video_tos" type="string" length="11" default="0x88" notnull="false"/>
-			<field name="video_cos" type="string" length="1" default="5" notnull="false"/>
+			<field name="video_cos" type="string" length="11" default="5" notnull="false"/>
 			<field name="conf_allow" type="string" default="on"/>
 			<field name="conf_play_general_announce" type="string" length="3" default="on" notnull="false"/>
 			<field name="conf_play_part_announce" type="string" default="on"/>
@@ -112,37 +112,37 @@
 			<field name="phonecodepage" type="string" length="50" notnull="false"/>
 			<field name="logserver" type="string" length="100" default="NULL" notnull="false"/>
 			<field name="_logserver" type="string" length="100" notnull="false"/>
-			<field name="daysdisplaynotactive" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="daysdisplaynotactive" type="string" length="20" notnull="false"/>
 			<field name="_daysdisplaynotactive" type="string" length="20" notnull="false"/>
-			<field name="displayontime" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="displayontime" type="string" length="20" notnull="false"/>
 			<field name="_displayontime" type="string" length="20" notnull="false"/>
-			<field name="displayonduration" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="displayonduration" type="string" length="20" notnull="false"/>
 			<field name="_displayonduration" type="string" length="20" notnull="false"/>
-			<field name="displayidletimeout" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="displayidletimeout" type="string" length="20" notnull="false"/>
 			<field name="_displayidletimeout" type="string" length="20" notnull="false"/>
-			<field name="settingsaccess" type="string" default="off"/>
+			<field name="settingsaccess" type="string"/>
 			<field name="_settingsaccess" type="string" notnull="false"/>
-			<field name="videocapability" type="string" default="off"/>
+			<field name="videocapability" type="string"/>
 			<field name="_videocapability" type="string" notnull="false"/>
-			<field name="webaccess" type="string" default="off"/>
+			<field name="webaccess" type="string"/>
 			<field name="_webaccess" type="string" notnull="false"/>
-			<field name="webadmin" type="string" default="off"/>
+			<field name="webadmin" type="string"/>
 			<field name="_webadmin" type="string" notnull="false"/>
-			<field name="pcport" type="string" default="on"/>
+			<field name="pcport" type="string"/>
 			<field name="_pcport" type="string" notnull="false"/>
-			<field name="spantopcport" type="string" default="on"/>
+			<field name="spantopcport" type="string"/>
 			<field name="_spantopcport" type="string" notnull="false"/>
-			<field name="voicevlanaccess" type="string" default="off"/>
+			<field name="voicevlanaccess" type="string"/>
 			<field name="_voicevlanaccess" type="string" notnull="false"/>
-			<field name="enablecdpswport" type="string" default="off"/>
+			<field name="enablecdpswport" type="string"/>
 			<field name="_enablecdpswport" type="string" notnull="false"/>
-			<field name="enablecdppcport" type="string" default="off"/>
+			<field name="enablecdppcport" type="string"/>
 			<field name="_enablecdppcport" type="string" notnull="false"/>
-			<field name="enablelldpswport" type="string" default="off"/>
+			<field name="enablelldpswport" type="string"/>
 			<field name="_enablelldpswport" type="string" notnull="false"/>
-			<field name="enablelldppcport" type="string" default="off"/>
+			<field name="enablelldppcport" type="string"/>
 			<field name="_enablelldppcport" type="string" notnull="false"/>
-			<field name="firstdigittimeout" type="string" length="20" default="NULL" notnull="false"/>
+			<field name="firstdigittimeout" type="string" length="20" notnull="false"/>
 			<field name="_firstdigittimeout" type="string" length="20" notnull="false"/>
 			<field name="digittimeout" type="string" length="20" default="NULL" notnull="false"/>
 			<field name="_digittimeout" type="string" length="20" notnull="false"/>

@@ -440,6 +440,7 @@ class dbinterface
         $sth->execute();
         return $sth->fetchAll()[$element];
     }
+
     public function getNamedGroup($callGroup) {
         //$sql = "SELECT {$callGroup} FROM sccpline GROUP BY {$callGroup}";
         $sth = $this->db->prepare("SELECT {$callGroup} FROM sccpline GROUP BY {$callGroup}");

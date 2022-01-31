@@ -279,6 +279,7 @@ trait ajaxHelper {
     }
 
     function saveServerSettings($request, $validateonly = false) {
+        dbug($request);
         $hdr_prefix = 'sccp_';
         $hdr_arprefix = 'sccp-ar_';
         $save_settings = array();
@@ -371,6 +372,8 @@ trait ajaxHelper {
                         // Value unchanged so ignore
                     } else {
                         $dbSaveArray[$key] = array('table' => $tableName, 'field' => $key, 'Default' => $value);
+                        // Save these settings to sccpsettings as backup - Doctrine overwrites defaults in installer.
+                        $save_settings[$key]= ['keyword' => $key, 'seq' => 98, 'type' => 2, 'data' => $value, 'systemdefault' => ''];
                     }
                     // If have matched on device, cannot match on line
                     continue 2;
@@ -546,19 +549,12 @@ trait ajaxHelper {
                     }
                     break;
                 case 'phonecodepage':
-                    // phonecodepage depends on 2 variables - language and phone type (uses java or not).
-                    // Non java phones use ISO8859-1 or CP1251 (Cyrillic); java phones use UTF-8. See @dkgroot.
-                    // Below list is not definitive or necessarily accurate - needs to be maintained.
-                    $nonJavaPhones = array(
-                        '6901', '6911', '6921', '6945', '7902', '7905', '7910', '7911', '7912', '7914', '7915', '7916', '7920', '7925', '7926', '7931', '7935', '7936', '7937', '7940', '7960'
-                        );
                     // TODO: May be other exceptions so use switch. Historically this is the only one handled
                     // phonecodepage depends on 2 variables - language and phone type (uses java or not).
                     // Non java phones use ISO8859-1 or CP1251 (Cyrillic); java phones use UTF-8. See @dkgroot.
                     // Below list is not definitive or necessarily accurate - needs to be maintained.
-                    $nonJavaPhones = array(
-                        '6901', '6911', '6921', '6945', '7902', '7905', '7910', '7911', '7912', '7914', '7915', '7916', '7920', '7925', '7926', '7931', '7935', '7936', '7937', '7940', '7960'
-                        );
+                    $nonJavaPhones = array( '7902', '7905', '7912', '7935', '7940', '7960');
+
                     if (!empty($get_settings["{$hdr_prefix}devlang"])) {
                         switch ($get_settings["{$hdr_prefix}devlang"]) {
                             case 'Russian_Russian_Federation':
@@ -586,28 +582,6 @@ trait ajaxHelper {
                                 case 'permit':
                                 case 'deny';
                                     $this->convertArrayToCsv($netValue);
-
-                                    /*
-                                    // Now have an array of settings each with keys net and Mask
-                                    // TODO: This needs to be optimised
-                                    //foreach ($valueArr as $netValue) {
-                                    if (isset($netValue['inherit'])) {
-                                        $save_settings['deny'] = 'NONE';
-                                        continue 2;
-                                    }
-                                    if (isset($netValue['internal'])) {
-                                        $output[] = 'internal';
-                                        continue 2;
-                                    }
-                                    if (empty($netValue['net'])) {
-                                        // empty net so ignored
-                                        continue 2;
-                                    }
-                                    $netValue['mask'] = (empty($netValue['mask'])) ? "255.255.255.0" : $netValue['mask'];
-                                    $output[]= implode('/', $netValue);
-                                    //}
-                                    */
-
                                     break;
                                 case 'setvar':
                                     $output[] = implode(';', $netValue);
@@ -621,12 +595,14 @@ trait ajaxHelper {
                 // Now only have normal prefix
                 if (!empty($get_settings["{$hdr_prefix}{$key}"])) {
                     $value = $get_settings["{$hdr_prefix}{$key}"];
+                    //dbug($key . "  " . $value);
                 }
             }
             if (!empty($value)) {
                 $save_settings[$key] = $value;
             }
         }
+        dbug($save_settings);
         // Save this device.
         $this->dbinterface->write('sccpdevice', $save_settings, 'replace');
         // Retrieve the phone buttons from $_REQUEST ($get_settings) and write back to
