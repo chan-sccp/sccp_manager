@@ -72,7 +72,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                                     );
 
     private $line_defaults = array();
-    public $delId = '';
+    public $delId = array();
     public $cachedDeleteStatement;
 
     public function __construct($parent_class = null) {
@@ -99,9 +99,9 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function __destruct() {
-        if (isset($this->delId)) {
-            if (isset($this->cachedDeleteStatement[$this->delId])) {
-                $this->cachedDeleteStatement[$this->delId]->execute();
+        foreach ($this->delId as $clearId) {
+            if (isset($this->cachedDeleteStatement[$clearId])) {
+                $this->cachedDeleteStatement[$clearId]->execute();
             }
         }
     }
@@ -206,11 +206,14 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         */
         // Delete associated default line buttons or will leave orphans. Cache this statement
         // execution is in the destructor
-        $this->cachedDeleteStatement[$id] = $this->database->prepare("DELETE FROM sccpbuttonconfig WHERE name LIKE '${id}%' AND buttontype = 'line'");
-        $this->delId = $id;
-        // Delete the line as requested - if edit will add again in addDevice
-        $sth = $this->database->prepare("DELETE FROM sccpline WHERE name = ${id}");
-        $sth->execute();
+        //when called from extensions as delete, id can be a list of ids
+        foreach (array($id) as $clearId) {
+            $this->cachedDeleteStatement[$clearId] = $this->database->prepare("DELETE FROM sccpbuttonconfig WHERE name LIKE '${clearId}%' AND buttontype = 'line'");
+            $this->delId[] = $clearId;
+            // Delete the line as requested - if edit will add again in addDevice
+            $sth = $this->database->prepare("DELETE FROM sccpline WHERE name = ${clearId}");
+            $sth->execute();
+        }
         return true;
   	}
 
