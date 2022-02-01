@@ -570,14 +570,17 @@ and open the template in the editor. Base Version before all crash :-)
 
     <page_group name="sccp_dev_vendor_display_conf">
         <label>Device Display Settings</label>
-        <item type="IE" id="3" seq="98">
+        <item type="IS" id="3" seq="98">
             <label>Days Display Not Active</label>
-            <input>
-                <name>daysdisplaynotactive</name>
-                <default></default>
-                <class>sccp-custom</class>
-                <options placeholder="1,7" />
-            </input>
+            <name>daysdisplaynotactive</name>
+            <default>off</default>
+            <button value="1">Sun</button>
+            <button value="2">Mon</button>
+            <button value="3">Tue</button>
+            <button value="4">Wed</button>
+            <button value="5">Thu</button>
+            <button value="6">Fri</button>
+            <button value="7">Sat</button>
             <help>Comma separated list of days that the phone's display is not active and will be automatically turned off after the time specified by "displayIdleTimeout" has elapsed (1 - Sunday, 7 - Saturday)</help>
         </item>
         <item type="IE" id="3" seq="98">
@@ -634,7 +637,6 @@ and open the template in the editor. Base Version before all crash :-)
 
     <page_group name="sccp_dev_vendor_conf">
         <label>Device Vendor Settings</label>
-
         <item type="IS" id="6" seq="98">
             <name>videocapability</name>
             <label>Video Capability</label>
@@ -643,7 +645,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="on">Enabled</button>
             <help></help>
         </item>
-
         <item type="IS" id="6" seq="98">
             <name>webadmin</name>
             <label>Web Admin</label>

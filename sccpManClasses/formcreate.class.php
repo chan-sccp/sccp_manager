@@ -463,7 +463,8 @@ class formcreate
                                    } else {$val_check = "";}
                                 } else {$val_check = "";}
                             }
-                            echo "<input type=radio name= {$res_id} id=${res_id}_{$i} value='{$value[@value]}' {$val_check} {$opt_hide} {$opt_disabled}>";
+                            $tmpName = ($res_id == 'sccpdevice_daysdisplaynotactive') ? "${res_id}_{$i}" : $res_id;
+                            echo "<input type=radio name= {$tmpName} id=${res_id}_{$i} value='{$value[@value]}' {$val_check} {$opt_hide} {$opt_disabled}>";
                             echo "<label for= {$res_id}_{$i}>{$value}</label>";
                             $i++;
                         }
