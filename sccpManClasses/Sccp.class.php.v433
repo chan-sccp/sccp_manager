@@ -207,6 +207,7 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         // Delete associated default line buttons or will leave orphans. Cache this statement
         // execution is in the destructor
         //when called from extensions as delete, id can be a list of ids
+        // TODO: Could be other buttons that refer this id (by name rather than id) - need to clear these as well.
         foreach (array($id) as $clearId) {
             $this->cachedDeleteStatement[$clearId] = $this->database->prepare("DELETE FROM sccpbuttonconfig WHERE name LIKE '${clearId}%' AND buttontype = 'line'");
             $this->delId[] = $clearId;
