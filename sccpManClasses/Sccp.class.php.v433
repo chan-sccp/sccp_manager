@@ -72,9 +72,10 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                                     );
 
     private $line_defaults = array();
+    public $delId = '';
+    public $cachedDeleteStatement;
 
     public function __construct($parent_class = null) {
-
         $this->freepbx = $parent_class;
         $this->database = $parent_class->Database();
         // Get system defaults [systemdefault] and sitedefaults [data] from sccpsettings.
@@ -97,6 +98,14 @@ class Sccp extends \FreePBX\modules\Core\Driver {
         unset($raw_settings, $siteDefaults, $sccpDefaults);
     }
 
+    public function __destruct() {
+        if (isset($this->delId)) {
+            if (isset($this->cachedDeleteStatement[$this->delId])) {
+                $this->cachedDeleteStatement[$this->delId]->execute();
+            }
+        }
+    }
+
     public function getInfo() {
 		    return array(
       			"rawName" => "sccp",
@@ -110,6 +119,12 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function addDevice($id, $settings) {
+        // If editing, have first passed by delDevice, so have cached PDO statement
+        // to remove this device from sccpbuttonconfig. As this is an edit, clear that statement.
+        if (isset($this->cachedDeleteStatement[$id])) {
+            unset($this->cachedDeleteStatement[$id]);
+        }
+
         // This is actually save line and is used by add and edit.
         $add_fld = array ("name"=>'label',"outboundcid"=>'cid_num',"langcode"=>'language',"extdisplay"=>'description','devinfo_mailbox'=>'mailbox');
         $settings['cid_num']['value'] = '';
@@ -184,17 +199,18 @@ class Sccp extends \FreePBX\modules\Core\Driver {
     }
 
     public function delDevice($id) {
-        //Required by FreePBX.
-        // Delete associated default line buttons or will leave orphans
-        foreach (array($id) as $openId) {
-            $sth = $this->database->prepare("DELETE FROM sccpbuttonconfig WHERE name LIKE :openID AND buttontype = 'line'");
-            $openId = "{$openId}%";
-            $sth->bindParam(':openID', $openId);
-            $sth->execute();
-        }
-
-        $sth = $this->database->prepare("DELETE FROM sccpline WHERE name = ?");
-        $sth->execute(array($id));
+        /*Required by FreePBX.
+        FreePbx edit is a delete followed by an add. Do not want to delete the
+        sccpbuttonconfig if we are editing, so store the statement, and execute via the destructor
+        if no add has followed
+        */
+        // Delete associated default line buttons or will leave orphans. Cache this statement
+        // execution is in the destructor
+        $this->cachedDeleteStatement[$id] = $this->database->prepare("DELETE FROM sccpbuttonconfig WHERE name LIKE '${id}%' AND buttontype = 'line'");
+        $this->delId = $id;
+        // Delete the line as requested - if edit will add again in addDevice
+        $sth = $this->database->prepare("DELETE FROM sccpline WHERE name = ${id}");
+        $sth->execute();
         return true;
   	}
 
@@ -429,7 +445,6 @@ class Sccp extends \FreePBX\modules\Core\Driver {
                     // Disable and hide list elements if there are no valid values
                     $thisHelp = (string)$child->help . ". <br>Known sccp named groups are: " . $select;
                     //Need element (array)select in array below to have list.
-                    dbug($setting[$elementID]);
                     $tmparr[(string)$child->name] = array('prompttext' => _((string)$child->label),
                                                 'value' => $setting[$elementID],
                                                 'tt' => $thisHelp,
