@@ -534,7 +534,7 @@ class formcreate
                         $select_opt[$key]= $key;
                     }
                 }
-
+                break;
             case 'SLM':
                 if (function_exists('music_list')) {
                     $moh_list = music_list();
@@ -545,9 +545,55 @@ class formcreate
                 $select_opt= $moh_list;
                 break;
             case 'SLD':
-                $day_format = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
+                $select_opt = array("D.M.Y", "D.M.YA", "Y.M.D", "YA.M.D", "M-D-Y", "M-D-YA", "D-M-Y", "D-M-YA", "Y-M-D", "YA-M-D", "M/D/Y", "M/D/YA",
                    "D/M/Y", "D/M/YA", "Y/M/D", "YA/M/D", "M/D/Y", "M/D/YA");
-                $select_opt= $day_format;
+                break;
+            case 'SLDT':
+                $select_opt = array(
+                        '0x00'  => 'Silence',
+                        '0x21'  => 'Inside Dial Tone',
+                        '0x22'  => 'Outside Dial Tone',
+                        '0x23'  => 'Line Busy Tone',
+                        '0x24'  => 'Alerting Tone',
+                        '0x25'  => 'Reorder Tone',
+                        '0x26'  => 'Recorder Warning Tone',
+                        '0x27'  => 'Recorder Detected Tone',
+                        '0x28'  => 'Reverting Tone',
+                        '0x29'  => 'Receiver OffHook Tone',
+                        '0x2A'  => 'Partial Dial Tone',
+                        '0x2B'  => 'No Such Number Tone',
+                        '0x2C'  => 'Busy Verification Tone',
+                        '0x2D'  => 'Call Waiting Tone',
+                        '0x2E'  => 'Confirmation Tone',
+                        '0x2F'  => 'Camp On Indication Tone',
+                        '0x30'  => 'Recall Dial Tone',
+                        '0x31'  => 'Zip Zip',
+                        '0x32'  => 'Zip',
+                        '0x33'  => 'Beep Bonk',
+                        '0x34'  => 'Music Tone',
+                        '0x35'  => 'Hold Tone',
+                        '0x36'  => 'Test Tone',
+                        '0x37'  => 'DT Monitor Warning Tone',
+                        '0x40'  => 'Add Call Waiting',
+                        '0x41'  => 'Priority Call Wait',
+                        '0x42'  => 'Recall Dial',
+                        '0x43'  => 'Barg In',
+                        '0x44'  => 'Distinct Alert',
+                        '0x45'  => 'Priority Alert',
+                        '0x46'  => 'Reminder Ring',
+                        '0x47'  => 'Precedence RingBank',
+                        '0x48'  => 'Pre-EmptionTone',
+                        '0x67'  => '2105 HZ',
+                        '0x68'  => '2600 HZ',
+                        '0x69'  => '440 HZ',
+                        '0x6A'  => '300 HZ',
+                        '0x77'  => 'MLPP Pala',
+                        '0x78'  => 'MLPP Ica',
+                        '0x79'  => 'MLPP Vca',
+                        '0x7A'  => 'MLPP Bpa',
+                        '0x7B'  => 'MLPP Bnea',
+                        '0x7C'  => 'MLPP Upa'
+                    );
                 break;
             case 'SLK':
                 $softKeyList = array();

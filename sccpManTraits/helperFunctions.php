@@ -345,7 +345,6 @@ trait helperfunctions {
         // This is a utility function for debug only, and is not used by core code
         foreach (array('general','line', 'device') as $section) {
             $sysConfig = $this->aminterface->getSCCPConfigMetaData($section);
-            dbug($sysConfig);
         }
         unset($sysConfig);
     }
@@ -455,7 +454,6 @@ trait helperfunctions {
                             } else {
                                 $datav = (string) $child->value;
                             }
-                            dbug($child->name);
                             if (empty($this->sccpvalues[(string) $child->name])) {
                                 $this->sccpvalues[(string) $child->name] = array('keyword' => (string) $child->name, 'data' => $datav, 'type' => '2', 'seq' => $seq, 'systemdefault' => '');
                             }
@@ -474,7 +472,6 @@ trait helperfunctions {
                 }
             }
         }
-        dbug($this->sccpvalues['earlyrtp']);
     }
 
     public function getSipConfig() {

@@ -453,7 +453,6 @@ class dbinterface
                $tech[$callGroup][] = $val[0];
             }
         } catch(\Exception $e) {}
-        dbug($tech);
     return $tech;
     }
 }

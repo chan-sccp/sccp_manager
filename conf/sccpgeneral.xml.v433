@@ -421,41 +421,33 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="0">Disabled</button>
             <help>This needs to be enabled to allow the server to push background or ringtones to the phone in the SEPXXXXXXXXXX.cnf.xml of each phone:</help>
         </item>
-        <item type="IE" id="4">
+        <item type="SLDT" id="4">
             <label>Autoanswer Tone</label>
-            <input>
-                <name>autoanswer_tone</name>
-                <default>0x32</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>Autoanswer Tone: The tone the phone plays back when it picks up the phone in autoanswer mode. Default is '0x32'. Silence is '0x00'. There are lots of tones, all expressed as '0XNN' where 'NN' is a hexadecimal number.</help>
+            <name>autoanswer_tone</name>
+            <default>0x32</default>
+            <class>form-control</class>
+            <help>Autoanswer Tone: The tone the phone plays back when it picks up the phone in autoanswer mode. Default is 'Zip'.</help>
         </item>
-        <item type="IE" id="5">
+        <item type="SLDT" id="5">
             <label>Remote Hangup Tone</label>
-            <input>
-                <name>remotehangup_tone</name>
-                <default>0x32</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>Remote Hangup Tone: The tone played by the phone when it received a remote hang-up signal. Use '0' to disable the tone.</help>
+            <name>remotehangup_tone</name>
+            <default>0x32</default>
+            <class>form-control</class>
+            <help>Remote Hangup Tone: The tone played by the phone when it received a remote hang-up signal. Default is 'Zip'. Use 'Silence' to disable the tone.</help>
         </item>
-        <item type="IE" id="6">
+        <item type="SLDT" id="6">
             <label>Transfer Tone</label>
-            <input>
-                <name>transfer_tone</name>
-                <default>0x32</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>Transfer Tone: The tone played when a call is transferred. Use '0' to disable the tone.</help>
+            <name>transfer_tone</name>
+            <default>0x32</default>
+            <class>form-control</class>
+            <help>Transfer Tone: The tone played when a call is transferred. Default is 'Zip'. Use 'Silence' to disable the tone.</help>
         </item>
-        <item type="IE" id="7">
+        <item type="SLDT" id="7">
             <label>Call Waiting Tone</label>
-            <input>
-                <name>callwaiting_tone</name>
-                <default>0x2D</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>Call Waiting Tone: The tone played when a call is waiting. If you set this one to '0', you will not get a tone in your current call if a new call comes in, so you might want to disable call waiting for this line instead.</help>
+            <name>callwaiting_tone</name>
+            <default>0x2D</default>
+            <class>form-control</class>
+            <help>Call Waiting Tone: The tone played when a call is waiting. Default is 'Call Waiting'. If you set this one to 'Silence', you will not get a tone in your current call if a new call comes in, so you might want to disable call waiting for this line instead.</help>
         </item>
         <item type="IE" id="3">
             <label>No Answer Ring Time</label>

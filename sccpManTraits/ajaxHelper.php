@@ -640,7 +640,6 @@ trait ajaxHelper {
                 $save_settings[$key] = $value;
             }
         }
-        dbug($save_settings);
         // Save this device.
         $this->dbinterface->write('sccpdevice', $save_settings, 'replace');
         // Retrieve the phone buttons from $_REQUEST ($get_settings) and write back to

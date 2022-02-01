@@ -83,6 +83,7 @@ foreach ($items as $child) {
         case 'SLA':
         case 'SLZ':
         case 'SL':
+        case 'SLDT':
             $sccpManager->formcreate->addElementSL($child, $fvalues, $sccp_defaults,$npref, $installedLangs);
             break;
         case 'SLDA':
