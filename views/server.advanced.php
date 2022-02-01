@@ -18,6 +18,7 @@
 
         //echo $this->showGroup('sccp_srst', 1);
         echo $this->showGroup('sccp_dev_vendor_conf', 1, 'sccpdevice', $defaultVals);
+        echo $this->showGroup('sccp_dev_advconfig', 1);
 
 ?>
 </form>

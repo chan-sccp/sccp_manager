@@ -25,8 +25,12 @@
         //echo $this->showGroup('sccp_dev_config', 1, 'sccpdevice', $def_val_device);
         echo $this->showGroup('sccp_dev_config', 1);
         echo $this->showGroup('sccp_dev_group_config', 1);
-        echo $this->showGroup('sccp_dev_advconfig', 1);
+        // Below moved to advanced
+        //echo $this->showGroup('sccp_dev_advconfig', 1);
         echo $this->showGroup('sccp_dev_softkey', 1);
+        //echo $this->showGroup('sccp_srst', 1);
+        echo $this->showGroup('sccp_dev_vendor_display_conf', 1, 'sccpdevice', $def_val_device );
+        echo $this->showGroup('sccp_dev_vendor_access_conf', 1, 'sccpdevice', $def_val_device );
         echo $this->showGroup('sccp_hotline_config', 1);
         echo $this->showGroup('sccp_qos_config', 1, 'sccpdevice', $def_val_device);
 ?>

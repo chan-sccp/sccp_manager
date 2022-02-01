@@ -373,6 +373,46 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="no">No</button>
             <help>Use simulated enbloc dialing to speedup connection when dialing while onhook (older phones)</help>
         </item>
+        <item type="IS" id="7" seq="98">
+            <name>autoselectline_enabled</name>
+            <label>Autoselect Line</label>
+            <default>on</default>
+            <button value="on">Enabled</button>
+            <button value="off">Disabled</button>
+            <help>Enables and Disables auto line selection.</help>
+        </item>
+        <item type="IS" id="10" seq="98">
+            <name>autocall_select</name>
+            <label>Auto Call Select</label>
+            <default>on</default>
+            <button value="on">Enabled</button>
+            <button value="off">Disabled</button>
+            <help></help>
+        </item>
+        <item type="IS" id="11" seq="98">
+            <name>callLogBlfEnabled</name>
+            <label>Allow BLF in Phone Directory</label>
+            <default>2</default>
+            <button value="3">Enabled</button>
+            <button value="2">Disabled</button>
+            <help>Show numbers you can redial, but also include their current device state, so you know when they are currently busy. Note that the other phonebook entries will now also monitor the remove device state and show the current device state</help>
+        </item>
+        <item type="IS" id="8">
+            <name>echocancel</name>
+            <label>Echo Cancel</label>
+            <default>yes</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Echo Cancel: Echo Cancellation (Yes or No).</help>
+        </item>
+        <item type="IS" id="9">
+            <name>silencesuppression</name>
+            <label>Silence Suppression</label>
+            <default>no</default>
+            <button value="yes">Yes</button>
+            <button value="no">No</button>
+            <help>Silence Suppression: Silence Suppression on the phone.</help>
+        </item>
         <item type="IS" id="11" seq="98">
             <name>phonepersonalization</name>
             <label>Allow push background from server </label>
@@ -427,6 +467,15 @@ and open the template in the editor. Base Version before all crash :-)
                 <options min="0" max="120"></options>
             </input>
             <help>Timeout after which callforward noanswer (when active) will be triggered. default is 30 seconds</help>
+        </item>
+        <item type="IE" id="5">
+            <label>Dynamic registration Context</label>
+            <input>
+                <name>regcontext</name>
+                <default>sccpregistration</default>
+                <class>sccp-custom</class>
+            </input>
+            <help>If regcontext is specified in sccp.conf chan-sccp-b will dynamically create and destroy a NoOp priority 1 extension for a given peer/line which registers with the server. If the context is not specified in extension.conf, then it will be dynamically created when an chan-sccp-b agent registers</help>
         </item>
     </page_group>
 
@@ -527,18 +576,8 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
     </page_group>
 
-    <page_group name="sccp_dev_vendor_conf">
-        <label>Device Vendor Setting</label>
-        <item type="IE" id="3" seq="98">
-            <label>Log Server</label>
-            <input>
-                <name>logserver</name>
-                <default></default>
-                <class>sccp-custom</class>
-                <options placeholder="x.x.x.x:9001" />
-            </input>
-            <help>Log server Address: x.x.x.x:9001 </help>
-        </item>
+    <page_group name="sccp_dev_vendor_display_conf">
+        <label>Device Display Settings</label>
         <item type="IE" id="3" seq="98">
             <label>Days Display Not Active</label>
             <input>
@@ -579,6 +618,10 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Timeout in HH:MM format to automatically turn off phone display if outside the time specified by "daysDisplayNotActive", "displayOnTime" and "displayOnTimeout".</help>
         </item>
+    </page_group>
+
+    <page_group name="sccp_dev_vendor_access_conf">
+        <label>Device Access settings</label>
         <item type="IS" id="6" seq="98">
             <name>settingsaccess</name>
             <label>Settings Access</label>
@@ -588,14 +631,6 @@ and open the template in the editor. Base Version before all crash :-)
             <help>Whether a user can access the phone settings.</help>
         </item>
         <item type="IS" id="6" seq="98">
-            <name>videocapability</name>
-            <label>Video Capability</label>
-            <default>on</default>
-            <button value="off">Disabled</button>
-            <button value="on">Enabled</button>
-            <help></help>
-        </item>
-        <item type="IS" id="6" seq="98">
             <name>webaccess</name>
             <label>Web Access</label>
             <default>off</default>
@@ -603,6 +638,20 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="on">Enabled</button>
             <help>Enable the phone's HTTP server.</help>
         </item>
+    </page_group>
+
+    <page_group name="sccp_dev_vendor_conf">
+        <label>Device Vendor Settings</label>
+
+        <item type="IS" id="6" seq="98">
+            <name>videocapability</name>
+            <label>Video Capability</label>
+            <default>on</default>
+            <button value="off">Disabled</button>
+            <button value="on">Enabled</button>
+            <help></help>
+        </item>
+
         <item type="IS" id="6" seq="98">
             <name>webadmin</name>
             <label>Web Admin</label>
@@ -667,6 +716,16 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="on">Enabled</button>
             <help> Enable Link Layer Discovery Protocol on the PC (computer) port.</help>
         </item>
+        <item type="IE" id="3" seq="98">
+            <label>Log Server</label>
+            <input>
+                <name>logserver</name>
+                <default></default>
+                <class>sccp-custom</class>
+                <options placeholder="x.x.x.x:9001" />
+            </input>
+            <help>Log server Address: x.x.x.x:9001 </help>
+        </item>
     </page_group>
 
     <page_group name="sccp_srst">
@@ -677,7 +736,6 @@ and open the template in the editor. Base Version before all crash :-)
             <element type='p'>You can also configure a Survivable Remote Site Telephony (SRST) reference as the last device in the CallManager(CM) list. This proves especially useful in a remote site configuration where the phones and Asterisk are connected over a WAN network. SRST provides users with fallback support for the IP phones that cannot access the primary, secondary, or tertiary Asterisk Node in the CallManager List because of an Asterisk Node failure or loss of connectivity across the WAN. For the remote sites attached to multiple-service routers across the WAN, SRST ensures that your remote users receive continuous (although minimal) service by providing call handling support directly from the SRST router.</element>
             <element type='p'>When IP phones lose contact with primary, secondary, and tertiary Asterisk Nodes (CM's), they must establish a connection to a local SRST router to sustain the call-processing capability necessary to place and receive calls. The IP phone retains the IP address of the local SRST router as a default router in the Network Configuration area of the Settings menu. The Settings menu supports a maximum of five default router entries; however, the cnf.xml accommodates a maximum of three entries. When a secondary Asterisk Node is not available on the network, the local SRST Router's IP address is retained as the standby connection for Asterisk Node during normal operation.</element>
         </item>
-
         <item type="IS" id="1" seq="20">
             <name>srst_Option</name>
             <label>SRST Server Enabled</label>
@@ -703,7 +761,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="false">No</button>
             <help>The user can change the personal SRST configuration on the device</help>
         </item>
-
         <item type="IE" id="2" seq="20">
             <label>SRST Config Name</label>
             <input>
@@ -712,7 +769,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>You enabled configure a Survivable Remote Site Telephony (SRST) reference as the last device in the CallManager(CM) list.</help>
         </item>
-
         <item type="IED" id="3" seq="20">
             <label>SRST Server list</label>
             <name>srst_ip</name>
@@ -816,7 +872,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help></help>
         </item>
-
         <item type="IE" id="8" seq="10">
             <label>Phone Idle Timeout</label>
             <input>
@@ -1028,15 +1083,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Context: This is the context in which your phones will operate. It should match the context you are using for the rest of your phones (if you have any). The FreePBX default is 'from-internal'</help>
         </item>
-        <item type="IE" id="5">
-            <label>Dynamic registration Context</label>
-            <input>
-                <name>regcontext</name>
-                <default>sccpregistration</default>
-                <class>sccp-custom</class>
-            </input>
-            <help>If regcontext is specified in sccp.conf chan-sccp-b will dynamically create and destroy a NoOp priority 1 extension for a given peer/line which registers with the server. If the context is not specified in extension.conf, then it will be dynamically created when an chan-sccp-b agent registers</help>
-        </item>
         <item type="IE" id="7">
             <label>Directed pickup context</label>
             <input>
@@ -1083,7 +1129,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="no">No</button>
             <help>Complete transfer on hangup, without pressing transfer a second time. Will complete transfer, when the transferer puts the receiver on hook, after the destination has been reached. To cancel the transfer, either press resume on the transferred channel, press the 'endcall' softkey, or have the receiving party hangup first.</help>
         </item>
-
         <item type="SLA-disabled" id="6">
             <label>Default Dial Plan</label>
             <name>dial_template</name>
@@ -1091,14 +1136,6 @@ and open the template in the editor. Base Version before all crash :-)
             <select></select>
             <class>sccp-custom</class>
             <help>Help.</help>
-        </item>
-        <item type="IS" id="7" seq="98">
-            <name>autoselectline_enabled</name>
-            <label>Autoselect Line</label>
-            <default>on</default>
-            <button value="on">Enabled</button>
-            <button value="off">Disabled</button>
-            <help>Enables and Disables auto line selection.</help>
         </item>
         <item type="IS-disabled" id="8" seq="0">
             <name>meetme</name>
@@ -1117,14 +1154,6 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Other options (app_meetme: A,a,b,c,C,d,D,E,e,F,i,I,l,L,m,M,o,p,P,q,r,s,S,t,T,w,x,X,1) see meetme specific documentation</help>
         </item>
-        <item type="IS" id="10" seq="98">
-            <name>autocall_select</name>
-            <label>Auto Call Select</label>
-            <default>on</default>
-            <button value="on">Enabled</button>
-            <button value="off">Disabled</button>
-            <help></help>
-        </item>
         <item type="IS" id="11" seq="98">
             <name>backgroundImageAccess</name>
             <label>Allow change Background Image</label>
@@ -1132,30 +1161,6 @@ and open the template in the editor. Base Version before all crash :-)
             <button value="on">Enabled</button>
             <button value="off">Disabled</button>
             <help>I'm guessing on this one, but on some devices, the background image on the display can be modified at the device. I think this is the thing that allows that to happen.</help>
-        </item>
-        <item type="IS" id="11" seq="98">
-            <name>callLogBlfEnabled</name>
-            <label>Allow BLF in Phone Directory</label>
-            <default>2</default>
-            <button value="3">Enabled</button>
-            <button value="2">Disabled</button>
-            <help>Show numbers you can redial, but also include their current device state, so you know when they are currently busy. Note that the other phonebook entries will now also monitor the remove device state and show the current device state</help>
-        </item>
-        <item type="IS" id="8">
-            <name>echocancel</name>
-            <label>Echo Cancel</label>
-            <default>yes</default>
-            <button value="yes">Yes</button>
-            <button value="no">No</button>
-            <help>Echo Cancel: Echo Cancellation (Yes or No).</help>
-        </item>
-        <item type="IS" id="9">
-            <name>silencesuppression</name>
-            <label>Silence Suppression</label>
-            <default>no</default>
-            <button value="yes">Yes</button>
-            <button value="no">No</button>
-            <help>Silence Suppression: Silence Suppression on the phone.</help>
         </item>
         <item type="SLM" id="6">
             <label>Music On Hold Class</label>
