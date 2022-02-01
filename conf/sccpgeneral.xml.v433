@@ -460,8 +460,8 @@ and open the template in the editor. Base Version before all crash :-)
             <name>dndFeature</name>
             <label>Enable "Do Not Disturb"</label>
             <default>on</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="on">Yes</button>
+            <button value="off">No</button>
             <help>Do Not Disturb. Default is Off</help>
         </item>
         <item type="IS" id="1" seq="0">
@@ -1047,6 +1047,7 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Context where direct pickup search for extensions. if not set current context will be use.</help>
         </item>
+        <!--
         <item type="IE" id="7">
             <label>Default pickup group</label>
             <input>
@@ -1057,6 +1058,7 @@ and open the template in the editor. Base Version before all crash :-)
             </input>
             <help>Context where direct pickup search for extensions. if not set current context will be use.</help>
         </item>
+    -->
         <item type="IS" id="11">
             <name>pickup_modeanswer</name>
             <label>Directed Pickup Answer</label>
@@ -1525,10 +1527,10 @@ and open the template in the editor. Base Version before all crash :-)
         </item>
         <item type="IS" id="5" seq="99">
             <name>dndFeature</name>
-            <label>DND Button on Device</label>
+            <label>Enable "Do Not Disturb"</label>
             <default>off</default>
-            <button value="on">On</button>
-            <button value="off">Off</button>
+            <button value="on">Yes</button>
+            <button value="off">No</button>
             <help>Do Not Disturb. Default is Off</help>
         </item>
         <item type="IS" id="1" seq="99">
