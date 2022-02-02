@@ -366,6 +366,11 @@ trait ajaxHelper {
             foreach (array('sccpdevice', 'sccpline') as $tableName) {
                 $key = (str_replace("{$tableName}_", '', $key, $count_mods));
                 if ($count_mods) {
+                    $searchArr = ['daysdisplaynotactive_0', 'daysdisplaynotactive_1', 'daysdisplaynotactive_2', 'daysdisplaynotactive_3', 'daysdisplaynotactive_4', 'daysdisplaynotactive_5', 'daysdisplaynotactive_6'];
+                    if (in_array($key, $searchArr, true)) {
+                        $key = 'daysdisplaynotactive';
+                        $value = (isset($save_settings[$key])) ? $save_settings[$key]['data'] . ',' . $value : $value;
+                    }
                     // Have default to be saved to db table default
                     $tableName_def = "{$tableName}_def";
                     if ((array_key_exists($key, ${$tableName_def})) && (${$tableName_def}[$key]['data'] == $value)) {
@@ -373,7 +378,7 @@ trait ajaxHelper {
                     } else {
                         $dbSaveArray[$key] = array('table' => $tableName, 'field' => $key, 'Default' => $value);
                         // Save these settings to sccpsettings as backup - Doctrine overwrites defaults in installer.
-                        $save_settings[$key]= ['keyword' => $key, 'seq' => 98, 'type' => 2, 'data' => $value, 'systemdefault' => ''];
+                        $save_settings[$key]= ['keyword' => $key, 'seq' => $this->sccpvalues[$key]['seq'], 'type' => $this->sccpvalues[$key]['type'], 'data' => $value, 'systemdefault' => ''];
                     }
                     // If have matched on device, cannot match on line
                     continue 2;

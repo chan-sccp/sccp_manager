@@ -385,86 +385,83 @@ class formcreate
                         $usingSysDefaults = false;
                     }
                     if (!empty($sccp_defaults[$res_n]['systemdefault'])) {
-                    // There is a system default, so add button to customise or reset
-                    // the closing } is after the code to include the button at line ~427
+                        // There is a system default, so add button to customise or reset
+                        // the closing } is after the code to include the button at line ~427
 
-                    //-- Start include of defaults button --
-                    echo "<div class='col-md-3'>";
-                    // Output current value
-                    echo $res_v;
-                    ?>
-                    </div>
-                    <div class="col-md-4">
-                      <span class="radioset">
-                        <input type="checkbox"
-                            <?php
-                            echo " data-for={$res_id} data-type=radio id=usedefault_{$res_id} ";
-                            if ($usingSysDefaults) {
-                                // Setting a site specific value
-                                echo " class=sccp-edit :checked ";
-                            } else {
-                                // reverting to chan-sccp default values
-                                echo " data-default={$sccp_defaults[$res_n]['systemdefault']} class=sccp-restore ";
-                            }
-                            ?>
-                        >
-                        <label
-                            <?php
-                            echo "for=usedefault_{$res_id} >";
-                            echo ($usingSysDefaults) ? "Customise" : "Use {$this->buttonDefLabel} defaults";
-                            ?>
-                        </label>
-                      </span>
+                        //-- Start include of defaults button --
+                        echo "<div class='col-md-3'>";
+                        // Output current value
+                        echo $res_v;
+                        ?>
+                        </div>
+                        <div class="col-md-4">
+                          <span class="radioset">
+                            <input type="checkbox"
+                                <?php
+                                echo " data-for={$res_id} data-type=radio id=usedefault_{$res_id} ";
+                                if ($usingSysDefaults) {
+                                    $res_v = $sccp_defaults[$res_n]['systemdefault'];
+                                    // Setting a site specific value
+                                    echo " class=sccp-edit :checked ";
+                                } else {
+                                    // reverting to chan-sccp default values
+                                    echo " data-default={$sccp_defaults[$res_n]['systemdefault']} class=sccp-restore ";
+                                }
+                                ?>
+                            >
+                            <label
+                                <?php
+                                echo "for=usedefault_{$res_id} >";
+                                echo ($usingSysDefaults) ? "Customise" : "Use {$this->buttonDefLabel} defaults";
+                                ?>
+                            </label>
+                          </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        <!--    <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none"> -->
-            <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none">
-                <div class="form-group <?php echo $res_id; ?>">
-                    <div class="col-md-3">
-                        <i><?php echo "Choose new {$this->buttonHelpLabel} value for {$res_n}"; ?></i>
-                    </div>
-                    <!-- Finish include of defaults button -->
+            <!--    <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none"> -->
+                <div class="row" id="edit_<?php echo $res_id; ?>" style="display: none">
+                    <div class="form-group <?php echo $res_id; ?>">
+                        <div class="col-md-3">
+                            <i><?php echo "Choose new {$this->buttonHelpLabel} value for {$res_n}"; ?></i>
+                        </div>
+                        <!-- Finish include of defaults button -->
                     <?php
                     // Close the conditional include of the defaults button opened at line ~385
                     }
                     ?>
-
                     <div class="col-md-9 radioset " data-hide="on">
-
-                      <?php
-                        $i = 0;
-                        $opt_hide = '';
-
-                        if ($usingSysDefaults) {
-                            $res_v = $sccp_defaults[$res_n]['systemdefault'];
-                        }
-                        if (!empty($child->option_hide)) {
-                            $opt_hide = ' class="sccp_button_hide" data-vhide="'.$child->option_hide.'" data-clhide="'.$child->option_hide['class'].'" ';
-                        }
+                        <?php
+                        $opt_hide = (!empty($child->option_hide)) ? ' class="sccp_button_hide" data-vhide="'.$child->option_hide.'" data-clhide="'.$child->option_hide['class'].'" ' : '';
                         if (!empty($child->option_show)) {
                             if (empty($opt_hide)) {
                                 $opt_hide =' class="sccp_button_hide" ';
                             }
                             $opt_hide .= ' data-vshow="'.$child->option_show.'" data-clshow="'.$child->option_show['class'].'" ';
                         }
+                        if ($res_id == 'sccpdevice_daysdisplaynotactive') {
+                            // This is a multi select button list for daysDisplayNotActive which is an
+                            // exception - its values are in a csv list - 1,2,7 for example
+                            $currentValue = array();
+                            foreach (explode(',',$res_v) as $resValue) {
+                                $currentValue[$resValue - 1] = $resValue;
+                            }
+                        }
+                        $i = 0;
                         foreach ($child->xpath('button') as $value) {
-                            $opt_disabled = '';
-                            if (in_array($value, $disabledButtons )) {
-                                $opt_disabled = 'disabled';
-                            }
-                            $val_check = strtolower((string)$value[@value]);
-                            if ($val_check == strtolower($res_v)) {
-                                $val_check = "checked";
+                            $opt_disabled = (in_array($value, $disabledButtons )) ? 'disabled' : '';
+                            $valToCheck = strtolower((string)$value[@value]);
+                            // TODO: Matching empty values - is this required?
+                            $val_check = (($valToCheck == strtolower($res_v)) || ($valToCheck == '' && $res_v == '' )) ? 'checked' : '';
+                            $tmpName = $res_id;
+                            if ($res_id == 'sccpdevice_daysdisplaynotactive') {
+                                if (isset($currentValue[$i])) {
+                                    $val_check = (($valToCheck == strtolower($currentValue[$i])) || ($valToCheck == '' && $currentValue[$i] == '' )) ? 'checked' : '';
+                                }
+                                echo "<input type=checkbox name= ${res_id}_{$i} id=${res_id}_{$i} value='{$value[@value]}' {$val_check} {$opt_hide} {$opt_disabled}>";
                             } else {
-                                if ($val_check == '' || $val_check == 'none' ) {
-                                   if (strtolower($res_v) == 'none' || $res_v == '' )  {
-                                      $val_check = "checked";
-                                   } else {$val_check = "";}
-                                } else {$val_check = "";}
+                                echo "<input type=radio name= {$res_id} id=${res_id}_{$i} value='{$value[@value]}' {$val_check} {$opt_hide} {$opt_disabled}>";
                             }
-                            $tmpName = ($res_id == 'sccpdevice_daysdisplaynotactive') ? "${res_id}_{$i}" : $res_id;
-                            echo "<input type=radio name= {$tmpName} id=${res_id}_{$i} value='{$value[@value]}' {$val_check} {$opt_hide} {$opt_disabled}>";
                             echo "<label for= {$res_id}_{$i}>{$value}</label>";
                             $i++;
                         }
@@ -476,7 +473,6 @@ class formcreate
                     <span id="<?php echo $res_id;?>-help" class="help-block fpbx-help-block"><?php echo _($child->help);?></span>
             </div></div>
         </div>
-
         <?php
     }
 
