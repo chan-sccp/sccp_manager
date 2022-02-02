@@ -337,11 +337,14 @@ class formcreate
         <?php
     }
 
-    function addElementIS($child, $fvalues, $sccp_defaults,$npref, $disabledButtons) {
-      if ($npref == 'sccp_hw_') {
-          $this->buttonDefLabel = 'site';
-          $this->buttonHelpLabel = 'device';
-      }
+    function addElementIS($child, $fvalues, $sccp_defaults,$npref, $disabledButtons, $defButton = '') {
+        if ($npref == 'sccp_hw_') {
+            $this->buttonDefLabel = 'site';
+            $this->buttonHelpLabel = 'device';
+        }
+        if ($defButton == 'site'){
+            $this->buttonDefLabel = 'site';
+        }
         $res_n =  (string)$child->name;
         $res_id = $npref.$res_n;
         $res_ext = str_replace($npref,'',$res_n);
@@ -384,8 +387,12 @@ class formcreate
                     if ($sccp_defaults[$res_n]['systemdefault'] != $res_v) {
                         $usingSysDefaults = false;
                     }
-                    if (!empty($sccp_defaults[$res_n]['systemdefault'])) {
-                        // There is a system default, so add button to customise or reset
+                    if ($sccp_defaults[$res_n]['data'] != $res_v) {
+                        $usingSiteDefaults = false;
+                    }
+
+                    if ((!empty($sccp_defaults[$res_n]['systemdefault'])) || ($defButton == 'site')) {
+                        // There is a system default, or we are referencing site defaults, so add button to customise or reset
                         // the closing } is after the code to include the button at line ~427
 
                         //-- Start include of defaults button --
@@ -403,16 +410,24 @@ class formcreate
                                     $res_v = $sccp_defaults[$res_n]['systemdefault'];
                                     // Setting a site specific value
                                     echo " class=sccp-edit :checked ";
+                                } else if ($usingSiteDefaults) {
+                                    $res_v = $sccp_defaults[$res_n]['data'];
+                                    // Setting a site specific value
+                                    echo " class=sccp-edit :checked ";
                                 } else {
-                                    // reverting to chan-sccp default values
-                                    echo " data-default={$sccp_defaults[$res_n]['systemdefault']} class=sccp-restore ";
+                                    // reverting to chan-sccp or site default values
+                                    if ($defButton == 'site') {
+                                        echo " data-default={$sccp_defaults[$res_n]['data']} class=sccp-restore ";
+                                    } else {
+                                        echo " data-default={$sccp_defaults[$res_n]['systemdefault']} class=sccp-restore ";
+                                    }
                                 }
                                 ?>
                             >
                             <label
                                 <?php
                                 echo "for=usedefault_{$res_id} >";
-                                echo ($usingSysDefaults) ? "Customise" : "Use {$this->buttonDefLabel} defaults";
+                                echo ($usingSysDefaults || $usingSiteDefaults) ? "Customise" : "Use {$this->buttonDefLabel} defaults";
                                 ?>
                             </label>
                           </span>

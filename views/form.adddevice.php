@@ -120,7 +120,7 @@ if (!empty($def_val['type']['data'])) {
         }
         echo $this->showGroup('sccp_hw_dev2', 1, 'sccp_hw', $def_val);
         echo $this->showGroup('sccp_hw_dev_advance', 1, 'sccp_hw', $def_val);
-        echo $this->showGroup('sccp_dev_vendor_display_conf', 1, 'sccpdevice', $def_val);
+        echo $this->showGroup('sccp_dev_vendor_display_conf', 1, 'sccpdevice', $def_val, 'site');
         echo $this->showGroup('sccp_hw_dev_softkey', 1, 'sccp_hw', $def_val);
         echo $this->showGroup('sccp_hw_dev_conference', 1, 'sccp_hw', $def_val);
         echo $this->showGroup('sccp_dev_vendor_conf', 1, 'vendorconfig', $def_val);

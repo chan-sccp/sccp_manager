@@ -538,7 +538,7 @@ trait ajaxHelper {
             }
         }
         foreach ($db_field as $key) {
-            $value = "";
+            $value = '';
             switch ($key) {
                 case 'name':
                     if (!empty($get_settings[$hdr_prefix . 'mac'])) {
@@ -553,10 +553,8 @@ trait ajaxHelper {
                         $name_dev = $value;
                     }
                     break;
-
                 case 'daysdisplaynotactive' :
                     $searchArr = ['daysdisplaynotactive_0', 'daysdisplaynotactive_1', 'daysdisplaynotactive_2', 'daysdisplaynotactive_3', 'daysdisplaynotactive_4', 'daysdisplaynotactive_5', 'daysdisplaynotactive_6'];
-                    $value = '';
                     foreach ($searchArr as  $settingsVal) {
                         $value .= (isset($get_settings["sccpdevice_${settingsVal}"])) ? $get_settings["sccpdevice_${settingsVal}"] . ',' : '';
                     }

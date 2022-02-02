@@ -28,7 +28,6 @@ if (empty($form_prefix)) {
 //    $npref = 'vendorconfig';
 //    $napref = 'vendorconfig-ar';
 }
-
 if (empty($fvalues)) {
     $fvalues = $sccp_defaults;
 }
@@ -71,7 +70,7 @@ foreach ($items as $child) {
                 $disabledButtons = array('off' => 'Off');
             }
         case 'IS':
-            $sccpManager->formcreate->addElementIS($child, $fvalues, $sccp_defaults,$npref, $disabledButtons);
+            $sccpManager->formcreate->addElementIS($child, $fvalues, $sccp_defaults,$npref, $disabledButtons, $defButton);
             break;
         case 'SLD':
         case 'SLM':

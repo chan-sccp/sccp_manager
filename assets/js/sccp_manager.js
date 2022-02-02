@@ -1222,9 +1222,18 @@ function sleep(milliseconds)
 // custom values. Clicking on these buttons is handled by the 2 functions below.
 $(".sccp-restore").click(function() {
     //input is sent by data-for where for is an attribute
+    console.log('have click');
   	var id = $(this).data("for"), input = $("#" + id);
+    console.log('id ' + id);
+    console.log('input ' + input);
     var edit_style = document.getElementById("edit_" + id).style;
+    console.log('edit style ' + edit_style);
     input = document.getElementsByName(id);
+    console.log(input);
+    input = $("input[id^=" + id);
+    console.log(input);
+    //input = document.querySelectorAll("[id^=" + id]));
+    //console.log(input);
   	if (input.length === 0) {
   		 return;
   	}
@@ -1236,7 +1245,7 @@ $(".sccp-restore").click(function() {
         var defaultVal = $(this).data("default");
         if ($(this).data("type") === 'radio') {
             // simulate read only for checkboxes except default
-            input.forEach(
+            input.each(
                 function(radioElement) {
                     radioElement.setAttribute('disabled', true);
                     if (radioElement.value === defaultVal){

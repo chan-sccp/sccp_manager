@@ -160,7 +160,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      *   Generate Input elements in Html Code from sccpgeneral.xml
      */
 
-    public function showGroup($group_name, $show_Header, $form_prefix = 'sccp', $form_values = array()) {
+    public function showGroup($group_name, $show_Header, $form_prefix = 'sccp', $form_values = array(), $defButton = '') {
 
         // load xml data - moved from Construct to simplify Construct.
         // TODO: This is static data so only load first time. Left as is for dbug.
@@ -186,7 +186,8 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
                     'fvalues' => $form_values,
                     'installedLangs' => $this->findInstLangs(),
                     'chanSccpHelp' => $this->sccpHelpInfo,
-                    'sccp_defaults' => $this->sccpvalues
+                    'sccp_defaults' => $this->sccpvalues,
+                    'defButton' => $defButton
                     )
                   );
             }
