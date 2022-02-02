@@ -553,24 +553,33 @@ trait ajaxHelper {
                         $name_dev = $value;
                     }
                     break;
+
+                case 'daysdisplaynotactive' :
+                    $searchArr = ['daysdisplaynotactive_0', 'daysdisplaynotactive_1', 'daysdisplaynotactive_2', 'daysdisplaynotactive_3', 'daysdisplaynotactive_4', 'daysdisplaynotactive_5', 'daysdisplaynotactive_6'];
+                    $value = '';
+                    foreach ($searchArr as  $settingsVal) {
+                        $value .= (isset($get_settings["sccpdevice_${settingsVal}"])) ? $get_settings["sccpdevice_${settingsVal}"] . ',' : '';
+                    }
+                    $value = rtrim($value,',');
+                    break;
                 case 'phonecodepage':
                     // TODO: May be other exceptions so use switch. Historically this is the only one handled
                     // phonecodepage depends on 2 variables - language and phone type (uses java or not).
                     // Non java phones use ISO8859-1 or CP1251 (Cyrillic); java phones use UTF-8. See @dkgroot.
                     // Below list is not definitive or necessarily accurate - needs to be maintained.
-                    $nonJavaPhones = array( '7902', '7905', '7912', '7935', '7940', '7960');
+                    $nonUtf8Phones = array( '7902', '7905', '7912', '7935', '7940', '7960');
 
                     if (!empty($get_settings["{$hdr_prefix}devlang"])) {
                         switch ($get_settings["{$hdr_prefix}devlang"]) {
                             case 'Arabic_Saudi_Arabia':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO-8859-6' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'ISO-8859-6' : 'utf-8';
                                     break;
                             case 'Greek_Greece':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO-8859-7' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'ISO-8859-7' : 'utf-8';
                                     break;
                             case 'Bulgarian_Bulgaria':
                             case 'Russian_Russian_Federation':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1251' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'CP1251' : 'utf-8';
                                     break;
                             case 'Slovenian_Slovenia':
                             case 'Serbian_Republic_of_Montenegro':
@@ -578,33 +587,33 @@ trait ajaxHelper {
                             case 'Croatian_Croatia':
                             case 'Hungarian_Hungary':
                             case 'Lithuanian_Lithuania':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1252' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'CP1252' : 'utf-8';
                                     break;
                             case 'Czech_Czech_Republic':
                             case 'Slovak_Slovakia':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1254' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'CP1254' : 'utf-8';
                                     break;
                             case 'Hebrew_Israel':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'CP1255' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'CP1255' : 'utf-8';
                                     break;
                             case 'Thai_Thailand':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'TIS-620' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'TIS-620' : 'utf-8';
                                     break;
                             case 'Turkish_Turkey':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO-8859-9' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'ISO-8859-9' : 'utf-8';
                                     break;
                             case 'Chinese_China':
                             case 'Chinese_Taiwan':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'GB2312' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'GB2312' : 'utf-8';
                                     break;
                             case 'Japanese_Japan':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'SHIFT_JIS' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'SHIFT_JIS' : 'utf-8';
                                     break;
                             case 'Korean_Korea_Republic':
-                                    $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'EUC-KR' : 'utf-8';
+                                    $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'EUC-KR' : 'utf-8';
                                     break;
                             default:
-                                $value = (in_array($get_settings['sccp_hw_type'], $nonJavaPhones, true)) ? 'ISO8859-1' : 'utf-8';
+                                $value = (in_array($get_settings['sccp_hw_type'], $nonUtf8Phones, true)) ? 'ISO8859-1' : 'utf-8';
                                 break;
                         }
                     }
