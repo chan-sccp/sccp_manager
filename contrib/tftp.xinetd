@@ -10,7 +10,7 @@ service tftp
 	wait			= yes
 	user			= root
 	server			= /usr/sbin/in.tftpd
-	server_args		= -c -s -v /tftpboot -m -m /etc/asterisk/sccpManagerRewrite.rules
+	server_args		= -c -s -v /tftpboot -m /etc/asterisk/sccpManagerRewrite.rules
 	disable			= no
 	per_source		= 11
 	cps			= 100 2
