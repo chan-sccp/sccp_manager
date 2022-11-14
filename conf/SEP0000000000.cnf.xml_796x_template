@@ -56,6 +56,11 @@
     <displayOnTime>08:30</displayOnTime>
     <displayOnDuration>11:30</displayOnDuration>
     <displayIdleTimeout>01:00</displayIdleTimeout>
+    <daysBacklightNotActive>1,7</daysBacklightNotActive>
+    <backlightOnTime>09:00</backlightOnTime>
+    <backlightOnDuration>11:30</backlightOnDuration>
+    <backlightIdleTimeout>01:00</backlightIdleTimeout>
+    <backlightOnWhenIncomingCall>1</backlightOnWhenIncomingCall>
   </vendorConfig>
   <userLocale>
     <name>Dutch_Netherlands</name>
