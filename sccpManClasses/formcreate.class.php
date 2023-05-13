@@ -47,7 +47,7 @@ class formcreate
                     </div>
         <?php
                     if (!empty($sccp_defaults[$shortId]['systemdefault'])) {
-                        // There is a system default, so add button to customise or reset
+                        // There is a system default, so add button to customize or reset
                         //-- Start include of defaults button --
                         echo "<div class=col-md-3>";
                     }
@@ -101,7 +101,7 @@ class formcreate
                         <label
                             <?php
                             echo "for=usedefault_{$res_id} >";
-                            echo ($usingSysDefaults) ? "Customise" : "Use {$this->buttonDefLabel} defaults";
+                            echo ($usingSysDefaults) ? "Customize" : "Use {$this->buttonDefLabel} defaults";
                             ?>
                         </label>
 
@@ -385,7 +385,7 @@ class formcreate
                         $usingSysDefaults = false;
                     }
                     if (!empty($sccp_defaults[$res_n]['systemdefault'])) {
-                    // There is a system default, so add button to customise or reset
+                    // There is a system default, so add button to customize or reset
                     // the closing } is after the code to include the button at line ~438
 
                     //-- Start include of defaults button --
@@ -411,7 +411,7 @@ class formcreate
                         <label
                             <?php
                             echo "for=usedefault_{$res_id} >";
-                            echo ($usingSysDefaults) ? "Customise" : "Use {$this->buttonDefLabel} defaults";
+                            echo ($usingSysDefaults) ? "Customize" : "Use {$this->buttonDefLabel} defaults";
                             ?>
                         </label>
                       </span>
