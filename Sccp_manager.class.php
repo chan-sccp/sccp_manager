@@ -95,6 +95,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
     private $cnf_wr = null;
     public $sccppath = array();
     public $sccpvalues = array();
+    private $dbsccpvalues = array();
     public $sccp_conf_init = array();
     public $xml_data;
     public $class_error; //error construct
@@ -136,6 +137,7 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
         }
 
         $this->sccpvalues = $this->dbinterface->get_db_SccpSetting(); //Initialise core settings
+        $this->dbsccpvalues = $this->sccpvalues; //Copy settings from DB for future reference
         $this->initializeSccpPath();  //Set required Paths
         $this->updateTimeZone();   // Get timezone from FreePBX
         //$this->findInstLangs();
@@ -800,9 +802,9 @@ class Sccp_manager extends \FreePBX_Helpers implements \BMO {
      */
 
     private function saveSccpSettings($save_value = array()) {
-
+        $diffToSave = array_udiff_assoc($this->sccpvalues, $this->dbsccpvalues, array($this, "compareArrays"));
         if (empty($save_value)) {
-            $this->dbinterface->write('sccpsettings', $this->sccpvalues, 'replace'); //Change to replace as clearer
+            $this->dbinterface->write('sccpsettings', $diffToSave, 'update');
         } else {
             $this->dbinterface->write('sccpsettings', $save_value, 'update');
         }
