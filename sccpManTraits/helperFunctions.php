@@ -288,7 +288,13 @@ trait helperfunctions {
         return $sccp_conf_init;
     }
 
-
+    public function compareArrays(array $a, array $b){
+        if (array_diff_assoc($a, $b)===[]) {
+          return 0;
+          }
+          return ($a>$b)?1:-1;
+    }
+    
     public function checkTftpMapping(){
         exec('in.tftpd -V', $tftpInfo);
         $info['TFTP Server'] = array('Version' => 'Not Found', 'about' => 'Mapping not available');
